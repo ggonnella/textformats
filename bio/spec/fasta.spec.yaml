@@ -1,0 +1,17 @@
+datatypes:
+  header:
+    pfx: '>'
+    sep: " "
+    composed_of:
+      - fastaid: {regex: '\w+'}
+      - desc: string
+    required: 1
+  sequence_line: {regex: "[^>].*"}
+  sequence:
+    list_of: sequence_line
+    sep: "\n"
+  unit:
+    composed_of:
+      - header: header
+      - sequence: sequence
+    sep: "\n"

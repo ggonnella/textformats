@@ -1,0 +1,13 @@
+- check int limits
+- positive integers: "+" sign problem
+
+- define datatypes from other file formats / databases:
+  - gfa1
+  - sam
+  - vcf
+  - NCBI fasta header
+
+- Python:
+  - check out alternatives to nimpy:
+    https://github.com/octonion/puzzles/tree/master/blackjack/python-nim-cffi
+    https://github.com/octonion/puzzles/tree/master/blackjack/python-nim

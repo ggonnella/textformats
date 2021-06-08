@@ -1,0 +1,24 @@
+datatypes:
+  r_unknown_key:
+    regex: "\\d\\d"
+    x: 1
+  r_seq:
+    regex: ["\\d\\d"]
+  r_wo_reverse:
+    regex:
+      "\\d\\d": 1
+  r_reverse_empty:
+    regex:
+      "\\d\\d": 1
+    reverse: {}
+  r_reverse_unknown_key:
+    regex:
+      "\\d\\d": 1
+    reverse:
+      1: "01"
+      2: "02"
+  r_reverse_invalid_value:
+    regex:
+      "\\d\\d": 1
+    reverse:
+      1: "aa"

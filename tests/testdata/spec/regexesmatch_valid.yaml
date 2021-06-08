@@ -1,0 +1,23 @@
+datatypes:
+  rs_simple:
+    regexes:
+    - "\\d\\d"
+    - "_\\d"
+  rs_maps:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+    reverse:
+      1: "01"
+      2: "_1"
+  rs_mixed:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d"
+    reverse:
+      1: "01"
+  rs_n:
+    regexes:
+    - "\\d\\d"
+    - "_\\d"
+    empty: 0

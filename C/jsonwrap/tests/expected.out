@@ -1,0 +1,43 @@
+Test NullNode:
+null
+
+
+Test BoolNode:
+true
+value read from node is: true
+
+
+Test IntNode:
+-10
+value read from node is: 4294967286
+
+
+Test FloatNode:
+1.0
+value read from node is: 1.000000
+
+
+Test StringNode:
+"Hello, world!"
+value read from node is: "Hello, world!"
+changed char 0 to B
+node content is now: Hello, world!
+
+
+Test ArrayNode:
+Before calling fill_array: []
+[null,true,1,1.0,"str",[false,-1,-1.0,"rts"],{"b":false,"i":-1,"f":-1.0,"s":"rts"}]
+array length: 7
+str value for index 3: 1.0
+int value for index 3: 0
+
+
+Test ObjectNode:
+Before calling fill_object: {}
+{"n":null,"b":false,"i":1,"f":1.0,"s":"str","e":[],"a":[1,2.0,"3"]}
+str value of key "f": 1.0
+float value of key "f": 1.000000
+changing value to 2.0...
+float value of key "f": 2.000000
+
+

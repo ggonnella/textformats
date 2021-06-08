@@ -1,0 +1,4 @@
+datatypes:
+  ok: {constant: "ok"}
+  a: b
+  b: {composed_of: ["ok": ok, a: a]}

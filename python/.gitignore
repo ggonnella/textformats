@@ -1,0 +1,6 @@
+__pycache__/
+build/
+dist/
+nim-extensions/
+MANIFEST.in
+textformats.egg-info/

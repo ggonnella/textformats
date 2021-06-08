@@ -1,0 +1,4 @@
+datatypes:
+  ok: {constant: "ok"}
+  a: b
+  b: {named_values: {ok: ok, a: a}, sep: ",", internal_sep: "."}

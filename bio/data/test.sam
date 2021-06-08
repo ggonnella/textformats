@@ -1,0 +1,6 @@
+@HD	VN:1.0	SO:unsorted
+@SQ	SN:test_ref	LN:17637
+@CO	test1
+@CO	test2	test3
+run1	16	test_ref	1208	255	15M	*	0	0	AACTGATGACGCAGAACAACTTCCA	HHHHHHHHHHHHHHHHHH	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:25	YT:Z:UU
+run2	16	test_ref	1208	255	24M	*	0	0	TGCTGATGAAGCAGAACAACTTTA	`\X_`aaaaaY]``b_aa_aaaaa	AS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:24	YT:Z:UU

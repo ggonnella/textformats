@@ -1,0 +1,11 @@
+datatypes:
+  r_simple:
+    regex: "\\d\\d"
+  r_map:
+    regex:
+      "\\d\\d": 1
+    reverse:
+      1: "01"
+  r_n:
+    regex: "\\d\\d"
+    empty: 0

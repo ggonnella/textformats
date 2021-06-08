@@ -1,0 +1,53 @@
+datatypes:
+  rs_too_short:
+    regexes:
+    - "\\d\\d"
+  rs_unknown_key:
+    regexes:
+    - "\\d\\d"
+    - "_\\d"
+    x: 1
+  rs_map:
+    regexes:
+      "\\d\\d": 1
+      "_\\d": 2
+    reverse:
+      1: "01"
+      2: "_1"
+  rs_wo_reverse:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+  rs_reverse_empty:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+    reverse: {}
+  rs_reverse_seq:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+    reverse:
+    - 1: "01"
+    - 2: "_1"
+  rs_reverse_missing_key:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+    reverse:
+      1: "01"
+  rs_reverse_unknown_key:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+    reverse:
+      1: "01"
+      2: "_1"
+      3: "_2"
+  rs_reverse_invalid_value:
+    regexes:
+    - "\\d\\d": 1
+    - "_\\d": 2
+    reverse:
+      1: "01"
+      2: "1_"

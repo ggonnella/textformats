@@ -1,0 +1,12 @@
+datatypes:
+  u:
+    one_of:
+      - {constant: {"a": true}}
+      - json
+      - string
+  u_n:
+    one_of:
+      - {constant: {"a": true}}
+      - json
+      - string
+    empty: false

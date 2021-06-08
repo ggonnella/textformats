@@ -1,0 +1,1013 @@
+
+datatypes:
+  line:
+    composed_of:
+    - id: {regex: "[A-Z]{2}[0-9]{5}"}
+    - age: {unsigned_integer: {min: 0}}
+    - treatment: {accepted_values: ["control", "treatment"]}
+    - outcome: {accepted_values: ["discharge", "death"]}
+    - description: string
+    required: 4
+    sep: "	"
+
+---
+JH14552	97	control	discharge
+TI00786	85	control	discharge
+BL75533	11	treatment	death	mislabeled?
+KJ88104	8	treatment	discharge
+BH52800	22	control	death
+HC34886	64	treatment	discharge
+NA84492	44	control	discharge
+RM27074	95	treatment	death
+XX33405	86	treatment	death
+IL28466	84	treatment	discharge
+NL20760	17	control	death
+JT90168	0	control	discharge
+GO36230	36	treatment	discharge
+RH80536	2	treatment	death	cancer
+UH12186	37	contol	discharge	overweight
+PC74177	21	treatment	discharge
+IP36726	46	control	death	diabetes
+ZZ88810	21	control	discharge
+QF25435	51	control	death
+RH53774	80	treatment	death
+EJ52001	44	treatment	death
+LO57518	28	control	discharge
+AQ44276	16	control	discharge
+BJ29711	3	treatment	death
+LD00512	71	treatment	death
+PN05925	44	treatment	death
+OM17346	55	control	discharge
+BD47841	23	treatment	death
+XA91286	47	treatment	death
+SM75507	95	treatment	discharge
+QJ66051	26	treatment	discharge
+DS14106	32	control	death
+WN38823	55	treatment	discharge
+UZ81451	28	treatment	death
+LH68852	63	control	discharge
+IQ28372	13	treatment	death
+EP95121	13	control	discharge
+SY76360	61	treatment	discharge
+YQ89668	39	control	discharge	overweight
+ZR44912	23	control	discharge
+CP47788	1	control	discharge
+FH40621	90	control	discharge
+XX65896	78	treatment	death
+DC19449	42	treatment	discharge
+SL20456	2	control	death
+SM13922	0	control	death
+HR28821	58	treatment	discharge
+CE15616	71	treatment	death	cancer
+NF48293	18	treatment	discharge	interesting, consider for case study
+PU93608	31	control	discharge
+DL88842	94	treatment	death	underweight
+XF24093	52	control	discharge
+DL59241	80	treatment	discharge
+NU45284	9	control	discharge
+FY21494	78	control	death
+WN34606	63	treatment	discharge	cancer
+NQ21783	19	treatment	discharge
+PK01559	2	treatment	discharge	interesting, consider for case study
+EU52594	99	treatment	discharge
+FN15343	76	control	discharge
+WJ06512	4	treatment	death
+FN11161	17	control	death
+OR86470	35	control	discharge
+FG44450	90	treatment	discharge	interesting, consider for case study
+MW45371	33	control	death
+ZL69624	94	treatment	discharge
+WC05026	24	control	death
+YI24861	17	control	discharge
+LJ82424	42	treatment	discharge
+OP85009	57	control	death
+IQ09730	20	control	death
+HS48506	44	control	death
+CD85274	11	treatment	discharge
+GB62406	68	treatment	death
+NL60404	2	control	death
+RR39255	56	treatment	discharge
+LG45770	91	treatment	death
+WQ08315	42	control	death
+DC65061	24	control	death	mislabeled?
+QB36743	48	treatment	discharge
+TJ26944	14	control	death
+HW28734	13	treatment	discharge
+DA46146	63	treatment	death
+ZB33140	98	treatment	death
+DQ23058	28	treatment	discharge
+OO63457	22	control	discharge
+WH07288	96	control	death
+SW12489	41	treatment	discharge
+XZ89840	56	control	discharge
+IJ54048	9	control	discharge
+DL36730	60	treatment	discharge
+JR08207	22	treatment	discharge
+JJ73632	17	treatment	discharge
+MA87976	66	control	death
+NZ67232	27	treatment	discharge
+SL14472	31	control	death
+WH28224	27	control	discharge
+ZU23489	18	control	death	underweight
+WO44177	90	treatment	discharge
+UR71091	55	treatment	discharge
+NV52642	53	control	discharge
+AW14510	14	treatment	discharge
+QN29114	6	control	discharge
+DN84494	51	treatment	death
+YN37846	93	control	discharge
+HH16257	72	control	death
+OW27665	41	control	death
+MF27614	64	treatment	discharge
+XO76813	74	control	discharge
+DV74645	85	treatment	death
+CH12820	38	control	discharge	initially refused treatment
+FD24344	23	control	death
+UY37377	58	treatment	discharge
+BW67686	91	treatment	death
+NR16314	54	control	death
+CQ64490	52	control	discharge
+VH50841	20	control	death
+ZD56715	92	treatment	discharge
+LQ02234	97	treatment	death
+SO70727	65	treatment	discharge
+OB70807	96	control	death
+AA55709	56	control	discharge
+PX79632	70	treatment	death
+LL82929	81	control	discharge
+TY49639	6	control	discharge
+WG09465	76	treatment	death
+LO47131	96	treatment	discharge
+IC43250	51	control	discharge
+NL20740	14	control	discharge
+MC26568	49	control	death	interesting, consider for case study
+ZH20211	70	control	death
+UW63049	2	treatment	death
+ZC88525	6	control	discharge
+HX54184	63	treatment	discharge
+PN11448	59	treatment	discharge
+VZ68384	57	treatment	discharge
+AE11277	57	treatment	death	initially refused treatment
+GZ60694	26	control	death
+VR42393	28	treatment	death
+UF31983	8	control	discharge
+CH81864	41	control	death
+LZ73113	81	control	death
+PS41668	24	control	discharge	interesting, consider for case study
+NG37752	50	control	death
+SP66454	95	treatment	death
+VH31610	83	control	discharge
+LC80932	56	control	discharge
+XD71182	35	control	death	diabetes
+LC65131	81	treatment	discharge
+PU75954	89	control	death
+MV51990	69	control	discharge
+OU87920	47	treatment	discharge
+PX16331	36	treatment	death
+KG29091	53	treatment	death
+GG32960	57	control	discharge
+MU27581	67	control	discharge
+YB61295	56	treatment	discharge	mislabeled?
+HU40081	2	control	discharge
+PP48810	61	treatment	death
+RN69251	32	control	death	overweight
+YU28557	57	treatment	death
+FM83619	51	control	death	cancer
+IQ30256	84	treatment	death
+AH98618	78	control	death
+WK72282	78	treatment	death
+GL84408	1	treatment	discharge
+EX90053	72	control	discharge
+MV02173	17	control	discharge
+OV47371	68	treatment	death
+DJ58055	14	control	death	interesting, consider for case study
+BC95569	66	treatment	death
+ML99746	35	control	death
+QI85493	82	control	death
+FL68280	60	control	death
+UY11800	43	treatment	discharge
+OQ13123	39	treatment	discharge
+HV95768	41	control	death
+AF05909	22	treatment	death
+VL38121	31	control	death	professional athlete
+ZJ64133	18	treatment	discharge
+MB87517	31	control	death
+VO89706	0	treatment	death
+MU56573	65	treatment	discharge
+DG14985	31	treatment	discharge
+EF11439	50	treatment	death
+MA14123	16	treatment	discharge
+ZP20644	71	treatment	discharge
+OZ09371	65	treatment	death
+EI49780	21	control	discharge
+XL72944	67	treatment	death
+TQ39571	51	treatment	death
+XW39776	19	control	discharge
+KG55570	9	control	death
+RH47721	90	treatment	death
+EG28518	41	treatment	discharge
+DF88658	65	treatment	death
+UG64605	57	treatment	death
+FK01334	82	control	death
+XS29916	5	control	discharge	underweight
+WS25264	74	control	death
+PN28937	6	control	discharge
+GO11765	65	treatment	death
+UB02577	62	control	death
+TC79372	35	control	discharge
+FA56636	83	treatment	death
+UW22698	21	control	discharge
+NZ53033	12	treatment	death
+OU35324	84	control	death
+ZT47493	81	control	discharge
+RU04085	71	control	discharge
+LI42136	37	treatment	death
+DV52957	15	control	discharge
+RC90969	28	control	death
+EH30181	47	treatment	death
+SM82137	3	treatment	death
+BQ48565	14	control	discharge
+AD38289	55	control	death
+BX92760	60	control	death
+RU39390	21	treatment	discharge
+VC14539	0	control	death
+WY75023	31	control	discharge
+KT18080	82	control	discharge
+FM28859	70	treatment	death
+DV09640	31	treatment	discharge
+AW59140	69	treatment	discharge
+LN67369	47	treatment	discharge
+DB68809	64	treatment	death
+QI05522	70	control	discharge
+VC45145	45	control	discharge
+ZO41810	95	treatment	death
+UO97434	34	control	death
+RD84727	64	treatment	discharge
+TU82862	23	treatment	discharge
+XF99069	28	treatment	death
+XF34746	14	treatment	death
+DX21747	42	control	death
+KD44195	49	treatment	discharge
+TX69844	24	treatment	death
+ZM29310	69	treatment	death
+OR18028	81	control	discharge
+CR41255	3	control	discharge
+WI44586	79	control	death
+IK84875	15	treatment	death
+KI73843	25	treatment	discharge
+HG31955	7	control	death	diabetes
+FI10524	43	control	death
+YY13261	33	treatment	discharge
+HT32382	57	treatment	discharge
+JT08779	95	treatment	death
+XA65295	9	control	death
+PX68494	51	treatment	death
+NV33847	55	control	death
+SW56828	59	treatment	discharge
+VH60528	3	treatment	discharge
+KS18169	17	treatment	death
+JJ05922	81	control	discharge
+AU02286	91	control	death
+GY31498	7	treatment	discharge
+WF26107	51	control	discharge
+LJ69365	30	control	death
+MZ95672	56	control	discharge
+BX56450	63	treatment	death	diabetes
+IV15556	85	control	death
+VK52230	15	treatment	death
+UU10149	29	control	discharge
+EX47352	65	control	discharge
+MN07616	21	control	discharge
+TT23153	78	treatment	discharge
+BB55617	79	treatment	death
+AK51612	38	treatment	death
+OZ82996	47	control	death	overweight
+OU32533	53	control	death
+QZ70273	98	control	discharge
+YP71753	75	treatment	discharge
+AE94064	47	control	death
+FS38229	18	treatment	discharge
+HJ79303	49	treatment	discharge
+ET31262	48	treatment	discharge
+GM47047	79	treatment	death
+CH09512	16	treatment	discharge
+GZ40224	95	control	discharge
+SA70864	68	control	death
+CM93960	4	control	discharge	mislabeled?
+ET58207	31	treatment	discharge
+LP91585	11	control	discharge
+CO48383	48	treatment	discharge
+ZZ99823	85	treatment	discharge
+CT62309	3	control	death	professional athlete
+QC64112	96	treatment	death
+IB70137	15	control	death
+WS94263	31	treatment	death
+PC93951	74	control	death
+PM80578	33	treatment	discharge
+AF77222	25	control	discharge
+KI84304	95	treatment	discharge
+GZ21156	32	control	discharge
+JM94752	17	treatment	death
+RM26961	66	control	discharge
+FB77010	46	treatment	death
+KL37139	34	control	death
+PI84077	34	control	discharge
+QP36399	75	treatment	discharge
+YC02656	44	control	death
+BT31626	57	treatment	death
+KA78034	15	treatment	discharge
+KB03363	53	control	death
+BJ63925	91	treatment	discharge
+HC17993	21	control	death	interesting, consider for case study
+NN83857	27	treatment	discharge
+VO47364	95	control	death
+PT16107	17	treatment	discharge
+DR53264	20	control	death
+AI20150	35	control	discharge
+ZD38473	19	control	death
+XY58825	10	treatment	death
+JJ10816	75	treatment	death
+SC82282	55	treatment	death
+QQ09222	28	control	death
+DZ64459	25	treatment	death
+RK51836	86	treatment	discharge
+TV15421	1	treatment	death
+WC71124	19	control	discharge
+VG48643	40	treatment	death
+AF55625	2	treatment	death
+TL65388	13	treatment	discharge
+WR03496	34	treatment	death	mislabeled?
+RJ37857	85	control	discharge
+AF99789	96	treatment	discharge
+SQ80068	43	treatment	death
+GV77808	36	control	death	professional athlete
+IU32126	33	treatment	death
+ST37965	38	control	death
+PO42750	1	treatment	discharge
+AH65548	59	treatment	discharge
+OC03488	21	control	discharge
+OI55625	6	control	discharge
+NY38788	51	control	death
+FQ45892	65	treatment	discharge
+ML40623	57	treatment	discharge
+JZ74800	2	treatment	discharge
+XA70208	11	control	death
+SJ92648	23	treatment	discharge
+QN02232	47	treatment	discharge
+RN81684	21	control	death
+IT84302	94	treatment	discharge
+FB12312	95	treatment	discharge
+UP24753	76	treatment	discharge
+OH62445	31	control	discharge
+FB86081	33	treatment	death
+LH06488	79	control	death
+DF96656	53	treatment	death
+JR63864	62	treatment	death	diabetes
+AH59391	49	control	death
+WY21417	61	control	discharge
+YK92622	3	treatment	discharge
+VY20826	36	control	discharge
+CP87487	50	treatment	death
+MK72774	44	treatment	death
+GF43237	36	control	death
+XH04513	33	treatment	death
+GE38888	21	treatment	discharge
+EX06384	19	control	discharge
+KH35261	2	control	discharge
+IP30280	87	control	discharge
+BH75059	82	control	discharge
+MR32066	64	control	discharge
+XK10971	89	treatment	death
+IN45399	93	control	death	interesting, consider for case study
+AF01949	57	treatment	discharge
+JG61319	31	treatment	discharge
+JN47370	7	control	death
+BX14412	46	treatment	death
+EN12895	87	treatment	death
+FJ59822	71	control	discharge
+NX74096	0	treatment	discharge
+VF71489	87	treatment	death
+AD81741	4	treatment	death
+SE28941	28	treatment	discharge
+AX36202	49	treatment	discharge
+WQ52785	46	control	death
+KW91670	7	treatment	death
+SL98165	52	control	death	underweight
+UY58142	45	control	discharge
+QW03929	55	treatment	death
+EH08776	47	treatment	discharge
+EU26741	66	control	death	mislabeled?
+NN42699	43	control	discharge
+HB42422	73	treatment	death
+WP03636	30	control	death
+CL21018	36	treatment	death	overweight
+WI82657	58	treatment	death
+GH25364	14	control	discharge
+NC96834	41	control	discharge
+UP37550	86	treatment	death
+IJ31042	87	treatment	discharge
+PW98281	11	control	death
+FY71391	95	control	death
+AU49173	84	control	death
+GB06330	47	control	discharge
+IH62117	97	treatment	discharge
+RK17670	28	control	discharge
+BU25627	17	control	death
+UK47928	98	treatment	death
+JC96642	93	treatment	death
+NG63837	20	treatment	discharge
+ML04647	38	treatment	death
+ET12164	64	treatment	discharge
+KL44814	88	treatment	death
+BP02836	64	treatment	death	underweight
+LF66373	29	treatment	discharge
+CB34127	97	treatment	death
+RJ82929	43	control	discharge
+MZ82016	67	treatment	discharge
+NU23538	58	control	discharge
+CB28150	20	control	death	underweight
+XM37009	63	control	death
+JF95685	48	control	death
+YM05721	23	treatment	discharge
+KJ58019	65	control	death
+VE38084	47	treatment	death
+XX30592	38	control	death
+JX60386	98	control	death
+GI75633	98	treatment	discharge
+YZ27616	81	treatment	discharge
+HE32846	17	control	death
+MO77071	35	treatment	death
+GT29299	72	control	death
+LF25865	27	treatment	death
+UG15366	19	control	discharge
+CY47181	85	control	death
+XG74446	76	treatment	death	interesting, consider for case study
+CR83064	34	control	death
+GE71817	6	control	discharge
+VH80553	99	treatment	discharge
+DF80610	46	treatment	death
+GV73777	47	treatment	death
+AF26073	44	treatment	discharge
+IW08930	81	control	death
+TG06105	16	control	discharge
+KP16085	60	treatment	discharge
+BM83663	57	treatment	discharge
+LD53886	34	treatment	discharge
+NL10072	84	treatment	discharge
+BH27264	49	treatment	discharge
+GY51000	52	treatment	death
+BL20549	81	control	death
+IH83904	80	treatment	death
+PI80126	27	treatment	death
+MZ08570	80	treatment	discharge
+OS47434	56	control	discharge
+LM72217	34	treatment	death
+DU72154	47	treatment	discharge
+CF69072	33	control	death
+BO13406	73	treatment	discharge
+WG32303	71	treatment	death
+YH24390	29	control	discharge	mislabeled?
+VK22143	23	control	discharge	interesting, consider for case study
+ND58523	90	control	death
+YM95519	79	control	discharge
+GH80552	89	control	death
+AT52710	64	treatment	discharge
+CF19833	66	control	death
+HV26694	53	control	death
+SG30120	24	control	death
+BF27183	4	control	death
+CB41302	7	control	death
+HL52137	8	control	death
+SW93315	92	control	discharge
+QG38531	88	control	death	initially refused treatment
+TU12277	78	treatment	death
+XJ10764	70	treatment	death
+ZH89311	40	treatment	death
+SU19736	51	control	discharge
+KQ67211	37	control	discharge
+PF13440	64	control	discharge
+VV03741	76	control	death
+ZU13038	12	treatment	death
+TS91018	14	treatment	discharge
+MP23981	3	control	death
+SG10755	70	treatment	death
+KP32362	49	treatment	death
+PR89894	54	control	discharge
+YP69955	3	treatment	discharge
+FO40458	38	control	death
+QZ94643	84	control	discharge
+QJ76381	55	control	discharge
+SQ71433	36	treatment	death
+IK27681	1	treatment	discharge
+WG49809	47	control	discharge
+SZ91607	6	treatment	discharge
+GX45247	77	control	discharge
+YV28014	54	treatment	discharge
+NL72055	51	control	death
+SJ33799	65	treatment	death
+XD10320	79	treatment	death	professional athlete
+NN75471	2	control	death
+QD93881	57	treatment	death
+KQ72949	74	treatment	death
+UE93660	75	treatment	death
+TN22467	32	control	discharge	cancer
+IT22322	72	control	discharge
+DT98138	96	control	discharge
+FP57390	18	control	death
+HG12496	43	treatment	death
+VB17656	13	control	death
+QX89942	60	treatment	discharge
+EP09099	85	control	discharge
+TE15541	40	treatment	death
+II59075	84	control	death
+LR51653	40	treatment	death
+DI92460	82	control	discharge
+BO75199	39	treatment	discharge
+BC67651	85	treatment	death
+OU38280	19	treatment	discharge
+VC32269	78	treatment	death
+NW22929	95	treatment	discharge
+IY90495	92	treatment	death	initially refused treatment
+VW67016	46	treatment	death
+PA54151	4	treatment	death
+ZU47218	91	control	discharge
+GJ48045	43	treatment	death
+ER09774	22	control	death
+PJ71344	77	treatment	discharge
+ON59900	50	treatment	death
+YR57449	93	control	discharge
+BP07870	61	control	discharge
+JF12413	92	treatment	death
+YH31674	88	treatment	discharge
+GW83811	31	treatment	discharge
+ZE26634	91	treatment	death
+VR38693	42	control	discharge
+UX89943	43	control	death
+GO85430	26	treatment	discharge
+MN66180	91	treatment	death
+KD24888	61	control	death
+FK05105	1	treatment	death
+PO37463	64	control	discharge
+PK93273	1	control	death
+UP92064	90	treatment	death
+ZX59957	92	treatment	discharge
+TS66250	95	treatment	death	initially refused treatment
+ZE60315	95	treatment	death	cancer
+JI31229	33	treatment	death
+WW41111	49	treatment	death
+EY22163	65	control	death
+AF22335	0	treatment	death
+QT14292	1	treatment	death
+VO16706	30	treatment	death
+IN38330	80	control	discharge
+QA72747	43	treatment	discharge
+BS49360	90	control	discharge
+IN51305	10	control	discharge
+SF33769	41	control	death
+GE58938	40	control	death
+ND83320	83	treatment	death
+JQ49104	4	control	discharge
+JV83927	89	treatment	death
+UI39135	82	control	discharge
+FJ14132	13	treatment	discharge
+AE15975	70	treatment	death
+US81490	50	control	discharge
+BK75645	27	control	death
+BX57872	27	control	death
+ZT99248	4	treatment	death	interesting, consider for case study
+RE89899	32	treatment	discharge
+DE96136	35	treatment	discharge
+SD15828	21	treatment	death
+ZK19284	67	control	discharge
+XR82270	25	treatment	death
+WY60004	2	treatment	death
+BU35673	78	control	discharge	cancer
+VN50982	23	treatment	death
+IR66853	83	control	death
+DG00858	62	control	death
+GZ73592	14	control	discharge
+LL32618	53	control	discharge
+MB07521	18	control	death
+PT00277	37	control	death
+RT33701	52	treatment	discharge
+OM73023	84	treatment	death
+VJ98059	70	treatment	discharge
+PP45367	23	control	discharge
+WM66606	89	treatment	discharge	mislabeled?
+EP48787	84	treatment	discharge
+UL26145	93	treatment	death
+YS36071	79	control	death
+PJ75504	25	control	death
+FC72733	36	control	death
+RU77379	47	treatment	death
+RW47491	13	treatment	death
+HD23623	31	control	death
+NT78775	16	control	death
+YL20967	90	treatment	discharge
+YV21985	39	treatment	discharge
+AL96483	5	control	discharge	underweight
+OB30810	3	treatment	discharge
+FT01321	85	control	discharge
+KE04310	49	treatment	discharge
+GA83903	58	treatment	death
+SO85344	86	control	death
+ZD25587	46	treatment	death
+BG80119	27	treatment	discharge
+XF90083	10	treatment	discharge
+XS39950	67	treatment	discharge
+FV30284	48	treatment	death
+RD52858	31	control	discharge
+OS87481	13	control	death
+KD47106	18	treatment	death
+MN61170	63	control	discharge
+HG91204	70	control	death
+SM90306	58	treatment	death
+AV34398	28	treatment	discharge
+YQ50931	44	treatment	death
+SV39075	28	control	discharge
+GQ82008	30	control	death
+VF62320	44	control	death
+AR35749	46	treatment	discharge
+QL60749	24	control	discharge
+IL73703	95	control	death
+GY67612	38	treatment	discharge
+OQ95899	6	treatment	discharge
+LM05175	95	treatment	discharge
+XM46636	21	control	death
+EH76018	20	treatment	discharge
+KB60896	90	control	death
+CG98517	28	control	death
+WT31015	66	control	discharge
+XX64695	77	treatment	discharge
+EY54895	90	control	death
+BP52053	90	treatment	death
+OP42198	87	control	discharge
+TE12060	49	treatment	death	cancer
+TV80256	95	control	death
+XP02965	2	control	death
+BG46086	47	control	discharge
+RU90074	70	control	discharge
+HK67657	57	treatment	death
+JZ97142	77	control	discharge
+FF92834	8	treatment	discharge
+MF32240	96	treatment	death
+VW25383	58	control	death
+LR72046	60	treatment	death
+RK45740	44	treatment	death
+HR87542	29	treatment	death
+MX33150	56	treatment	discharge
+OH29419	0	treatment	discharge
+EN92680	42	treatment	death
+XB14672	50	treatment	death
+FU67294	24	control	discharge
+UP31440	15	control	discharge
+CY36800	84	treatment	discharge
+PK64531	84	control	death
+PS38894	11	control	death
+MX07060	68	control	death
+KI12154	81	treatment	death
+QA30027	7	control	discharge	overweight
+LW00881	5	treatment	death
+IP47445	38	control	discharge
+BY07585	39	treatment	death
+LK96438	48	control	discharge
+JT72488	2	control	death	underweight
+KB51428	0	treatment	death
+QJ19848	30	control	death
+UH54505	76	control	discharge
+SV68971	47	treatment	death
+FU35130	52	treatment	discharge	interesting, consider for case study
+JA05011	82	treatment	discharge
+RL96645	97	control	death
+TF14743	52	treatment	discharge
+XL81407	61	control	death
+DK86360	19	treatment	death
+QG37211	51	control	discharge
+NM46437	78	control	discharge
+AW83741	42	treatment	discharge
+ET34762	64	treatment	discharge
+VB44781	19	treatment	discharge	underweight
+CQ83108	5	control	discharge	interesting, consider for case study
+PF46869	97	control	death
+ZP51921	72	treatment	death	interesting, consider for case study
+JA39573	42	control	death	diabetes
+PU83424	2	treatment	death
+RN85952	20	treatment	death
+ZV03682	33	treatment	discharge
+TS61646	74	treatment	discharge
+SZ66156	56	treatment	death
+EZ36523	44	control	discharge
+KJ41437	8	treatment	discharge
+ZL22794	14	control	discharge
+GL93667	23	treatment	discharge
+JS56961	51	treatment	discharge
+ZT38636	61	treatment	discharge
+NZ80288	54	control	discharge
+SA45406	25	control	discharge
+RA69421	67	control	discharge
+YH60019	44	control	death
+ZN39270	67	treatment	death
+RF45174	28	control	discharge
+MX85984	99	control	death
+MK57171	78	control	discharge
+JZ30184	64	control	discharge
+GZ86285	75	control	discharge
+TQ77799	54	control	discharge
+LP22489	37	treatment	discharge
+LN34560	34	control	death
+RJ17073	99	control	death
+OU95301	45	control	death
+XI10985	45	control	death
+UC11934	87	treatment	discharge
+IU49623	45	control	death
+UE10867	30	control	discharge
+CD76469	60	control	discharge
+PZ22749	51	control	death
+PD78369	79	treatment	death
+UE00898	88	treatment	death
+GP68411	8	treatment	discharge
+GB12283	38	treatment	death
+CV43088	22	control	discharge
+BW74465	61	treatment	discharge
+TO67266	80	control	discharge
+PA53028	2	treatment	discharge
+QH37983	28	control	discharge
+LZ85541	89	treatment	discharge
+UG18812	10	treatment	discharge
+IS09324	30	treatment	death
+YR60140	67	treatment	discharge
+HF52299	75	treatment	discharge
+PJ53232	30	treatment	death
+WR74789	26	control	death
+BS50026	73	treatment	discharge	mislabeled?
+XW08610	10	treatment	death
+LX78161	4	control	death
+BO19807	48	control	death
+OQ70987	53	treatment	death
+UY38736	85	treatment	death
+KU00271	6	control	death
+LU79067	36	treatment	discharge	underweight
+AU47589	17	control	death
+EW89183	18	control	death
+PT39886	30	treatment	death
+SN85505	65	treatment	discharge
+ZN14236	91	treatment	discharge	mislabeled?
+UE52651	64	control	death
+MK01260	11	control	death
+AT47602	19	control	death
+OB37103	11	treatment	discharge
+DN08916	49	treatment	death
+ES93596	2	treatment	discharge	underweight
+OZ38219	5	treatment	discharge
+NY24391	8	treatment	discharge
+RY34945	56	treatment	discharge
+RE66497	1	treatment	death
+AD60644	20	control	death
+FM84130	45	treatment	discharge
+WR53945	42	treatment	death
+LS08837	34	treatment	death
+FB22755	57	treatment	death
+BM28548	82	control	death	professional athlete
+XU14387	15	treatment	discharge
+CY83376	79	treatment	discharge
+YB98867	25	control	death
+HP07048	74	treatment	death
+KB36211	52	treatment	death
+ZK39544	26	treatment	death
+LE05813	46	control	death
+EG81382	45	treatment	discharge
+QD39897	15	control	death
+YP13979	38	treatment	death
+NT62252	60	control	discharge
+ZF36186	89	control	death
+XU87243	8	treatment	death	interesting, consider for case study
+JB41153	0	treatment	death
+GW65884	20	control	discharge
+GF58543	53	treatment	discharge
+ZC73538	1	treatment	discharge
+FX40254	32	control	discharge	professional athlete
+EO78672	33	treatment	discharge
+QY12452	19	treatment	death
+XQ57342	64	treatment	death
+SJ52441	73	control	discharge
+FS48392	55	treatment	death
+PQ95538	78	control	death
+MS47481	18	treatment	death
+ZO66738	21	control	discharge
+MK26111	65	control	discharge
+YO41736	81	control	death	overweight
+IA79440	13	treatment	death
+EY06653	61	control	death	diabetes
+KL78888	76	control	discharge
+EW48026	46	control	death
+YC07745	63	treatment	discharge
+NK43689	98	treatment	discharge	overweight
+BD60819	8	control	death
+DE41707	93	control	discharge
+BJ75274	9	control	discharge
+HO40848	98	treatment	death	professional athlete
+BI71046	37	control	discharge	interesting, consider for case study
+BV24993	22	control	death
+GF07695	86	control	death
+CD25412	67	control	death
+AA39841	25	treatment	discharge
+QV76066	85	control	discharge
+FO96048	60	treatment	discharge
+IV39960	24	treatment	discharge	initially refused treatment
+FT80004	27	treatment	death	interesting, consider for case study
+KF74667	88	control	death
+CV96702	87	control	discharge
+JN66032	70	treatment	discharge
+GZ41276	97	control	death
+QQ97220	87	control	discharge
+CN39640	64	control	discharge
+VX13228	57	treatment	discharge
+NC34452	62	control	death
+WY72465	71	treatment	discharge	overweight
+WK30618	8	control	discharge
+BM45748	26	control	death
+QR68803	70	treatment	discharge
+DJ96619	20	treatment	discharge
+SP01540	84	control	death
+NI91390	53	control	discharge
+YU14025	87	control	death
+GA07787	66	treatment	discharge	underweight
+XQ96897	23	treatment	death	initially refused treatment
+DA55794	45	control	discharge
+WT28778	50	control	discharge	mislabeled?
+LK26432	1	treatment	death
+GF12672	40	treatment	discharge
+LI31812	48	treatment	discharge	professional athlete
+AL31169	37	treatment	discharge
+JM98501	37	treatment	discharge
+EI51307	95	control	death
+TP55686	31	treatment	discharge
+DE61382	86	treatment	discharge
+PX43206	45	treatment	death
+VA66930	83	treatment	death
+FW49929	95	treatment	discharge
+JL65442	53	treatment	death
+RD29961	21	control	discharge
+UL75840	81	control	discharge	mislabeled?
+SI66994	48	control	death	cancer
+XR31312	20	treatment	death
+XG53553	83	control	death
+KA20360	93	control	death
+CH95933	18	control	discharge
+JS28086	35	treatment	discharge
+AV57003	97	treatment	death
+PJ76191	54	control	discharge
+EQ43519	8	treatment	discharge
+HK45665	72	treatment	death
+JJ78886	49	control	death
+HV36638	5	treatment	discharge
+PA54051	58	treatment	discharge
+YV37789	70	control	discharge
+YO65222	97	control	death	cancer
+XR42874	7	treatment	discharge
+FI36891	96	control	death
+DH78251	7	control	death
+FC33781	79	treatment	discharge
+PD05601	35	control	discharge
+RK27841	15	control	discharge
+WE82078	2	control	discharge
+PN41550	10	control	discharge
+RK64508	20	control	death
+ID61419	4	treatment	discharge
+ON10704	11	treatment	death
+HW72265	62	treatment	death
+UQ72414	65	treatment	death	professional athlete
+VS72772	63	control	discharge
+XG16844	91	treatment	death
+TB08381	85	control	death
+GD92532	23	treatment	death
+TW13725	10	control	death	underweight
+KQ35854	0	control	death
+OW93669	8	control	death	diabetes
+KQ57494	47	control	discharge
+MT86881	53	control	discharge
+UB49946	90	control	death
+QV67390	28	control	death
+EA65170	51	treatment	discharge	initially refused treatment
+CN55355	95	treatment	discharge
+HP16881	87	treatment	death
+RY92474	63	control	discharge
+UQ11915	63	treatment	discharge
+SN46896	71	control	discharge
+VT93495	30	control	discharge
+HZ02981	86	control	discharge
+PM12461	12	treatment	death
+XT83796	77	treatment	death
+UU86759	14	treatment	discharge
+RV71872	48	treatment	discharge
+UA44674	27	treatment	death
+LY57594	86	control	death
+CO97507	66	treatment	discharge
+GT79775	99	treatment	death
+CB05310	58	control	discharge
+FL95922	94	treatment	death
+YE63102	7	control	death	mislabeled?
+WV45262	98	control	discharge
+UK21376	98	treatment	death
+ZB33373	78	treatment	death
+AI38978	37	treatment	death
+SB25246	72	control	discharge
+CL21354	43	control	death
+CZ23853	0	treatment	death
+RD37586	94	control	discharge
+UD19606	17	control	discharge
+PU73140	62	treatment	discharge
+EZ30316	36	treatment	discharge
+TO41829	52	control	death
+LM95048	46	treatment	discharge
+UR99883	31	control	death
+QU40867	49	treatment	discharge
+WX27361	84	treatment	death
+TV24681	67	control	death
+QJ87130	46	treatment	discharge
+EX61400	35	control	death
+TK34888	39	control	death
+TX35857	89	control	discharge
+GR67983	45	treatment	death	cancer
+OA56852	54	control	death
+XR69408	53	treatment	death
+MK73310	80	treatment	discharge
+NZ03876	62	control	death
+DK85200	75	control	death	underweight
+BX42213	40	treatment	discharge
+YZ57496	16	treatment	death
+PT31604	42	control	discharge	cancer
+HC26032	33	control	discharge	diabetes
+XA91128	67	treatment	death	cancer
+NM51585	28	treatment	discharge
+WU25137	94	treatment	discharge
+KN86792	65	control	discharge
+TP51081	26	treatment	discharge
+HZ76957	21	control	death
+YP54415	32	treatment	discharge
+JA33638	61	control	death
+PV99233	35	control	death	mislabeled?
+EK68069	96	treatment	death	mislabeled?
+TW21870	71	treatment	discharge
+OF66681	45	treatment	discharge
+GN16205	23	control	death
+IH29993	35	control	discharge
+EF16835	27	control	death
+FR78833	81	control	death
+HF85802	41	control	discharge	cancer
+LJ77689	18	control	death
+AL61088	23	control	discharge
+EZ86127	24	treatment	death
+KN16647	99	control	discharge
+PL45245	20	control	death
+UL42473	98	treatment	death
+GZ57517	98	control	death
+IG71197	73	treatment	death
+SB98401	48	control	death
+RF02568	89	treatment	death
+HQ22857	85	treatment	discharge
+LR89371	3	treatment	discharge
+IZ87314	56	treatment	death
+EY31880	31	control	death
+XX28685	78	control	death
+GT94499	70	treatment	discharge
+EY32977	28	control	discharge
+EA22572	17	control	discharge	initially refused treatment
+KJ49146	72	treatment	death
+DL17484	2	treatment	discharge
+ZU50572	95	control	discharge
+BD72920	95	control	death
+LG95686	97	treatment	death
+UC49811	18	treatment	discharge
+MK84087	15	treatment	discharge
+XB30961	43	control	discharge
+ER67906	88	control	discharge
+SO78984	43	control	death
+QU26102	84	control	death
+KR06079	81	control	discharge
+DV52558	98	control	death
+ZM24818	97	treatment	discharge
+BB42174	77	control	discharge	cancer
+TG67901	43	treatment	discharge
+HX28061	91	control	death
+GA83955	34	treatment	death
+OD49857	89	treatment	death
+EL06570	13	treatment	discharge
+DJ36092	93	treatment	death
+PU83790	30	control	death
+SU64566	74	treatment	discharge
+RG66051	92	control	death
+GI43054	39	treatment	discharge
+OJ32196	65	treatment	discharge
+OT42056	82	treatment	discharge
+MD90576	52	control	death
+QX82256	37	control	discharge
+TI29528	52	control	discharge
+GS78516	4	treatment	death
+BY32541	98	control	death
+VL54651	26	treatment	discharge
+DB22837	9	control	discharge
+EN12322	83	treatment	death
+OF74147	38	treatment	death
+JD88264	47	treatment	death
+AF69016	55	control	discharge

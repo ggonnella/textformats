@@ -1,0 +1,61 @@
+testdata:
+  l_sep_maxlen:
+    valid: {"a,a":["a","a"], "a":["a"]}
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
+  l_nosep_minmaxlen:
+    valid: {"aa":["a","a"]}
+    invalid:
+      encoded: ["a", ""]
+      decoded: [[], ["a"], ""]
+  l_nosplit:
+    valid: {"a,a":["a","a"], "a":["a"]}
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
+  l_nosplit_minlen_zero:
+    valid: {"":[], "a,a":["a","a"], "a":["a"]}
+    invalid:
+      encoded: []
+      decoded: [""]
+  l_nosplit_minmaxlen:
+    valid: {"a,a":["a","a"]}
+    invalid:
+      encoded: ["a", ""]
+      decoded: [[], ["a"], ""]
+  l_sep_minlen:
+    valid: {"a,a":["a","a"]}
+    invalid:
+      encoded: ["a", ""]
+      decoded: [[], ["a"], ""]
+  l_sep:
+    valid: {"a,a":["a","a"], "a":["a"]}
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
+  l_sep_minlen_zero:
+    valid: {"":[], "a,a":["a","a"], "a":["a"]}
+    invalid:
+      encoded: []
+      decoded: [""]
+  l_nosep:
+    valid: {"aa":["a","a"], "a":["a"]}
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
+  l_fullopts:
+    valid: {"<<<a,a>>>":["a","a"], "":{"n":null}}
+    invalid:
+      encoded: ["<<<a>>>"]
+      decoded: [[], ["a"]]
+  l_sep_minmaxlen:
+    valid: {"a,a":["a","a"]}
+    invalid:
+      encoded: ["a", ""]
+      decoded: [[], ["a"], ""]
+  l_nosep_minlen_zero:
+    valid: {"":[], "aa":["a","a"], "a":["a"]}
+    invalid:
+      encoded: []
+      decoded: [""]

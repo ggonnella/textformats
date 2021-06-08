@@ -1,0 +1,15 @@
+datatypes:
+  u_too_short:
+    one_of:
+      - {constant: "a"}
+  u_empty:
+    one_of: []
+  u_map:
+    one_of: {constant: "a"}
+  u_scalar:
+    one_of: a
+  u_unknown_key:
+    one_of:
+      - {constant: "a"}
+      - json
+    x: 0

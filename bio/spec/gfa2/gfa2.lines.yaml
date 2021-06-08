@@ -1,0 +1,86 @@
+datatypes:
+  header:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {H: "header"}}
+      - tags: gfa2_tags
+  segment:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {S: "segment"}}
+      - sid: gfa2_opt_id
+      - slen: unsigned_integer
+      - sequence: gfa2_sequence
+      - tags: gfa2_tags
+    required: 4
+  edge:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {E: "edge"}}
+      - eid: gfa2_opt_id
+      - sid1: gfa2_ref
+      - sid2: gfa2_ref
+      - beg1: gfa2_position
+      - end1: gfa2_position
+      - beg2: gfa2_position
+      - end2: gfa2_position
+      - alignment: gfa2_alignment
+      - tags: gfa2_tags
+    required: 9
+  ordered_group:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {O: "ordered_group"}}
+      - oid: gfa2_opt_id
+      - elements: gfa2_ref_list
+      - tags: gfa2_tags
+    required: 3
+  unordered_group:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {U: "unordered_group"}}
+      - uid: gfa2_opt_id
+      - elements: gfa2_id_list
+      - tags: gfa2_tags
+    required: 3
+  gap:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {G: "gap"}}
+      - gid: gfa2_opt_id
+      - sid1: gfa2_ref
+      - sid2: gfa2_ref
+      - dist: unsigned_integer
+      - var: gfa2_opt_integer
+      - tags: gfa2_tags
+    required: 6
+  fragment:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {F: "fragment"}}
+      - sid: gfa2_id
+      - external: gfa2_ref
+      - sbeg: gfa2_position
+      - send: gfa2_position
+      - fbeg: gfa2_position
+      - fend: gfa2_position
+      - alignment: gfa2_alignment
+      - tags: gfa2_tags
+    required: 8
+  comment:
+    composed_of:
+      - line_type: {constant: {"#": "comment"}}
+      - content: string
+    required: 1
+  custom_line:
+    sep: "\t"
+    composed_of:
+      - descriptor: {regex: "[^HSEOUGF#]"}
+      - fields:
+          list_of: {regex: "[^\t]*"}
+          sep: "\t"
+    implicit: {line_type: "custom_line"}
+    required: 1
+  gfa2_line: {one_of: [header, segment, edge, ordered_group,
+                       unordered_group, gap, fragment, comment,
+                       custom_line]}

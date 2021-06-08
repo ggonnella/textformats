@@ -1,0 +1,11 @@
+Bio-Textformats is the bioinformatics companion to the Textformats
+package.
+
+Bioinformatics formats are the main goal of Textformats. However,
+textformats is generic and can be applied to any kind of text
+format.
+
+This package contains:
+- definitions of common bioinformatics formats
+- test bioinformatics data
+- benchmarks of textformats using bioinformatics data

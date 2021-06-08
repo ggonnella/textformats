@@ -1,0 +1,29 @@
+datatypes_tests:
+  type: dict
+  keysrules:
+    type: string
+    regex: '^[A-Za-z_][A-Za-z0-9_]*'
+  valuesrules:
+    type: dict
+    schema:
+      valid:
+        anyof:
+        - type: list
+          schema:
+            type: string
+        - type: dict
+          keysrules:
+            type: string
+      invalid:
+        anyof:
+        - type: list
+          schema:
+            type: string
+        - type: dict
+          schema:
+            encoded:
+              type: list
+              schema:
+                type: string
+            decoded:
+              type: list

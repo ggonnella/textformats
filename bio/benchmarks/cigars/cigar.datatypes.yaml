@@ -1,0 +1,4 @@
+datatypes:
+  cigar_op: {composed_of: [length: unsigned_integer,
+                           code: {regex: "[MID]"}]}
+  cigar: {list_of: cigar_op, sep: "", minlength: 1}

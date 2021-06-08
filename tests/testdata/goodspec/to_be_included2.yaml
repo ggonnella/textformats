@@ -1,0 +1,3 @@
+datatypes:
+  incl2: {constant: "b"}
+include: to_be_included1.yaml

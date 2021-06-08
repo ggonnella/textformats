@@ -1,0 +1,51 @@
+datatypes:
+  e_unknown_key:
+    accepted_values: ["1", "2"]
+    x: string
+  e_accepted_values_map:
+    accepted_values:
+      1: true
+      "a": false
+  e_accepted_values_scalar:
+    accepted_values: a, b
+  e_accepted_values_empty:
+    accepted_values: []
+  e_accepted_values_too_short:
+    accepted_values: ["1"]
+  e_no_reverse:
+    accepted_values:
+      - 1: true
+      - "a": true
+      - 1.0
+  e_reverse_unknown_key:
+    accepted_values:
+      - 1: true
+      - "a": true
+      - 1.0
+    reverse:
+      true: 1
+      false: 0
+  e_reverse_missing_key:
+    accepted_values:
+      - 1: true
+      - "a": true
+      - "b": false
+      - 1.0: false
+    reverse:
+      true: 1
+  e_reverse_wrong_value:
+    accepted_values:
+      - 1: true
+      - "a": true
+      - 1.0
+    reverse:
+      true: 1.0
+  e_reverse_unknown_value:
+    accepted_values:
+      - 1: true
+      - "a": true
+      - 1.0
+    reverse:
+      true: 0
+  e_repeated_values:
+    accepted_values: [1, "a", 1.0, 1]

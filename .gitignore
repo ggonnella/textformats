@@ -1,0 +1,7 @@
+build
+MANIFEST.in
+__pycache__
+nim-extensions
+*.so
+*.egg-info/
+dist/

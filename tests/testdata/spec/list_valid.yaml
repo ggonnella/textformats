@@ -1,0 +1,54 @@
+datatypes:
+  l_nosep:
+    list_of: {constant: a}
+  l_sep:
+    list_of: {constant: a}
+    sep: ","
+  l_nosplit:
+    list_of: {constant: a}
+    sep: ","
+    split: false
+  l_nosep_minmaxlen:
+    list_of: {constant: a}
+    minlength: 2
+    maxlength: 3
+  l_sep_minmaxlen:
+    list_of: {constant: a}
+    sep: ","
+    minlength: 2
+    maxlength: 3
+  l_nosplit_minmaxlen:
+    list_of: {constant: a}
+    sep: ","
+    split: false
+    minlength: 2
+    maxlength: 3
+  l_nosep_minlen_zero:
+    list_of: {constant: a}
+    minlength: 0
+  l_sep_minlen_zero:
+    list_of: {constant: a}
+    sep: ","
+    minlength: 0
+  l_nosplit_minlen_zero:
+    list_of: {constant: a}
+    sep: ","
+    split: false
+    minlength: 0
+  l_sep_minlen:
+    list_of: {constant: a}
+    sep: ","
+    minlength: 2
+  l_sep_maxlen:
+    list_of: {constant: a}
+    sep: ","
+    maxlength: 2
+  l_fullopts:
+    list_of: {constant: a}
+    minlength: 2
+    maxlength: 3
+    sep: ","
+    split: true
+    pfx: "<<<"
+    sfx: ">>>"
+    empty: {"n": null}

@@ -1,0 +1,6 @@
+include: [gfa2.lines.yaml, gfa2.datatypes.yaml]
+datatypes:
+  gfa2_tags:
+    list_of: gfa2_tag_generic
+    sep: "\t"
+    minlength: 0

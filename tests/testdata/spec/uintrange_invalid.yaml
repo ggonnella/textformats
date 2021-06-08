@@ -1,0 +1,52 @@
+datatypes:
+  u_unknown_optkey:
+    unsigned_integer: {}
+    x: 1
+  u_unknown_subkey:
+    unsigned_integer: {x: 1}
+  u_scalar:
+    unsigned_integer: 1
+  u_seq:
+    unsigned_integer: [0, 1]
+  u_min_string:
+    unsigned_integer:
+      min: "1"
+  u_min_float:
+    unsigned_integer:
+      min: 1.0
+  u_min_neg:
+    unsigned_integer:
+      min: -1
+  u_min_map:
+    unsigned_integer:
+      min: {"a": 1}
+  u_min_excl_wo_min:
+    unsigned_integer:
+      min_excluded: true
+  u_min_excl_wrong:
+    unsigned_integer:
+      min: 0
+      min_excluded: 1
+  u_max_string:
+    unsigned_integer:
+      max: "1"
+  u_max_float:
+    unsigned_integer:
+      max: 1.0
+  u_max_neg:
+    unsigned_integer:
+      max: -1
+  u_max_map:
+    unsigned_integer:
+      max: {"a": 1.0}
+  u_max_excl_wo_max:
+    unsigned_integer:
+      max_excluded: true
+  u_max_excl_wrong:
+    unsigned_integer:
+      max: 0.0
+      max_excluded: 1.0
+  u_min_lt_max:
+    unsigned_integer:
+      min: 2
+      max: 1

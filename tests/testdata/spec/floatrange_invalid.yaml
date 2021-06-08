@@ -1,0 +1,40 @@
+datatypes:
+  f_unknown_optkey:
+    float: {}
+    x: 1
+  f_unknown_subkey:
+    float: {x: 1.0}
+  f_scalar:
+    float: 1.0
+  f_seq:
+    float: [0.0, 1.0]
+  f_min_string:
+    float:
+      min: "1.0"
+  f_min_map:
+    float:
+      min: {"a": 1.0}
+  f_min_excl_wo_min:
+    float:
+      min_excluded: true
+  f_min_excl_wrong:
+    float:
+      min: 0.0
+      min_excluded: 1.0
+  f_max_string:
+    float:
+      max: "1.0"
+  f_max_map:
+    float:
+      max: {"a": 1.0}
+  f_max_excl_wo_max:
+    float:
+      max_excluded: true
+  f_max_excl_wrong:
+    float:
+      max: 0.0
+      max_excluded: 1.0
+  f_min_lt_max:
+    float:
+      min: 1.0
+      max: 0.0

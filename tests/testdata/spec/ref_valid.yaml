@@ -1,0 +1,7 @@
+datatypes:
+  s: string
+  i: integer
+  u: unsigned_integer
+  f: float
+  j: json
+  ref_s: s

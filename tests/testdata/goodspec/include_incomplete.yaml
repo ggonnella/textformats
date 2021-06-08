@@ -1,0 +1,3 @@
+include: ../badspec/broken_ref.yaml
+datatypes:
+  missingdef: {constant: "x"}

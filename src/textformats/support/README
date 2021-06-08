@@ -1,0 +1,6 @@
+Modules in this directory are independent
+from the rest of the library.
+
+Thus they can import each other, but they
+cannot import modules in the parent directory
+or in the sibling subdirectories.

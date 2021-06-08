@@ -1,0 +1,6 @@
+datatypes:
+  cigar_operation: {composed_of: [length: unsigned_integer,
+                                  code: {regex: "[MDIP]"}]}
+  cigar:  {list_of: cigar_operation,  sep: "", minlength: 1}
+  cigars: {list_of: cigar,            sep: ",", minlength: 2}
+  trace:  {list_of: unsigned_integer, sep: ",", minlength: 1}

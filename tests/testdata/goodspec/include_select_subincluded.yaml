@@ -1,0 +1,3 @@
+datatypes:
+  c: {constant: "a"}
+include: {to_be_included2.yaml: [incl1]}

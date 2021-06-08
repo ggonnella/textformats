@@ -1,0 +1,5 @@
+c_api_test.linux
+c_api_test.macos
+c_api_test.static
+nimcache
+nimcache_static

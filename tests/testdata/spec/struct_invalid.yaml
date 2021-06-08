@@ -1,0 +1,41 @@
+datatypes:
+  s_unknown_key:
+    composed_of:
+    - name: string
+    - a: {constant: a}
+    sep: ","
+    x: ""
+  s_composed_of_map:
+    composed_of:
+      name: string
+      a: {constant: a}
+    sep: ","
+  s_composed_of_scalar:
+    composed_of: a
+    sep: ","
+  s_composed_of_seq_scalar:
+    composed_of:
+    - name
+    - a
+    sep: ","
+  s_sep_excl_wo_sep:
+    composed_of:
+    - name: string
+    - a: {constant: a}
+    split: true
+  s_no_values:
+    composed_of: {}
+    sep: ","
+  s_repeated_name:
+    composed_of:
+    - name: string
+    - a: {constant: a}
+    - name: string
+    max_n_lastelem: 2
+  s_name_implicit_collision:
+    composed_of:
+    - name: string
+    - a: {constant: a}
+    max_n_lastelem: 2
+    implicit:
+      name: string

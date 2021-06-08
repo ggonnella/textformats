@@ -1,0 +1,38 @@
+datatypes:
+  t_simple:
+    tags:
+      x: {constant: x}
+    tagname: "[a-z]{2}"
+    sep: ","
+    internal_sep: ":"
+  t_predefined_only:
+    tags:
+      x: {constant: x}
+    tagname: ""
+    sep: ","
+    internal_sep: ":"
+    predefined:
+      abc: x
+      CD: x
+      ef: x
+  t_fullopts:
+    tags:
+      x: {constant: x}
+      "y": string
+      z: integer
+    tagname: "[a-z]{2}"
+    sep: ","
+    internal_sep: ":"
+    pfx: "<<<"
+    sfx: ">>>"
+    predefined:
+      abc: x
+      CD: x
+      ef: z
+    empty: 0
+    implicit:
+      ii: 1
+      if: 1.0
+      is: "a"
+      ib: false
+      in: null

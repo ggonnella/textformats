@@ -1,0 +1,56 @@
+testdata:
+  f_min_max_i:
+    valid: {"0.0":0.0, "1.0":1.0}
+    invalid:
+      encoded: ["a", "[]", "{}", "-1.0", "-inf", "inf", "2.0", ""]
+      decoded: ["A", [], {}, -1.0, -.Inf, .Inf, 2.0, ""]
+  f_max_i:
+    valid: {"-inf":-.Inf, "-1.0":-1.0, "0.0":0.0, "1.0":1.0}
+    invalid:
+      encoded: ["a", "[]", "{}", "inf", "2.0", ""]
+      decoded: ["A", [], {}, .Inf, 2.0, ""]
+  f_min_max_e:
+    valid: []
+    invalid:
+      encoded:
+        - "a"
+        - "[]"
+        - "{}"
+        - "0.0"
+        - "-1.0"
+        - "1.0"
+        - "-inf"
+        - "inf"
+        - "2.0"
+        - ""
+      decoded: ["A", [], {}, 0.0, -1.0, 1.0, -.Inf, .Inf, 2.0, ""]
+  f_n:
+    valid: {"0.0":0.0, "":-1.0, "1.0":1.0, "inf":.Inf}
+    invalid:
+      encoded: ["a", "[]", "{}", "-1.0", "-inf"]
+      decoded: ["A", [], {}, -.Inf]
+  f_max_e:
+    valid: {"-inf":-.Inf, "-1.0":-1.0, "0.0":0.0}
+    invalid:
+      encoded: ["a", "[]", "{}", "1.0", "inf", "2.0", ""]
+      decoded: ["A", [], {}, 1.0, .Inf, 2.0, ""]
+  f_min_e:
+    valid: {"inf":.Inf}
+    invalid:
+      encoded: ["a", "[]", "{}", "0.0", "-1.0", "1.0", "-inf", ""]
+      decoded: ["A", [], {}, 0.0, -1.0, 1.0, -.Inf, ""]
+  f_empty:
+    valid:
+      "-inf": -.Inf
+      "-1.0": -1.0
+      "0.0": 0.0
+      "1.0": 1.0
+      "inf": .Inf
+    invalid:
+      encoded: ["a", "[]", "{}", ""]
+      decoded: ["A", [], {}, ""]
+  f_min_i:
+    valid: {"1.0":1.0, "inf":.Inf}
+    invalid:
+      encoded: ["a", "[]", "{}", "0.0", "-1.0", "-inf", ""]
+      decoded: ["A", [], {}, 0.0, -1.0, -.Inf, ""]

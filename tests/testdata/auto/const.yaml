@@ -1,0 +1,40 @@
+testdata:
+  cf:
+    valid: {"1.0":1.0}
+    oneway: {"+1.0":1.0,"1":1.0}
+    invalid:
+      encoded: ["2.0","0.0",""]
+      decoded: [null,true,1,2.0,0.0,"A",[],{},""]
+  cs_map:
+    valid: {"a":null}
+    invalid:
+      encoded: ["ac",""]
+      decoded: [true,1,1.0,[],{},""]
+  cs_map_n:
+    valid: {"":"b","a":null}
+    invalid:
+      encoded: ["ac"]
+      decoded: [true,1,1.0,[],{}]
+  ci:
+    valid: {"1":1}
+    oneway: {"+1":1}
+    invalid:
+      encoded: ["2","0",""]
+      decoded: [null,true,2,0,"A",[],{},1.0,""]
+  ci_map:
+    valid: {"1":"a"}
+    oneway: {"+1":"a"}
+    invalid:
+      encoded: ["2","0",""]
+      decoded: [null,true,1,1.0,[],{},""]
+  cf_map:
+    valid: {"1.0":"a"}
+    oneway: {"+1.0":"a","1":"a"}
+    invalid:
+      encoded: ["2.0","0.0",""]
+      decoded: [null,true,1,1.0,[],{},""]
+  cs:
+    valid: ["a"]
+    invalid:
+      encoded: ["ac",""]
+      decoded: [null,true,1,1.0,[],{},""]

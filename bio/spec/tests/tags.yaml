@@ -1,0 +1,80 @@
+testdata:
+  tag_A:
+    valid:
+      "xx:A:X": {name: xx, type: A, value: X}
+    invalid:
+      encoded: ["xx:A: ", "xx:Z:A", "xx:A:"]
+      decoded:
+        - {name: xx, type: A}
+        - {name: xxx, type: A, value: X}
+        - {name: xx, type: Z, value: X}
+  tag_J:
+    valid:
+      "xx:J:{\"x\":\"y\",\"z\":1}":
+        name: xx
+        type: J
+        value: {x: "y", z: 1}
+      "xx:J:[1,2,\"a\",{\"b\":0}]":
+        name: xx
+        type: J
+        value: [1, 2, a, {b: 0}]
+  tag_Z:
+    valid:
+      "xx:Z:test":    {name: xx, type: Z, value: test}
+      "xx:Z:with sp": {name: xx, type: Z, value: "with sp"}
+      "xx:Z: ":       {name: xx, type: Z, value: " "}
+      "xx:Z:":        {name: xx, type: Z, value: ""}
+    invalid:
+      encoded: ["xx:A:test", ""]
+      decoded:
+        - {name: xx, type: Z, value: "\t"}
+  tag_i:
+    valid:
+      "xx:i:1": {name: xx, type: i, value: 1}
+    invalid:
+      decoded:
+        - {name: xx, type: i, value: "1"}
+        - {name: xx, type: i, value: 1.1}
+        - {name: xx, type: f, value: 1}
+      encoded: ["xx:i:", "xx:i:A", "xx:Z:1"]
+  tag_f:
+    valid:
+      "xx:f:1.0":     {name: xx, type: f, value: 1.0}
+      "xx:f:-2.1e-05": {name: xx, type: f, value: -2.1e-05}
+    invalid:
+      decoded:
+        - {name: xx, type: f, value: 1}
+        - {name: xx, type: i, value: 1.1}
+      encoded: ["xx:i:", "xx:i:A", "xx:Z:1"]
+  tag_H:
+    valid:
+      "xx:H:":       {name: xx, type: H, value: []}
+      "xx:H:1AE301": {name: xx, type: H, value: ["1A", "E3", "01"]}
+    invalid:
+      decoded:
+        - {name: xx, type: H, value: ["1", "E3", "01"]}
+        - {name: xx, type: H, value: [""]}
+        - {name: xx, type: Z, value: ["1A", "E3", "01"]}
+      encoded: ["xx:H:1E301", "xx:H: ", "xx:Z:1AE301"]
+  tag_B:
+    valid:
+      "xx:B:c,-1,10":
+        {name: xx, type: B, value: {element_type: c, elements: [-1, 10]}}
+      "xx:B:C,1,10":
+        {name: xx, type: B, value: {element_type: C, elements: [1, 10]}}
+      "xx:B:s,-1,10":
+        {name: xx, type: B, value: {element_type: s, elements: [-1, 10]}}
+      "xx:B:S,1,10":
+        {name: xx, type: B, value: {element_type: S, elements: [1, 10]}}
+      "xx:B:i,-1,10":
+        {name: xx, type: B, value: {element_type: i, elements: [-1, 10]}}
+      "xx:B:I,1,10":
+        {name: xx, type: B, value: {element_type: I, elements: [1, 10]}}
+      "xx:B:f,1.0,10.1":
+        {name: xx, type: B, value: {element_type: f, elements: [1.0, 10.1]}}
+      "xx:B:c":
+        {name: xx, type: B, value: {element_type: c, elements: []}}
+  tag:
+    invalid:
+      encoded: ["xxx:A:A", "xx:A", "x:A:A", ""]
+      decoded: [1, "A", "", [], {}, "xx:A:X"]

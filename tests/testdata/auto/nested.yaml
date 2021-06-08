@@ -1,0 +1,113 @@
+testdata:
+  s2:
+    valid:
+      "01A111a111A131A161Ve1b1e141d161le1c1e151A161f171A1h1j191i1g1j181AE00A000AEh2j292i2g2j282AEA5GA4BdA4h3j393i3g3j383A2A5BA4BcA403A2A5kA4BuA433A2A5-A4BsA463f373A2A5`A4BtA463Ce3c3e353d3636e3b3e343A2A5jA4BlA413AECdA7h4j494i4g4j484A6CtA764[e4b4e444d464Ne4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414AE00A000AE01A111a111A131A161qe1b1e141d161Ee1c1e151A161f171A1h1j191i1g1j181AEh2j292i2g2j282AEA53A4BdA4h3j393i3g3j383A2A54A4BcA403A2A5gA4BuA433A2A5?A4BsA463f373A2A5hA4BtA463Ze3c3e353d363ge3b3e343A2A5#A4BlA413AECdA7h4j494i4g4j484A6CtA764me4b4e444d464Xe4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414ADCdA7h4j494i4g4j484A6CtA764me4b4e444d464Xe4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": {"s":{"c":"01","l":["11","11"],"u":"31","t":{"61V":{"type":"b1","value":"41"},"61l":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}},"l":["00","00"],"u":{"h2":"92","g2":"82"},"t":{"A5G":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5B":{"type":"Bc","value":"03"},"A5k":{"type":"Bu","value":"33"},"A5-":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5`":{"type":"Bt","value":{"63C":{"type":"c3","value":"53"},"636":{"type":"b3","value":"43"}}},"A5j":{"type":"Bl","value":["13"]}},"d":{"Cd":{"h4":"94","g4":"84"},"Ct":{"64[":{"type":"b4","value":"44"},"64N":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]},"ll":[["00","00"]],"ls":[{"c":"01","l":["11","11"],"u":"31","t":{"61q":{"type":"b1","value":"41"},"61E":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}],"lu":[{"h2":"92","g2":"82"}],"lt":[{"A53":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A54":{"type":"Bc","value":"03"},"A5g":{"type":"Bu","value":"33"},"A5?":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5h":{"type":"Bt","value":{"63Z":{"type":"c3","value":"53"},"63g":{"type":"b3","value":"43"}}},"A5#":{"type":"Bl","value":["13"]}}],"ld":[{"Cd":{"h4":"94","g4":"84"},"Ct":{"64m":{"type":"b4","value":"44"},"64X":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]},{"Cd":{"h4":"94","g4":"84"},"Ct":{"64m":{"type":"b4","value":"44"},"64X":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}]}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  t:
+    valid:
+      "A5lA4BdA4h3j393i3g3j383A2A5/A4BcA403A2A5%A4BuA433A2A5'A4BsA463f373A2A5CA4BtA463Me3c3e353d3630e3b3e343": {"A5l":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5/":{"type":"Bc","value":"03"},"A5%":{"type":"Bu","value":"33"},"A5'":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5C":{"type":"Bt","value":{"63M":{"type":"c3","value":"53"},"630":{"type":"b3","value":"43"}}}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  ll:
+    valid: {"00A000":[["00","00"]], "":[],
+            "00A000A8A800":[["00","00"],[],["00"]]}
+    invalid:
+      encoded: []
+      decoded: [""]
+  ls:
+    valid:
+      "01A111a111A131A161Me1b1e141d161we1c1e151A161f171A1h1j191i1g1j181A901A111a111A131A161Me1b1e141d161we1c1e151A161f171A1h1j191i1g1j181": [{"c":"01","l":["11","11"],"u":"31","t":{"61M":{"type":"b1","value":"41"},"61w":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}},{"c":"01","l":["11","11"],"u":"31","t":{"61M":{"type":"b1","value":"41"},"61w":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}]
+      "": []
+      "01A111a111A131A161Me1b1e141d161we1c1e151A161f171A1h1j191i1g1j181": [{"c":"01","l":["11","11"],"u":"31","t":{"61M":{"type":"b1","value":"41"},"61w":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}]
+    invalid:
+      encoded: []
+      decoded: [""]
+  d:
+    valid:
+      "CdA7h4j494i4g4j484A6CtA764he4b4e444d464ee4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": {"Cd":{"h4":"94","g4":"84"},"Ct":{"64h":{"type":"b4","value":"44"},"64e":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  ld:
+    valid:
+      "CdA7h4j494i4g4j484A6CtA764qe4b4e444d464Ce4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414ADCdA7h4j494i4g4j484A6CtA764qe4b4e444d464Ce4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": [{"Cd":{"h4":"94","g4":"84"},"Ct":{"64q":{"type":"b4","value":"44"},"64C":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]},{"Cd":{"h4":"94","g4":"84"},"Ct":{"64q":{"type":"b4","value":"44"},"64C":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}]
+      "": []
+      "CdA7h4j494i4g4j484A6CtA764qe4b4e444d464Ce4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": [{"Cd":{"h4":"94","g4":"84"},"Ct":{"64q":{"type":"b4","value":"44"},"64C":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}]
+    invalid:
+      encoded: []
+      decoded: [""]
+  l:
+    valid: {"00A000":["00","00"], "":[], "00":["00"]}
+    invalid:
+      encoded: []
+      decoded: [""]
+  u:
+    valid:
+      "h2j292i2g2j282": {"h2":"92","g2":"82"}
+      "62f272": {"c1":"62","c2":"72"}
+      "12": ["12"]
+      "": []
+      "12a212": ["12","12"]
+      "02": "02"
+      "62Ke2c2e232d262Ae2b2e222": {"62K":{"type":"c2","value":"32"},"62A":{"type":"b2","value":"22"}}
+    invalid:
+      encoded: ["02c", "0"]
+      decoded: [null, true, 1, 1.0, ""]
+  s:
+    valid:
+      "01A111a111A131A1613e1b1e141d1611e1c1e151A161f171A1h1j191i1g1j181": {"c":"01","l":["11","11"],"u":"31","t":{"613":{"type":"b1","value":"41"},"611":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  u2:
+    valid:
+      "62Te2c2e232d262 e2b2e222": {"62T":{"type":"c2","value":"32"},"62 ":{"type":"b2","value":"22"}}
+      "h2j292i2g2j282": {"h2":"92","g2":"82"}
+      "CdA7h4j494i4g4j484A6CtA764Fe4b4e444d464 e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414ADCdA7h4j494i4g4j484A6CtA764Fe4b4e444d464 e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": [{"Cd":{"h4":"94","g4":"84"},"Ct":{"64F":{"type":"b4","value":"44"},"64 ":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]},{"Cd":{"h4":"94","g4":"84"},"Ct":{"64F":{"type":"b4","value":"44"},"64 ":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}]
+      "A51A4BdA4h3j393i3g3j383A2A5nA4BcA403A2A5XA4BuA433A2A5`A4BsA463f373A2A5qA4BtA463se3c3e353d363Ye3b3e343A2A5cA4BlA413": {"A51":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5n":{"type":"Bc","value":"03"},"A5X":{"type":"Bu","value":"33"},"A5`":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5q":{"type":"Bt","value":{"63s":{"type":"c3","value":"53"},"63Y":{"type":"b3","value":"43"}}},"A5c":{"type":"Bl","value":["13"]}}
+      "62f272": {"c1":"62","c2":"72"}
+      "A5GA4BdA4h3j393i3g3j383A2A5MA4BcA403A2A5AA4BuA433A2A5WA4BsA463f373A2A5cA4BtA463ye3c3e353d363_e3b3e343A2A5]A4BlA413ACA5GA4BdA4h3j393i3g3j383A2A5MA4BcA403A2A5AA4BuA433A2A5WA4BsA463f373A2A5cA4BtA463ye3c3e353d363_e3b3e343A2A5]A4BlA413": [{"A5G":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5M":{"type":"Bc","value":"03"},"A5A":{"type":"Bu","value":"33"},"A5W":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5c":{"type":"Bt","value":{"63y":{"type":"c3","value":"53"},"63_":{"type":"b3","value":"43"}}},"A5]":{"type":"Bl","value":["13"]}},{"A5G":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5M":{"type":"Bc","value":"03"},"A5A":{"type":"Bu","value":"33"},"A5W":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5c":{"type":"Bt","value":{"63y":{"type":"c3","value":"53"},"63_":{"type":"b3","value":"43"}}},"A5]":{"type":"Bl","value":["13"]}}]
+      "12": ["12"]
+      "00A000": ["00","00"]
+      "": []
+      "01A111a111A131A161#e1b1e141d161he1c1e151A161f171A1h1j191i1g1j181": {"c":"01","l":["11","11"],"u":"31","t":{"61#":{"type":"b1","value":"41"},"61h":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}
+      "00A000A8A800": [["00","00"],[],["00"]]
+      "00": ["00"]
+      "CdA7h4j494i4g4j484A6CtA764Je4b4e444d464/e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": {"Cd":{"h4":"94","g4":"84"},"Ct":{"64J":{"type":"b4","value":"44"},"64/":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}
+      "12a212": ["12","12"]
+      "02": "02"
+      "h2j292i2g2j282AB62f272AB12ABAB62<e2c2e232d262oe2b2e222AB12a212AB02": [{"h2":"92","g2":"82"},{"c1":"62","c2":"72"},["12"],[],{"62<":{"type":"c2","value":"32"},"62o":{"type":"b2","value":"22"}},["12","12"],"02"]
+    invalid:
+      encoded: ["02c", "0"]
+      decoded: ["", null, true, 1, 1.0]
+  t2:
+    valid:
+      "AF;AHDluAHh2j292i2g2j282AGAFJAHDllAH00A000AGAF_AHDlsAHAGAFoAHDltAHA59A4BdA4h3j393i3g3j383A2A5BA4BcA403A2A5:A4BuA433A2A5&A4BsA463f373A2A5JA4BtA463\"e3c3e353d363Xe3b3e343A2A5bA4BlA413ACA59A4BdA4h3j393i3g3j383A2A5BA4BcA403A2A5:A4BuA433A2A5&A4BsA463f373A2A5JA4BtA463\"e3c3e353d363Xe3b3e343A2A5bA4BlA413AGAFbAHDuAHh2j292i2g2j282AGAFRAHDldAHCdA7h4j494i4g4j484A6CtA764%e4b4e444d464^e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414AGAFvAHDlAH00A000AGAF5AHDtAHA5:A4BdA4h3j393i3g3j383A2A5/A4BcA403A2A57A4BuA433A2A5%A4BsA463f373A2A5!A4BtA463ve3c3e353d363+e3b3e343A2A5bA4BlA413AGAFlAHDsAH01A111a111A131A1615e1b1e141d161Be1c1e151A161f171A1h1j191i1g1j181AGAFrAHDdAHCdA7h4j494i4g4j484A6CtA764\"e4b4e444d4643e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414": {"AF;":{"type":"Dlu","value":[{"h2":"92","g2":"82"}]},"AFJ":{"type":"Dll","value":[["00","00"]]},"AF_":{"type":"Dls","value":[]},"AFo":{"type":"Dlt","value":[{"A59":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5B":{"type":"Bc","value":"03"},"A5:":{"type":"Bu","value":"33"},"A5&":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5J":{"type":"Bt","value":{"63\"":{"type":"c3","value":"53"},"63X":{"type":"b3","value":"43"}}},"A5b":{"type":"Bl","value":["13"]}},{"A59":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5B":{"type":"Bc","value":"03"},"A5:":{"type":"Bu","value":"33"},"A5&":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5J":{"type":"Bt","value":{"63\"":{"type":"c3","value":"53"},"63X":{"type":"b3","value":"43"}}},"A5b":{"type":"Bl","value":["13"]}}]},"AFb":{"type":"Du","value":{"h2":"92","g2":"82"}},"AFR":{"type":"Dld","value":[{"Cd":{"h4":"94","g4":"84"},"Ct":{"64%":{"type":"b4","value":"44"},"64^":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}]},"AFv":{"type":"Dl","value":["00","00"]},"AF5":{"type":"Dt","value":{"A5:":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5/":{"type":"Bc","value":"03"},"A57":{"type":"Bu","value":"33"},"A5%":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5!":{"type":"Bt","value":{"63v":{"type":"c3","value":"53"},"63+":{"type":"b3","value":"43"}}},"A5b":{"type":"Bl","value":["13"]}}},"AFl":{"type":"Ds","value":{"c":"01","l":["11","11"],"u":"31","t":{"615":{"type":"b1","value":"41"},"61B":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}},"AFr":{"type":"Dd","value":{"Cd":{"h4":"94","g4":"84"},"Ct":{"64\"":{"type":"b4","value":"44"},"643":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d2:
+    valid:
+      "EllAJ00A000AIEdAJCdA7h4j494i4g4j484A6CtA764ne4b4e444d464(e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414AIEltAJA5NA4BdA4h3j393i3g3j383A2A5_A4BcA403A2A5rA4BuA433A2A56A4BsA463f373A2A5]A4BtA463fe3c3e353d363_e3b3e343A2A5bA4BlA413ACA5NA4BdA4h3j393i3g3j383A2A5_A4BcA403A2A5rA4BuA433A2A56A4BsA463f373A2A5]A4BtA463fe3c3e353d363_e3b3e343A2A5bA4BlA413AIEtAJA5GA4BdA4h3j393i3g3j383A2A5TA4BcA403A2A5jA4BuA433A2A5DA4BsA463f373A2A5;A4BtA463ze3c3e353d3631e3b3e343A2A5$A4BlA413AIEluAJh2j292i2g2j282AIElsAJ01A111a111A131A161/e1b1e141d161pe1c1e151A161f171A1h1j191i1g1j181A901A111a111A131A161/e1b1e141d161pe1c1e151A161f171A1h1j191i1g1j181AIEldAJCdA7h4j494i4g4j484A6CtA764Be4b4e444d464<e4c4e454A6CuA734A6CsA764f474A6CcA704A6ClA714a414AIElAJ00A000AIEsAJ01A111a111A131A161/e1b1e141d1619e1c1e151A161f171A1h1j191i1g1j181AIEuAJh2j292i2g2j282": {"Ell":[["00","00"]],"Ed":{"Cd":{"h4":"94","g4":"84"},"Ct":{"64n":{"type":"b4","value":"44"},"64(":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]},"Elt":[{"A5N":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5_":{"type":"Bc","value":"03"},"A5r":{"type":"Bu","value":"33"},"A56":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5]":{"type":"Bt","value":{"63f":{"type":"c3","value":"53"},"63_":{"type":"b3","value":"43"}}},"A5b":{"type":"Bl","value":["13"]}},{"A5N":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5_":{"type":"Bc","value":"03"},"A5r":{"type":"Bu","value":"33"},"A56":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5]":{"type":"Bt","value":{"63f":{"type":"c3","value":"53"},"63_":{"type":"b3","value":"43"}}},"A5b":{"type":"Bl","value":["13"]}}],"Et":{"A5G":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5T":{"type":"Bc","value":"03"},"A5j":{"type":"Bu","value":"33"},"A5D":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A5;":{"type":"Bt","value":{"63z":{"type":"c3","value":"53"},"631":{"type":"b3","value":"43"}}},"A5$":{"type":"Bl","value":["13"]}},"Elu":[{"h2":"92","g2":"82"}],"Els":[{"c":"01","l":["11","11"],"u":"31","t":{"61/":{"type":"b1","value":"41"},"61p":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}},{"c":"01","l":["11","11"],"u":"31","t":{"61/":{"type":"b1","value":"41"},"61p":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}}],"Eld":[{"Cd":{"h4":"94","g4":"84"},"Ct":{"64B":{"type":"b4","value":"44"},"64<":{"type":"c4","value":"54"}},"Cu":"34","Cs":{"c1":"64","c2":"74"},"Cc":"04","Cl":["14","14"]}],"El":["00","00"],"Es":{"c":"01","l":["11","11"],"u":"31","t":{"61/":{"type":"b1","value":"41"},"619":{"type":"c1","value":"51"}},"s":{"c1":"61","c2":"71"},"d":{"h1":"91","g1":"81"}},"Eu":{"h2":"92","g2":"82"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  lt:
+    valid:
+      "": []
+      "A5/A4BdA4h3j393i3g3j383A2A5_A4BcA403A2A5`A4BuA433A2A5PA4BsA463f373A2A55A4BtA4639e3c3e353d363;e3b3e343A2A5CA4BlA413": [{"A5/":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5_":{"type":"Bc","value":"03"},"A5`":{"type":"Bu","value":"33"},"A5P":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A55":{"type":"Bt","value":{"639":{"type":"c3","value":"53"},"63;":{"type":"b3","value":"43"}}},"A5C":{"type":"Bl","value":["13"]}}]
+      "A5/A4BdA4h3j393i3g3j383A2A5_A4BcA403A2A5`A4BuA433A2A5PA4BsA463f373A2A55A4BtA4639e3c3e353d363;e3b3e343A2A5CA4BlA413ACA5/A4BdA4h3j393i3g3j383A2A5_A4BcA403A2A5`A4BuA433A2A5PA4BsA463f373A2A55A4BtA4639e3c3e353d363;e3b3e343A2A5CA4BlA413": [{"A5/":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5_":{"type":"Bc","value":"03"},"A5`":{"type":"Bu","value":"33"},"A5P":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A55":{"type":"Bt","value":{"639":{"type":"c3","value":"53"},"63;":{"type":"b3","value":"43"}}},"A5C":{"type":"Bl","value":["13"]}},{"A5/":{"type":"Bd","value":{"h3":"93","g3":"83"}},"A5_":{"type":"Bc","value":"03"},"A5`":{"type":"Bu","value":"33"},"A5P":{"type":"Bs","value":{"c1":"63","c2":"73"}},"A55":{"type":"Bt","value":{"639":{"type":"c3","value":"53"},"63;":{"type":"b3","value":"43"}}},"A5C":{"type":"Bl","value":["13"]}}]
+    invalid:
+      encoded: []
+      decoded: [""]
+  lu:
+    valid:
+      "h2j292i2g2j282": [{"h2":"92","g2":"82"}]
+      "h2j292i2g2j282AB62f272AB12ABAB62Fe2c2e232d262Ge2b2e222AB12a212AB02": [{"h2":"92","g2":"82"},{"c1":"62","c2":"72"},["12"],[],{"62F":{"type":"c2","value":"32"},"62G":{"type":"b2","value":"22"}},["12","12"],"02"]
+      "": []
+    invalid:
+      encoded: []
+      decoded: [""]

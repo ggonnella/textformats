@@ -1,0 +1,4 @@
+datatypes:
+  a: {constant: "a"}
+include:
+  a: b

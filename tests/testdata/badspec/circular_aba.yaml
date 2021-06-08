@@ -1,0 +1,4 @@
+datatypes:
+  ok: {constant: "ok"}
+  a: b
+  b: a

@@ -1,0 +1,4 @@
+datatypes:
+  ok: {constant: "ok"}
+  a: b
+  b: {one_of: [ok, a]}

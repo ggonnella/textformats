@@ -1,0 +1,73 @@
+testdata:
+  d_m1_o1_s2:
+    valid: {"name:A,a:a":{"name":"A","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m1:
+    valid: {"name:A":{"name":["A"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m2:
+    valid: {"name:A,a:a":{"name":["A"],"a":["a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m1_s1:
+    valid: {"name:A":{"name":"A"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_o2_s2:
+    valid: {"name:A,a:a":{"name":"A","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m1_o1:
+    valid: {"name:A,a:a":{"name":["A"],"a":["a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_o1_s1:
+    valid: {"name:Ri;i/":{"name":"Ri;i/"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m2_s1:
+    valid: {"name:A,a:a":{"name":"A","a":["a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_o2:
+    valid: {"name:A,a:a":{"name":["A"],"a":["a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_o1:
+    valid: {"name:&.2ku":{"name":["&.2ku"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m2_s2:
+    valid: {"name:A,a:a":{"name":"A","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_m1_o1_s1:
+    valid: {"name:A,a:a":{"name":"A","a":["a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_o2_s1:
+    valid: {"name:A,a:a":{"name":"A","a":["a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  d_fullopt:
+    valid:
+      "": {"false":null}
+      "<<<b:false,i:-9223372036854775808,name:A,a:a,f:-1.0>>>": {"b":[false],"i":-9223372036854775808,"name":"A","a":["a"],"f":[-1.0],"ii":1,"if":1.0,"is":"a","in":null,"ib":false}
+    invalid:
+      encoded: []
+      decoded: []

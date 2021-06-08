@@ -1,0 +1,77 @@
+testdata:
+  s_fullopts:
+    valid:
+      "<<<pI,a>>>": {"name":"pI","a":"a","ii":1,"if":1.0,"is":"a","in":null,"ib":false}
+      "<<<pI,a,-9223372036854775808>>>": {"name":"pI","a":"a","i":-9223372036854775808,"ii":1,"if":1.0,"is":"a","in":null,"ib":false}
+      "<<<pI,a,-9223372036854775808,-1.0,false,true>>>": {"name":"pI","a":"a","i":-9223372036854775808,"f":-1.0,"b":[false,true],"ii":1,"if":1.0,"is":"a","in":null,"ib":false}
+      "": {"n":null}
+      "<<<pI,a,-9223372036854775808,-1.0>>>": {"name":"pI","a":"a","i":-9223372036854775808,"f":-1.0,"ii":1,"if":1.0,"is":"a","in":null,"ib":false}
+    invalid:
+      encoded: []
+      decoded: []
+  s_nosplit_varlen:
+    valid: {"wYHbX\\,gOJb6,a,a":{"name":"wYHbX\\,gOJb6","a":["a","a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_sep_lastopt:
+    valid: {"H,a":{"name":"H","a":"a"}, "H":{"name":"H"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_nosep_varlen:
+    valid: {"6aa":{"name":"6","a":["a","a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_sep:
+    valid: {"D,a":{"name":"D","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_sep_varlen_max:
+    valid: {"6,a,a":{"name":"6","a":["a","a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_sep_varlen_minmax:
+    valid: {"*L,a,a":{"name":"*L","a":["a","a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_nosep_lastopt:
+    valid: {"/k:[":{"name":"/k:["}, "/k:[a":{"name":"/k:[","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_nosplit:
+    valid: {"MC\\,8;95e,a":{"name":"MC\\,8;95e","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_single_elem:
+    valid: {"A":{"name":"A"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_sep_varlen_min:
+    valid: {"Ccnn,a,a":{"name":"Ccnn","a":["a","a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_nosep:
+    valid: {"1Iha":{"name":"1Ih","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_sep_varlen:
+    valid: {"2T.,a,a":{"name":"2T.","a":["a","a"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  s_nosplit_lastopt:
+    valid: {"z`K\\,1Ce ":{"name":"z`K\\,1Ce "},
+            "z`K\\,1Ce ,a":{"name":"z`K\\,1Ce ","a":"a"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]

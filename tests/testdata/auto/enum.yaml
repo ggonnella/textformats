@@ -1,0 +1,75 @@
+testdata:
+  e_null_value:
+    valid: {"1":1,"":0,"a":"a","1.0":1.0}
+    oneway: {"+1.0":1.0,"1":1.0,"+1":1}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0"]
+      decoded: [null,true,2,0,"A",[],{},2.0,0.0]
+  e_map:
+    valid: {"1":true,"a":"a","1.0":null}
+    oneway: {"+1.0":null,"1":null,"+1":true}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [false,1,1.0,[],{},""]
+  e_map_rev:
+    valid: {"1":true,"1.0":1.0}
+    oneway: {"+1.0":1.0,"1":1.0,"a":true,"+1":true}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [null,false,1,[],{},2.0,0.0,"A",""]
+  e_simple:
+    valid: {"1":1,"a":"a","1.0":1.0}
+    oneway: {"+1.0":1.0,"1":1.0,"+1":1}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [null,true,2,0,"A",[],{},2.0,0.0,""]
+testdata:
+  e_null_value:
+    valid: {"1":1,"":0,"a":"a","1.0":1.0}
+    oneway: {"+1.0":1.0,"+1":1}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0"]
+      decoded: [null,true,2,0,"A",[],{},2.0,0.0]
+  e_map:
+    valid: {"1":true,"a":"a","1.0":null}
+    oneway: {"+1.0":null,"+1":true}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [false,1,1.0,[],{},""]
+  e_map_rev:
+    valid: {"1":true,"1.0":1.0}
+    oneway: {"+1.0":1.0,"a":true,"+1":true}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [null,false,1,[],{},2.0,0.0,"A",""]
+  e_simple:
+    valid: {"1":1,"a":"a","1.0":1.0}
+    oneway: {"+1.0":1.0,"+1":1}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [null,true,2,0,"A",[],{},2.0,0.0,""]
+testdata:
+  e_null_value:
+    valid: {"1":1,"":0,"a":"a","1.0":1.0}
+    oneway: {"+1.0":1.0,"+1":1}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0"]
+      decoded: [null,true,2,"A",[],{},2.0,0.0]
+  e_map:
+    valid: {"1":true,"a":"a","1.0":null}
+    oneway: {"+1.0":null,"+1":true}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [false,1,1.0,[],{},""]
+  e_map_rev:
+    valid: {"1":true,"1.0":1.0}
+    oneway: {"+1.0":1.0,"a":true,"+1":true}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [null,false,1,[],{},2.0,0.0,"A",""]
+  e_simple:
+    valid: {"1":1,"a":"a","1.0":1.0}
+    oneway: {"+1.0":1.0,"+1":1}
+    invalid:
+      encoded: ["2","0","ac","2.0","0.0",""]
+      decoded: [null,true,2,0,"A",[],{},2.0,0.0,""]

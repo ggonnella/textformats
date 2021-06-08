@@ -1,0 +1,6 @@
+support => generic modules (data structures, helper methods) independent from
+           the rest of the library
+types => datatypes specific for the library
+*.nim => modules which define the main operations (decoding, encoding, etc)
+dt_* => implementation of the operations for each of the datatype kinds
+shared => code common to multiple datatypes (e.g. due to common options)

@@ -1,0 +1,92 @@
+datatypes:
+  s_single_elem:
+    composed_of:
+    - name: string
+  s_nosep:
+    composed_of:
+    - name: {regex: "[^a]+"}
+    - a: {constant: a}
+  s_sep:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {constant: a}
+    sep: ","
+  s_nosplit:
+    composed_of:
+    - name: {regex: "[^,]+\\\\,[^,]+"}
+    - a: {constant: a}
+    sep: ","
+    split: false
+  s_nosep_lastopt:
+    composed_of:
+    - name: {regex: "[^a]+"}
+    - a: {constant: a}
+    required: 1
+  s_sep_lastopt:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {constant: a}
+    sep: ","
+    required: 1
+  s_nosplit_lastopt:
+    composed_of:
+    - name: {regex: "[^,]+\\\\,[^,]+"}
+    - a: {constant: a}
+    sep: ","
+    split: false
+    required: 1
+  s_nosep_varlen:
+    composed_of:
+    - name: {regex: "[^a]+"}
+    - a: {list_of: {constant: a}}
+  s_sep_varlen:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {list_of: {constant: a}, sep: ","}
+    sep: ","
+  s_nosplit_varlen:
+    composed_of:
+    - name: {regex: "[^,]+\\\\,[^,]+"}
+    - a: {list_of: {constant: a}, sep: ","}
+    sep: ","
+    split: false
+  s_sep_varlen_min:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {list_of: {constant: a}, minlength: 2, sep: ","}
+    sep: ","
+  s_sep_varlen_max:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {list_of: {constant: a}, maxlength: 2, sep: ","}
+    sep: ","
+  s_sep_varlen_minmax:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {list_of: {constant: a}, minlength: 2, maxlength: 3, sep: ","}
+    sep: ","
+  s_fullopts:
+    composed_of:
+    - name: {regex: "[^,]+"}
+    - a: {constant: a}
+    - i: integer
+    - f: float
+    - b:
+        list_of:
+          accepted_values:
+            - "true": true
+            - "false": false
+        minlength: 2
+        maxlength: 3
+        sep: ","
+    required: 2
+    sep: ","
+    pfx: "<<<"
+    sfx: ">>>"
+    empty: {"n": null}
+    implicit:
+      ii: 1
+      if: 1.0
+      is: "a"
+      ib: false
+      in: null

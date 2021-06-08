@@ -1,0 +1,162 @@
+datatypes:
+  rname: {regex: "[0-9A-Za-z!#$%&+./:;?@^_|~-][0-9A-Za-z!#$%&*+./:;=?@^_|~-]*"}
+  qname: {regex: "[!-?A-~]+"}
+  flag: {unsigned_integer: {max: 65535}}
+  mapq: {unsigned_integer: {max: 255}}
+  placeholder: {constant: {"*": null}}
+  cigar_op: {composed_of: [length: unsigned_integer,
+                           code: {regex: "[MDIPNX=]"}]}
+  cigar: {list_of: cigar_op, sep: "", minlength: 1}
+  sequence: {regex: "[A-Za-z=.]+"}
+  qual: {regex: "[!-~]+"}
+  alignment:
+    composed_of:
+      - qname: qname
+      - flag: flag
+      - rname: rname
+      - pos: unsigned_integer
+      - mapq: mapq
+      - cigar: cigar
+      - rnext:
+          one_of:
+            - placeholder
+            - rname
+      - pnext: unsigned_integer
+      - tlen: integer
+      - sequence:
+          one_of:
+            - placeholder
+            - sequence
+      - qual:
+          one_of:
+            - placeholder
+            - qual
+      - tags:
+          tags:
+            i: string
+            Z: string
+          tagname: "[A-Z][A-Z]"
+          sep: "\t"
+          internal_sep: ":"
+    sep: "\t"
+    required: 8
+  header:
+    named_values:
+      "@HD":
+        named_values:
+          VN: string
+          #  regex: "\\d+\\.\\d+"
+          SO:
+            accepted_values:
+              - unknown
+              - unsorted
+              - queryname
+              - coordinate
+          GO:
+            accepted_values:
+              - none
+              - query
+              - reference
+          SS:
+            composed_of:
+              - sort_order:
+                  accepted_values:
+                    - coordinate
+                    - queryname
+                    - unsorted
+              - sub_sort:
+                  list_of:
+                    regex: "[A-Za-z0-9_-]+"
+                  sep: ":"
+            sep: ":"
+        sep: "\t"
+        internal_sep: ":"
+        required: [VN]
+      "@SQ":
+        named_values:
+          SN: rname
+          LN: {unsigned_integer: {min: 1}}
+          AH:
+            one_of:
+            - placeholder
+            - sep: ":"
+              composed_of:
+                - chromosome: {regex: "[^:]+"}
+                - coords:
+                    composed_of:
+                      - start: {unsigned_integer: {min: 1}}
+                      - end: {unsigned_integer: {min: 1}}
+                    sep: "-"
+          AN:
+            list_of: rname
+            sep: ","
+            minlength: 1
+          AS: strvalue
+          DS: strvalue
+          M5: md5
+          SP: strvalue
+          TP:
+            accepted_values:
+              - linear
+              - circular
+          UR: strvalue
+        required: [SN, LN]
+        sep: "\t"
+        internal_sep: ":"
+      "@RG":
+        named_values:
+          ID: strvalue
+          BC: strvalue
+          CN: strvalue
+          DS: strvalue
+          DT: strvalue
+          FO:
+            one_of:
+            - placeholder
+            - regex: "[ACMGRSVTWYHKDBN]+"
+          KS: strvalue
+          LB: strvalue
+          PG: strvalue
+          PI: strvalue
+          PL:
+            accepted_values:
+              - CAPILLARY
+              - DNBSEQ
+              - HELICOS
+              - ILLUMINA
+              - IONTORRENT
+              - LS454
+              - 454
+              - ONT
+              - PACBIO
+              - SOLID
+          PM: strvalue
+          PU: strvalue
+          SM: strvalue
+        sep: "\t"
+        internal_sep: ":"
+        required: [ID]
+      "@PG":
+        named_values:
+          ID: strvalue
+          PN: strvalue
+          CL: strvalue
+          PP: strvalue
+          DS: strvalue
+          VN: strvalue
+        sep: "\t"
+        internal_sep: ":"
+      "@CO": string
+    sep: "\n"
+    internal_sep: "\t"
+    single: ["@HD"]
+  strvalue: {regex: "[^\t\n]+"}
+  md5: {regex: "[0-9a-fA-F]{32}"}
+  alignments:
+    list_of: alignment
+    sep: "\n"
+  file:
+    composed_of:
+    - header: header
+    - alignments: alignments
+    sep: "\n"

@@ -1,0 +1,4 @@
+include: to_be_included2.yaml
+datatypes:
+  c: {constant: "c"}
+  incl1: {constant: "redefined"}

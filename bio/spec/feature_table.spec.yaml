@@ -1,0 +1,19 @@
+datatypes:
+  location: {one_of: [internal_location, external_location]}
+  internal_location: {one_of: [singlebase, range, approximate, betweenbases,
+                               join, complement]}
+  singlebase: {unsigned_integer: {min: 1}}
+  range: {composed_of: [{range_begin: {one_of: singlebase, lessthanpos},
+                         range_end: {one_of: singlebase, morethanpos}],
+          separator: ".."}
+  lessthanpos: {composed_of: [{lessthansym: {constant: "<"}}, pos: singlebase}]}
+  morethanpos: {composed_of: [{pos: singlebase, morethansym: {constant: ">"}]}
+  approximate: {composed_of: [{pos1: singlebase, pos2: singlebase}], sep: "."}
+  betweenbases: {composed_of: [{pos1: singlebase, pos2: singlebase}], sep: "^"}
+  rangecomplement: {composed_of: [{range: range}], left: "complement(", right: ")"}
+  join: {list_of: {one_of: [range, rangecomplement]}, left: "join(", right: ")", sep: ","}
+  joincomplement: {composed_of: [{joined: join}], left: "complement(", right: ")"}
+  complement: {one_of: [rangecomplement, joincomplement]}
+  external: {composed_of: [{external_ref: versioned_accession,
+                            location: internal_location}], sep: ":"}
+  versioned_accession: {composed_of: [accession, version]}

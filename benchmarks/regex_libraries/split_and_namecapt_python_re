@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""
+Parse all cigars in file using a Python-based simple parser
+
+Usage:
+  parse_cigars_python.py [options]
+
+Options:
+  -i, --input <filename>: filename with input data
+"""
+
+from docopt import docopt
+import re
+
+def match_cigars(filename):
+  cigar_op_regex = re.compile("(?P<length>\d+)(?P<code>[MDIP])")
+  with open(filename) as f:
+    for line in f:
+      cigar = line.rstrip()
+      expected_start = 0
+      results = []
+      for m in cigar_op_regex.finditer(cigar):
+        if m.start() > expected_start:
+          raise RuntimeError("Something is between elements")
+        expected_start = m.end()
+        length = int(m.group("length"))
+        code = m.group("code")
+        cigarop = {}
+        cigarop["length"] = length
+        cigarop["code"] = code
+        results.append(cigarop)
+      if expected_start != len(cigar):
+        raise ValueError("Something is after the last element")
+  return 0
+
+if __name__ == "__main__":
+  args = docopt(__doc__, version="0.1")
+  match_cigars(args["--input"])
+

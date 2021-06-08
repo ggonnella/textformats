@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+"""
+Parse all cigars in file
+
+Usage:
+  parse_cigars_python.py [options]
+
+Options:
+  -i, --input <filename>: filename with input data
+"""
+
+from docopt import docopt
+import split_and_namecapt_regex_nimpy
+
+if __name__ == "__main__":
+  args = docopt(__doc__, version="0.1")
+  split_and_namecapt_regex_nimpy.match_cigars(args["--input"])
+

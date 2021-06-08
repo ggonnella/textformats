@@ -1,0 +1,6 @@
+This directory contains invalid specifications which are
+invalid not because the datatype definitions included
+in them are invalid, but because of general syntax errors
+(YAML errors, YAML structure) or they have invalid
+references (to datatypes: broken or cyclic; to specifications:
+missing or invalid).

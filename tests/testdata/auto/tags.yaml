@@ -1,0 +1,19 @@
+testdata:
+  t_fullopts:
+    valid:
+      "<<<CD:x:x,ef:z:-9223372036854775808,abc:x:x,qv:y:A>>>": {"CD":{"type":"x","value":"x"},"ef":{"type":"z","value":-9223372036854775808},"abc":{"type":"x","value":"x"},"qv":{"type":"y","value":"A"},"ii":1,"if":1.0,"is":"a","in":null,"ib":false}
+      "": 0
+    invalid:
+      encoded: []
+      decoded: []
+  t_simple:
+    valid: {"dn:x:x":{"dn":{"type":"x","value":"x"}}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  t_predefined_only:
+    valid:
+      "CD:x:x,ef:x:x,abc:x:x": {"CD":{"type":"x","value":"x"},"ef":{"type":"x","value":"x"},"abc":{"type":"x","value":"x"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]

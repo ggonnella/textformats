@@ -1,0 +1,98 @@
+#
+# Accession numbers of biological databases, used as stable record identifier,
+# are often composed of multiple parts, which identify the database and
+# the type of data.
+#
+# This file defines formats for parsing and validating the accession
+# numbers of databases of NCBI, DDBJ, ENA/EBI and Uniprot, according to the
+# available documentations.
+#
+# The URL of the source documentations are given in comments.
+#
+datatypes:
+  # https://www.ncbi.nlm.nih.gov/Sequin/acc.html
+  # https://www.ddbj.nig.ac.jp/acc_def-e.html
+  insd: {one_of: [insd_annotated, insd_raw, insd_meta]}
+  insd_annotated: {one_of: [nucleotide, protein, bulk, mga]}
+  insd_raw: {one_of: [trace_archive, read_archive]}
+  insd_meta: {one_of: [bioproject, biosample]}
+  nucleotide:
+    one_of:
+      - regex: "[a-zA-Z][0-9]{5}"
+      - regex: "[a-zA-Z]{2}[0-9]{6}([0-9]{2})?"
+  protein:
+    regex: "[a-zA-Z]{3}[0-9]{5}([0-9]{2})?"
+  bulk:
+    one_of:
+      - regex: "[a-zA-Z]{4}[0-9]{8,10}"
+      - regex: "[a-zA-Z]{6}[0-9]{9,11}"
+  mga:
+    regex: "[a-zA-Z]{5}[0-9]{7}"
+  trace:
+    regex: "TI[0-9]+"
+  # https://www.ddbj.nig.ac.jp/prefix-e.html#dra
+  read_archive:
+    composed_of:
+      - archive:
+          accepted_values:
+          - DR: DRA
+          - ER: ERA
+          - SR: SRA
+      - object_type:
+          accepted_values:
+          - A: Submission
+          - P: Study
+          - R: Run
+          - S: Sample
+          - X: Experiment
+          - Z: Analysis
+      - entry_id:
+          regex: "[0-9]{6,}"
+    sep: ""
+  bioproject:
+    composed_of:
+      - institution:
+          accepted_values:
+          - PRJD: "DDBJ"
+          - PRJE: "ENA/EBI"
+          - PRJN: "NCBI"
+      - entry_id:
+          regex: "[A-Z][0-9]+"
+  biosample:
+    composed_of:
+      - institution:
+          accepted_values:
+          - SAMD: "DDBJ"
+          - SAME: "ENA/EBI"
+          - SAMN: "NCBI"
+      - entry_id:
+          regex: "[0-9]{8}"
+  # https://www.ncbi.nlm.nih.gov/books/NBK21091/table/ch18.T.refseq_accession_numbers_and_mole/
+  refseq:
+    composed_of:
+      - molecule_type: {regex: "(AC|N[CGTWZMR]|X[MR]|[ANYXW]P)"}
+      - number: {regex: "[0-9]+"}
+    sep: "_"
+  # https://www.uniprot.org/help/accession_numbers
+  uniprotkb:
+    regex: "[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}"
+  # https://www.ensembl.org/info/genome/stable_ids/prefixes.html
+  ensembl:
+    composed_of:
+      - species_prefix:
+          one_of:
+          - regex: "ENS[A-Z]{3}"
+          - regex: "MGP_[a-zA-Z0-9]+_"
+      - ftype_prefix:
+          accepted_values:
+          - E: exon
+          - FM: protein_family
+          - G: gene
+          - GT: gene_tree
+          - P: protein
+          - R: regulatory
+          - T: transcript
+      - entry_id:
+          regex:
+            "[0-9]{11}"
+    sep: ""

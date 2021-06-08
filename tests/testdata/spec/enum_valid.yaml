@@ -1,0 +1,18 @@
+datatypes:
+  e_simple:
+    accepted_values: [1, "a", 1.0]
+  e_null_value:
+    accepted_values: [1, "a", 1.0]
+    empty: 0
+  e_map:
+    accepted_values:
+      - 1: true
+      - "a"
+      - 1.0: null
+  e_map_rev:
+    accepted_values:
+      - 1: true
+      - "a": true
+      - 1.0
+    reverse:
+      true: "1"

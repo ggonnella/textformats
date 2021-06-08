@@ -1,0 +1,31 @@
+datatypes:
+  u_empty:
+    unsigned_integer: {}
+  u_min_i:
+    unsigned_integer:
+      min: 1
+  u_min_e:
+    unsigned_integer:
+      min: 1
+      min_excluded: true
+  u_max_i:
+    unsigned_integer:
+      max: 4
+  u_max_e:
+    unsigned_integer:
+      max: 4
+      max_excluded: true
+  u_min_max_i:
+    unsigned_integer:
+      min: 1
+      max: 4
+  u_min_max_e:
+    unsigned_integer:
+      min: 1
+      max: 4
+      min_excluded: true
+      max_excluded: true
+  u_n:
+    unsigned_integer:
+      min: 1
+    empty: -1

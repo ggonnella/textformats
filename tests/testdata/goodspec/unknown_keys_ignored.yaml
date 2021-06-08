@@ -1,0 +1,4 @@
+datatypes:
+  x: {constant: "x"}
+unknown:
+  is_this: allowed

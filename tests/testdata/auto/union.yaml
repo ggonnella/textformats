@@ -1,0 +1,18 @@
+testdata:
+  u:
+    valid: {"{}":{}, "null":null, "1":1, "false":false,
+            "[\"d\",\"e\"]":["d","e"], "\"\"":"",
+            "{\"a\":1,\"b\":2}":{"a":1,"b":2}, "\"c\"":"c", "a":true,
+            "1.0":1.0, "[]":[]}
+    oneway: {"A":"A", ",-d~!":",-d~!", " ":" ", "true":true}
+    invalid:
+      encoded: [""]
+      decoded: []
+  u_n:
+    valid: {"{}":{}, "null":null, "1":1, "[\"d\",\"e\"]":["d","e"], "":false,
+            "\"\"":"", "{\"a\":1,\"b\":2}":{"a":1,"b":2}, "\"c\"":"c",
+            "a":true, "1.0":1.0, "[]":[]}
+    oneway: {"A":"A", "false":false, " ":" ", "7YbY=":"7YbY=", "true":true}
+    invalid:
+      encoded: []
+      decoded: []

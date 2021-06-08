@@ -1,0 +1,63 @@
+include: sized_integers.textformats.yaml
+datatypes:
+  tagname: {regex: "[A-Za-z0-9]{2}"}
+  tag_Bc_array:
+    composed_of:
+      - element_type: {constant: "c"}
+      - elements: {list_of: int8, sep: ",", pfx: ",", empty: []}
+  tag_BC_array:
+    composed_of:
+      - element_type: {constant: "C"}
+      - elements: {list_of: uint8, sep: ",", pfx: ",", empty: []}
+  tag_Bs_array:
+    composed_of:
+      - element_type: {constant: "s"}
+      - elements: {list_of: int16, sep: ",", pfx: ",", empty: []}
+  tag_BS_array:
+    composed_of:
+      - element_type: {constant: "S"}
+      - elements: {list_of: uint16, sep: ",", pfx: ",", empty: []}
+  tag_Bi_array:
+    composed_of:
+      - element_type: {constant: "i"}
+      - elements: {list_of: int32, sep: ",", pfx: ",", empty: []}
+  tag_BI_array:
+    composed_of:
+      - element_type: {constant: "I"}
+      - elements: {list_of: uint32, sep: ",", pfx: ",", empty: []}
+  tag_Bf_array:
+    composed_of:
+      - element_type: {constant: "f"}
+      - elements: {list_of: float, sep: ",", pfx: ",", empty: []}
+  tag_B_array: {one_of: [tag_Bc_array, tag_BC_array,
+                         tag_Bs_array, tag_BS_array,
+                         tag_Bi_array, tag_BI_array,
+                         tag_Bf_array]}
+  tag_A: {composed_of: [name: tagname,
+                        type: {constant: "A"},
+                        value: {regex: "[!-~]"}],
+                        sep: ":", split: false}
+  tag_B: {composed_of: [name: tagname, type: {constant: "B"},
+                        value: tag_B_array], sep: ":" }
+  tag_H: {composed_of: [name: tagname,
+                        type: {constant: "H"},
+                        value: {list_of: {regex: "[0-9A-F]{2}"}}],
+          sep: ":"}
+  tag_J: {composed_of: [name: tagname,
+                        type: {constant: "J"},
+                        value: json],
+                        sep: ":", split: false}
+  tag_Z: {composed_of: [name: tagname,
+                        type: {constant: "Z"},
+                        value: {regex: "[ -~]*"}],
+                        sep: ":", split: false}
+  tag_i: {composed_of: [name: tagname,
+                        type: {constant: "i"},
+                        value: integer],
+          sep: ":"}
+  tag_f: {composed_of: [name: tagname,
+                        type: {constant: "f"},
+                        value: float],
+          sep: ":"}
+  tag: {one_of: [tag_A, tag_B,
+                 tag_H, tag_J, tag_Z, tag_i, tag_f]}
