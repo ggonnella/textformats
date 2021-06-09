@@ -1,4 +1,4 @@
-include: sized_integers.textformats.yaml
+include: sized_integers.spec.yaml
 datatypes:
   tagname: {regex: "[A-Za-z0-9]{2}"}
   tag_Bc_array:
