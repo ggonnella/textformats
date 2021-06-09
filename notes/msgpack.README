@@ -1,0 +1,5 @@
+msgpack.patch is a patch for changing the current marshalling
+method to one based on msgpack4nim.
+
+Unfortunately it does not work, and the unpacking leads to an
+error.
