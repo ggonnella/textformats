@@ -16,7 +16,7 @@ template raise_brokenref(name, tname: untyped) =
           "However, no definition of '"  & tname & "' was found.")
 
 proc resolve_references(dd: DatatypeDefinition, name: string,
-                         spec: Specification) =
+                        spec: Specification) =
   if dd.has_unresolved_ref:
     if dd.kind == ddkRef:
       let tname = dd.target_name
