@@ -1,4 +1,4 @@
 time ./parse_cigars \
-  -s=../../data/cigars/cigar.datatypes.yaml \
+  -s=../../bio/benchmarks/cigars/cigar.datatypes.yaml \
   -t=cigar \
-  -i=../../data/cigars/10k_cigars_len100
+  -i=../../bio/benchmarks/cigars/10k_cigars_len100

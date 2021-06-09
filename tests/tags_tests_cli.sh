@@ -2,9 +2,9 @@
 
 testsdir=$(dirname $0)
 scriptsdir=$testsdir/../scripts
-datadir=$testsdir/../data
-spec=$datadir/spec/tags.textformats.yaml
-tests=$datadir/spec/tests/tags.yaml
+datadir=$testsdir/../bio/spec
+spec=$datadir/tags.spec.yaml
+tests=$datadir/tests/tags.yaml
 
 cd $testsdir/../cli
 #nim c textformats_cli
