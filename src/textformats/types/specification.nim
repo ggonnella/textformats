@@ -6,8 +6,25 @@ export pairs
 type
   Specification* = TableRef[string, DatatypeDefinition]
 
+proc restore_references(dd: DatatypeDefinition, spec: Specification) =
+  if dd.kind == ddkRef:
+    dd.target = spec[dd.target_name]
+    dd.target.restore_references(spec)
+  else:
+    for sub in dd.children:
+      sub.restore_references(spec)
+
+proc remove_references*(dd: DatatypeDefinition) =
+  if dd.kind == ddkRef:
+    dd.target = nil
+  else:
+    for sub in dd.children:
+      sub.remove_references
+
 proc save_specification*(table: Specification, filename: string) =
   try:
+    for name, dd in table:
+      dd.remove_references
     filename.writeFile($$table)
   except IOError:
     let e = get_current_exception()
@@ -20,7 +37,10 @@ proc load_specification*(filename: string): Specification =
                    &"  Filename: '{filename}'\n"
   try:
     let filecontent = filename.readFile()
-    return filecontent.to[:Specification]
+    result = filecontent.to[:Specification]
+    for name, dd in result:
+      dd.restore_references(result)
+    return
   except IOError:
     let errmsg = block:
       if not fileExists(filename): "File not found"
