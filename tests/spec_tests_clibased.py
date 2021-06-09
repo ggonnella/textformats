@@ -124,7 +124,7 @@ def main(arguments):
   preprocessed=arguments["--preprocess"]
   mainkey="testdata"
   if preprocessed:
-    preprocessed_specfile=specfile+".textformats"
+    preprocessed_specfile=os.path.splitext(specfile)[0]+".textformats"
     preprocess(s=specfile, o=preprocessed_specfile)
     specfile=preprocessed_specfile
   with open(arguments["<tests>"]) as f:
