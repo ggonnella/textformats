@@ -1,4 +1,4 @@
-import tables, marshal, strformat
+import tables, marshal, strformat, os, json
 import datatype_definition, textformats_error
 
 export pairs
@@ -12,17 +12,24 @@ proc save_specification*(table: Specification, filename: string) =
   except IOError:
     let e = get_current_exception()
     raise newException(TextformatsRuntimeError,
-                       "Error while saving specification file '{filename}'\n" &
+                       &"Error while saving specification file '{filename}'\n" &
                        e.msg)
 
 proc load_specification*(filename: string): Specification =
+  let errmsg_pfx = "Error loading preprocessed specification\n" &
+                   &"  Filename: '{filename}'\n"
   try:
-    filename.readFile().to[:Specification]
+    let filecontent = filename.readFile()
+    return filecontent.to[:Specification]
   except IOError:
-    let e = get_current_exception()
-    raise newException(TextformatsRuntimeError,
-                       "Error while loading specification file '{filename}'\n" &
-                       e.msg)
+    let errmsg = block:
+      if not fileExists(filename): "File not found"
+      else: get_current_exception().msg
+    raise newException(TextformatsRuntimeError, errmsg_pfx & errmsg)
+  except JsonParsingError:
+    let errmsg = "  Parsing error: is it really a preprocessed specification?" &
+              "\n  Please try repeating the preprocessing step."
+    raise newException(TextformatsRuntimeError, errmsg_pfx & errmsg)
 
 const BaseDatatypes* = [
   "integer", "unsigned_integer", "float", "string", "json"

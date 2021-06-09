@@ -17,6 +17,16 @@ const
                      "consisting of only letters, digits and underscores.\n" &
                      "The identifiers are case sensitive."
 
+template spec_errmsg(filename: string, action: string, errmsg: string): string =
+  "Error " & action & " specification\n" &
+  "  Filename: '" & filename & "'\n" & errmsg.indent(2)
+
+template raise_spec_err(errtype, filename, errmsg) =
+  let action = block:
+      when errtype is TextformatsRuntimeError: "loading"
+      else: "parsing"
+  raise newException(errtype, spec_errmsg(filename, action, errmsg))
+
 proc parse_datatype_name(datatype_name_node: YamlNode): string =
   try:
     datatype_name_node.validate_is_string("Invalid datatype name.\n")
@@ -28,7 +38,8 @@ proc parse_datatype_name(datatype_name_node: YamlNode): string =
              &"The datatype name '{result}' is reserved.\n")
 
 proc include_yaml(spec: Specification, filename: string,
-                  datatypes: Option[HashSet[string]])
+                  datatypes: Option[HashSet[string]],
+                  disable_including_incomplete_specs = false)
 
 proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
   # ignore ProveInit warning thrown by options library
@@ -127,24 +138,27 @@ proc get_yaml_root(filename: string): YamlNode =
   var
     filestream: FileStream = nil
     yaml: YamlDocument = YamlDocument(root: YamlNode())
+  if not fileExists(filename):
+    raise_spec_err(TextformatsRuntimeError, filename, "File not found")
   try:
     filestream = newFileStream(filename, fmRead)
   except IOError:
-    raise newException(TextformatsRuntimeError,
-                "Error while loading specification file '{filename}'\n" &
-                get_current_exception_msg())
+    raise_spec_err(TextformatsRuntimeError, filename,
+                   get_current_exception_msg())
   try:
     yaml = load_dom(filestream)
   except:
-    raise newException(InvalidSpecError,
-            "Error while parsing specification file " &
-            &"'{filename}'\n" & get_current_exception_msg().indent(2))
+    raise_spec_err(InvalidSpecError, filename,
+                   get_current_exception_msg())
   try:
-    yaml.root.validate_is_mapping(
-      &"Invalid content of YAML file {filename}\n",
-      &"\nIt must be a mapping containing the '{DatatypesKey}' key.")
+    yaml.root.validate_is_mapping()
   except NodeValueError:
-    raise newException(InvalidSpecError, get_current_exception_msg())
+    raise_spec_err(InvalidSpecError, filename,
+      "Invalid content of YAML file\n" &
+      "Expected: " &
+      "The root node of the specification YAML file must be a mapping.\n" &
+      "Details of YAML validation error:" &
+      get_current_exception_msg().indent(2))
   return yaml.root
 
 proc finalize_definitions(spec: Specification) {.inline.} =
@@ -177,17 +191,32 @@ proc define_datatypes(spec: Specification, root: YamlNode,
         spec[name] = newDatatypeDefinition(defnode, name)
 
 proc include_yaml(spec: Specification, filename: string,
-                  datatypes: Option[HashSet[string]]) =
+                  datatypes: Option[HashSet[string]],
+                  disable_including_incomplete_specs = false) =
   let root = filename.get_yaml_root
-  spec.include_subspec(root, split_path(filename).head, datatypes)
-  spec.define_datatypes(root, datatypes)
-  # uncomment this to disable importing incomplete specs:
-  # spec.finalize_definitions
+  try:
+    spec.include_subspec(root, split_path(filename).head, datatypes)
+    spec.define_datatypes(root, datatypes)
+    if disable_including_incomplete_specs:
+      spec.finalize_definitions
+  except:
+    let e = get_current_exception()
+    e.msg = spec_errmsg(filename, "parsing", e.msg)
+    raise e
+
+proc try_finalizing_definitions(spec: Specification, filename: string)
+                                {.inline.} =
+  try:
+    spec.finalize_definitions
+  except:
+    let e = get_current_exception()
+    e.msg = spec_errmsg(filename, "parsing", e.msg)
+    raise e
 
 proc parse_specification*(filename: string): Specification =
   result = newSpecification()
   result.include_yaml(filename, HashSet[string].none)
-  result.finalize_definitions
+  result.try_finalizing_definitions(filename)
 
 proc list_specification_datatypes*(filename: string): seq[string] =
   ## List the datatypes in a yaml specification file

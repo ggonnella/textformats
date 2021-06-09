@@ -2,11 +2,7 @@
 ## Encode, decode and validate data according to a specification
 ##
 
-# standard library
-import tables
-import strformat
-import json
-# this library
+import tables, strformat, json, strutils
 from textformats import parse_specification, load_specification,
                      save_specification, is_valid,
                      recognize_and_decode_lines, `$`
@@ -54,7 +50,7 @@ template exit_with(exit_code: untyped, info = ""): untyped =
   if exit_code != ec_success:
     stderr.write_line $exit_code
   if info.len > 0:
-    stderr.write_line $info
+    stderr.write_line ($info).indent(2)
   return exit_code.int
 
 template get_specification(specfile, preprocessed: untyped): untyped =
@@ -73,9 +69,7 @@ template get_specification(specfile, preprocessed: untyped): untyped =
 
 template get_datatype_definition(datatype: untyped,
                                  preprocessed: untyped): untyped =
-  let datatypes = block:
-    if preprocessed: load_specification(specfile)
-    else: parse_specification(specfile)
+  let datatypes = get_specification(specfile, preprocessed)
   if datatype notin datatypes:
     exit_with ec_err_def_not_found
     nil
