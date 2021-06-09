@@ -28,6 +28,11 @@ During compilation, C code is created and then compiled to binary.
 Besides in Nim code itself, the resulting library can be easily employed
 in C/C++ and in Python.
 
+## Running the test suite
+
+To run the unit test suite of the library in your system, use the
+``nimble test`` command.
+
 ## Known limitations
 
 Unsigned integers cannot be larger than the largest signed integer [^1]
