@@ -1,1 +1,3 @@
 *.out
+test_spec_parser
+*.textformats
