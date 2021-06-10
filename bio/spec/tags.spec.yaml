@@ -41,7 +41,7 @@ datatypes:
                         value: tag_B_array], sep: ":" }
   tag_H: {composed_of: [name: tagname,
                         type: {constant: "H"},
-                        value: {list_of: {regex: "[0-9A-F]{2}"}}],
+                        value: {list_of: {regex: "[0-9A-F]{2}"}, empty: []}],
           sep: ":"}
   tag_J: {composed_of: [name: tagname,
                         type: {constant: "J"},
