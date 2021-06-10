@@ -3,7 +3,7 @@ import os
 from textformats import Specification
 
 testdir = os.path.dirname(os.path.realpath(__file__))
-specfile = testdir + "/../../data/gfa2/gfa2.datatypes.yaml"
+specfile = testdir + "/../../bio/spec/gfa2/gfa2.datatypes.yaml"
 spec = Specification(specfile)
 gfa2_position = spec["gfa2_position"]
 

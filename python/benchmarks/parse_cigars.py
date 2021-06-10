@@ -53,7 +53,7 @@ def parse_cigar_findall(cigarstr):
 
 def main(args):
   if "textformats" in args["<method>"]:
-    specfname = "../../data/cigars/cigar.datatypes.yaml"
+    specfname = "../../bio/benchmarks/cigars/cigar.datatypes.yaml"
     import textformats as st
     spec = st.Specification(specfname)
     cigardef = spec["cigar"]

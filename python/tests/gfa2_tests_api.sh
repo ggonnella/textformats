@@ -2,7 +2,7 @@
 
 testsdir=$(dirname $0)
 
-datadir=$testsdir/../../data
+datadir=$testsdir/../../bio/spec
 spec=$datadir/gfa2/gfa2.complete.yaml
 tests=$datadir/gfa2/gfa2.datatypes_tests.yaml
 

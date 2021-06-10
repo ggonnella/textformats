@@ -31,6 +31,7 @@ def test_decode(datatype_def, encoded, decoded):
     sys.stderr.write("Error: decode result is not as expected\n"+
             "Decoded: '{}'\nEncoded: '{}'\nResult of decode(): '{}'\n".
          format(decoded, encoded, decode_result))
+    exit(1)
   else:
     sys.stderr.write("Successfully decoded '{}' ({}) to '{}'\n".
          format(encoded, datatype_def.name, decode_result))
@@ -41,6 +42,7 @@ def test_encode(datatype_def, encoded, decoded):
     sys.stderr.write("Error: encode result is not as expected\n"+
             "Decoded: '{}'\nEncoded: '{}'\nResult of encode(): '{}'\n".
          format(decoded, encoded, encode_result))
+    exit(1)
   else:
     sys.stderr.write("Successfully encoded '{}' ({}) to '{}'\n".
          format(decoded, datatype_def.name, encode_result))
@@ -70,6 +72,7 @@ def test_validate_decoded(datatype_def, decoded, expect_valid):
     if not datatype_def.is_valid_decoded(decoded):
       sys.stderr.write("Error: {} is not valid as it was expected\n".
            format(decoded))
+      exit(1)
     else:
       sys.stderr.write("Successfully validated decoded '{}' ({})\n".
            format(decoded, datatype_def.name))
@@ -77,6 +80,7 @@ def test_validate_decoded(datatype_def, decoded, expect_valid):
     if datatype_def.is_valid_decoded(decoded):
       sys.stderr.write("Error: {} is not invalid as it was expected\n".
            format(decoded))
+      exit(1)
     else:
       sys.stderr.write("Success: decoded '{}' ({}) invalid as expected\n".
            format(decoded, datatype_def.name))
@@ -86,6 +90,7 @@ def test_validate_encoded(datatype_def, encoded, expect_valid):
     if not datatype_def.is_valid_encoded(encoded):
       sys.stderr.write("Error: {} is not valid as it was expected\n".
            format(encoded))
+      exit(1)
     else:
       sys.stderr.write("Successfully validated encoded '{}' ({})\n".
            format(encoded, datatype_def.name))
@@ -93,6 +98,7 @@ def test_validate_encoded(datatype_def, encoded, expect_valid):
     if datatype_def.is_valid_encoded(encoded):
       sys.stderr.write("Error: {} is not invalid as it was expected\n".
            format(encoded))
+      exit(1)
     else:
       sys.stderr.write("Success: encoded '{}' ({}) invalid as expected\n".
            format(encoded, datatype_def.name))
@@ -140,6 +146,7 @@ def main(arguments):
       datatype_def = spec[datatype]
       test_all_valid(datatype_def, tests)
       test_all_invalid(datatype_def, tests)
+  sys.stderr.write("\nAll tests completed with no errors\n")
 
 if __name__ == "__main__":
   arguments = docopt(__doc__, version="0.1")
