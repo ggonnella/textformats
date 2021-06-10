@@ -1,4 +1,5 @@
-NIMLIB:=${HOME}/.choosenim/toolchains/nim-1.2.6/lib
+VERSION=1.4.8
+NIMLIB:=${HOME}/.choosenim/toolchains/nim-${VERSION}/lib
 
 default: run
 
