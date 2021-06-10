@@ -21,8 +21,10 @@ for bm in \
   validate_regex             \
   validate_re                \
   validate_python_re; do
+  cdir="../../bio/benchmarks/cigars/"
+  input="$cdir/10k_cigars_len100"
   echo run ${bm} ...
-  time ./${bm} -i ../../data/cigars/10k_cigars_len100
+  time ./${bm} -i $input
   echo "-------"
   echo
 done

@@ -10,9 +10,13 @@ Options:
 """
 
 from docopt import docopt
-import split_and_namecapt_regex_nimpy
+import nimporter, split_and_namecapt_regex_nimpy
+import sys
 
 if __name__ == "__main__":
   args = docopt(__doc__, version="0.1")
+  if not args["--input"]:
+    sys.stderr.write(__doc__)
+    exit(1)
   split_and_namecapt_regex_nimpy.match_cigars(args["--input"])
 
