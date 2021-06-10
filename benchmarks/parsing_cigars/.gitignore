@@ -1,6 +1,6 @@
 callgrind.*
 parse_cigars
 profile_results.txt
-tmp*
+output.parse_cigars.*
 recognize_and_decode
 parse_fastq
