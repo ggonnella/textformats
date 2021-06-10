@@ -291,7 +291,100 @@ using (e.g. 1.4.8).
 
 ## Command line
 
-The subdirectory ``cli`` contains the command line interface.
+The subdirectory ``cli`` contains the command line tool ``textformats_cli``.
+It consists of a number of subcommands, which are selected using the first
+argument. The list of subcommands is output by ``textformats_cli --help``.
+The mandatory and optional arguments of each subcommand are output by
+``textformats_cli <SUBCOMMAND> --help``.
+
+The tool can be used to encode, decode and validate strings or data files
+from the command line, as well as tests and a number of additional
+operations on specification files, as illustrated below.
+
+### Preprocess a specification
+
+The specification YAML file can be preprocessed and marshalled to file.
+In some cases, a preprocessed specification is faster to load than the parsing
+of the YAML specification (since no validation occurs and the regular
+expressions are already compiled).
+
+Thus when a specification is used multiple times, it can be convenient to
+preprocess it. The current marshalling format is the one used by the Nim
+``marshal`` library, which is mostly a JSON format (although its not
+guaranteed to be JSON-compliant).
+
+To preprocess a specification, use the following command:
+``textformats_cli preprocess -s YAML_SPEC -o PREPROCESSED_SPEC``
+where YAML_SPEC is the input specification, in YAML format and
+PREPROCESSED_SPEC is the output file.
+
+All other subcommands of ``textformats_cli`` accept both YAML and preprocessed
+specifications (passed to them with the ``--specfile`` or ``-s`` option).
+In case preprocessed specifications are used, the ``--preprocessed`` or
+``-p`` flag must be set.
+
+### Decode strings
+
+To decode an encoded string according to a datatype, and output it as the
+JSON representation of the decoded data, the ``decode`` subcommand is used.
+
+The ``decode`` subcommand requires the input string, provided using the option
+``--encoded`` or ``-e``. The path to the specification file is provided through
+the option ``--specfile`` or ``-s``. If the specification is preprocessed, the
+flag ``--preprocessed`` or ``-p`` must be set. The datatype to be used for
+decoding is selected using the ``--datatype`` or ``-t``.
+
+### Encode data
+
+To encode data (represented as a JSON string) to an encoded representation
+according to a given datatype definition, the ``encode`` subcommand is used.
+
+The ``encode`` subcommand requires the input string (JSON representation of
+the data to encode), provided using the option ``--decoded_json`` or ``-d``.
+The path to the specification file is provided through the option ``--specfile``
+or ``-s``. If the specification is preprocessed, the
+flag ``--preprocessed`` or ``-p`` must be set. The datatype to be used for
+encoding is selected using the ``--datatype`` or ``-t``.
+
+### Decode files
+
+TODO: describe ``decode_lines``, ``decode_embedded``, ``decode_units``,
+``linetypes``.
+
+### Analysing a specification file
+
+#### List of datatype definitions
+
+For a list of all definitions in a specification file (YAML or preprocessed),
+use the subcommand ``list``. The path to the specification file is provided
+through the option ``--specfile`` or ``-s``. If the specification is
+preprocessed, the flag ``--preprocessed`` or ``-p`` must be set.
+The list includes all datatypes defined by included files. It does not contain
+the predefined basic datatypes.
+
+#### Show a datatype definition
+
+Using the subcommand ``show``, a string representation of the DatatypeDefinition
+corresponding to a datatype definition can be output. This can be useful for
+debug, as well as to understand more specifically how a datatype definition
+is handled (e.g. how does the generated regular expression look like).
+
+The path to the specification file is provided through the option ``--specfile``
+or ``-s``. If the specification is preprocessed, the
+flag ``--preprocessed`` or ``-p`` must be set. The datatype to be shown
+is selected using the ``--datatype`` or ``-t``.
+
+### Validate data
+
+TODO: describe ``validate`` subcommand and its subsubcommands.
+
+### Autogenerate test data for a specification
+
+TODO: describe the ``generate_tests`` subcommand
+
+### Run tests
+
+TODO: describe ``test`` subcommand and its subsubcommands.
 
 ## Known limitations
 
