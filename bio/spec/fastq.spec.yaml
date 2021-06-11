@@ -1,6 +1,17 @@
 #
 # FastQ format
 #
+# The specification was generated using "genspec",
+# then manually edited to add comments and better formatting
+#
+# Test data was generated using "generate_tests",
+# then manually edited to add further examples and better formatting
+#
+# Example data is added after the (first) YAML document end. So this file can
+# be used as an example of specification embedded in a data file.
+#
+---
+include: quality_score.yaml
 datatypes:
   fastq_unit:
     composed_of:
@@ -37,54 +48,81 @@ datatypes:
     regex: "[!-~]+"
     empty: null
   fastq_unit_qdesc_desctxt: string
-  fastq_unit_qual:
-    regex: "[!-~]+"
+  fastq_unit_qual: quality_score
 testdata:
-  fastq_unit_sdesc_desctxt:
-    valid: ["A", "1", "V/zQ,", " ", "a"]
-    invalid:
-      encoded: [""]
-      decoded: [0, 0.0, [], {}, ""]
-  fastq_unit_qdesc_desctxt:
-    valid: ["A", "1", " ", "{3I=K", "a"]
-    invalid:
-      encoded: [""]
-      decoded: [0, 0.0, [], {}, ""]
-  fastq_unit_qdesc_fastaid:
-    valid: {";P5i":";P5i", "4":"4", "2":"2", "":null, "lmD":"lmD", "|x":"|x"}
-    invalid:
-      encoded: []
-      decoded: []
-  fastq_unit_sdesc_fastaid:
-    valid: ["Vw8?:", "AK", "5(%of", "Ym0N", "QPE", "`w", "ZC3Z", "Y'oaU",
-            "{VZL", "~"]
-    invalid:
-      encoded: [""]
-      decoded: [""]
-  fastq_unit_qdesc:
-    valid: {"+\\":{"fastaid":"\\"}, "+\\ A":{"fastaid":"\\","desc":"A"}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
-  fastq_unit_sdesc:
-    valid: {"@=L Ri;i/":{"fastaid":"=L","desc":"Ri;i/"},
-            "@=L":{"fastaid":"=L"}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   fastq_unit_seq:
     valid: ["A", ",-d~!", "1", " ", "a"]
     invalid:
       encoded: [""]
       decoded: [0, 0.0, [], {}, ""]
-  fastq_unit_qual:
-    valid: [":;", "C+b", "lM}Z", "Q1W", "2", "hol", "Zu)", "W", "}", ",:s"]
-    invalid:
-      encoded: [""]
-      decoded: [""]
   fastq_unit:
     valid:
-      "@P A\nA\n+K(} A\nKm6": {"sdesc":{"fastaid":"P","desc":"A"},"seq":"A","qdesc":{"fastaid":"K(}","desc":"A"},"qual":"Km6"}
+      "@bla\nACGT\n+\n0!#2":
+        {"sdesc":{"fastaid":"bla"}, "seq":"ACGT",
+         "qdesc":{"fastaid":null},"qual":[15,0,2,17]}
+         # see note above above required further validations;
+         # this is parsed, although further validations would fail:
+      "@y( A\x0AA\x0A+$\x0AU":
+        {"sdesc":{"fastaid":"y(","desc":"A"},"seq":"A",
+         "qdesc":{"fastaid":"$"},"qual":[52]}
+    invalid:
+      encoded: ["@bla\nACGT\nACGT\n+\n0!#2",
+                "@bla\nACGT\n0!#2",
+                "@bla\n+bla\n0!#2",
+                "@bla\nACGT\n@bla\n0!#2"]
+      decoded: [""]
+  fastq_unit_qual:
+    valid:
+      "U": [52]
+      "U_b)?DEFHPX\\g28yzx*-w.7il}jf+~L|t#/Y]Tvm>c@eMWdo;V0'$4BC&1<:GKQpZ=9nNa\"3{O6R[IA`khSJ^u5q(rs!,%": [52,62,65,8,30,35,36,37,39,47,55,59,70,17,23,88,89,87,9,12,86,13,22,72,75,92,73,69,10,93,43,91,83,2,14,56,60,51,85,76,29,66,31,68,44,54,67,78,26,53,15,6,3,19,33,34,5,16,27,25,38,42,48,79,57,28,24,77,45,64,1,18,90,46,21,49,58,40,32,63,74,71,50,41,61,84,20,80,7,81,82,0,11,4]
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
+  fastq_unit_sdesc_desctxt:
+    valid: ["A", "1", "V/zQ,", " ", "a"]
+    invalid:
+      encoded: [""]
+      decoded: [0, 0.0, [], {}, ""]
+  fastq_unit_qdesc_fastaid:
+    valid: {"]=":"]=", "Un8":"Un8", "vxv|3":"vxv|3", "":null, "PA":"PA",
+            "d`do":"d`do"}
+    invalid:
+      encoded: []
+      decoded: []
+  fastq_unit_sdesc_fastaid:
+    valid: ["22", "%*jFi", "o8w.", "^Q", "(", "bFf", "r", "tS", ";V", "0%lF"]
     invalid:
       encoded: [""]
       decoded: [""]
+  fastq_unit_qdesc:
+    valid: {"+/ A":{"fastaid":"/","desc":"A"}, "+/":{"fastaid":"/"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  fastq_unit_sdesc:
+    valid: {"@2p":{"fastaid":"2p"},
+            "@2p Ri;i/":{"fastaid":"2p","desc":"Ri;i/"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  fastq_unit_qdesc_desctxt:
+    valid: ["A", "1", " ", "{3I=K", "a"]
+    invalid:
+      encoded: [""]
+      decoded: [0, 0.0, [], {}, ""]
+#
+# Example Fastq file data follows the document end marker ---
+#
+---
+@read1
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
++
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+@read2
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+@read3
+GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
++
+999999999999999999999999999999999999999
