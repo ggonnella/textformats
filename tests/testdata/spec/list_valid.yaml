@@ -4,7 +4,7 @@ datatypes:
   l_sep:
     list_of: {constant: a}
     sep: ","
-  l_nosplit_by_sep:
+  l_nosplit:
     list_of: {constant: a}
     sep: ","
     split_by_sep: false
