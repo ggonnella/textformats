@@ -91,9 +91,9 @@ datatypes:
   #
   # can the structure be splitted by the separator? (sometimes the separator
   # can be contained in the last element, sometimes in any element if escaped);
-  # if not, use split: false
+  # if not, use split_by_sep: false
   my_struct_5: {composed_of: [foo: {regex: "\d+"}, bar: {regex: "\d+"}],
-                sep: ".", split: false}
+                sep: ".", split_by_sep: false}
   #
   # as a particular case, the last element(s) of the structure can be omitted:
   # to allow this use last_optional: true
@@ -120,7 +120,7 @@ datatypes:
   # (3.3) lists
   #
   # lists require always a separator (which can be an empty string; and
-  # as in structures, it is possible to specify split: false if necessary);
+  # as in structures, it is possible to specify split_by_sep: false if necessary);
   # pfx and sfx can be specified;
   # minlength and maxlength may be optionally added:
   foo: {list_of: my_struct_1, sep: " ", minlength: 1, maxlength: 3}

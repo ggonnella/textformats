@@ -4,7 +4,7 @@ datatypes:
   double_quoted_string: {regex: "\"(\\\\\"|[^\"])*\""}
 
   wiggle_trackdef_line: {list_of: wiggle_trackdef_line_item,
-                         minlength: 1, sep: " ", split: false, pfx: "track "}
+                         minlength: 1, sep: " ", split_by_sep: false, pfx: "track "}
 
   wiggle_trackdef_line_item: {one_of:
     [wiggle_trackdef_line_item_type,
@@ -34,12 +34,12 @@ datatypes:
   wiggle_trackdef_line_item_name:
     composed_of: [key: {constant: name}, value: double_quoted_string]
     sep: =
-    split: false
+    split_by_sep: false
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: description}, value: double_quoted_string]
     sep: =
-    split: false
+    split_by_sep: false
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: visibility},

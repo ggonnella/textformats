@@ -814,7 +814,7 @@ def get_seppfxsfx(name):
     result = ask(enter_question, "qstring")
     opt_txt += f", sep: \"{result}\""
     if choice == 1 or choice == 4:
-      opt_txt += ", split: false"
+      opt_txt += ", split_by_sep: false"
   if choice >= 3:
     enter_question="Enter the prefix string (just enter if none)"
     result = ask(enter_question, "optqstring")

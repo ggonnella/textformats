@@ -219,7 +219,7 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
      d.kind == ddkDict or d.kind == ddkTags:
     result &= &"{pfx}- pfx: '{d.pfx}'\n"
     result &= &"{pfx}- sep: '{d.sep}'\n"
-    result &= &"{pfx}- split: {d.sep_excl}\n"
+    result &= &"{pfx}- split_by_sep: {d.sep_excl}\n"
     result &= &"{pfx}- sfx: '{d.sfx}'\n"
   case d.kind:
   of ddkRef:

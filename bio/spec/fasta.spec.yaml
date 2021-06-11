@@ -18,7 +18,7 @@ datatypes:
   header:
     pfx: '>'
     sep: " "
-    split: False
+    split_by_sep: False
     composed_of:
       - fastaid: {regex: '\w*'}
       - desc: {regex: '.*'}
@@ -33,7 +33,7 @@ datatypes:
       - header: header
       - sequence: sequence
     sep: "\n"
-    split: False
+    split_by_sep: False
 testdata:
   header:
     valid: {">TDPy A":{"fastaid":"TDPy","desc":"A"},

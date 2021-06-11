@@ -19,7 +19,7 @@ datatypes:
       - desc: fastq_unit_sdesc_desctxt
     required: 1
     sep: " "
-    split: false
+    split_by_sep: false
     pfx: "@"
   fastq_unit_sdesc_fastaid:
       regex: "[!-~]+"
@@ -31,7 +31,7 @@ datatypes:
       - desc: fastq_unit_qdesc_desctxt
     required: 1
     sep: " "
-    split: false
+    split_by_sep: false
     pfx: "+"
   fastq_unit_qdesc_fastaid:
     regex: "[!-~]+"

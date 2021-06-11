@@ -22,7 +22,7 @@ datatypes:
     composed_of:
     - name: string
     - a: {constant: a}
-    split: true
+    split_by_sep: true
   s_no_values:
     composed_of: {}
     sep: ","

@@ -11,12 +11,12 @@ datatypes:
     - name: {regex: "[^,]+"}
     - a: {constant: a}
     sep: ","
-  s_nosplit:
+  s_nosplit_by_sep:
     composed_of:
     - name: {regex: "[^,]+\\\\,[^,]+"}
     - a: {constant: a}
     sep: ","
-    split: false
+    split_by_sep: false
   s_nosep_lastopt:
     composed_of:
     - name: {regex: "[^a]+"}
@@ -33,7 +33,7 @@ datatypes:
     - name: {regex: "[^,]+\\\\,[^,]+"}
     - a: {constant: a}
     sep: ","
-    split: false
+    split_by_sep: false
     required: 1
   s_nosep_varlen:
     composed_of:
@@ -49,7 +49,7 @@ datatypes:
     - name: {regex: "[^,]+\\\\,[^,]+"}
     - a: {list_of: {constant: a}, sep: ","}
     sep: ","
-    split: false
+    split_by_sep: false
   s_sep_varlen_min:
     composed_of:
     - name: {regex: "[^,]+"}

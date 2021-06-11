@@ -32,7 +32,7 @@ const
   MaxExcludedKey* = "max_excluded"
   # list/dict/struct/tags
   SepKey* = "sep"
-  SepExclKey* = "split"
+  SepExclKey* = "split_by_sep"
   PfxKey* = "pfx"
   SfxKey* = "sfx"
   # list

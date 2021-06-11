@@ -170,7 +170,7 @@ datatypes:
         max_n_lastelem:
           type: integer
           dependencies: varlen
-        split:
+        split_by_sep:
           type: boolean
           dependencies: sep
         minlength:

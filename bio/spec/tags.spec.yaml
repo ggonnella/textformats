@@ -36,7 +36,7 @@ datatypes:
   tag_A: {composed_of: [name: tagname,
                         type: {constant: "A"},
                         value: {regex: "[!-~]"}],
-                        sep: ":", split: false}
+                        sep: ":", split_by_sep: false}
   tag_B: {composed_of: [name: tagname, type: {constant: "B"},
                         value: tag_B_array], sep: ":" }
   tag_H: {composed_of: [name: tagname,
@@ -46,11 +46,11 @@ datatypes:
   tag_J: {composed_of: [name: tagname,
                         type: {constant: "J"},
                         value: json],
-                        sep: ":", split: false}
+                        sep: ":", split_by_sep: false}
   tag_Z: {composed_of: [name: tagname,
                         type: {constant: "Z"},
                         value: {regex: "[ -~]*"}],
-                        sep: ":", split: false}
+                        sep: ":", split_by_sep: false}
   tag_i: {composed_of: [name: tagname,
                         type: {constant: "i"},
                         value: integer],

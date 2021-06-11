@@ -6,7 +6,7 @@ datatypes:
     list_of: [{constant: a}, {constant: b}]
   l_sep_excl_wo_sep:
     list_of: {constant: a}
-    split: true
+    split_by_sep: true
   l_minlen_neg:
     list_of: {constant: a}
     minlength: -2
