@@ -141,7 +141,11 @@ def test_all_valid(datatype_def, tests):
 def main(arguments):
   spec = textformats.Specification(arguments["<spec>"])
   with open(arguments["<tests>"]) as f:
-    data = yaml.safe_load(f)
+    for doc in yaml.safe_load_all(f):
+      data = doc
+      # anything after the first document (if there is) can be data
+      # in an embedded spec, thus skip it
+      break
     for datatype, tests in data["testdata"].items():
       datatype_def = spec[datatype]
       test_all_valid(datatype_def, tests)

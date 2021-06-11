@@ -128,7 +128,11 @@ def main(arguments):
     preprocess(s=specfile, o=preprocessed_specfile)
     specfile=preprocessed_specfile
   with open(arguments["<tests>"]) as f:
-    data = yaml.safe_load(f)
+    for doc in yaml.safe_load_all(f):
+      data = doc
+      # anything after the first document (if there is) can be data
+      # in an embedded spec, thus skip it
+      break
     for datatype, tests in data[mainkey].items():
       test_all_valid(specfile, preprocessed, datatype, tests)
       test_all_secondary(specfile, preprocessed, datatype, tests)
