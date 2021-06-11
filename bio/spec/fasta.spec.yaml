@@ -1,12 +1,30 @@
+#
+# MultiFasta format
+#
+# - header:
+#   - fastaid: anything after > before the first space
+#   - desc:    anything after the first space
+#   - both fastaid and desc can be empty
+# - sequence:
+#   - multiple sequence lines are allowed
+#   - empty lines are allowed
+#   - any kind of symbol is allowed (including spacing characters);
+#     the only restriction is that the line shall not start with >
+# - unit:
+#   - consists of header and sequence
+#   - after an header there must be at least a sequence line
+#
 datatypes:
   header:
     pfx: '>'
     sep: " "
+    split: False
     composed_of:
-      - fastaid: {regex: '\w+'}
-      - desc: string
-    required: 1
-  sequence_line: {regex: "[^>].*"}
+      - fastaid: {regex: '\w*'}
+      - desc: {regex: '.*'}
+    required: 0
+  sequence_line:
+    regex: "([^>]*|[^>].*)"
   sequence:
     list_of: sequence_line
     sep: "\n"
@@ -15,3 +33,29 @@ datatypes:
       - header: header
       - sequence: sequence
     sep: "\n"
+    split: False
+testdata:
+  header:
+    valid: {">TDPy A":{"fastaid":"TDPy","desc":"A"},
+            ">TDPy":{"fastaid":"TDPy"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  sequence_line:
+    valid: ["g*C!b", "k", "g", "+L=k", "^O*g", "#N;L@", "N ", "N3_^F",
+            "(JNJ", "(c:"]
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  unit:
+    valid: {">X\x0A`E]mi":{"header":{"fastaid":"X"},"sequence":["`E]mi"]}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  sequence:
+    valid:
+      "J7B": ["J7B"]
+      "J7B\x0A3cD\x0Az2>B\x0AQ*\x0A\"2)Y\x0A(>CH\x0AZ=A^@\x0A3\x0AQyPTa\x0A0$s\"#": ["J7B","3cD","z2>B","Q*","\"2)Y","(>CH","Z=A^@","3","QyPTa","0$s\"#"]
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
