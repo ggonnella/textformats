@@ -17,16 +17,6 @@ const
                      "consisting of only letters, digits and underscores.\n" &
                      "The identifiers are case sensitive."
 
-template spec_errmsg(filename: string, action: string, errmsg: string): string =
-  "Error " & action & " specification\n" &
-  "  Filename: '" & filename & "'\n" & errmsg.indent(2)
-
-template raise_spec_err(errtype, filename, errmsg) =
-  let action = block:
-      when errtype is TextformatsRuntimeError: "loading"
-      else: "parsing"
-  raise newException(errtype, spec_errmsg(filename, action, errmsg))
-
 proc parse_datatype_name(datatype_name_node: YamlNode): string =
   try:
     datatype_name_node.validate_is_string("Invalid datatype name.\n")
@@ -135,31 +125,9 @@ proc include_subspec(spec: Specification, root: YamlNode, path: string,
       raise newException(SpecIncludeError, get_current_exception_msg())
 
 proc get_yaml_root(filename: string): YamlNode =
-  var
-    filestream: FileStream = nil
-    yaml: YamlDocument = YamlDocument(root: YamlNode())
-  if not fileExists(filename):
-    raise_spec_err(TextformatsRuntimeError, filename, "File not found")
-  try:
-    filestream = newFileStream(filename, fmRead)
-  except IOError:
-    raise_spec_err(TextformatsRuntimeError, filename,
-                   get_current_exception_msg())
-  try:
-    yaml = load_dom(filestream)
-  except:
-    raise_spec_err(InvalidSpecError, filename,
-                   get_current_exception_msg())
-  try:
-    yaml.root.validate_is_mapping()
-  except NodeValueError:
-    raise_spec_err(InvalidSpecError, filename,
-      "Invalid content of YAML file\n" &
-      "Expected: " &
-      "The root node of the specification YAML file must be a mapping.\n" &
-      "Details of YAML validation error:" &
-      get_current_exception_msg().indent(2))
-  return yaml.root
+  get_yamlfile_mapping_root(TextformatsRuntimeError,
+                            InvalidSpecError, filename,
+                            "specification")
 
 proc finalize_definitions(spec: Specification) {.inline.} =
   spec.validate_dependencies
@@ -201,7 +169,7 @@ proc include_yaml(spec: Specification, filename: string,
       spec.finalize_definitions
   except:
     let e = get_current_exception()
-    e.msg = spec_errmsg(filename, "parsing", e.msg)
+    e.msg = yamlfile_errmsg(filename, "specification", e.msg)
     raise e
 
 proc try_finalizing_definitions(spec: Specification, filename: string)
@@ -210,7 +178,7 @@ proc try_finalizing_definitions(spec: Specification, filename: string)
     spec.finalize_definitions
   except:
     let e = get_current_exception()
-    e.msg = spec_errmsg(filename, "parsing", e.msg)
+    e.msg = yamlfile_errmsg(filename, "specification", e.msg)
     raise e
 
 proc parse_specification*(filename: string): Specification =

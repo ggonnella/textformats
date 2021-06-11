@@ -376,3 +376,43 @@ proc getKeys*(n: YamlNode,
       raise newException(KeyMissingError,
         &"{errmsgpfx}Missing key: '{keys[i]}'\n" &
         accepted_keys_helpmsg(keys, n_required))
+
+template yamlfile_errmsg*(filename: string, filedesc: string,
+                          errmsg: string): string =
+  "Error parsing YAML " & filedesc &
+  "\n  Filename: '" & filename & "'\n" &
+  errmsg.indent(2)
+
+import streams, os
+
+proc get_yamlfile_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
+                                filename: string, filedesc: string): YamlNode =
+  var
+    filestream: FileStream = nil
+    yaml: YamlDocument = YamlDocument(root: YamlNode())
+  if not fileExists(filename):
+    raise newException(io_errtype, yamlfile_errmsg(filename, filedesc,
+      "File not found"))
+  try:
+    filestream = newFileStream(filename, fmRead)
+  except IOError:
+    raise newException(io_errtype, yamlfile_errmsg(filename,
+       filedesc, get_current_exception_msg()))
+  try:
+    yaml = load_dom(filestream)
+  except:
+    raise newException(parsing_errtype,
+       yamlfile_errmsg(filename, filedesc,
+         get_current_exception_msg()))
+  try:
+    yaml.root.validate_is_mapping()
+  except NodeValueError:
+    raise newException(parsing_errtype, yamlfile_errmsg(
+      filename, filedesc,
+      "Invalid content of YAML file\n" &
+      "Expected: " &
+      "The root node of the YAML file must be a mapping.\n" &
+      "Details of YAML validation error:" &
+      get_current_exception_msg().indent(2)))
+  return yaml.root
+
