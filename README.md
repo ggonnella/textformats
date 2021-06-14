@@ -397,8 +397,17 @@ specification itself, or in a separate file.
 As for the specification, the YAML document (which must be the first YAML
 document in the file) must contain a mapping. Test data are written
 under the key 'testdata' under the mapping root.
-Examples of both valid and invalid textual representations and decoded data
-can be given, respectively under the keys 'valid' and 'invalid'.
+
+The 'testdata' key contains a mapping, where the names of the datatypes to be
+tested are the keys. Each of the datatype keys contain a mapping, where
+examples of both valid and invalid textual representations and decoded data can
+be given, respectively under the keys 'valid' and 'invalid':
+```
+testdata:
+  datatype1:
+    valid: ...
+    invalid: ...
+```
 
 #### Examples of valid data
 
