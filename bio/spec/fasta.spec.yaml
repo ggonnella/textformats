@@ -43,10 +43,10 @@ testdata:
       decoded: [""]
   sequence_line:
     valid: ["g*C!b", "k", "g", "+L=k", "^O*g", "#N;L@", "N ", "N3_^F",
-            "(JNJ", "(c:"]
+            "(JNJ", "(c:", "", " >"]
     invalid:
-      encoded: [""]
-      decoded: [""]
+      encoded: [">", ">1", "> 1"]
+      decoded: [">", ">1", "> 1"]
   unit:
     valid: {">X\x0A`E]mi":{"header":{"fastaid":"X"},"sequence":["`E]mi"]}}
     invalid:
@@ -54,8 +54,10 @@ testdata:
       decoded: [""]
   sequence:
     valid:
+      "\n": ["", ""]
+      " >": [" >"]
       "J7B": ["J7B"]
       "J7B\x0A3cD\x0Az2>B\x0AQ*\x0A\"2)Y\x0A(>CH\x0AZ=A^@\x0A3\x0AQyPTa\x0A0$s\"#": ["J7B","3cD","z2>B","Q*","\"2)Y","(>CH","Z=A^@","3","QyPTa","0$s\"#"]
     invalid:
-      encoded: [""]
-      decoded: [[], ""]
+      encoded: [">", ">1", "> 1"]
+      decoded: [[], ">", ">1", "> 1"]
