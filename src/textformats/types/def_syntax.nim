@@ -50,3 +50,11 @@ const
   TagnameKey* = "tagname"
   TagsInternalSepKey* = "internal_sep"
   PredefinedTagsKey* = "predefined"
+
+  # testdata syntax
+  TestdataRootKey* = "testdata"
+  TestdataValidKey* = "valid"
+  TestdataOnewayKey* = "oneway"
+  TestdataInvalidKey* = "invalid"
+  TestdataEncodedKey* = "encoded"
+  TestdataDecodedKey* = "decoded"

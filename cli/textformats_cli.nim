@@ -5,7 +5,7 @@
 import tables, strformat, json, strutils
 from textformats import parse_specification, load_specification,
                      save_specification, is_valid,
-                     recognize_and_decode_lines, `$`
+                     recognize_and_decode_lines, `$`, test_specification
 import textformats / [testdata_generator, spec_parser]
 from textformats import nil
 
@@ -44,13 +44,15 @@ type
       "The specification file does not exist or cannot be read"
     ec_err_invalid_encoded=err_pfx & "Decoding error: " & enc_in & err_inv
     ec_err_invalid_decoded=err_pfx & "Encoding error: " & dec_in & err_inv
+    ec_test_error
 
-template exit_with(exit_code: untyped, info = ""): untyped =
+template exit_with(exit_code: untyped, info = "", errcodemsg = true): untyped =
   let `info` = info # local copy, to avoid multiple evaluation
-  if exit_code != ec_success:
+  if exit_code != ec_success and errcodemsg:
     stderr.write_line $exit_code
   if info.len > 0:
-    stderr.write_line ($info).indent(2)
+    let i = if errcodemsg: 2 else: 0
+    stderr.write_line ($info).indent(i)
   return exit_code.int
 
 template get_specification(specfile, preprocessed: untyped): untyped =
@@ -313,6 +315,20 @@ proc list*(specfile: string, preprocessed=false): int =
       echo $datatype_name
   exit_with(ec_success)
 
+proc run_tests*(specfile: string, preprocessed=false,
+                testfile: string): int =
+  ## test a specification using a testdata file
+  let datatypes = get_specification(specfile, preprocessed)
+  try:
+    datatypes.test_specification(testfile)
+  except textformats.InvalidTestdataError, textformats.TestError:
+    exit_with(ec_testerror, get_current_exception_msg(), false)
+  exit_with(ec_success)
+
+# not accepting preprocessed specifications because in the preprocessed
+# there is no information if a datatype is defined in the specification
+# itself or in an included file; thus list_specification_datatypes is only
+# accepting a YAML specification
 proc generate_tests*(specfile: string): int =
   ## auto-generate testdata for a specification file
   let
@@ -331,6 +347,7 @@ template short_expected_valid: untyped = 'v'
 template short_preprocessed: untyped = 'p'
 template short_outfile: untyped = 'o'
 template short_infile: untyped = 'i'
+template short_testfile: untyped = 'f'
 
 template help_specfile: untyped =
   "datatypes specification (YAML or preprocessed)"
@@ -344,6 +361,7 @@ template help_expected: untyped = "expected encoded data"
 template help_expected_valid: untyped = "expected valid? (y/n)"
 template help_outfile: untyped = "output filename"
 template help_infile: untyped = "input filename"
+template help_testfile: untyped = "test data filename (YAML)"
 
 when isMainModule:
   import cligen
@@ -515,10 +533,18 @@ when isMainModule:
                            "outfile": short_outfile},
                   help = {"specfile": help_specfile,
                           "outfile": help_outfile}],
+                 [run_tests,
+                  short = {"specfile": short_specfile,
+                           "preprocessed": short_preprocessed,
+                           "testfile": short_testfile},
+                  help = {"specfile": help_specfile,
+                          "preprocessed": help_preprocessed,
+                          "testfile": help_testfile}],
                  [test, stopwords = @[
                    "decoding", "encoding",
                    "fail_decoding", "fail_encoding",
                    "decoded_validation", "encoded_validation"],
-                   doc = "subcommand test: see 'test' (help) or 'test help' (full help)",
+                   doc = "subcommand test: " &
+                         "see 'test' (help) or 'test help' (full help)",
                    usage = "$doc\n",
                    suppress = @["usage", "prefix"]])

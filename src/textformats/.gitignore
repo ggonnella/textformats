@@ -5,3 +5,4 @@ encoder
 regex_generator
 testdata_generator
 spec_parser
+testdata_parser

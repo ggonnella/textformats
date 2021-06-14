@@ -9,7 +9,7 @@ export BaseDatatypes
 
 # API procs and iterators
 import textformats / [spec_parser, decoder, decoded_validator,
-                   encoded_validator, encoder]
+                   encoded_validator, encoder, testdata_parser]
 export parse_specification
 export save_specification
 export load_specification
@@ -24,6 +24,7 @@ export encode
 export unsafe_encode
 export decode_units
 export decode_file_linewise
+export test_specification
 
 # API exceptions
 import textformats/types/textformats_error
