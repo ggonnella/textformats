@@ -61,7 +61,7 @@ testdata:
   gfa2_ref:
     valid:
       abc+: {id: abc, orientation: +}
-      abc-: {id: abc, orientation: -}
+      abc-: {id: abc, orientation: "-"}
     invalid:
       encoded: ["*", "*+", "abc", " ", ""]
       decoded: ["abc+", 0, "", {}, []]
@@ -76,7 +76,7 @@ testdata:
     valid:
       a+: [{id: a, orientation: +}]
       a+ b- c+: [{id: a, orientation: +},
-                 {id: b, orientation: -},
+                 {id: b, orientation: "-"},
                  {id: c, orientation: +}]
     invalid:
       encoded: ["", "a", "a b c", "*", "*+", "*+ a+", " a+"]
