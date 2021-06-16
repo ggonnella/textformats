@@ -2,11 +2,11 @@
 ## Encode, decode and validate data according to a specification
 ##
 
-import tables, strformat, json, strutils
+import tables, strformat, json, strutils, sets
 from textformats import parse_specification, load_specification,
                      save_specification, is_valid,
                      recognize_and_decode_lines, `$`, test_specification
-import textformats / [testdata_generator, spec_parser]
+import textformats / [testdata_generator, spec_parser, testdata_parser]
 from textformats import nil
 
 const
@@ -329,14 +329,25 @@ proc run_tests*(specfile: string, preprocessed=false,
 # there is no information if a datatype is defined in the specification
 # itself or in an included file; thus list_specification_datatypes is only
 # accepting a YAML specification
-proc generate_tests*(specfile: string): int =
+#
+# if a testfile is provided, only datatypes not present in the testfile
+# are considered, and the initial "testdata:" is not printed, so that
+# the output can be appended to the input testfile
+proc generate_tests*(specfile: string, testfile = ""): int =
   ## auto-generate testdata for a specification file
   let
     datatypes = list_specification_datatypes(specfile)
     specification = parse_specification(specfile)
-  echo "testdata:"
+  let skip_datatypes =
+    if len(testfile) > 0:
+      toHashSet(list_testdata_datatypes(testfile))
+    else:
+      initHashSet[string]()
+  if len(testfile) == 0:
+    echo "testdata:"
   for ddn in datatypes:
-    echo specification[ddn].to_testdata(ddn)
+    if ddn notin skip_datatypes:
+      echo specification[ddn].to_testdata(ddn)
   exit_with(ec_success)
 
 template short_specfile: untyped = 's'
@@ -362,6 +373,8 @@ template help_expected_valid: untyped = "expected valid? (y/n)"
 template help_outfile: untyped = "output filename"
 template help_infile: untyped = "input filename"
 template help_testfile: untyped = "test data filename (YAML)"
+template help_opt_testfile: untyped = "optional: test data filename (YAML);" &
+  "if provided, tests are generated only for datatypes not yet present in it"
 
 when isMainModule:
   import cligen
@@ -526,8 +539,10 @@ when isMainModule:
                           "preprocessed": help_preprocessed,
                           "datatype": help_datatype}],
                  [generate_tests,
-                  short = {"specfile": short_specfile},
-                  help = {"specfile": help_specfile}],
+                  short = {"specfile": short_specfile,
+                           "testfile": short_testfile},
+                  help = {"specfile": help_specfile,
+                          "testfile": help_opt_testfile}],
                  [preprocess,
                   short = {"specfile": short_specfile,
                            "outfile": short_outfile},

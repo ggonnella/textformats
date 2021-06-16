@@ -304,3 +304,12 @@ proc test_specification*(spec: Specification, filename: string) =
           "  Unexpected key found: '{node_name}'.\n" &
           &"  Accepted keys: '{TestdataValidKey}', " &
           &"'{TestdataOnewayKey}', '{TestdataInvalidKey}'.")
+
+proc list_testdata_datatypes*(filename: string): seq[string] =
+  ## List the datatypes in a yaml testdata file
+  result = newSeq[string]()
+  let
+    root = filename.get_yaml_root
+    testdata_node = root.get_testdata_node()
+  for datatype_name_node, datatype_testdata in testdata_node:
+    result.add(datatype_name_node.to_string())
