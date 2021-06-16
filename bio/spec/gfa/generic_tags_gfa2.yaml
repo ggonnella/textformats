@@ -1,0 +1,21 @@
+#
+# This is a version of the GFA2 specification which
+# does not include the exact specification of tags,
+# but just a generic parsing of the name/type/value
+# of the tags
+#
+# Use gfa2.yaml for the specification including
+# complete tags parsing
+#
+include: [gfa2.lines.yaml, gfa2.datatypes.yaml]
+datatypes:
+  gfa_tag_generic:
+    composed_of:
+      - name: {regex: "[A-Za-z][A-Za-z0-9]"}
+      - type: {regex: "[ABHJZif]"}
+      - value: {regex: "[ -~]*"}
+    sep: ":"
+  gfa_tags:
+    list_of: gfa_tag_generic
+    sep: "\t"
+    minlength: 0

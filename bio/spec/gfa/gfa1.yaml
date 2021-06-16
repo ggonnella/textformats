@@ -1,0 +1,1 @@
+include: [gfa1.lines.yaml, gfa.tags.yaml, gfa1.fields.yaml]

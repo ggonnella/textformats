@@ -1,0 +1,58 @@
+#
+# XXX this is not finished, it's just a copy of the GFA2 file
+#
+# The definition of gfa_tags is left open, i.e. it must be defined
+# by the including file.
+datatypes:
+  header:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {H: "header"}}
+      - tags: gfa_tags
+    required: 1
+  segment:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {S: "segment"}}
+      - name: gfa1_name
+      - sequence: gfa1_sequence
+      - tags: gfa_tags
+    required: 3
+  link:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {L: "link"}}
+      - from: gfa1_name
+      - from_orient: gfa1_orient
+      - to: gfa1_name
+      - to_orient: gfa1_orient
+      - overlap: gfa1_alignment
+      - tags: gfa_tags
+    required: 6
+  containment:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {C: "containment"}}
+      - container: gfa1_name
+      - container_orient: gfa1_orient
+      - contained: gfa1_name
+      - contained_orient: gfa1_orient
+      - pos: unsigned_integer
+      - overlap: gfa1_alignment
+      - tags: gfa_tags
+    required: 7
+  path:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {P: "path"}}
+      - path_name: gfa1_name
+      - segment_names: gfa1_oriented_names_list
+      - overlaps: gfa1_alignments_list
+      - tags: gfa_tags
+    required: 4
+  comment:
+    composed_of:
+      - line_type: {constant: {"#": "comment"}}
+      - content: string
+    required: 1
+  gfa1_line: {one_of: [header, segment, link, containment, path, comment]}
