@@ -44,7 +44,7 @@ proc test_encoded_validation(input: string, datatype: DatatypeDefinition,
                              failed: string, success: string) =
   if not input.is_valid(datatype):
     raise newException(UnexpectedEncodedInvalidError, failed &
-      &"  Encoded data: {input}\n" &
+      &"  Encoded string: '{input}'\n" &
       &"  Expected to be valid, but validation failed\n")
   else:
     echo(&"{success}'{input}' (encoded) validated")
@@ -53,7 +53,7 @@ proc test_encoded_no_validation(input: string, datatype: DatatypeDefinition,
                                 failed: string, success: string) =
   if input.is_valid(datatype):
     raise newException(UnexpectedEncodedValidError, failed &
-      &"  Encoded data: {input}\n" &
+      &"  Encoded string: '{input}'\n" &
       &"  Expected to be invalid, but validation succeded\n")
   else:
     echo(&"{success}'{input}' (encoded) not validated")
@@ -63,20 +63,20 @@ proc test_decoded_validation(input: JsonNode, datatype: DatatypeDefinition,
   if not input.is_valid(datatype):
     raise newException(UnexpectedDecodedInvalidError,
       failed &
-      &"  Decoded data: {input}\n" &
+      &"  Decoded data (JSON): {input}\n" &
       &"  Expected to be valid, but validation failed\n")
   else:
-    echo(&"{success}'{input}' (decoded) validated")
+    echo(&"{success}{input} (decoded) validated")
 
 proc test_decoded_no_validation(input: JsonNode, datatype: DatatypeDefinition,
                                 failed: string, success: string) =
   if input.is_valid(datatype):
     raise newException(UnexpectedDecodedValidError,
       failed &
-      &"  Decoded data: {input}\n" &
+      &"  Decoded data (JSON): {input}\n" &
       &"  Expected to be invalid, but validation succeeded\n")
   else:
-    echo(&"{success}'{input}' (decoded) not validated")
+    echo(&"{success}{input} (decoded) not validated")
 
 proc test_valid_decoding(input: string, datatype: DatatypeDefinition,
                          expected: JsonNode, failed: string, success: string) =
@@ -86,15 +86,16 @@ proc test_valid_decoding(input: string, datatype: DatatypeDefinition,
       raise newException(UnexpectedDecodingResultError,
         failed &
         "  Decoding result different than expected\n" &
-        &"  Expected: {expected}\n" &
-        &"  Decoded:  {output}")
+        &"  Encoded string: '{input}'\n" &
+        &"  Expected decoded data (JSON): {expected}\n" &
+        &"  Decoded data (JSON):{output}")
     else:
-      echo(&"{success}'{input}' =(decode)=> '{output}'")
+      echo(&"{success}'{input}' =(decode)=> {output}")
   except DecodingError:
     raise newException(UnexpectedEncodedInvalidError,
       failed &
-      &"  Encoded data: {input}\n" &
-      &"  Expected decoding output: {expected}\n" &
+      &"  Encoded string: '{input}'\n" &
+      &"  Expected decoded data (JSON): {expected}\n" &
       "  Instead, decoding failed with an error:\n" &
       get_current_exception_msg().indent(4))
 
@@ -105,14 +106,15 @@ proc test_valid_encoding(input: JsonNode, datatype: DatatypeDefinition,
     if output != expected:
       raise newException(UnexpectedEncodingResultError, failed &
         "  Encoding result different than expected\n" &
-        &"  Expected: {expected}\n" &
-        &"  Decoded:  {output}")
+        &"  Decoded data (JSON): {input}\n" &
+        &"  Expected encoded string: '{expected}'\n" &
+        &"  Encoded string: '{output}'")
     else:
       echo(&"{success}'{input}' =(encode)=> '{output}'")
   except EncodingError:
     raise newException(UnexpectedDecodedInvalidError, failed &
-      &"  Decoded data: {input}\n" &
-      &"  Expected encoding output: {expected}\n" &
+      &"  Decoded data (JSON): {input}\n" &
+      &"  Expected encoded string: '{expected}'\n" &
       "  Instead, encoding failed with an error:\n" &
       get_current_exception_msg().indent(4))
 
@@ -155,10 +157,10 @@ proc test_invalid_encoded(encoded: string, datatype: DatatypeDefinition,
   try:
     let decoded = encoded.decode(datatype)
     raise newException(UnexpectedEncodedValidError, failed &
-      &"  Encoded input data: {encoded}\n" &
-      "  The encoded data should be invalid " &
+      &"  Encoded string: '{encoded}'\n" &
+      "  The encoded string should be invalid " &
       "  but the decoding unexpectedly succeded\n" &
-      &"  Output: {decoded}\n")
+      &"  Output decoded data (JSON): {decoded}\n")
   except DecodingError:
     echo(&"{success}decoding '{encoded}' failed as expected")
 
@@ -183,12 +185,12 @@ proc test_invalid_decoded(decoded: JsonNode, datatype: DatatypeDefinition,
   try:
     let encoded = decoded.encode(datatype)
     raise newException(UnexpectedDecodedValidError, failed &
-      &"  Decoded input data: {decoded}\n" &
+      &"  Decoded data (JSON): {decoded}\n" &
       "  The decoded data should be invalid " &
       "  but the encoding unexpectedly succeded\n" &
-      &"Output: {encoded}\n")
+      &"Output encoded string: '{encoded}'\n")
   except EncodingError:
-    echo(&"{success}encoding '{decoded}' failed as expected")
+    echo(&"{success}encoding {decoded} failed as expected")
 
 proc run_invalid_decoded_test(datatype: DatatypeDefinition,
                               decoded_list: YamlNode, dtmsg: string,
@@ -301,7 +303,7 @@ proc test_specification*(spec: Specification, filename: string) =
       else:
         raise newException(InvalidTestdataError,
           dtmsg &
-          "  Unexpected key found: '{node_name}'.\n" &
+          &"  Unexpected key found: '{key}'.\n" &
           &"  Accepted keys: '{TestdataValidKey}', " &
           &"'{TestdataOnewayKey}', '{TestdataInvalidKey}'.")
 
