@@ -1,0 +1,24 @@
+Test system:
+
+- handling different order of the tags
+  - what determines the order of the keys in a table?
+    - similar problems in Python are solvable using a
+      pre-defined hash seed
+  - ordered table is not a good idea, because
+    the tags are inherently not ordered, so equivalence
+    should hold without regard to the order
+  - define a canonical order? (e.g. lexicographic)
+
+Command line interface:
+
+  If the YAML file is empty or contains only spaces,
+  the NIM library outputs the following error:
+
+  [NimYAML] Error in file stream.nim at line 176:
+  assertion failed!
+  [NimYAML] Stacktrace:
+  No stack traceback available
+  SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+
+  TODO:
+  - check that the content of the file is not empty or consisting of only spaces
