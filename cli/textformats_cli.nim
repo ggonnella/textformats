@@ -316,11 +316,14 @@ proc list*(specfile: string, preprocessed=false): int =
   exit_with(ec_success)
 
 proc run_tests*(specfile: string, preprocessed=false,
-                testfile: string): int =
+                testfile = ""): int =
   ## test a specification using a testdata file
   let datatypes = get_specification(specfile, preprocessed)
+  let test_or_specfile =
+    if len(testfile) == 0: specfile
+    else: testfile
   try:
-    datatypes.test_specification(testfile)
+    datatypes.test_specification(test_or_specfile)
   except textformats.InvalidTestdataError, textformats.TestError:
     exit_with(ec_testerror, get_current_exception_msg(), false)
   exit_with(ec_success)
@@ -372,7 +375,8 @@ template help_expected: untyped = "expected encoded data"
 template help_expected_valid: untyped = "expected valid? (y/n)"
 template help_outfile: untyped = "output filename"
 template help_infile: untyped = "input filename"
-template help_testfile: untyped = "test data filename (YAML)"
+template help_testfile: untyped = "test data filename (YAML); " &
+  "if not provided, the same file as the specification shall contain tests"
 template help_opt_testfile: untyped = "optional: test data filename (YAML);" &
   "if provided, tests are generated only for datatypes not yet present in it"
 
