@@ -23,9 +23,12 @@ proc normalize_regex(rgx: string): string =
 iterator exrex(rgx: string, n_random_strings: int,
                max_range_size: int): string =
   let r = normalize_regex(rgx).quote_shell
-  for line in exec_cmd_ex(&"for i in {{1..{n_random_strings}}}; " &
-                            &"do exrex -l {max_range_size} -r {r}; " &
-                           "done").output.split_lines:
+  let exrexcmd = &"exrex -l {max_range_size} -r {r}"
+  let cmdline = &"for i in {{1..{n_random_strings}}}; " &
+                &"do {exrexcmd}; " &
+                "done"
+  stderr.write_line(&"# generated using: {exrexcmd}")
+  for line in exec_cmd_ex(cmdline).output.split_lines:
     yield line
 
 proc process_regex*(t: var TestData, rgx: string,
