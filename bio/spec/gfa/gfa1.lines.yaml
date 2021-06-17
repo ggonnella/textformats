@@ -1,9 +1,17 @@
 #
-# XXX this is not finished, it's just a copy of the GFA2 file
+# GFA1 format
 #
-# The definition of gfa_tags is left open, i.e. it must be defined
-# by the including file.
+# Specification URL:
+#   https://github.com/GFA-spec/GFA-spec/blob/master/GFA1.md
+#
+include: [gfa1.fields.yaml, gfa.tags.yaml]
 datatypes:
+  gfa1_line: {one_of: [comment, header, segment, link, containment, path]}
+  comment:
+    composed_of:
+      - line_type: {constant: {"#": "comment"}}
+      - content: string
+    required: 1
   header:
     sep: "\t"
     composed_of:
@@ -50,9 +58,197 @@ datatypes:
       - overlaps: gfa1_alignments_list
       - tags: gfa_tags
     required: 4
+testdata:
   comment:
-    composed_of:
-      - line_type: {constant: {"#": "comment"}}
-      - content: string
-    required: 1
-  gfa1_line: {one_of: [header, segment, link, containment, path, comment]}
+    valid: {"#":{"line_type":"comment"},
+            "#A":{"line_type":"comment","content":"A"}}
+    invalid:
+      encoded: ["", "A"]
+      decoded: ["", [], {}, 1, 1.0, true, null]
+  header:
+    valid:
+      "H": {"line_type":"header"}
+      "H\tVN:Z:1.0": {"line_type":"header",
+                      "tags": {"VN": {"type": "Z", "value": "1.0"}}}
+      "H\txx:i:1\tVN:Z:1.0": {"line_type":"header",
+                             "tags": {"VN": {"type": "Z", "value": "1.0"},
+                                      "xx": {"type": "i", "value": 1}}}
+      "H\twL:B:f,-1.0,0.0,1.0\tnJ:H:AF\tUT:J:{}\ton:A:'\tH7:f:-1.0":
+        line_type: header
+        tags:
+          nJ:
+            type: H
+            value: ["AF"]
+          wL:
+            type: B
+            value: [-1.0,0.0,1.0]
+          "on":
+            type: A
+            value: "'"
+          UT:
+            type: J
+            value: {}
+          H7:
+            type: f
+            value: -1.0
+    invalid:
+      encoded: ["h\tVN:Z:1.0", "H\t\tVN:Z:1.0", "H\tABC"]
+      decoded: ["", [], {}, 1, 1.0, true, null]
+  segment:
+    valid:
+      "S\tABC\tCGGCTG":
+        line_type: segment
+        name: ABC
+        sequence: CGGCTG
+      "S\tABC\tCGGCTG\txx:f:1.0":
+        line_type: segment
+        name: ABC
+        sequence: CGGCTG
+        tags:
+          xx:
+            type: f
+            value: 1.0
+      "S\tABC\t*\txx:f:1.0\txy:i:1":
+        line_type: segment
+        name: ABC
+        sequence: null
+        tags:
+          xx:
+            type: f
+            value: 1.0
+          xy:
+            type: i
+            value: 1
+    invalid:
+      encoded: ["", "s\tABC\tCGTG", "S\t*\tCGT", "S\t\tABC\tCGG",
+                "S\tABC\tCGG\t1", "S\tABC"]
+      decoded: ["", [], {}, 1, 1.0, true, null]
+  link:
+    valid:
+      "L\tA\t-\tB\t+\t20M1D":
+        line_type: link
+        from: A
+        from_orient: "-"
+        to: B
+        to_orient: "+"
+        overlap: [{"length":20,"code":"M"},{"length":1,"code":"D"}]
+      "L\tAX\t+\tBX\t-\t*\txx:i:0":
+        line_type: link
+        from: AX
+        from_orient: "+"
+        to: BX
+        to_orient: "-"
+        overlap: null
+        tags:
+          xx:
+            type: i
+            value: 0
+    invalid:
+      encoded: ["", "l\tA\t-\tB\t+\t*", "L\t*\t+\tB\t-\t100M",
+               "L\t1\t+\t2\t-", "L\t1\t+\t2\t+\t10M\t1"]
+      decoded: ["", [], {}, 1, 1.0, true, null]
+  containment:
+    valid:
+      "C\tA\t-\tB\t+\t0\t20M1D10M":
+        line_type: containment
+        container: A
+        container_orient: "-"
+        contained: B
+        contained_orient: "+"
+        pos: 0
+        overlap: [{"length":20,"code":"M"},
+                  {"length":1,"code":"D"},
+                  {"length":10,"code":"M"}]
+    invalid:
+      encoded: ["", "c\tA\t-\tB\t+\t20\t20M1D10M",
+                "C\t*\t-\tB\t+\t20\t20M1D10M", "C\tA\t-\tB\t+\t-1\t20M1D10M",
+                "C\tA\t-\tB\t+\t1", "C\tA\t-\tB\t+\t1\t20M1D10M\t1"]
+      decoded: ["", [], {}, 1, 1.0, true, null]
+  path:
+    valid:
+      "P\tA\tU-,X+,C-\t20M,10M1I10M":
+        line_type: path
+        path_name: A
+        segment_names:
+          - name: U
+            orientation: "-"
+          - name: X
+            orientation: "+"
+          - name: C
+            orientation: "-"
+        overlaps:
+          - [{"length":20,"code":"M"}]
+          - [{"length":10,"code":"M"},
+             {"length":1,"code":"I"},
+             {"length":10,"code":"M"}]
+      "P\tA\tU-,X+\t*\txx:i:1\txy:f:1.0":
+        line_type: path
+        path_name: A
+        segment_names:
+          - name: U
+            orientation: "-"
+          - name: X
+            orientation: "+"
+        overlaps: [null]
+        tags:
+          xx:
+            type: i
+            value: 1
+          xy:
+            type: f
+            value: 1.0
+    invalid:
+      encoded: ["", "p\tA\tU-,X+,C-\t20M,10M1I10M",
+                "P\tA\t*,X+,C-\t20M,10M1I10M", "P\t*\tU-,X+,C-\t20M,10M1I10M",
+                "P\t*\tU,X,C\t20M,10M1I10M", "P\t*\tU+,X-,C+",
+                "P\tA\tU-,X+,C-\t20M,10M1I10M\t1"]
+      decoded: ["", [], {}, 1, 1.0, true, null]
+  gfa1_line:
+    valid:
+      "#A": {"line_type":"comment","content":"A"}
+      "H\tVN:Z:1.0": {"line_type":"header",
+                "tags": {"VN": {"type": "Z", "value": "1.0"}}}
+      "S\tABC\tCGGCTG":
+        line_type: segment
+        name: ABC
+        sequence: CGGCTG
+      "L\tA\t-\tB\t+\t20M1D":
+        line_type: link
+        from: A
+        from_orient: "-"
+        to: B
+        to_orient: "+"
+        overlap: [{"length":20,"code":"M"},{"length":1,"code":"D"}]
+      "C\tA\t-\tB\t+\t0\t20M1D10M":
+        line_type: containment
+        container: A
+        container_orient: "-"
+        contained: B
+        contained_orient: "+"
+        pos: 0
+        overlap: [{"length":20,"code":"M"},
+                  {"length":1,"code":"D"},
+                  {"length":10,"code":"M"}]
+      "P\tA\tU-,X+,C-\t*":
+        line_type: path
+        path_name: A
+        segment_names:
+          - name: U
+            orientation: "-"
+          - name: X
+            orientation: "+"
+          - name: C
+            orientation: "-"
+        overlaps: [null]
+    invalid:
+      encoded: ["", "A", "h\tVN:Z:1.0", "H\t\tVN:Z:1.0", "H\tABC",
+                "s\tABC\tCGTG", "S\t*\tCGT", "S\t\tABC\tCGG",
+                "S\tABC\tCGG\t1", "S\tABC", "l\tA\t-\tB\t+\t*",
+                "L\t*\t+\tB\t-\t100M", "L\t1\t+\t2\t-", "L\t1\t+\t2\t+\t10M\t1",
+                "c\tA\t-\tB\t+\t20\t20M1D10M", "C\t*\t-\tB\t+\t20\t20M1D10M",
+                "C\tA\t-\tB\t+\t-1\t20M1D10M", "C\tA\t-\tB\t+\t1",
+                "C\tA\t-\tB\t+\t1\t20M1D10M\t1", "p\tA\tU-,X+,C-\t20M,10M1I10M",
+                "P\tA\t*,X+,C-\t20M,10M1I10M", "P\t*\tU-,X+,C-\t20M,10M1I10M",
+                "P\t*\tU,X,C\t20M,10M1I10M", "P\t*\tU+,X-,C+",
+                "P\tA\tU-,X+,C-\t20M,10M1I10M\t1"]
+      decoded: ["", [], {}, 1, 1.0, true, null]

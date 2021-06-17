@@ -1,5 +1,4 @@
 datatypes:
-  gfa_tagname: {regex: "[A-Za-z][A-Za-z0-9]"}
   uint8: {unsigned_integer: {max: 255}}
   int8: {integer: {min: -128, max: 127}}
   uint16: {unsigned_integer: {max: 65535}}
@@ -24,6 +23,6 @@ datatypes:
       Z: {regex: "[ -~]*"}
       i: integer
       f: float
-    tagname: gfa_tagname
+    tagname: "[A-Za-z][A-Za-z0-9]"
     sep: "\t"
     internal_sep: ":"
