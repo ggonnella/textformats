@@ -1,0 +1,113 @@
+datatypes:
+  ipv_future:
+    as_string: true
+    composed_of:
+      - a: {regex: "[0-9A-Fa-f]+"}
+      - b: {regex: "[A-Za-z0-9.+!&'()*+-,;=:]+"}
+    sep: "."
+    pfx: "v"
+  h16:
+    regex: "[0-9a-f]{1,4}"
+  ls32:
+    as_string: true
+    one_of:
+    - ipv4
+    - {list_of: h16, sep: ":", minlength: 2, maxlength: 2}
+  ipv4:
+    as_string: true
+    list_of: {unsigned_integer: {min: 0, max: 255}}
+    minlength: 4
+    maxlength: 4
+    sep: "."
+  ipv6:
+    as_string: true
+    one_of:
+      - composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 6, maxlength: 6}
+        - b: ls32
+        sep: ":"
+        split_by_sep: false
+      - pfx: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 5, maxlength: 5}
+        - b: ls32
+        sep: ":"
+        split_by_sep: false
+      - sep: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 1}
+        - b:
+            composed_of:
+            - c: {list_of: h16, sep: ":", minlength: 4, maxlength: 4}
+            - d: ls32
+            sep: ":"
+            split_by_sep: false
+      - sep: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 2}
+        - b:
+            composed_of:
+            - c: {list_of: h16, sep: ":", minlength: 3, maxlength: 3}
+            - d: ls32
+            sep: ":"
+            split_by_sep: false
+      - sep: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 3}
+        - b:
+            composed_of:
+            - c: {list_of: h16, sep: ":", minlength: 2, maxlength: 2}
+            - d: ls32
+            sep: ":"
+            split_by_sep: false
+      - sep: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 4}
+        - b:
+            composed_of:
+            - c: h16
+            - d: ls32
+            sep: ":"
+            split_by_sep: false
+      - sep: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 5}
+        - b: ls32
+      - sep: "::"
+        composed_of:
+        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 6}
+        - b: h16
+      - list_of: h16
+        sep: ":"
+        minlength: 0
+        maxlength: 7
+        sfx: "::"
+testdata:
+  ipv_future:
+    valid: ["v17.In!0"]
+    invalid:
+      encoded: ["v.1123", ""]
+      decoded: ["v.1123", "", 1, 0.0, [], {}]
+  ipv6:
+    valid: ["0d9c::6fb:b:29", "::", "::be:c40:c91:397:065:255.1.0.255",
+            "f94::6a:4:2ec4:8", "36cd::6:68:8fb:255.1.0.255", "6502::",
+            "4:49:ce:f4:8037:9c:255.1.0.255",
+            "6::68:f1c8:39aa:c45:255.1.0.255", "99b4::c006", "810::579c:ac53"]
+    invalid:
+      encoded: ["", "1", "A", "1:::12", ":::"]
+      decoded: ["", "1", "A", "1:::12", ":::", 1, 0.0, [], {}]
+  ipv4:
+    valid: ["255.1.0.255"]
+    invalid:
+      encoded: ["255", "255.1", "255.1.0", ""]
+      decoded: [[], [255], [255,1], [255,1,0], "", 1, 0.0, {}, ["A"],
+               "255", "255.1", "255.1.0"]
+  h16:
+    valid: ["d6", "fcda", "46", "3657", "3c2e", "d4e", "5", "181", "73b",
+            "a5a9"]
+    invalid:
+      encoded: ["X", "d6X", "fcdaX", "46X", "3657X", "3c2eX", "d4eX", "5X",
+                "181X", "73bX", "a5a9X", ""]
+      decoded: [1, [], {}, 0.0,
+                "X", "d6X", "fcdaX", "46X", "3657X", "3c2eX", "d4eX", "5X",
+                "181X", "73bX", "a5a9X", ""]

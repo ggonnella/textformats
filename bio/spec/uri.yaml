@@ -1,0 +1,322 @@
+#
+# Defined in RFC3986, Berners-Lee et al., 2005
+# https://datatracker.ietf.org/doc/html/rfc3986
+#
+include: ip.yaml
+datatypes:
+  uri:
+    composed_of:
+      - scheme: uri_scheme
+      - hier_part: uri_hier_part
+      - query: uri_query
+      - fragment: uri_fragment
+  uri_hier_part:
+    one_of:
+      - composed_of:
+          - authority: uri_authority
+          - path: uri_path_abempty
+      - uri_path_absolute
+      - uri_path_rootless
+    empty: {}
+  uri_reference:
+    one_of:
+      - uri
+      - uri_relative_ref
+  absolute_uri:
+    composed_of:
+      - scheme: uri_scheme
+      - hier_part: uri_hier_part
+      - query: uri_query
+  uri_relative_ref:
+    composed_of:
+      - relative_part: uri_relative_part
+      - query: uri_query
+      - fragment: uri_fragment
+  uri_relative_part:
+    one_of:
+      - composed_of:
+          - authority: uri_authority
+          - path: uri_path_abempty
+        pfx: "//"
+      - uri_path_absolute
+      - uri_path_noscheme
+    empty: {}
+  uri_scheme:
+    regex: "[A-Za-z][A-Za-z0-9.+-]*:"
+  uri_authority:
+    composed_of:
+      - userinfo:
+          composed_of:
+            - username: uri_string_ups
+            - password: uri_string_upsc
+          sep: ":"
+          split_by_sep: false
+          sfx: "@"
+          required: 0
+          empty: {}
+      - host:
+          one_of:
+            - uri_ip_literal
+            - ipv4
+            - uri_string_ups
+      - port:
+          composed_of:
+            - pfx: {constant: ":"}
+            - value: unsigned_integer
+    required: 2
+  uri_ip_literal:
+    composed_of:
+      - pfx: {constant: "["}
+      - value:
+          one_of:
+          - ipv6
+          - ipv_future
+      - sfx: {constant: "]"}
+  uri_path:
+    one_of:
+      - uri_path_abempty
+      - uri_path_absolute
+      - uri_path_noscheme
+      - uri_path_rootless
+    empty: ""
+  uri_query:
+    composed_of:
+      - pfx: {"constant": "?"}
+      - value: uri_string_upsqs
+    empty: {}
+  uri_fragment:
+    composed_of:
+      - pfx: {"constant": "#"}
+      - value: uri_string_upsqs
+    empty: {}
+  uri_path_abempty:
+    as_string: true
+    list_of:
+      composed_of:
+        - sep: {constant: "/"}
+        - component: uri_segment
+  uri_path_absolute:
+    as_string: true
+    composed_of:
+      - root: {constant: "/"}
+      - path:
+          one_of:
+          - uri_segment_nz
+          - {list_of: uri_segment, sep: "/"}
+          empty: []
+  uri_path_noscheme:
+    as_string: true
+    composed_of:
+      - first: uri_segment_nz_nc
+      - subpath:
+          list_of: uri_segment
+          sep: "/"
+    required: 1
+    sep: "/"
+    split_by_sep: false
+  uri_path_rootless:
+    as_string: true
+    composed_of:
+      - first: uri_segment_nz
+      - subpath:
+          list_of: uri_segment
+          sep: "/"
+    required: 1
+    sep: "/"
+    split_by_sep: false
+  # the following regexes are composed of:
+  #   pct_encoded: %[0-9A-Fa-z]{2}
+  #   unreserved:  [A-Za-z0-9.+-]
+  #   subdelim:    [!$&'()*+,;=]
+  #   gendelim:    [:@?/]
+  uri_string_us: # unreserved or subdelim
+    regex: "([A-Za-z0-9.+!&'()*+,;=-])+"
+  uri_string_ups: # unreserved, pct_endoded or subdelim
+    regex: "([A-Za-z0-9.+!&'()*+,;=-]|%[0-9A-Fa-f]{2})+"
+  uri_string_upsc: # unreserved, pct_endoded, subdelim or colon
+    regex: "([A-Za-z0-9.+!&'()*+,;=:-]|%[0-9A-Fa-f]{2})+"
+  uri_segment: # unreserved, pct_endoded, subdelim, :, @; may be empty
+    regex: "([A-Za-z0-9.+!&'()*+,;=:@-]|%[0-9A-Fa-f]{2})*"
+  uri_segment_nz: # unreserved, pct_endoded, subdelim, :, @
+    regex: "([A-Za-z0-9.+!&'()*+,;=:@-]|%[0-9A-Fa-f]{2})+"
+  uri_segment_nz_nc: # unreserved, pct_endoded, subdelim, @
+    regex: "([A-Za-z0-9.+!&'()*+,;=@-]|%[0-9A-Fa-f]{2})+"
+  uri_string_upsqs: # ups ? /
+    regex: "([A-Za-z0-9.+!&'()*+,;=@?\/-]|%[0-9A-Fa-f]{2})*"
+testdata:
+  uri_path_abempty:
+    valid: ["/9F%cD%be"]
+    invalid:
+      encoded: [""]
+      decoded: [[], ""]
+  uri_path_noscheme:
+    valid: ["%ca", "%ca/%9D%8A%f6"]
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_query:
+    valid: {"?Bg%08":{"pfx":"?","value":"Bg%08"}, "":{}}
+    invalid:
+      encoded: []
+      decoded: []
+  uri_path_absolute:
+    valid: ["/%A2%8c"]
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_path_rootless:
+    valid: ["%f5", "%f5/P"]
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_authority:
+    valid:
+      "CC": {"userinfo": {}, "host":"CC"}
+      "%6C:%43%c5@%AFiO4": {"userinfo":{"username":"%6C","password":"%43%c5"},"host":"%AFiO4"}
+      "%6C:%43%c5@%AFiO4:1": {"userinfo":{"username":"%6C","password":"%43%c5"},"host":"%AFiO4","port":{"pfx":":","value":1}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_segment:
+    valid: ["%eAoN(", "%91E%3CZ", "(%e2%C1", "w%359%2c", "p%2E",
+            "%71%cB%fbJ", "S%2F", "t%5f", ""]
+    invalid:
+      encoded: ["(NoAe%", "ZC3%E19%", "(%e2%C", "1C%2e%(", "w%359%2",
+                "c2%953%w", "p%2", "E2%p", "Jbf%Bc%17%", "S%2", "F2%S", "t%5",
+                "f5%t"]
+      decoded: ["(NoAe%", "ZC3%E19%", "(%e2%C", "1C%2e%(", "w%359%2",
+                "c2%953%w", "p%2", "E2%p", "Jbf%Bc%17%", "S%2", "F2%S", "t%5",
+                "f5%t"]
+  uri_reference:
+    valid:
+      "Mw:R#B": {"scheme":"Mw:","hier_part":"R","query":{},"fragment":{"pfx":"#","value":"B"}}
+      "D/t%6C;?z%0E#SS%fa":
+        relative_part: "D/t%6C;"
+        query: {"pfx":"?","value":"z%0E"}
+        fragment: {"pfx":"#","value":"SS%fa"}
+      "D/t%6C;?z%0E":
+        relative_part: "D/t%6C;"
+        query: {"pfx":"?","value":"z%0E"}
+        fragment: {}
+      "":
+        relative_part: {}
+        query: {}
+        fragment: {}
+  uri_segment_nz:
+    valid: ["%CfFY", "J0", "y", "mf", "%3f", "X%15sZ", "n%DA*", "%EE",
+            "%32g%bc%C1", "%c4%f8%B7"]
+    invalid:
+      encoded: ["YFfC%", "%3", "f3%", "Zs51%X", "*AD%n", "%E", "EE%",
+                "%32g%bc%C", "1C%cb%g23%", "%c4%f8%B", "7B%8f%4c%", ""]
+      decoded: ["YFfC%", "%3", "f3%", "Zs51%X", "*AD%n", "%E", "EE%",
+                "%32g%bc%C", "1C%cb%g23%", "%c4%f8%B", "7B%8f%4c%", ""]
+  uri_string_us:
+    valid: ["tStz", "70", "JugV", "rCYL", "!;XDh", "t7", "M", "d", "b!&dO",
+            "V"]
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_ip_literal:
+    valid:
+      "[1::255.1.0.255]": {"pfx":"[","value":"1::255.1.0.255","sfx":"]"}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  absolute_uri:
+    valid:
+      "btk:%1F%cc,2W?i!": {"scheme":"btk:","hier_part":"%1F%cc,2W","query":{"pfx":"?","value":"i!"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_string_upsqs:
+    valid: ["*", "%62%6AK", "%7f%e9", "%0E", "R%88ct", "%1E%3c", "%CaQ", ""]
+    invalid:
+      encoded: ["KA6%26%", "%7f%e", "9e%f7%", "%0", "E0%", "tc88%R", "%1E%3",
+                "c3%E1%", "QaC%"]
+      decoded: ["KA6%26%", "%7f%e", "9e%f7%", "%0", "E0%", "tc88%R", "%1E%3",
+                "c3%E1%", "QaC%"]
+  uri_scheme:
+    valid: ["Ae:", "CGqD:", "goHkJ:", "vYx:", "Pbc:", "of:", "Z:", "fZTx:",
+            "q7psX:", "J:"]
+    invalid:
+      encoded: ["X", "Ae", "Ae:X", ":eA", "CGqD", "CGqD:X", ":DqGC", "goHkJ",
+                "goHkJ:X", ":JkHog", "vYx", "vYx:X", ":xYv", "Pbc", "Pbc:X",
+                ":cbP", "of", "of:X", ":fo", "Z", "Z:X", ":Z", "fZTx",
+                "fZTx:X", ":xTZf", "q7psX", "q7psX:X", ":Xsp7q", "J", "J:X",
+                ":J", ""]
+      decoded: ["X", "Ae", "Ae:X", ":eA", "CGqD", "CGqD:X", ":DqGC", "goHkJ",
+                "goHkJ:X", ":JkHog", "vYx", "vYx:X", ":xYv", "Pbc", "Pbc:X",
+                ":cbP", "of", "of:X", ":fo", "Z", "Z:X", ":Z", "fZTx",
+                "fZTx:X", ":xTZf", "q7psX", "q7psX:X", ":Xsp7q", "J", "J:X",
+                ":J", ""]
+  uri_hier_part:
+    valid:
+      ";R*%3d%D2": ";R*%3d%D2"
+      "%01:%5c%d7@F%86%74o/s%68": {"authority":{"userinfo":{"username":"%01","password":"%5c%d7"},"host":"F%86%74o"},"path":"/s%68"}
+      "": {}
+      "/W%2DY%24": "/W%2DY%24"
+    invalid:
+      encoded: []
+      decoded: [""]
+  uri_relative_part:
+    valid:
+      "R": "R"
+      "R/%bb": "R/%bb"
+      "//15%93VP@q%Be:1/ZdM": {"authority":{"userinfo":{"username":"15%93VP"},"host":"q%Be","port":{"pfx":":","value":1}},"path":"/ZdM"}
+      "": {}
+      "/E": "/E"
+    invalid:
+      encoded: []
+      decoded: [""]
+  uri:
+    valid:
+      "Hn:)g%2B?%EB%E1%03#HZ": {"scheme":"Hn:","hier_part":")g%2B","query":{"pfx":"?","value":"%EB%E1%03"},"fragment":{"pfx":"#","value":"HZ"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  uri_string_upsc:
+    valid: ["z%EA%8al%E5", "%15%AE%bbU", "%d8%fai%a8", "E%8e%a9%a3N",
+            "%cfy%C7", "a%36%Cf%fC", "2", "3t%E5Q%CC", "k%69", "%E89%59%b5!"]
+    invalid:
+      encoded: ["z%EA%8al%E", "5E%la8%AE%z", "Ubb%EA%51%", "%d8%fai%a",
+                "8a%iaf%8d%", "N3a%9a%e8%E", "%cfy%C", "7C%yfc%", "a%36%Cf%f",
+                "Cf%fC%63%a", "3t%E5Q%C", "CC%Q5E%t3", "k%6", "96%k",
+                "!5b%95%98E%", ""]
+      decoded: ["z%EA%8al%E", "5E%la8%AE%z", "Ubb%EA%51%", "%d8%fai%a",
+                "8a%iaf%8d%", "N3a%9a%e8%E", "%cfy%C", "7C%yfc%", "a%36%Cf%f",
+                "Cf%fC%63%a", "3t%E5Q%C", "CC%Q5E%t3", "k%6", "96%k",
+                "!5b%95%98E%", ""]
+  uri_fragment:
+    valid: {"":{}, "#%B5%A2%fAb":{"pfx":"#","value":"%B5%A2%fAb"}}
+    invalid:
+      encoded: []
+      decoded: []
+  uri_relative_ref:
+    valid:
+      "%d2%9EM'X": {"relative_part":"%d2%9EM'X","query":{},"fragment":{}}
+      "": {"relative_part":{},"query":{},"fragment":{}}
+  uri_path:
+    valid: ["li4", "li4/%ca", "", "/Y"]
+    invalid:
+      encoded: []
+      decoded: [[]]
+  uri_segment_nz_nc:
+    valid: ["m%a9%78%F2v", "%88%e0T%cf%b4", "L%CF%9F", "u", "l", "c%cc%4e",
+            "%Bbr@%14T", "g1%BE", "%2D", "gw"]
+    invalid:
+      encoded: ["v2F%87%9a%m", "%88%e0T%cf%b", "4b%fc%T0e%88%", "L%CF%9",
+                "F9%FC%L", "c%cc%4", "e4%cc%c", "T41%@rbB%", "g1%B", "EB%1g",
+                "%2", "D2%", ""]
+      decoded: ["v2F%87%9a%m", "%88%e0T%cf%b", "4b%fc%T0e%88%", "L%CF%9",
+                "F9%FC%L", "c%cc%4", "e4%cc%c", "T41%@rbB%", "g1%B", "EB%1g",
+                "%2", "D2%", ""]
+  uri_string_ups:
+    valid: ["R", "h%0bcD", "%49%2A%AA", "%8a", "%C5%305%0C", "-)+%B8",
+            "%EBA", "c%bbr'", "%e9%c1", "%B4%a8WH"]
+    invalid:
+      encoded: ["Dcb0%h", "%49%2A%A", "AA%A2%94%", "%8", "a8%", "%C5%305%0",
+                "C0%503%5C%", "-)+%B", "8B%+)-", "ABE%", "'rbb%c", "%e9%c",
+                "1c%9e%", "HW8a%4B%", ""]
+      decoded: ["Dcb0%h", "%49%2A%A", "AA%A2%94%", "%8", "a8%", "%C5%305%0",
+                "C0%503%5C%", "-)+%B", "8B%+)-", "ABE%", "'rbb%c", "%e9%c",
+                "1c%9e%", "HW8a%4B%", ""]

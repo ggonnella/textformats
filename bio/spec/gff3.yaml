@@ -1,25 +1,90 @@
+#!../../cli/textformats_cli -s 
 #
 # GFF3 format
 #
 # URL of specification document:
 #  https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
 #
+include: uri.yaml
 datatypes:
   #
   # (1) Main definition for parsing GFF lines
   #
-  gff3_line:
+  line:
+    one_of:
+      - directive
+      - comment
+      - annotation
+  comment:
+    regex: "#([^#].*)?"
+  annotation:
     composed_of: [seqid: gff3_column_seqid, source: gff3_column_source,
                  type: gff3_column_type, start: gff3_column_start,
                  end: gff3_column_end, score: gff3_column_score,
                  strand: gff3_column_strand, phase: gff3_column_phase,
                  attributes: gff3_column_attributes]
     sep: "\t"
-
   #
-  # (2) Columns
+  # (2) Directives
   #
-
+  directive:
+    one_of:
+      - version_directive
+      - optional_directive
+      - application_specific_directive
+  version_directive:
+    composed_of:
+      - version: {constant: "3"}
+      - major_revision: unsigned_integer
+      - minor_revision: unsigned_integer
+    sep: "."
+    pfx: "##gff-version "
+  sequence_region_directive:
+    composed_of:
+      - seqid: gff3_id
+      - start: unsigned_integer
+      - end: unsigned_integer
+    sep: " "
+    pfx: "##sequence-region "
+  ontology_directive:
+    composed_of:
+      - pragma:
+          accepted_values: ["attribute-ontology",
+                            "source-ontology",
+                            "feature-ontology"]
+      - uri: uri
+    pfx: "##"
+    sep: " "
+  genome_build_directive:
+    composed_of:
+      - source: gff3_string
+      - build_name: gff3_string
+    sep: " "
+    pfx: "##genome-build "
+  forward_references_solved_directive: {constant: "###"}
+  fasta_directive: {constant: "##FASTA"}
+  optional_directive:
+    one_of:
+      - sequence_region_directive
+      - ontology_directive
+      - genome_build_directive
+      - forward_references_solved_directive
+      - fasta_directive
+  #
+  # note: the following also matches all previous directives,
+  # but it works if used after them in one_of, since the first
+  # matching choice is always selected
+  #
+  application_specific_directive:
+    composed_of:
+      - pragma: gff3_string
+      - content: string
+    pfx: "##"
+    sep: " "
+    split_by_sep: false
+  #
+  # (3) Columns of annotation lines
+  #
   gff3_column_seqid: gff3_id
   gff3_column_source: {one_of: [gff3_undefined, gff3_string]}
   # "either a term from the Sequence Ontology or an SO accession number.
@@ -43,9 +108,8 @@ datatypes:
     sep: ";"
 
   #
-  # (3) Attributes
+  # (4) Attributes (column 9 of annotation lines)
   #
-
   # "The format of the value is "target_id start end [strand]",
   # where strand is optional and may be "+" or "-". If the target_id
   # contains spaces, they must be escaped as hex escape %20."
@@ -94,7 +158,6 @@ datatypes:
     - tag: {constant: "Dbxref"}
     - value: gff3_xref
     sep: "="
-
   #
   # note: the following also matches all previous attributes,
   # but it works if used after them in one_of, since the first
@@ -138,12 +201,24 @@ datatypes:
   gff3_undefined: {constant: {".": null}}
 
 testdata:
-  gff3_line:
+  annotation:
     valid:
-      "%c6s%BA\x09k//%25x\x09%7FX%25a\x091\x091\x09-1.0\x09?\x091\x09Ontology_term=w%7F[%25%26:%25": {"seqid":"%c6s%BA","source":"k//%25x","type":"%7FX%25a","start":1,"end":1,"score":-1.0,"strand":"?","phase":1,"attributes":[{"tag":"Ontology_term","value":{"dbtag":"w%7F[%25%26","id":"%25"}}]}
-    invalid:
-      encoded: [""]
-      decoded: [""]
+      "c6s\tk2\tgeneric\t1\t100\t1.0\t?\t1\tID=bla11;Ontology_term=ABC:7252625":
+        seqid: c6s
+        source: k2
+        type: generic
+        start: 1
+        end: 100
+        score: 1.0
+        strand: "?"
+        phase: 1
+        attributes:
+          - tag: ID
+            value: bla11
+          - tag: Ontology_term
+            value:
+              dbtag: ABC
+              id: "7252625"
   gff3_column_seqid:
     valid: ["U", ".G", "%E5", "@%1a", "O8", "%59F%b6%9C", "JEL%bc",
             "%2f%8ac%Ee0", "s", "L"]
@@ -222,41 +297,23 @@ testdata:
     valid:
       "Target=1d7A07 1 1": {"tag":"Target",
                             "value":{"target_id":"1d7A07","start":1,"end":1}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   gff3_gap_attribute:
     valid:
       "Gap=F1 M10": {"tag":"Gap",
                     "value":[{"operation":"F","length":1},
                              {"operation":"M","length":10}]}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   gff3_xref:
     valid: {"Kv:3B7F":{"dbtag":"Kv","id":"3B7F"}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   gff3_dbxref_attribute:
     valid:
       "Dbxref=BLA:1Et7F0d1E":
           {"tag":"Dbxref","value":{"dbtag":"BLA","id":"1Et7F0d1E"}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   gff3_ontology_term_attribute:
     valid:
       "Ontology_term=ONTO:000001": {"tag":"Ontology_term",
                                      "value":{"dbtag":"ONTO","id":"000001"}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   gff3_generic_attribute:
     valid: {"pt=X21%3b0":{"tag":"pt","value":"X21%3b0"}}
-    invalid:
-      encoded: [""]
-      decoded: [""]
   gff3_string:
     valid: ["Ad", "%0b(", "L%25F%1f", "w%1C", "J", "p%25a%25",
             "=", "%08B`", "%25t", "e%1a"]
@@ -293,3 +350,74 @@ testdata:
     invalid:
       encoded: [".c", ""]
       decoded: [true, 1, 1.0, [], {}, ""]
+  comment:
+    valid: ["#", "#pp=vk", "#8V", "#t,&", "#\\"]
+    invalid:
+      encoded: ["X", "kv=pp#", "V8#", "&,t#", "\\#", ""]
+      decoded: ["X", "kv=pp#", "V8#", "&,t#", "\\#", ""]
+  line:
+    valid:
+      "#": "#"
+      "##attribute-ontology Y:R?u#b%9A%cC": {"pragma":"attribute-ontology","uri":{"scheme":"Y:","hier_part":"R","query":{"pfx":"?","value":"u"},"fragment":{"pfx":"#","value":"b%9A%cC"}}}
+      "##sequence-region %b9 1 1": {"seqid":"%b9","start":1,"end":1}
+      "##gff-version 3.1.1": {"version":"3","major_revision":1,"minor_revision":1}
+      "DG\x09%7f%7F2\x09_%7fT\x091\x091\x09-1.0\x09?\x091\x09Target=%25 1 1": {"seqid":"DG","source":"%7f%7F2","type":"_%7fT","start":1,"end":1,"score":-1.0,"strand":"?","phase":1,"attributes":[{"tag":"Target","value":{"target_id":"%25","start":1,"end":1}}]}
+    invalid:
+      encoded: ["", "X", "%09 %25"]
+      decoded: ["", null, true, 1, 1.0, [], {}, "X", "i!>j#", ")G7F]#",
+                "g[#", "v#", "\\]#"]
+  ontology_directive:
+    valid:
+      "##attribute-ontology dg:ty%46": {"pragma":"attribute-ontology","uri":{"scheme":"dg:","hier_part":"ty%46","query":{},"fragment":{}}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  fasta_directive:
+    valid: ["##FASTA"]
+    invalid:
+      encoded: ["##FASTAc", "##FAST", ""]
+      decoded: [null, true, 1, 1.0, [], {}, ""]
+  sequence_region_directive:
+    valid: {"##sequence-region %bdU 1 1":{"seqid":"%bdU","start":1,"end":1}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  directive:
+    valid:
+      "##genome-build %7ff0s %25": {"source":"%7ff0s","build_name":"%25"}
+      "##sequence-region %78%96G%e3 1 1": {"seqid":"%78%96G%e3","start":1,"end":1}
+      "##attribute-ontology ox:%11%91%A3@kj%f5/%4C#kdx": {"pragma":"attribute-ontology","uri":{"scheme":"ox:","hier_part":{"authority":{"userinfo":{"username":"%11%91%A3"},"host":"kj%f5"},"path":"/%4C"},"query":{},"fragment":{"pfx":"#","value":"kdx"}}}
+      "##gff-version 3.1.1": {"version":"3","major_revision":1,"minor_revision":1}
+    invalid:
+      encoded: ["%25%7Ff"]
+      decoded: ["", null, true, 1, 1.0, [], {}]
+  optional_directive:
+    valid:
+      "##attribute-ontology wekVr:/)?NW%D8#9%B6%88%ca": {"pragma":"attribute-ontology","uri":{"scheme":"wekVr:","hier_part":"/)","query":{"pfx":"?","value":"NW%D8"},"fragment":{"pfx":"#","value":"9%B6%88%ca"}}}
+      "##sequence-region %a0%CdN%dA 1 1": {"seqid":"%a0%CdN%dA","start":1,"end":1}
+      "##genome-build %25 %7FX": {"source":"%25","build_name":"%7FX"}
+    invalid:
+      encoded: ["%25%7Ff"]
+      decoded: ["", null, true, 1, 1.0, [], {}]
+  forward_references_solved_directive:
+    valid: ["###"]
+    invalid:
+      encoded: ["###c", "##", ""]
+      decoded: [null, true, 1, 1.0, [], {}, ""]
+  version_directive:
+    valid:
+      "##gff-version 3.1.1": {"version":"3","major_revision":1,"minor_revision":1}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  application_specific_directive:
+    valid: {"##Y%7f%1D%18 A":{"pragma":"Y%7f%1D%18","content":"A"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  genome_build_directive:
+    valid:
+      "##genome-build %7ff0s %25": {"source":"%7ff0s","build_name":"%25"}
+    invalid:
+      encoded: [""]
+      decoded: [""]
