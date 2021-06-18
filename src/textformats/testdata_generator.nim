@@ -102,6 +102,11 @@ proc handle_null_value(t: var TestData, dd: DatatypeDefinition) =
     if not in_keys: t.e.add_if_unique("")
     if not in_values: t.d.add_if_unique(%*"")
 
+proc handle_as_string(t: var TestData, dd: DatatypeDefinition) =
+  if dd.as_string:
+    for k, val in t.v:
+      t.v[k] = %*k
+
 proc generate_testdata*(t: var TestData, dd: DatatypeDefinition) =
   case dd.kind:
   of ddkRef:          t.generate_testdata(dd.target)
@@ -123,6 +128,7 @@ proc generate_testdata*(t: var TestData, dd: DatatypeDefinition) =
   of ddkTags:         t.tags_generate_testdata(dd)
   of ddkUnion:        t.union_generate_testdata(dd)
   t.handle_null_value(dd)
+  t.handle_as_string(dd)
 
 proc to_testdata*(dd: DatatypeDefinition, name: string): TestData =
   result = new_testdata(name)

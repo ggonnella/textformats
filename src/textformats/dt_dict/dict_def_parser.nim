@@ -2,7 +2,8 @@ import strformat, sequtils, yaml, tables
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../support/yaml_support
 import ../shared / [formatting_def_parser, implicit_def_parser,
-                    null_value_def_parser, nameddef_def_parser]
+                    null_value_def_parser, nameddef_def_parser,
+                    as_string_def_parser]
 
 proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition
@@ -43,6 +44,7 @@ const
   - {NullValueKey}: {NullValueHelp}
   - {ImplicitKey}: {ImplicitHelp}
   - {SingleKey}: {SingleHelp}
+  - {AsStringKey}: {AsStringHelp}
   """
 
 proc parse_dict_members(n: YamlNode, name: string):
@@ -96,7 +98,8 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
   try:
     let defnodes = collect_defnodes(defroot,
                      [DefKey, SepKey, DictInternalSepKey, NullValueKey,
-                     PfxKey, SfxKey, ImplicitKey, DictRequiredKey, SingleKey],
+                     PfxKey, SfxKey, ImplicitKey, DictRequiredKey, SingleKey,
+                     AsStringKey],
                      3)
     result = DatatypeDefinition(kind: ddkDict, name: name,
       dict_members:           defnodes[0].unsafe_get.parse_dict_members(name),
@@ -105,7 +108,8 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
       null_value:             defnodes[3].parse_null_value,
       pfx:                    defnodes[4].parse_pfx,
       sfx:                    defnodes[5].parse_sfx,
-      implicit:               defnodes[6].parse_implicit)
+      implicit:               defnodes[6].parse_implicit,
+      as_string:              defnodes[9].parse_as_string)
     result.required_keys =
       defnodes[7].parse_keys_list(DictRequiredKey, result.dict_members)
     result.single_keys =

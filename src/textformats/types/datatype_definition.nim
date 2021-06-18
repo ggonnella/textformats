@@ -104,6 +104,10 @@ type
                                     ## constant additional values to add to
                                     ## table-like decoded values
                                     ## (ddkStruct, ddkDict, ddkTags)
+    as_string*: bool ## the definition is only used for validation
+                     ## but no decoding or encoding is done, i.e. the
+                     ## encoded string is returned as decoded data;
+                     ## ignored for datatypes whose decoded value are strings
 
     # Kind-specific information
 
@@ -280,7 +284,8 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
     result &= &"{pfx}- choices:\n"
     for i, c in d.choices:
       result &= &"{pfx}  - <{i}>:\n" & c.tabular_desc(indent+4)
-  of ddkAnyInteger, ddkAnyUInteger, ddkAnyFloat, ddkAnyString, ddkJson: discard
+  of ddkAnyInteger, ddkAnyUInteger, ddkAnyFloat, ddkAnyString, ddkJson:
+    discard
   if d.kind == ddkStruct or d.kind == ddkDict or d.kind == ddkTags:
     result &= &"{pfx}- implicit:"
     if len(d.implicit) > 0:
@@ -289,3 +294,6 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
         result &= &"{pfx}  - {k}:{v}\n"
     else:
       result &= " []\n"
+  if d.kind != ddkRef and d.kind != ddkAnyString and
+     d.kind != ddkRegexMatch and d.kind != ddkRegexesMatch:
+    result &= &"{pfx}- as_string: {d.as_string}\n"

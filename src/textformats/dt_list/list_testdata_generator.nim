@@ -45,7 +45,6 @@ proc list_generate_testdata*(t: var TestData, dd: DatatypeDefinition) =
           else:
             t.e.add_if_unique(encoded & dd.sfx)
             t.d.add_if_unique(decoded.copy)
-      if n_added > 1:
         if n_added >= dd.lenrange.low:
           t.v[encoded & dd.sfx] = decoded
           return

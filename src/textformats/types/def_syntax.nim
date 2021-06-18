@@ -25,6 +25,7 @@ const
   # common
   NullValueKey* = "empty"
   EncodedKey* = "reverse"
+  AsStringKey* = "as_string"
   # ranges
   MinKey* = "min"
   MaxKey* = "max"

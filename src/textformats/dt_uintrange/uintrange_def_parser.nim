@@ -3,7 +3,8 @@ import strformat
 import yaml/dom
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../support / [yaml_support, error_support, openrange]
-import ../shared / [minmaxexcluded_def_parser, null_value_def_parser]
+import ../shared / [minmaxexcluded_def_parser, null_value_def_parser,
+                    as_string_def_parser]
 
 proc newUintRangeDatatypeDefinition*(defroot: YamlNode, name: string):
                                      DatatypeDefinition
@@ -29,6 +30,7 @@ const
 
   Optional keys:
   - {NullValueKey}: {NullValueHelp}
+  - {AsStringKey}: {AsStringHelp}
 """
 
 proc parse_range_u(min_max_optnodes: tuple[min: Option[YamlNode],
@@ -48,13 +50,14 @@ proc newUintRangeDatatypeDefinition*(defroot: YamlNode, name: string):
                                      DatatypeDefinition {.noinit.} =
   try:
     let
-      defnodes = collect_defnodes(defroot, [DefKey, NullValueKey])
+      defnodes = collect_defnodes(defroot, [DefKey, NullValueKey, AsStringKey])
       subdefnodes = collect_defnodes(defnodes[0].unsafe_get,
                       [MinKey, MaxKey, MinExcludedKey, MaxExcludedKey],
                       n_required = 0)
     result = DatatypeDefinition(kind: ddkUIntRange, name: name,
                range_u: (subdefnodes[0], subdefnodes[1]).parse_range_u,
-               null_value: defnodes[1].parse_null_value)
+               null_value: defnodes[1].parse_null_value,
+               as_string: defnodes[2].parse_as_string)
     validate_requires(MinExcludedKey, subdefnodes[2], MinKey, subdefnodes[0])
     validate_requires(MaxExcludedKey, subdefnodes[3], MaxKey, subdefnodes[1])
     if subdefnodes[2].parse_minexcluded:

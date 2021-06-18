@@ -5,7 +5,8 @@ import regex
 import ../support / [yaml_support, error_support]
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../shared / [formatting_def_parser, implicit_def_parser,
-                    null_value_def_parser, nameddef_def_parser]
+                    null_value_def_parser, nameddef_def_parser,
+                    as_string_def_parser]
 
 proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition
@@ -48,12 +49,13 @@ const
   - {SepKey} and {TagsInternalSepKey} must be different, non-empty strings
     and {TagsInternalSepKey} must not be contain {SepKey}
 
-  optional keys:
+  Optional keys:
   - {PredefinedTagsKey}: {PredefinedTagsHelp}
   - {PfxKey}: {PfxHelp}
   - {SfxKey}: {SfxHelp}
   - {NullValueKey}: {NullValueHelp}
   - {ImplicitKey}: {ImplicitHelp}
+  - {AsStringKey}: {AsStringHelp}
   """
 
 proc parse_tagtypes(n: YamlNode, name: string):
@@ -127,7 +129,7 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot,
                      [DefKey, TagnameKey, SepKey, TagsInternalSepKey,
                      PfxKey, SfxKey, NullValueKey, PredefinedTagsKey,
-                     ImplicitKey], n_required=4)
+                     ImplicitKey, AsStringKey], n_required=4)
     result = DatatypeDefinition(kind: ddkTags, name: name,
       tagtypes:          defnodes[0].unsafe_get.parse_tagtypes(name),
       sep:               defnodes[2].parse_sep,
@@ -137,6 +139,7 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
       null_value:        defnodes[6].parse_null_value,
       predefined_tags:   defnodes[7].parse_predefined_tags,
       implicit:          defnodes[8].parse_implicit,
+      as_string:         defnodes[9].parse_as_string,
       type_key:          TagTypeDictKey,
       value_key:         TagValueDictKey)
     result.validate_predefined_tags

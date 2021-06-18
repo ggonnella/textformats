@@ -3,7 +3,7 @@ import strformat
 import yaml/dom
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../support / [yaml_support, error_support]
-import ../shared/null_value_def_parser
+import ../shared / [null_value_def_parser, as_string_def_parser]
 
 proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
                                  DatatypeDefinition
@@ -25,6 +25,7 @@ const
 
   Optional keys:
   - {NullValueKey}: {NullValueHelp}
+  - {AsStringKey}: {AsStringHelp}
   """
 
 proc parse_choices(defnode: YamlNode, name: string): seq[DatatypeDefinition] =
@@ -44,9 +45,11 @@ proc parse_choices(defnode: YamlNode, name: string): seq[DatatypeDefinition] =
 proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
                                  DatatypeDefinition {.noinit.} =
   try:
-    var defnodes = collect_defnodes(defroot, [DefKey, NullValueKey])
+    var defnodes = collect_defnodes(defroot, [DefKey,
+                      NullValueKey, AsStringKey])
     result = DatatypeDefinition(kind: ddkUnion, name: name,
         choices:    defnodes[0].unsafe_get.parse_choices(name),
-        null_value: defnodes[1].parse_null_value)
+        null_value: defnodes[1].parse_null_value,
+        as_string:  defnodes[2].parse_as_string)
   except YamlSupportError, DefSyntaxError:
     reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)

@@ -4,7 +4,8 @@ import ../support/yaml_support
 import ../types / [datatype_definition, match_element, def_syntax,
                    textformats_error]
 import ../shared / [scalar_def_parser, matchelement_def_parser,
-                    null_value_def_parser, encoded_def_parser]
+                    null_value_def_parser, encoded_def_parser,
+                    as_string_def_parser]
 
 proc newEnumDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition
@@ -36,6 +37,7 @@ const
 
   Optional keys:
   - {NullValueKey}: {NullValueHelp}
+  - {AsStringKey}: {AsStringHelp}
 """
   InvalidElemMsg = &"Invalid element in YAML sequence in '{DefKey}' node\n"
 
@@ -73,11 +75,13 @@ proc newEnumDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
   try:
     let defnodes = collect_defnodes(defroot,
-                                    @[DefKey, NullValueKey, EncodedKey])
+                                    @[DefKey, NullValueKey, EncodedKey,
+                                      AsStringKey])
     result = DatatypeDefinition(kind: ddkEnum, name: name,
         elements:   defnodes[0].unsafe_get.parse_elements,
         decoded:    defnodes[0].unsafe_get.parse_decoded,
-        null_value: defnodes[1].parse_null_value)
+        null_value: defnodes[1].parse_null_value,
+        as_string:  defnodes[2].parse_as_string)
     let
       info = compute_encoded_map_validation_info(result.elements,
                                                  result.decoded)

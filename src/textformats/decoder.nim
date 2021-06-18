@@ -51,71 +51,75 @@ template raise_decoding_error(input: string, msg: string,
                      "Encoded string: '" & $input & "'\n" &
                      smsg.indent(2))
 
-proc prematched_decode(input: string, slice: Slice[int],
+proc prematched_decode*(input: string, slice: Slice[int],
                  dd: DatatypeDefinition, m: RegexMatch, childnum: int,
                  groupspfx: string): JsonNode =
+  let sliced = if input.len > 0 and slice.b >= 0: input[slice] else: input
   if dd.kind == ddkRef:
-    return input.prematched_decode(slice, dd.target, m, childnum, groupspfx)
+    result = input.prematched_decode(slice, dd.target, m, childnum, groupspfx)
   else:
-    let sliced = if input.len > 0 and slice.b >= 0: input[slice] else: input
     if sliced.len == 0 and dd.null_value.is_some:
-      return dd.null_value.unsafe_get
-    if not dd.regex.ensures_valid:
-      return sliced.decode(dd)
-    # the following should never raise exceptions, since the input is
-    # already validated by the regular expression
-    case dd.kind:
-    of ddkAnyInteger:   return sliced.decode_anyint(dd)
-    of ddkAnyUInteger:  return sliced.decode_anyuint(dd)
-    of ddkIntRange:     return sliced.decode_intrange(dd)
-    of ddkUIntRange:    return sliced.decode_uintrange(dd)
-    of ddkAnyFloat:     return sliced.decode_anyfloat(dd)
-    of ddkAnyString:    return sliced.decode_anystring(dd)
-    of ddkRegexMatch:   return input.prematched_decode_regexmatch(
-                                 slice, dd, m, childnum, groupspfx)
-    of ddkRegexesMatch: return input.prematched_decode_regexesmatch(
-                                 slice, dd, m, childnum, groupspfx)
-    of ddkConst:        return input.prematched_decode_const(
-                                 slice, dd, m, childnum, groupspfx)
-    of ddkEnum:         return input.prematched_decode_enum(
-                                 slice, dd, m, childnum, groupspfx)
-    of ddkList:         return input.prematched_decode_list(
-                                 slice, dd, m, childnum, groupspfx)
-    of ddkStruct:       return input.prematched_decode_struct(
-                                 slice, dd, m, childnum, groupspfx)
-    of ddkUnion:        return input.prematched_decode_union(
-                                 slice, dd, m, childnum, groupspfx)
-    else: assert(false)
+      result = dd.null_value.unsafe_get
+    elif not dd.regex.ensures_valid:
+      result = sliced.decode(dd)
+    else:
+      # the following should never raise exceptions, since the input is
+      # already validated by the regular expression
+      case dd.kind:
+      of ddkAnyInteger:   result = sliced.decode_anyint(dd)
+      of ddkAnyUInteger:  result = sliced.decode_anyuint(dd)
+      of ddkIntRange:     result = sliced.decode_intrange(dd)
+      of ddkUIntRange:    result = sliced.decode_uintrange(dd)
+      of ddkAnyFloat:     result = sliced.decode_anyfloat(dd)
+      of ddkAnyString:    result = sliced.decode_anystring(dd)
+      of ddkRegexMatch:   result = input.prematched_decode_regexmatch(
+                                   slice, dd, m, childnum, groupspfx)
+      of ddkRegexesMatch: result = input.prematched_decode_regexesmatch(
+                                   slice, dd, m, childnum, groupspfx)
+      of ddkConst:        result = input.prematched_decode_const(
+                                   slice, dd, m, childnum, groupspfx)
+      of ddkEnum:         result = input.prematched_decode_enum(
+                                   slice, dd, m, childnum, groupspfx)
+      of ddkList:         result = input.prematched_decode_list(
+                                   slice, dd, m, childnum, groupspfx)
+      of ddkStruct:       result = input.prematched_decode_struct(
+                                   slice, dd, m, childnum, groupspfx)
+      of ddkUnion:        result = input.prematched_decode_union(
+                                   slice, dd, m, childnum, groupspfx)
+      else: assert(false)
+  return if dd.as_string: %sliced else: result
 
 proc decode*(input: string, dd: DatatypeDefinition): JsonNode =
   if input.len == 0 and dd.null_value.is_some:
     assert dd.kind != ddkRef
-    return dd.null_value.unsafe_get
-  try:
-    case dd.kind:
-    of ddkRef:
-      assert(not dd.target.is_nil)
-      return input.decode(dd.target)
-    of ddkAnyInteger:    return input.decode_anyint(dd)
-    of ddkAnyUInteger:   return input.decode_anyuint(dd)
-    of ddkIntRange:      return input.decode_intrange(dd)
-    of ddkUIntRange:     return input.decode_uintrange(dd)
-    of ddkAnyFloat:      return input.decode_anyfloat(dd)
-    of ddkFloatRange:    return input.decode_floatrange(dd)
-    of ddkAnyString:     return input.decode_anystring(dd)
-    of ddkRegexesMatch:  return input.decode_regexesmatch(dd)
-    of ddkRegexMatch:    return input.decode_regexmatch(dd)
-    of ddkConst:         return input.decode_const(dd)
-    of ddkEnum:          return input.decode_enum(dd)
-    of ddkJson:          return input.decode_json(dd)
-    of ddkList:          return input.decode_list(dd)
-    of ddkStruct:        return input.decode_struct(dd)
-    of ddkDict:          return input.decode_dict(dd)
-    of ddkTags:          return input.decode_tags(dd)
-    of ddkUnion:         return input.decode_union(dd)
-  except DecodingError:
-    let e = get_current_exception()
-    raise_decoding_error(input, e.msg, dd)
+    result = dd.null_value.unsafe_get
+  else:
+    try:
+      case dd.kind:
+      of ddkRef:
+        assert(not dd.target.is_nil)
+        result = input.decode(dd.target)
+      of ddkAnyInteger:    result = input.decode_anyint(dd)
+      of ddkAnyUInteger:   result = input.decode_anyuint(dd)
+      of ddkIntRange:      result = input.decode_intrange(dd)
+      of ddkUIntRange:     result = input.decode_uintrange(dd)
+      of ddkAnyFloat:      result = input.decode_anyfloat(dd)
+      of ddkFloatRange:    result = input.decode_floatrange(dd)
+      of ddkAnyString:     result = input.decode_anystring(dd)
+      of ddkRegexesMatch:  result = input.decode_regexesmatch(dd)
+      of ddkRegexMatch:    result = input.decode_regexmatch(dd)
+      of ddkConst:         result = input.decode_const(dd)
+      of ddkEnum:          result = input.decode_enum(dd)
+      of ddkJson:          result = input.decode_json(dd)
+      of ddkList:          result = input.decode_list(dd)
+      of ddkStruct:        result = input.decode_struct(dd)
+      of ddkDict:          result = input.decode_dict(dd)
+      of ddkTags:          result = input.decode_tags(dd)
+      of ddkUnion:         result = input.decode_union(dd)
+    except DecodingError:
+      let e = get_current_exception()
+      raise_decoding_error(input, e.msg, dd)
+  return if dd.as_string: %input else: result
 
 proc recognize_and_decode*(input: string, dd: DatatypeDefinition):
                           tuple[name: string, decoded: JsonNode] =

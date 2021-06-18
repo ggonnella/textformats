@@ -9,6 +9,9 @@ import tables
 import sequtils
 import support/openrange
 
+# for the as_string option
+import encoded_validator
+
 # forward declaration for submodules procs:
 proc is_valid*(item: JsonNode, dd: DatatypeDefinition): bool
 
@@ -33,6 +36,11 @@ import dt_tags/tags_decoded_validator
 import dt_union/union_decoded_validator
 
 proc is_valid*(item: JsonNode, dd: DatatypeDefinition): bool =
+  if dd.as_string:
+    if not item.is_string:
+      return false
+    else:
+      return item.get_str.is_valid(dd)
   if dd.null_value.is_some and item == dd.null_value.unsafe_get:
     return true
   case dd.kind:
