@@ -100,6 +100,8 @@ datatypes:
   gff3_column_attributes:
     list_of:
       one_of:
+      - gff3_single_id_attribute
+      - gff3_id_list_attribute
       - gff3_target_attribute
       - gff3_gap_attribute
       - gff3_ontology_term_attribute
@@ -109,6 +111,18 @@ datatypes:
 
   #
   # (4) Attributes (column 9 of annotation lines)
+  #
+  gff3_single_id_attribute:
+    composed_of:
+    - tag: {accepted_values: ["ID", "Name"]}
+    - value: gff3_id
+    sep: "="
+  #
+  gff3_id_list_attribute:
+    composed_of:
+    - tag: {accepted_values: ["Parent", "Alias"]}
+    - value: {list_of: gff3_id, sep: ","}
+    sep: "="
   #
   # "The format of the value is "target_id start end [strand]",
   # where strand is optional and may be "+" or "-". If the target_id
@@ -151,21 +165,26 @@ datatypes:
   gff3_ontology_term_attribute:
     composed_of:
     - tag: {constant: "Ontology_term"}
-    - value: gff3_xref
+    - value: {list_of: gff3_xref, sep: ","}
     sep: "="
   gff3_dbxref_attribute:
     composed_of:
     - tag: {constant: "Dbxref"}
-    - value: gff3_xref
+    - value: {list_of: gff3_xref, sep: ","}
     sep: "="
   #
   # note: the following also matches all previous attributes,
   # but it works if used after them in one_of, since the first
   # matching choice is always selected
   #
-  gff3_generic_attribute: {composed_of: [tag: gff3_attr_string,
-                           value: gff3_attr_string], sep: "="}
-
+  gff3_generic_attribute:
+    composed_of:
+    - tag: gff3_attr_string
+    - value:
+        one_of:
+        - gff3_attr_string
+        - {list_of: gff3_attr_string, sep: ","}
+    sep: "="
   #
   # (4) Strings and special values
   #
@@ -217,7 +236,7 @@ testdata:
             value: bla11
           - tag: Ontology_term
             value:
-              dbtag: ABC
+            - dbtag: ABC
               id: "7252625"
   gff3_column_seqid:
     valid: ["U", ".G", "%E5", "@%1a", "O8", "%59F%b6%9C", "JEL%bc",
@@ -285,11 +304,11 @@ testdata:
       "Gap=R1 M10;Ontology_term=XA2:V;SM=%7F;Target=C 1 1 -;Dbxref=j:7Fn:1":
         [{"tag":"Gap","value":[{"operation":"R","length":1},
                                {"operation":"M","length":10}]},
-         {"tag":"Ontology_term","value":{"dbtag":"XA2","id":"V"}},
+         {"tag":"Ontology_term","value":[{"dbtag":"XA2","id":"V"}]},
          {"tag":"SM","value":"%7F"},
          {"tag":"Target",
            "value":{"target_id":"C","start":1,"end":1,"strand":"-"}},
-         {"tag":"Dbxref","value":{"dbtag":"j","id":"7Fn:1"}}]
+         {"tag":"Dbxref","value":[{"dbtag":"j","id":"7Fn:1"}]}]
     invalid:
       encoded: [""]
       decoded: [[], ""]
@@ -307,11 +326,11 @@ testdata:
   gff3_dbxref_attribute:
     valid:
       "Dbxref=BLA:1Et7F0d1E":
-          {"tag":"Dbxref","value":{"dbtag":"BLA","id":"1Et7F0d1E"}}
+          {"tag":"Dbxref","value":[{"dbtag":"BLA","id":"1Et7F0d1E"}]}
   gff3_ontology_term_attribute:
     valid:
       "Ontology_term=ONTO:000001": {"tag":"Ontology_term",
-                                     "value":{"dbtag":"ONTO","id":"000001"}}
+                                     "value":[{"dbtag":"ONTO","id":"000001"}]}
   gff3_generic_attribute:
     valid: {"pt=X21%3b0":{"tag":"pt","value":"X21%3b0"}}
   gff3_string:
