@@ -39,6 +39,7 @@ const
   # list
   LenrangeMinKey*  = "minlength"
   LenrangeMaxKey*  = "maxlength"
+  LenKey* = "length"
   # dict/struct/tags
   ImplicitKey* = "implicit"
   # dict

@@ -15,6 +15,8 @@ const
   ListItemDefNameSfx = ".item"
   LenrangeMinHelp = "minimum number of elements in list (default: 1)"
   LenrangeMaxHelp = "maximum number of elements in list (default: unlimited)"
+  LenHelp = "fixed number of elements in list " &
+            &"(not compatible with {LenrangeMinKey} and {LenrangeMaxKey})"
   SyntaxHelp = &"""
   <datatype_name>:
     {DefKey}: <ref_or_def>
@@ -27,6 +29,7 @@ const
   Optional keys:
   - {LenrangeMinKey}: {LenrangeMinHelp}
   - {LenrangeMaxKey}: {LenrangeMaxHelp}
+  - {LenKey}: {LenHelp}
   - {NullValueKey}: {NullValueHelp}
   - {SepKey}: {SepHelp}
   - {SepExclKey}: {SepExclHelp}
@@ -65,18 +68,28 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot, [DefKey, NullValueKey,
                                               LenrangeMinKey, LenrangeMaxKey,
                                               SepKey, PfxKey, SfxKey,
-                                              SepExclKey, AsStringKey])
+                                              SepExclKey, AsStringKey, LenKey])
     result = DatatypeDefinition(kind: ddkList, name: name,
         members_def: defnodes[0].unsafe_get.parse_members_def(
                        name & ListItemDefNameSfx),
         null_value:  defnodes[1].parse_null_value,
-        lenrange:   (defnodes[2].parse_lenrange_min,
-                     defnodes[3].parse_lenrange_max),
         sep:         defnodes[4].parse_sep,
         pfx:         defnodes[5].parse_pfx,
         sfx:         defnodes[6].parse_sfx,
         sep_excl:    defnodes[7].parse_sep_excl,
         as_string:   defnodes[8].parse_as_string)
+    if defnodes[9].is_some:
+      if defnodes[2].is_some:
+        raise newException(DefSyntaxError,
+                &"Key '{LenKey}' is incompatible with '{LenrangeMinKey}'\n")
+      if defnodes[3].is_some:
+        raise newException(DefSyntaxError,
+                &"Key '{LenKey}' is incompatible with '{LenrangeMaxKey}'\n")
+      result.lenrange = (defnodes[9].parse_lenrange_min,
+                         defnodes[9].parse_lenrange_max)
+    else:
+      result.lenrange = (defnodes[2].parse_lenrange_min,
+                         defnodes[3].parse_lenrange_max)
     validate_sep_if_sepexcl(defnodes[7], defnodes[4])
     result.lenrange.validate
   except YamlSupportError, DefSyntaxError, ValueError:
