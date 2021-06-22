@@ -1,0 +1,18 @@
+include: [to_be_included_namespace.yaml,
+          to_be_included_incomplete_namespace.yaml]
+namespace: middle
+datatypes:
+  a: low::a
+  low::b: {constant: "b"} # redefined
+  incomplete::y: {constant: "y"}
+  ab:
+    composed_of:
+      - first: low::a
+      - second: a
+      - third: low::b
+  aaa:
+    list_of: low::a
+  u:
+    one_of:
+      - aaa
+      - low::a

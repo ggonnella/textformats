@@ -1,0 +1,23 @@
+include: include_namespace.yaml
+datatypes:
+  a1: middle::low::a
+  a2: middle::a
+  b:
+    composed_of:
+      - first: middle::low::a
+      - second: middle::a
+      - third: a1
+      - fourth: a2
+  c:
+    list_of: middle::low::a
+  d:
+    one_of:
+      - middle::low::a
+      - middle::a
+      - a1
+      - a2
+      - b
+      - c
+      - middle::incomplete::y
+  middle::a:
+    constant: "redefined"

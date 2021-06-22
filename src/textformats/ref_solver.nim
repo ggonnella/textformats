@@ -16,17 +16,18 @@ template raise_brokenref(name, tname: untyped) =
           "refers to a datatype named '" & tname & "'.\n" &
           "However, no definition of '"  & tname & "' was found.")
 
-proc get_namespace(name: string): string =
-  let name_parts = name.split(NamespaceSeparator, 1)
-  if len(name_parts) == 1: ""
-  else: name_parts[0] & NamespaceSeparator
+proc qualified_target_name(dd: DatatypeDefinition, name: string): string =
+  let name_parts = name.rsplit(NamespaceSeparator, 1)
+  if len(name_parts) == 1:
+    dd.target_name
+  else:
+    name_parts[0] & NamespaceSeparator & dd.target_name
 
 proc resolve_references(dd: DatatypeDefinition, name: string,
                         spec: Specification) =
-  let namespace = name.get_namespace
   if dd.has_unresolved_ref:
     if dd.kind == ddkRef:
-      let tname = namespace & dd.target_name
+      let tname = dd.qualified_target_name(name)
       if tname notin spec:
         raise_brokenref(name, tname)
       let target = spec[tname]
@@ -44,9 +45,8 @@ proc resolve_references*(spec: Specification) =
 
 proc construct_dependency_subgraph(dd: DatatypeDefinition, name: string,
                                    dependencies: Graph) =
-  let namespace = name.get_namespace
   if dd.kind == ddkRef:
-    let tname = namespace & dd.target_name
+    let tname = dd.qualified_target_name(name)
     try:
       dependencies.add_edge(name, tname, true)
     except NodeNotFoundError:

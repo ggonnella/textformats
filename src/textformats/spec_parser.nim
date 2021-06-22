@@ -16,6 +16,12 @@ const
                    "be non empty strings,\nstarting with a letter and " &
                    "consisting of only letters, digits and underscores.\n" &
                    "The identifiers are case sensitive."
+  NamespacedHelp = "For special purposes (redefinition of a datatype in " &
+                   "included file; definition of a missing datatype in an " &
+                   "incompleted included file), datatype names can be " &
+                   "identifiers prefixed by one or multiple namespace names " &
+                   "concatenated to each other, and to the datatype " &
+                   "identifier by {NamespaceSeparator} (e.g. a::b::c)."
 
 proc parse_datatype_name(datatype_name_node: YamlNode): string =
   try:
@@ -29,8 +35,9 @@ proc parse_datatype_name(datatype_name_node: YamlNode): string =
 
 proc include_yaml(spec: Specification, filename: string,
                   datatypes: Option[HashSet[string]],
+                  prefix: string,
                   disable_including_incomplete_specs = false,
-                  prefix_by_namespace = true)
+                  use_namespace = true)
 
 proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
   # ignore ProveInit warning thrown by options library
@@ -60,9 +67,9 @@ proc get_datatypes_node(root: YamlNode): Option[YamlNode] =
     raise newException(InvalidSpecError, get_current_exception_msg())
 
 proc do_include(spec: Specification, path: string, filename: string,
-                datatypes: Option[HashSet[string]]) =
+                prefix: string, datatypes: Option[HashSet[string]]) =
   try:
-    spec.include_yaml(path / filename, datatypes)
+    spec.include_yaml(path / filename, datatypes, prefix)
   except YamlParserError:
     raise newException(YamlParserError,
             "Error while parsing included " &
@@ -71,7 +78,8 @@ proc do_include(spec: Specification, path: string, filename: string,
             get_current_exception_msg().indent(2))
 
 proc include_subspec_selection(spec: Specification, filename_map: YamlNode,
-                          path: string, datatypes: Option[HashSet[string]]) =
+                          path: string, prefix: string,
+                          datatypes: Option[HashSet[string]]) =
   let errmsg = &"Invalid syntax of '{IncludeKey}' key\n" &
      "Mappings must contain a single key (filename) mapped to a " &
      "list of strings (datatype names)"
@@ -90,10 +98,10 @@ proc include_subspec_selection(spec: Specification, filename_map: YamlNode,
       for dtname_node in dt_seq_node:
         dtname_node.validate_is_string(errmsg)
         include_datatypes.incl(dtname_node.to_string)
-  spec.do_include(path, filename, include_datatypes.some)
+  spec.do_include(path, filename, prefix, include_datatypes.some)
 
 proc include_subspec(spec: Specification, root: YamlNode, path: string,
-                     datatypes: Option[HashSet[string]]) =
+                     prefix: string, datatypes: Option[HashSet[string]]) =
   let include_optnode = get_map_node(root, IncludeKey)
   if include_optnode.is_some:
     let include_node = include_optnode.unsafe_get
@@ -102,16 +110,17 @@ proc include_subspec(spec: Specification, root: YamlNode, path: string,
       of yScalar:
         include_node.validate_is_string(
               &"Invalid content of '{IncludeKey}' key\n")
-        spec.do_include(path, include_node.to_string, datatypes)
+        spec.do_include(path, include_node.to_string, prefix, datatypes)
       of ySequence:
         for filename_node in include_node:
           case filename_node.kind:
           of yScalar:
             filename_node.validate_is_string(
               &"Invalid content of '{IncludeKey}' key\n")
-            spec.do_include(path, filename_node.to_string, datatypes)
+            spec.do_include(path, filename_node.to_string, prefix, datatypes)
           of yMapping:
-            spec.include_subspec_selection(filename_node, path, datatypes)
+            spec.include_subspec_selection(filename_node, path,
+                                           prefix, datatypes)
           of ySequence:
             raise newException(SpecIncludeError,
                     &"Invalid value in '{IncludeKey}' key YAML sequence\n" &
@@ -121,7 +130,7 @@ proc include_subspec(spec: Specification, root: YamlNode, path: string,
                            &"Invalid value in '{IncludeKey}' key YAML sequence\n",
                             "Sequence values must be strings (filenames)")
       of yMapping:
-        spec.include_subspec_selection(include_node, path, datatypes)
+        spec.include_subspec_selection(include_node, path, prefix, datatypes)
     except NodeValueError:
       raise newException(SpecIncludeError, get_current_exception_msg())
 
@@ -135,19 +144,21 @@ proc finalize_definitions(spec: Specification) {.inline.} =
   spec.resolve_references
   spec.compute_regexes
 
-proc validate_name(name: string, spec: Specification,
-                   forbid_overriding_definitions = false) {.inline.} =
-  if not name.match(IdentifierRE):
-    raise newException(IdentifierError,
-            "Datatype name invalid\n" &
-            "Datatype names" & IdentifierHelp & "\n")
+proc validate_datatype_name(name: string, spec: Specification,
+                            forbid_overriding_definitions = false) {.inline.} =
+  for part in name.split(NamespaceSeparator):
+    if not part.match(IdentifierRE):
+      raise newException(IdentifierError,
+              &"Datatype name invalid: {name}\n" &
+              "Datatype names" & IdentifierHelp & "\n\n" &
+              NamespacedHelp & "\n")
   if forbid_overriding_definitions:
     if name in spec:
       raise newException(IdentifierError,
-              "Datatype definition overriding disabled\n" &
-              &"Datatype name: {name}\n" &
-              "The datatype name was defined in an included specification\n" &
-              "(directly or in a specification included in them)\n")
+                "Datatype definition overriding disabled\n" &
+                &"Datatype name: {name}\n" &
+                "The datatype name was defined in an included specification\n" &
+                "(directly or in a specification included in them)\n")
 
 proc define_datatypes(spec: Specification, root: YamlNode,
                       selection: Option[HashSet[string]],
@@ -156,11 +167,11 @@ proc define_datatypes(spec: Specification, root: YamlNode,
   if opt_datatypes_node.is_some:
     let datatypes_node = opt_datatypes_node.unsafe_get
     for name_node, defnode in datatypes_node.pairs:
-      let basename = name_node.parse_datatype_name
-      basename.validate_name(spec)
-      if selection.is_none or basename in selection.unsafe_get:
-        let name = prefix & basename
-        spec[name] = newDatatypeDefinition(defnode, name)
+      let name = name_node.parse_datatype_name
+      name.validate_datatype_name(spec)
+      if selection.is_none or name in selection.unsafe_get:
+        let qualified_name = prefix & name
+        spec[qualified_name] = newDatatypeDefinition(defnode, qualified_name)
 
 proc compute_datatypes_prefix(root: YamlNode): string =
   let namespace_optnode = get_map_node(root, NamespaceKey)
@@ -177,14 +188,16 @@ proc compute_datatypes_prefix(root: YamlNode): string =
 
 proc include_yaml(spec: Specification, filename: string,
                   datatypes: Option[HashSet[string]],
+                  prefix: string,
                   disable_including_incomplete_specs = false,
-                  prefix_by_namespace = true) =
+                  use_namespace = true) =
   let root = filename.get_yaml_root
   try:
-    spec.include_subspec(root, split_path(filename).head, datatypes)
-    let prefix = block:
-      if prefix_by_namespace: compute_datatypes_prefix(root) else: ""
-    spec.define_datatypes(root, datatypes, prefix)
+    let fullprefix = block:
+      if use_namespace: prefix & compute_datatypes_prefix(root)
+      else: prefix
+    spec.include_subspec(root, split_path(filename).head, fullprefix, datatypes)
+    spec.define_datatypes(root, datatypes, fullprefix)
     if disable_including_incomplete_specs:
       spec.finalize_definitions
   except:
@@ -203,8 +216,8 @@ proc try_finalizing_definitions(spec: Specification, filename: string)
 
 proc parse_specification*(filename: string): Specification =
   result = newSpecification()
-  result.include_yaml(filename, HashSet[string].none,
-                      prefix_by_namespace = false)
+  result.include_yaml(filename, HashSet[string].none, "",
+                      use_namespace = false)
   result.try_finalizing_definitions(filename)
 
 proc list_specification_datatypes*(filename: string): seq[string] =

@@ -11,7 +11,9 @@ suite "test_spec_parser":
       "include_select_included.yaml", "include_select_subincluded.yaml",
       "include_select_unknown.yaml", "redefine_included.yaml",
       "redefine_subincluded.yaml", "to_be_included1.yaml",
-      "to_be_included2.yaml", "unknown_keys_ignored.yaml"]:
+      "to_be_included2.yaml", "unknown_keys_ignored.yaml",
+      "to_be_included_namespace.yaml", "include_namespace.yaml",
+      "include_include_namespace.yaml"]:
     test "valid_" & filename:
       check len(parse_specification(goodspecdir & filename)) > 0
   for filename in @["broken_ref.yaml", "circular_aba.yaml",
@@ -21,7 +23,7 @@ suite "test_spec_parser":
       "datatype_name_empty.yaml", "datatype_name_invchar.yaml",
       "datatype_name_num.yaml", "datatype_name_startnum.yaml",
       "datatypes_scalar.yaml", "datatypes_seq.yaml", "included_map.yaml",
-      "wrong_yaml_syntax.yaml"]:
+      "wrong_yaml_syntax.yaml", "ref_included_wo_namespace.yaml"]:
     test "invalid_" & filename:
       expect(InvalidSpecError):
         discard parse_specification(badspecdir & filename)

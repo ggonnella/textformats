@@ -1,0 +1,4 @@
+include: included_namespace.yaml
+datatypes:
+  wrong_ref_a: a
+  correct_ref_a: low::a

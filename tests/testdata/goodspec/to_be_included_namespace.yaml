@@ -1,0 +1,4 @@
+namespace: low
+datatypes:
+  a: {constant: "A"}
+  b: {constant: "B"}
