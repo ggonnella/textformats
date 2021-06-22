@@ -4,8 +4,10 @@
 
 const
   # section keys
-  IncludeKey* = "include"
   DatatypesKey* = "datatypes"
+  IncludeKey* = "include"
+  NamespaceKey* = "namespace"
+  NamespaceSeparator* = "::"
 
   # def keys, one and only one must be present
   ConstDefKey* = "constant"

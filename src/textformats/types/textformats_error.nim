@@ -13,8 +13,8 @@ type
     ## Error while parsing the specification
   SpecIncludeError*   = object of InvalidSpecError ##\
     ## Error regarding the content of the specification 'include' key
-  DatatypeNameError*  = object of InvalidSpecError ##\
-    ## Error regarding a datatype name in the specification
+  IdentifierError*  = object of InvalidSpecError ##\
+    ## Invalid datatype name or namespace prefix
   DefSyntaxError*     = object of InvalidSpecError ##\
     ## Raised by syntax errors in a datatype definition
   CircularDefError*   = object of InvalidSpecError ##\

@@ -11,25 +11,26 @@ import support / [yaml_support, error_support]
 import regex_generator, ref_solver, def_parser
 
 const
-  DatatypeNameRE = "[A-Za-z_][A-Za-z_0-9]*".re
-  DatatypeNameHelp = "Datatype names must be valid C identifiers, i.e. " &
-                     "be non empty strings,\nstarting with a letter and " &
-                     "consisting of only letters, digits and underscores.\n" &
-                     "The identifiers are case sensitive."
+  IdentifierRE = "[A-Za-z_][A-Za-z_0-9]*".re
+  IdentifierHelp = " must be valid C identifiers, i.e. " &
+                   "be non empty strings,\nstarting with a letter and " &
+                   "consisting of only letters, digits and underscores.\n" &
+                   "The identifiers are case sensitive."
 
 proc parse_datatype_name(datatype_name_node: YamlNode): string =
   try:
     datatype_name_node.validate_is_string("Invalid datatype name.\n")
   except NodeValueError:
-    raise newException(DatatypeNameError, get_current_exception_msg())
+    raise newException(IdentifierError, get_current_exception_msg())
   result = datatype_name_node.to_string
   if result in BaseDatatypes:
-    raise newException(DatatypeNameError,
+    raise newException(IdentifierError,
              &"The datatype name '{result}' is reserved.\n")
 
 proc include_yaml(spec: Specification, filename: string,
                   datatypes: Option[HashSet[string]],
-                  disable_including_incomplete_specs = false)
+                  disable_including_incomplete_specs = false,
+                  prefix_by_namespace = true)
 
 proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
   # ignore ProveInit warning thrown by options library
@@ -43,8 +44,8 @@ proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
 proc get_datatypes_node(root: YamlNode): Option[YamlNode] =
   result = YamlNode.none
   try:
-    let whole_errmsg = "Expected: mapping with keys " &
-                       &"'{DatatypesKey}' and/or '{IncludeKey}'"
+    let whole_errmsg = "Expected: mapping; allowed keys: " &
+                       &"'{DatatypesKey}', '{IncludeKey}', '{NamespaceKey}'"
     root.validate_is_mapping("Invalid content of YAML\n", "\n" & whole_errmsg)
     result = root.get_map_node(DatatypesKey)
     if result.is_some:
@@ -134,37 +135,56 @@ proc finalize_definitions(spec: Specification) {.inline.} =
   spec.resolve_references
   spec.compute_regexes
 
-proc validate_name(name: string, spec: Specification) {.inline.} =
-  if not name.match(DatatypeNameRE):
-    raise newException(DatatypeNameError,
-            "Datatype name invalid\n" & DatatypeNameHelp & "\n")
-  # uncomment to forbid re-definition of datatypes:
-  # if name in spec:
-  #   # this can only happen if multiple specifications are loaded
-  #   raise newException(DatatypeNameError,
-  #           "Datatype name duplicated\n" &
-  #           &"Datatype name: {name}\n" &
-  #           "The datatype name was defined in an included specification\n" &
-  #           "(directly or in a specification included in them)\n")
+proc validate_name(name: string, spec: Specification,
+                   forbid_overriding_definitions = false) {.inline.} =
+  if not name.match(IdentifierRE):
+    raise newException(IdentifierError,
+            "Datatype name invalid\n" &
+            "Datatype names" & IdentifierHelp & "\n")
+  if forbid_overriding_definitions:
+    if name in spec:
+      raise newException(IdentifierError,
+              "Datatype definition overriding disabled\n" &
+              &"Datatype name: {name}\n" &
+              "The datatype name was defined in an included specification\n" &
+              "(directly or in a specification included in them)\n")
 
 proc define_datatypes(spec: Specification, root: YamlNode,
-                      selection: Option[HashSet[string]]) {.inline.} =
+                      selection: Option[HashSet[string]],
+                      prefix: string) {.inline.} =
   let opt_datatypes_node = root.get_datatypes_node
   if opt_datatypes_node.is_some:
     let datatypes_node = opt_datatypes_node.unsafe_get
     for name_node, defnode in datatypes_node.pairs:
-      let name = name_node.parse_datatype_name
-      if selection.is_none or name in selection.unsafe_get:
-        name.validate_name(spec)
+      let basename = name_node.parse_datatype_name
+      basename.validate_name(spec)
+      if selection.is_none or basename in selection.unsafe_get:
+        let name = prefix & basename
         spec[name] = newDatatypeDefinition(defnode, name)
+
+proc compute_datatypes_prefix(root: YamlNode): string =
+  let namespace_optnode = get_map_node(root, NamespaceKey)
+  if namespace_optnode.is_some:
+    let namespace_node = namespace_optnode.unsafe_get
+    namespace_node.validate_is_string(
+              &"Invalid content of '{NamespaceKey}' key\n")
+    let namespace = namespace_node.to_string
+    if not namespace.match(IdentifierRE):
+      raise newException(IdentifierError,
+              "Namespace invalid\n" &
+              "Namespaces " & IdentifierHelp & "\n")
+    return namespace & NamespaceSeparator
 
 proc include_yaml(spec: Specification, filename: string,
                   datatypes: Option[HashSet[string]],
-                  disable_including_incomplete_specs = false) =
+                  disable_including_incomplete_specs = false,
+                  prefix_by_namespace = true) =
   let root = filename.get_yaml_root
   try:
     spec.include_subspec(root, split_path(filename).head, datatypes)
-    spec.define_datatypes(root, datatypes)
+    let prefix = block:
+      if prefix_by_namespace: compute_datatypes_prefix(root) else: ""
+    spec.define_datatypes(root, datatypes, prefix)
     if disable_including_incomplete_specs:
       spec.finalize_definitions
   except:
@@ -183,7 +203,8 @@ proc try_finalizing_definitions(spec: Specification, filename: string)
 
 proc parse_specification*(filename: string): Specification =
   result = newSpecification()
-  result.include_yaml(filename, HashSet[string].none)
+  result.include_yaml(filename, HashSet[string].none,
+                      prefix_by_namespace = false)
   result.try_finalizing_definitions(filename)
 
 proc list_specification_datatypes*(filename: string): seq[string] =

@@ -5,8 +5,9 @@
 # The code in this module does not depend on the specification
 # format/syntax (differently from spec_parser).
 
-import tables, strformat
-import types / [datatype_definition, specification, textformats_error]
+import tables, strformat, strutils
+import types / [datatype_definition, specification, textformats_error,
+                def_syntax]
 import support/directed_graph
 
 template raise_brokenref(name, tname: untyped) =
@@ -15,11 +16,17 @@ template raise_brokenref(name, tname: untyped) =
           "refers to a datatype named '" & tname & "'.\n" &
           "However, no definition of '"  & tname & "' was found.")
 
+proc get_namespace(name: string): string =
+  let name_parts = name.split(NamespaceSeparator, 1)
+  if len(name_parts) == 1: ""
+  else: name_parts[0] & NamespaceSeparator
+
 proc resolve_references(dd: DatatypeDefinition, name: string,
                         spec: Specification) =
+  let namespace = name.get_namespace
   if dd.has_unresolved_ref:
     if dd.kind == ddkRef:
-      let tname = dd.target_name
+      let tname = namespace & dd.target_name
       if tname notin spec:
         raise_brokenref(name, tname)
       let target = spec[tname]
@@ -37,11 +44,13 @@ proc resolve_references*(spec: Specification) =
 
 proc construct_dependency_subgraph(dd: DatatypeDefinition, name: string,
                                    dependencies: Graph) =
+  let namespace = name.get_namespace
   if dd.kind == ddkRef:
+    let tname = namespace & dd.target_name
     try:
-      dependencies.add_edge(name, dd.target_name, true)
+      dependencies.add_edge(name, tname, true)
     except NodeNotFoundError:
-      raise_brokenref(name, dd.target_name)
+      raise_brokenref(name, tname)
   else:
     for sub in dd.children:
       sub.construct_dependency_subgraph(name, dependencies)
