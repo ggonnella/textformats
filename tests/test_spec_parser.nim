@@ -1,4 +1,4 @@
-import os, streams
+import os
 import unittest
 import textformats
 import tables

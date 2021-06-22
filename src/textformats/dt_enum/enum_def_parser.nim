@@ -81,7 +81,7 @@ proc newEnumDatatypeDefinition*(defroot: YamlNode, name: string):
         elements:   defnodes[0].unsafe_get.parse_elements,
         decoded:    defnodes[0].unsafe_get.parse_decoded,
         null_value: defnodes[1].parse_null_value,
-        as_string:  defnodes[2].parse_as_string)
+        as_string:  defnodes[3].parse_as_string)
     let
       info = compute_encoded_map_validation_info(result.elements,
                                                  result.decoded)
