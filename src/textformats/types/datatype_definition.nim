@@ -165,6 +165,8 @@ type
 
     of ddkUnion:
       choices*: seq[DatatypeDefinition]
+      wrapped*: bool
+      type_labels*: seq[string]
 
     # Construction flags
 
@@ -284,6 +286,8 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
     result &= &"{pfx}- choices:\n"
     for i, c in d.choices:
       result &= &"{pfx}  - <{i}>:\n" & c.tabular_desc(indent+4)
+    if d.wrapped:
+      result &= &"{pfx}- wrapped; type labels {d.type_labels}\n"
   of ddkAnyInteger, ddkAnyUInteger, ddkAnyFloat, ddkAnyString, ddkJson:
     discard
   if d.kind == ddkStruct or d.kind == ddkDict or d.kind == ddkTags:

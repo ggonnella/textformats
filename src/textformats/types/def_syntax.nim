@@ -54,6 +54,9 @@ const
   TagnameKey* = "tagname"
   TagsInternalSepKey* = "internal_sep"
   PredefinedTagsKey* = "predefined"
+  # unions
+  WrappedKey* = "wrapped"
+  TypeLabelsKey* = "type_labels"
 
   # testdata syntax
   TestdataRootKey* = "testdata"

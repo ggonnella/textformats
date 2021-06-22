@@ -10,3 +10,23 @@ datatypes:
       - json
       - string
     empty: false
+  u_w:
+    one_of:
+      - {constant: {"a": true}}
+      - json
+      - string
+    wrapped: true
+  u_w_auto:
+    one_of:
+      - {constant: {"a": true}}
+      - json
+      - string
+    wrapped: true
+    type_labels: auto
+  u_w_l:
+    one_of:
+      - {constant: {"a": true}}
+      - json
+      - string
+    wrapped: true
+    type_labels: ["a", "json", "string"]

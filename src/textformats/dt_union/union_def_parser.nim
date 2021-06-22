@@ -1,8 +1,7 @@
-import options
-import strformat
+import options, strformat, sets
 import yaml/dom
 import ../types / [datatype_definition, def_syntax, textformats_error]
-import ../support / [yaml_support, error_support]
+import ../support / [yaml_support, error_support, messages_support]
 import ../shared / [null_value_def_parser, as_string_def_parser]
 
 proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
@@ -11,6 +10,15 @@ import ../def_parser
 
 const
   DefKey = UnionDefKey
+  WrappedHelp = "Boolean; default: false; "&
+                "if true, the decoded value is a " &
+                "a mapping {'type': type label, " &
+                "'value': value decoded according to " &
+                "the given type definition}. "
+  TypeLabelsHelp = "the string 'auto' or a " &
+                &"list of type labels used by the '{WrappedHelp}' option; " &
+                &"strings, one per each of the '{DefKey}' branches; "&
+                "default: 1, 2, 3..."
   SyntaxHelp = &"""
   <datatype_name>:
     {DefKey}:
@@ -24,13 +32,15 @@ const
     - a datatype definition (map)
 
   Optional keys:
+  - {WrappedKey}: {WrappedHelp}
+  - {TypeLabelsKey}: {TypeLabelsHelp}
   - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
   """
 
 proc parse_choices(defnode: YamlNode, name: string): seq[DatatypeDefinition] =
-  defnode.validate_is_sequence(&"Invalid value of '{DefKey}' node.\n")
-  defnode.validate_min_len(2, &"Invalid content of 'DefKey' node.\n")
+  defnode.validate_is_sequence(&"Invalid value of '{DefKey}'.\n")
+  defnode.validate_min_len(2, &"Invalid content of '{DefKey}' list.\n")
   var i = 0
   for node in defnode.elems:
     try:
@@ -42,14 +52,59 @@ proc parse_choices(defnode: YamlNode, name: string): seq[DatatypeDefinition] =
       reraise_prepend(&"Invalid element in '{DefKey}' key.\n")
     i += 1
 
+proc parse_type_labels(optnode: Option[YamlNode], choices_node: YamlNode):
+                       seq[string] =
+  let explen = len(choices_node.elems)
+  if optnode.is_none:
+    for i in 1..explen:
+      result.add($i)
+  else:
+    let node = optnode.unsafe_get
+    if node.is_string:
+      let node_str = node.to_string
+      if node_str == "auto":
+        for i in 0..<explen:
+          let choice_name =
+            if choices_node[i].kind == yScalar:
+              choices_node[i].to_string
+            else: $(i+1)
+          result.add(choice_name)
+      else:
+        raise newException(DefSyntaxError,
+                &"Invalid value of '{TypeLabelsKey}'.\n" &
+                &"Invalid string value: {node_str}\n" &
+                &"Expected: list of strings or 'auto'\n")
+    else:
+      node.validate_is_sequence(&"Invalid value of '{TypeLabelsKey}'.\n")
+      node.validate_len(explen, &"Invalid length of '{TypeLabelsKey}' list.\n")
+      var
+        i = 0
+        previous = initHashSet[string]()
+      for elemnode in node.elems:
+        elemnode.validate_is_string("Invalid value found " &
+                                  &"in '{TypeLabelsKey}' list\n" &
+                                  &"The {nth(i+1)} element is invalid.\n" &
+                                  "All elements should be strings.\n")
+        let elem = elemnode.to_string
+        if elem in previous:
+          raise newException(DefSyntaxError, "Duplicated value found " &
+                                  &"in '{TypeLabelsKey}' list\n" &
+                                  &"Duplicated value: '{elem}'\n" &
+                                  "All elements should be unique.\n")
+        previous.incl(elem)
+        result.add(elem)
+
 proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
                                  DatatypeDefinition {.noinit.} =
   try:
     var defnodes = collect_defnodes(defroot, [DefKey,
-                      NullValueKey, AsStringKey])
+                      NullValueKey, AsStringKey, WrappedKey,
+                      TypeLabelsKey])
     result = DatatypeDefinition(kind: ddkUnion, name: name,
         choices:    defnodes[0].unsafe_get.parse_choices(name),
         null_value: defnodes[1].parse_null_value,
-        as_string:  defnodes[2].parse_as_string)
+        as_string:  defnodes[2].parse_as_string,
+        wrapped:    defnodes[3].to_bool(default=false, WrappedKey))
+    result.type_labels = defnodes[4].parse_type_labels(defnodes[0].unsafe_get)
   except YamlSupportError, DefSyntaxError:
     reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)

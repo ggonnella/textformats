@@ -16,3 +16,42 @@ testdata:
     invalid:
       encoded: []
       decoded: []
+  u_w:
+    valid:
+      "{}": {"type":"2","value":{}}
+      "null": {"type":"2","value":null}
+      "1": {"type":"2","value":1}
+      "false": {"type":"2","value":false}
+      "[\"d\",\"e\"]": {"type":"2","value":["d","e"]}
+      "\"\"": {"type":"2","value":""}
+      "{\"a\":1,\"b\":2}": {"type":"2","value":{"a":1,"b":2}}
+      "\"c\"": {"type":"2","value":"c"}
+      "a": {"type":"1","value":true}
+      "1.0": {"type":"2","value":1.0}
+      "[]": {"type":"2","value":[]}
+    oneway: {"A":{"type":"3","value":"A"},
+             ",-d~!":{"type":"3","value":",-d~!"},
+             " ":{"type":"3","value":" "}, "true":{"type":"2","value":true}}
+    invalid:
+      encoded: [""]
+      decoded: [""]
+  u_w_l:
+    valid:
+      "{}": {"type":"json","value":{}}
+      "null": {"type":"json","value":null}
+      "1": {"type":"json","value":1}
+      "false": {"type":"json","value":false}
+      "[\"d\",\"e\"]": {"type":"json","value":["d","e"]}
+      "\"\"": {"type":"json","value":""}
+      "{\"a\":1,\"b\":2}": {"type":"json","value":{"a":1,"b":2}}
+      "\"c\"": {"type":"json","value":"c"}
+      "a": {"type":"a","value":true}
+      "1.0": {"type":"json","value":1.0}
+      "[]": {"type":"json","value":[]}
+    oneway: {"A":{"type":"string","value":"A"},
+             " ":{"type":"string","value":" "},
+             "7YbY=":{"type":"string","value":"7YbY="},
+             "true":{"type":"json","value":true}}
+    invalid:
+      encoded: [""]
+      decoded: [""]

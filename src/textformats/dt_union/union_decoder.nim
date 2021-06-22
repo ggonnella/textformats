@@ -17,13 +17,18 @@ template appenderr(errmsg, i, choice: untyped) =
    errmsg &= "==== [" & $i & ": " & choice.name & "] ====\n" &
     get_current_exception_msg().indent(2) & "\n"
 
+template wrapped(value: JsonNode, dd: DatatypeDefinition): JsonNode =
+  if dd.wrapped: %{"type": %dd.type_labels[i], "value": value}
+  else: value
+
 proc decode_union*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkUnion
   var
     errmsg = ""
     i = 0
   for c in dd.choices:
-    try: return input.decode(c)
+    try:
+      return input.decode(c).wrapped(dd)
     except DecodingError:
       errmsg.appenderr(i, c)
       i += 1
@@ -45,12 +50,12 @@ proc prematched_decode_union*(input: string, slice: Slice[int],
         assert(choicematch.len == 1)
         if dd.choices[i].regex.ensures_valid:
           return input.prematched_decode(choicematch[0], dd.choices[i], m, -1,
-                                         choicepfx)
+                                         choicepfx).wrapped(dd)
         else:
           for i2 in i..<dd.choices.len:
             try:
               return input.prematched_decode(choicematch[0], dd.choices[i2], m,
-                                             -1, choicepfx)
+                                             -1, choicepfx).wrapped(dd)
             except DecodingError:
               errmsg.appenderr(i2, dd.choices[i2])
               continue
@@ -61,12 +66,12 @@ proc prematched_decode_union*(input: string, slice: Slice[int],
           if boundaries == slice:
             if dd.choices[i].regex.ensures_valid:
               return input.prematched_decode(boundaries, dd.choices[i], m, -2,
-                                             choicepfx)
+                                             choicepfx).wrapped(dd)
             else:
               for i2 in i..<dd.choices.len:
                 try:
                   return input.prematched_decode(boundaries, dd.choices[i2],
-                                                 m, -2, choicepfx)
+                                                 m, -2, choicepfx).wrapped(dd)
                 except DecodingError:
                   errmsg.appenderr(i2, dd.choices[i2])
                   continue
