@@ -30,21 +30,23 @@ proc prematched_decode_struct*(input: string, slice: Slice[int],
       matches = match_obj.group(member_pfx)
     if matches.len == 0:
       break
-    var subslice: Slice[int]
-    if childnum == UnknownChildNum:
-      # note: consider using binary search if lists are long
-      for boundaries in matches:
-        if (boundaries.a >= slice.a and boundaries.b <= slice.b):
-          subslice = boundaries
-          break
-    else:
-      subslice = matches[max(0, childnum)]
-    try:
-      elements.add((member.name, input.prematched_decode(subslice, member.def,
-                                          match_obj, childnum, member_pfx)))
-    except DecodingError:
-      assert(false)
-      #raise_invalid_element(getCurrentExceptionMsg(), member.name)
+    if i notin dd.hidden:
+      var subslice: Slice[int]
+      if childnum == UnknownChildNum:
+        # note: consider using binary search if lists are long
+        for boundaries in matches:
+          if (boundaries.a >= slice.a and boundaries.b <= slice.b):
+            subslice = boundaries
+            break
+      else:
+        subslice = matches[max(0, childnum)]
+      try:
+        let elem_decoded = input.prematched_decode(subslice, member.def,
+                                            match_obj, childnum, member_pfx)
+        elements.add((member.name, elem_decoded))
+      except DecodingError:
+        assert(false)
+        #raise_invalid_element(getCurrentExceptionMsg(), member.name)
     i += 1
   if i < dd.n_required:
     raise_invalid_min_n_elements(i, dd.n_required)
@@ -62,7 +64,9 @@ proc splitting_decode_struct(input: string, dd: DatatypeDefinition): JsonNode =
   for elem in core.split(dd.sep, max_split=dd.members.len-1):
     let member = dd.members[i]
     try:
-      elements.add((member.name, elem.decode(member.def)))
+      let elem_decoded = elem.decode(member.def)
+      if i notin dd.hidden:
+        elements.add((member.name, elem_decoded))
     except DecodingError:
       raise_invalid_element(get_current_exception_msg(), member.name)
     i += 1
@@ -103,9 +107,10 @@ proc elementwise_decode_struct(input: string, dd: DatatypeDefinition):
       break
     assert(matches.len == 1)
     try:
-      elements.add((member.name,
-                     input.prematched_decode(matches[0], member.def,
-                                  match_obj, NoChildNum, member_pfx)))
+      let elem_decoded = input.prematched_decode(matches[0], member.def,
+                                  match_obj, NoChildNum, member_pfx)
+      if i notin dd.hidden:
+        elements.add((member.name, elem_decoded))
     except DecodingError:
       raise_invalid_element(get_current_exception_msg(), member.name)
     i += 1

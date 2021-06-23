@@ -75,3 +75,8 @@ testdata:
     invalid:
       encoded: [""]
       decoded: [""]
+  s_hide:
+    valid: {"ap>b":{"name":"p>"}}
+    invalid:
+      encoded: [""]
+      decoded: [""]

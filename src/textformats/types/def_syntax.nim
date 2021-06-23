@@ -50,6 +50,7 @@ const
   SingleKey* = "single"
   # struct
   NRequiredKey* = "required"
+  HiddenKey* = "hide_constants"
   # tags
   TagnameKey* = "tagname"
   TagsInternalSepKey* = "internal_sep"

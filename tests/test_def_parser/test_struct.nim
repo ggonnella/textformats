@@ -17,6 +17,7 @@ suite "test_struct_def_parser":
     check d.members.len == 1
     check d.members[0].name == "name"
     check d.members[0].def.target_name == "string"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ""
     check d.pfx == ""
@@ -31,6 +32,7 @@ suite "test_struct_def_parser":
     check d.members[0].def.regex.raw == "[^a]+"
     check d.members[1].name == "a"
     check d.members[1].def.constant_element.s_value == "a"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ""
     check d.pfx == ""
@@ -45,12 +47,30 @@ suite "test_struct_def_parser":
     check d.members[0].def.regex.raw == "[^,]+"
     check d.members[1].name == "a"
     check d.members[1].def.constant_element.s_value == "a"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
     check d.sfx == ""
     check d.sep_excl == true
     check d.n_required == 2
+  test "s_hide":
+    let d = new_struct_datatype_definition(v["s_hide"], "s_hide")
+    check d.kind == ddkStruct
+    check d.members.len == 3
+    check d.members[0].name == "a"
+    check d.members[0].def.constant_element.s_value == "a"
+    check d.members[1].name == "name"
+    check d.members[1].def.regex.raw == "[^,]+"
+    check d.members[2].name == "b"
+    check d.members[2].def.constant_element.s_value == "b"
+    check d.hidden == @[0, 2]
+    check d.null_value.is_none
+    check d.sep == ""
+    check d.pfx == ""
+    check d.sfx == ""
+    check d.sep_excl == true
+    check d.n_required == 3
   test "s_nosplit":
     let d = new_struct_datatype_definition(v["s_nosplit"], "s_nosplit")
     check d.kind == ddkStruct
@@ -59,6 +79,7 @@ suite "test_struct_def_parser":
     check d.members[0].def.regex.raw == "[^,]+\\\\,[^,]+"
     check d.members[1].name == "a"
     check d.members[1].def.constant_element.s_value == "a"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -74,6 +95,7 @@ suite "test_struct_def_parser":
     check d.members[0].def.regex.raw == "[^a]+"
     check d.members[1].name == "a"
     check d.members[1].def.constant_element.s_value == "a"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ""
     check d.pfx == ""
@@ -89,6 +111,7 @@ suite "test_struct_def_parser":
     check d.members[0].def.regex.raw == "[^,]+"
     check d.members[1].name == "a"
     check d.members[1].def.constant_element.s_value == "a"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -104,6 +127,7 @@ suite "test_struct_def_parser":
     check d.members[0].def.regex.raw == "[^,]+\\\\,[^,]+"
     check d.members[1].name == "a"
     check d.members[1].def.constant_element.s_value == "a"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -121,6 +145,7 @@ suite "test_struct_def_parser":
     check d.members[1].def.members_def.constant_element.s_value == "a"
     check d.members[1].def.lenrange.low == 1
     check d.members[1].def.lenrange.highstr == "Inf"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ""
     check d.pfx == ""
@@ -138,6 +163,7 @@ suite "test_struct_def_parser":
     check d.members[1].def.members_def.constant_element.s_value == "a"
     check d.members[1].def.lenrange.low == 1
     check d.members[1].def.lenrange.highstr == "Inf"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -155,6 +181,7 @@ suite "test_struct_def_parser":
     check d.members[1].def.members_def.constant_element.s_value == "a"
     check d.members[1].def.lenrange.low == 1
     check d.members[1].def.lenrange.highstr == "Inf"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -172,6 +199,7 @@ suite "test_struct_def_parser":
     check d.members[1].def.members_def.constant_element.s_value == "a"
     check d.members[1].def.lenrange.low == 2
     check d.members[1].def.lenrange.highstr == "Inf"
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -189,6 +217,7 @@ suite "test_struct_def_parser":
     check d.members[1].def.members_def.constant_element.s_value == "a"
     check d.members[1].def.lenrange.low == 1
     check d.members[1].def.lenrange.high == 2
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -206,6 +235,7 @@ suite "test_struct_def_parser":
     check d.members[1].def.members_def.constant_element.s_value == "a"
     check d.members[1].def.lenrange.low == 2
     check d.members[1].def.lenrange.high == 3
+    check d.hidden == newSeq[int]()
     check d.null_value.is_none
     check d.sep == ","
     check d.pfx == ""
@@ -230,6 +260,7 @@ suite "test_struct_def_parser":
     check d.members[4].def.lenrange.low == 2
     check d.members[4].def.lenrange.high == 3
     check d.n_required == 2
+    check d.hidden == newSeq[int]()
     check d.null_value == (%*({"n": newJNull()})).some
     check d.sep == ","
     check d.pfx == "<<<"

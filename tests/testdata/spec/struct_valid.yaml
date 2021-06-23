@@ -11,6 +11,12 @@ datatypes:
     - name: {regex: "[^,]+"}
     - a: {constant: a}
     sep: ","
+  s_hide:
+    composed_of:
+    - a: {constant: a}
+    - name: {regex: "[^,]+"}
+    - b: {constant: b}
+    hide_constants: true
   s_nosplit:
     composed_of:
     - name: {regex: "[^,]+\\\\,[^,]+"}

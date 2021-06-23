@@ -15,6 +15,7 @@ import ../def_parser
 const
   DefKey = StructDefKey
   NRequiredHelp = "Number of required elements (default: all)"
+  HiddenHelp = "Hide constant elements from decoded value"
   SyntaxHelp = &"""
   <datatype_name>:
     {DefKey}:
@@ -36,6 +37,7 @@ const
   - {ImplicitKey}: {ImplicitHelp}
   - {NRequiredKey}: {NRequiredHelp}
   - {AsStringKey}: {AsStringHelp}
+  - {HiddenKey}: {HiddenHelp}
   """
 
 proc parse_struct_members(n: YamlNode, name: string):
@@ -79,7 +81,8 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
   try:
     let defnodes = collect_defnodes(defroot,
                      [DefKey, NullValueKey, SepKey, PfxKey, SfxKey,
-                      SepExclKey, NRequiredKey, ImplicitKey, AsStringKey])
+                      SepExclKey, NRequiredKey, ImplicitKey, AsStringKey,
+                      HiddenKey])
     result = DatatypeDefinition(kind: ddkStruct, name: name,
                members:    defnodes[0].unsafe_get.parse_struct_members(name),
                null_value: defnodes[1].parse_null_value,
@@ -92,5 +95,11 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
     result.parse_n_required(defnodes[6])
     validate_sep_if_sepexcl(defnodes[5], defnodes[2])
     result.validate_member_names_uniqueness
+    if defnodes[9].to_bool(default=false, HiddenKey):
+      var i = 0
+      for m in result.members:
+        if m.def.kind == ddkConst:
+          result.hidden.add(i)
+        i+=1
   except YamlSupportError, DefSyntaxError, ValueError:
     reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)

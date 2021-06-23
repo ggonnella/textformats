@@ -20,7 +20,7 @@ proc struct_generate_testdata*(t: var TestData, dd: DatatypeDefinition) =
       (e, d) = get_one_v_from_subdef(m.def)
     if i > 0: encoded &= dd.sep
     encoded &= e
-    decoded[m.name] = d
+    if i notin dd.hidden: decoded[m.name] = d
     i += 1
     if i >= dd.n_required:
       t.finalize(dd, decoded.copy, encoded)

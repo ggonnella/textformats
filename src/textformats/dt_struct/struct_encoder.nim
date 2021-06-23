@@ -54,24 +54,33 @@ proc struct_encode*(value: JsonNode, dd: DatatypeDefinition): string =
     results = newseq_of_cap[string](dd.members.len)
     i = 0
   for (name, subdef) in dd.members:
-    if name notin value_keys:
-      if i < dd.n_required:
-        raise_required_key_missing(name, i, results, dd)
-      else:
-        for j in i..<dd.members.len:
-          let optname = dd.members[j].name
-          if optname in value_keys:
-            raise_optional_key_missing(name, optname, results, dd)
-        break
-    try_encoding(value[name], name, subdef, dd, results)
+    if i in dd.hidden:
+      results.add(subdef.constant_element.s_value)
+    else:
+      if name notin value_keys:
+        if i < dd.n_required:
+          raise_required_key_missing(name, i, results, dd)
+        else:
+          for j in i..<dd.members.len:
+            let optname = dd.members[j].name
+            if optname in value_keys:
+              raise_optional_key_missing(name, optname, results, dd)
+          break
+      try_encoding(value[name], name, subdef, dd, results)
     value_keys.excl(name)
     i+=1
   value.validate_nonmember_keys(value_keys, dd)
   return results.format_results(dd)
 
 proc struct_unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
-  var results = newseq_of_cap[string](dd.members.len)
+  var
+    results = newseq_of_cap[string](dd.members.len)
+    i = 0
   for (name, subdef) in dd.members:
-    results.add(value[name].unsafe_encode(subdef))
+    if i in dd.hidden:
+      results.add(subdef.constant_element.s_value)
+    else:
+      results.add(value[name].unsafe_encode(subdef))
+    i+=1
   return results.format_results(dd)
 

@@ -147,6 +147,7 @@ type
     of ddkStruct:
       members*: seq[tuple[name: string, def: DatatypeDefinition]]
       n_required*: int
+      hidden*: seq[int]
 
     of ddkDict:
       dict_members*: TableRef[string, DatatypeDefinition] # name => def
