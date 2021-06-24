@@ -6,7 +6,5 @@ datadir=$testsdir/../bio/spec
 spec=$datadir/tags.spec.yaml
 tests=$datadir/tests/tags.yaml
 
-cd $testsdir/../cli
-#nim c textformats_cli
 cd $testsdir/../tests
 time ./spec_tests_clibased.py --preprocess $spec $tests

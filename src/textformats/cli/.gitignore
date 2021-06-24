@@ -1,0 +1,7 @@
+tf_encode
+tf_decode
+tf_validate
+tf_test
+tf_spec
+*.1
+*.1.gz

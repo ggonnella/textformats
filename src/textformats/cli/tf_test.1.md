@@ -1,0 +1,102 @@
+% TF\_TEST(1) tf\_test 1.0.0
+% Giorgio Gonnella
+% June 2021
+
+# NAME
+
+tf\_test - test the results of encoding, decoding and validation for a given datatype
+
+# SYNOPSIS
+
+**tf_test** decoding -s SPECFILE [-p] -t DATATYPE -e ENCODED -d EXPECTED \
+**tf_test** fail\_decoding -s SPECFILE [-p] -t DATATYPE -e ENCODED \
+
+**tf_test** encoding -s SPECFILE [-p] -t DATATYPE -d DECODED -e EXPECTED \
+**tf_test** fail\_encoding -s SPECFILE [-p] -t DATATYPE -d DECODED \
+
+**tf_test** decoded\_validation -s SPECFILE [-p] -t DATATYPE -d DECODED [-v] \
+**tf_test** encoded\_validation -s SPECFILE [-p] -t DATATYPE -e ENCODED [-v] \
+
+# DESCRIPTION
+
+The command can be used to test if the results of encoding, decoding and
+validation using a given datatype fulfill the expectations.
+
+It has the same purpose as the test data provided under ``testdata`` (see
+also **tf\_spec generate_tests** and **tf\_spec test**), but is intended
+for running a single test manually, instead of the entire test suite
+automatically.
+
+The available tests are decoding (subcommands **decoding** and **fail_decoding**),
+encoding (subcommands **encoding** and **fail_encoding**), validation
+of data, provided as encoded in the defined text representation
+(subcommand **encoded_validation**) or as decoded data in JSON format
+(subcommand **decoded_validation**).
+
+# OPTIONS
+
+## Subcommands
+
+**decoding**
+: test an encoded string and compare the result to the expected data (JSON)
+
+**fail\_decoding**
+: test that decoding the provided encoded string fails
+
+**encoding**
+: encode the decoded data (JSON) and compare to the expected encoding
+
+**fail\_encoding**
+: test that encoding the provided decoded data (JSON) fails
+
+**encoded_validation**
+: test the validation of an encoded string
+
+**decoded_validation**
+: test the validation of decoded data (JSON)
+
+## Common options
+**-s**, **--specfile=**FILENAME
+: specification file to use (REQUIRED)
+
+**-p**, **--preprocessed**
+: set this flag, when using a preprocessed specification
+  (see **tf_spec** manual)
+
+**-t**, **--datatype=**DATATYPE
+: which datatype to use among those defined by the specification (REQUIRED)
+
+## Input data options
+
+*decoding*, *fail\_decoding*, *encoded\_validation* subcommands:
+
+**-e**, **--encoded**=STRING
+: encoded data (in the specified text representation) to be decoded or validated
+(REQUIRED)
+
+*encoding, *fail\_encoding*, *decoded\_validation* subcommands:
+
+**-d**, **--decoded\_json**=STRING
+: decoded data (as JSON) to be encoded or validated (REQUIRED)
+
+## Expected results
+
+*encoding* subcommand:
+
+**-e**, **--expected**=STRING
+: encoded data which is expected as an output of the encoding (REQUIRED)
+
+*decoding* subcommand:
+
+**-d**, **--expected\_json**=STRING
+: encoded data which is expected as an output of the encoding (REQUIRED)
+
+*encoded\_validation* and *decoded\_validation* subcommands:
+
+**-v**, **--expected\_valid**
+: set this flag if the validation is expected to succeed (default:
+  expect that the validation fails)
+
+# EXIT VALUES
+The exit code is 0 on success, anything else on error.
+

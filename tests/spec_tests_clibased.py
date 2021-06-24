@@ -49,14 +49,14 @@ import docopt
 from functools import partial
 
 testdir = os.path.dirname(os.path.realpath(__file__))
-textformats = sh.Command(testdir + "/../cli/textformats_cli")
+textformats = sh.Command(testdir + "/../cli/tf_test")
 preprocess = partial(textformats, "preprocess", _fg=True)
-test_decode = partial(textformats, "test", "decoding", _fg=True)
-test_encode = partial(textformats, "test", "encoding", _fg=True)
-test_validate_decoded = partial(textformats, "test", "decoded_validation", _fg=True)
-test_validate_encoded = partial(textformats, "test", "encoded_validation", _fg=True)
-test_decode_invalid = partial(textformats, "test", "fail_decoding", _fg=True)
-test_encode_invalid = partial(textformats, "test", "fail_encoding", _fg=True)
+test_decode = partial(textformats, "decoding", _fg=True)
+test_encode = partial(textformats, "encoding", _fg=True)
+test_validate_decoded = partial(textformats, "decoded_validation", _fg=True)
+test_validate_encoded = partial(textformats, "encoded_validation", _fg=True)
+test_decode_invalid = partial(textformats, "fail_decoding", _fg=True)
+test_encode_invalid = partial(textformats, "fail_encoding", _fg=True)
 
 def test_valid_encoded(specfile, preprocessed, datatype, encoded, decoded):
   test_decode(s=specfile, p=preprocessed, t=datatype, e=encoded, d=decoded)
