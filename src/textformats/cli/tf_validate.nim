@@ -9,19 +9,19 @@ import strutils, tables, strformat, json
 import ../../textformats
 import cli_helpers
 
-proc validate_encoded*(specfile: string, preprocessed=false,
+proc validate_encoded*(specfile: string,
                            datatype: string, encoded: string): int =
   ## validate an encoded string
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   if encoded.is_valid(definition):
     exit_with(ec_success, &"'{encoded}' is a valid encoded '{datatype}'")
   else:
     exit_with(ec_vdn_invalid_encoded)
 
-proc validate_decoded*(specfile: string, preprocessed=false,
-                           datatype: string, decoded_json: string): int =
+proc validate_decoded*(specfile: string,
+                       datatype: string, decoded_json: string): int =
   ## validate decoded data (JSON)
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     if decoded.is_valid(definition):
@@ -35,19 +35,15 @@ when isMainModule:
   import cligen
   dispatch_multi([validate_encoded, cmdname="encoded",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "encoded": short_encoded},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "encoded": help_encoded}],
                      [validate_decoded, cmdname="decoded",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "decoded_json": short_decoded},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "decoded_json": help_decoded_json}])

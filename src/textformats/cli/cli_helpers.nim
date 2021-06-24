@@ -2,7 +2,7 @@
 ## Common functionality for the command line interface tools
 ##
 
-import json
+import json, os, streams
 
 ##
 ## Error messages and exit codes;
@@ -41,6 +41,8 @@ type
     ec_err_spec_invalid=err_pfx & "The specification is invalid"
     ec_err_spec_io=err_pfx &
       "The specification file does not exist or cannot be read"
+    ec_err_preproc=err_pfx &
+      "The specification file is preprocessed; use a YAML specification"
     ec_err_invalid_encoded=err_pfx & "Decoding error: " & enc_in & err_inv
     ec_err_invalid_decoded=err_pfx & "Encoding error: " & dec_in & err_inv
     ec_test_error
@@ -54,8 +56,18 @@ template exit_with*(exit_code: untyped, info = "", errcodemsg = true): untyped =
     stderr.write_line ($info).indent(i)
   return exit_code.int
 
-template get_specification*(specfile, preprocessed: untyped): untyped =
+template is_preprocessed*(specfile: string): bool =
+  if unlikely(not fileExists(specfile)):
+    exit_with(ec_err_spec_io)
+  let stream = newFileStream(specfile, mode = fmRead)
+  defer: stream.close()
+  var magic_string: char
+  discard stream.read_data(magic_string.addr, 1)
+  magic_string == '['
+
+template get_specification*(specfile): untyped =
   var datatypes: textformats.Specification
+  let preprocessed = is_preprocessed(specfile)
   try:
     datatypes =
       if preprocessed: textformats.load_specification(specfile)
@@ -68,9 +80,8 @@ template get_specification*(specfile, preprocessed: untyped): untyped =
     exit_with(ec_err_spec_io, e.msg)
   datatypes
 
-template get_datatype_definition*(datatype: untyped,
-                                 preprocessed: untyped): untyped =
-  let datatypes = get_specification(specfile, preprocessed)
+template get_datatype_definition*(datatype: untyped): untyped =
+  let datatypes = get_specification(specfile)
   if datatype notin datatypes:
     exit_with ec_err_def_not_found
     nil
@@ -91,7 +102,6 @@ template short_datatype*:       untyped = 't'
 template short_decoded*:        untyped = 'd'
 template short_encoded*:        untyped = 'e'
 template short_expected_valid*: untyped = 'v'
-template short_preprocessed*:   untyped = 'p'
 template short_outfile*:        untyped = 'o'
 template short_infile*:         untyped = 'i'
 template short_testfile*:       untyped = 'f'
@@ -102,8 +112,8 @@ template short_testfile*:       untyped = 'f'
 ##
 template help_specfile*: untyped =
   "datatypes specification (YAML or preprocessed)"
-template help_preprocessed*: untyped =
-  "specification file is preprocessed (default: YAML)"
+template help_specfile_yaml*: untyped =
+  "datatypes specification (YAML only)"
 template help_datatype*: untyped = "datatype"
 template help_decoded_json*: untyped = "data to encode (JSON)"
 template help_encoded*: untyped = "encoded data"

@@ -7,11 +7,11 @@ import strutils, tables, strformat, json
 import ../../textformats
 import cli_helpers
 
-proc test_encoded_validation*(specfile: string, preprocessed=false,
+proc test_encoded_validation*(specfile: string,
                             datatype: string, encoded: string,
                             expected_valid=false): int =
   ## test the validation of an encoded string
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   if encoded.is_valid(definition):
     if expected_valid:
       exit_with(ec_success, ok_pfx &
@@ -25,11 +25,11 @@ proc test_encoded_validation*(specfile: string, preprocessed=false,
       exit_with(ec_success, ok_pfx &
                 &"'{encoded}' => invalid as encoded {datatype}")
 
-proc test_decoded_validation*(specfile: string, preprocessed=false,
+proc test_decoded_validation*(specfile: string,
                             datatype: string, decoded_json: string,
                             expected_valid=false): int =
   ## test the validation of decoded data (JSON)
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     if decoded.is_valid(definition):
@@ -51,10 +51,10 @@ proc test_decoded_validation*(specfile: string, preprocessed=false,
   except JsonParsingError:
     exit_with ec_err_json_syntax
 
-proc test_fail_encoding*(specfile: string, preprocessed=false,
+proc test_fail_encoding*(specfile: string,
                          datatype: string, decoded_json: string): int =
   ## test that encoding the provided decoded data (JSON) fails
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     try:
@@ -71,10 +71,10 @@ proc test_fail_encoding*(specfile: string, preprocessed=false,
   except JsonParsingError:
     exit_with ec_err_json_syntax
 
-proc test_encoding*(specfile: string, preprocessed=false, datatype: string,
+proc test_encoding*(specfile: string, datatype: string,
                     decoded_json: string, expected: string): int =
   ## encode the decoded data (JSON) and compare to the expected encoding
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     try:
@@ -94,10 +94,10 @@ proc test_encoding*(specfile: string, preprocessed=false, datatype: string,
   except JsonParsingError:
     exit_with ec_err_json_syntax
 
-proc test_fail_decoding*(specfile: string, preprocessed=false,
+proc test_fail_decoding*(specfile: string,
                          datatype: string, encoded: string): int =
   ## test that decoding the provided encoded string fails
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded_json = $textformats.decode(encoded, definition)
     let info = &"Encoded data:          '{encoded}'\n" &
@@ -109,10 +109,10 @@ proc test_fail_decoding*(specfile: string, preprocessed=false,
     exit_with(ec_success, ok_pfx &
       &"'{encoded}' => decoding as {datatype} fails")
 
-proc test_decoding*(specfile: string, preprocessed=false, datatype: string,
+proc test_decoding*(specfile: string, datatype: string,
                     encoded: string, expected_json: string): int =
   ## decode an encoded string and compare the result to the expected data (JSON)
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded = textformats.decode(encoded, definition)
     try:
@@ -138,63 +138,51 @@ when isMainModule:
   import cligen
   dispatch_multi([test_decoding, cmdname="decoding",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "encoded": short_encoded,
                                "expected_json": short_decoded},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "encoded": help_encoded,
                               "expected_json": help_expected_json}],
                      [test_encoding, cmdname="encoding",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "decoded_json": short_decoded,
                                "expected": short_encoded},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "decoded_json": help_decoded_json,
                               "expected": help_expected}],
                      [test_fail_decoding, cmdname="fail_decoding",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "encoded": short_encoded},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "encoded":  help_encoded}],
                      [test_fail_encoding, cmdname="fail_encoding",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "decoded_json": short_decoded},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "decoded_json": help_decoded_json}],
                      [test_encoded_validation, cmdname="encoded_validation",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "encoded": short_encoded,
                                "expected_valid": short_expected_valid},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "encoded": help_encoded,
                               "expected_valid": help_expected_valid}],
                      [test_decoded_validation, cmdname="decoded_validation",
                       short = {"specfile": short_specfile,
-                               "preprocessed": short_preprocessed,
                                "datatype": short_datatype,
                                "decoded_json": short_decoded,
                                "expected_valid": short_expected_valid},
                       help = {"specfile": help_specfile,
-                              "preprocessed": help_preprocessed,
                               "datatype": help_datatype,
                               "decoded_json": help_decoded_json,
                               "expected_valid": help_expected_valid}],

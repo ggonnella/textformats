@@ -405,8 +405,7 @@ JSON representation of the decoded data, the ``tf_decode`` tool is used.
 
 The ``string`` subcommand requires the input string, provided using the option
 ``--encoded`` or ``-e``. The path to the specification file is provided through
-the option ``--specfile`` or ``-s``. If the specification is preprocessed, the
-flag ``--preprocessed`` or ``-p`` must be set. The datatype to be used for
+the option ``--specfile`` or ``-s``. The datatype to be used for
 decoding is selected using the ``--datatype`` or ``-t``.
 
 #### Decode files
@@ -422,8 +421,7 @@ according to a given datatype definition, the ``tf_encode`` tool is used.
 The ``json`` subcommand requires the input string (JSON representation of
 the data to encode), provided using the option ``--decoded_json`` or ``-d``.
 The path to the specification file is provided through the option ``--specfile``
-or ``-s``. If the specification is preprocessed, the
-flag ``--preprocessed`` or ``-p`` must be set. The datatype to be used for
+or ``-s``. The datatype to be used for
 encoding is selected using the ``--datatype`` or ``-t``.
 
 ### Validate data
@@ -453,15 +451,12 @@ PREPROCESSED_SPEC is the output file.
 
 Most tools accept both YAML and preprocessed
 specifications (passed to them with the ``--specfile`` or ``-s`` option).
-In case preprocessed specifications are used, the ``--preprocessed`` or
-``-p`` flag must be set.
 
 #### List of datatype definitions
 
 For a list of all definitions in a specification file (YAML or preprocessed),
 use the subcommand ``list``. The path to the specification file is provided
-through the option ``--specfile`` or ``-s``. If the specification is
-preprocessed, the flag ``--preprocessed`` or ``-p`` must be set.
+through the option ``--specfile`` or ``-s``.
 The list includes all datatypes defined by included files. It does not contain
 the predefined basic datatypes.
 
@@ -473,8 +468,7 @@ debug, as well as to understand more specifically how a datatype definition
 is handled (e.g. how does the generated regular expression look like).
 
 The path to the specification file is provided through the option ``--specfile``
-or ``-s``. If the specification is preprocessed, the
-flag ``--preprocessed`` or ``-p`` must be set. The datatype to be shown
+or ``-s``. The datatype to be shown
 is selected using the ``--datatype`` or ``-t``.
 
 #### Autogenerate test data for a specification

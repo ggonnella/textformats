@@ -12,10 +12,10 @@ import strutils, json, tables
 import ../../textformats
 import cli_helpers
 
-proc encode_json*(specfile: string, preprocessed=false, datatype: string,
-             decoded_json: string): int =
+proc encode_json*(specfile: string, datatype: string, decoded_json: string):
+                  int =
   ## encode decoded data (JSON) and output as encoded string
-  let definition = get_datatype_definition(datatype, preprocessed)
+  let definition = get_datatype_definition(datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     try:
@@ -29,10 +29,8 @@ when isMainModule:
   import cligen
   dispatch_multi([encode_json, cmdname = "json",
                   short = {"specfile": short_specfile,
-                           "preprocessed": short_preprocessed,
                            "datatype": short_datatype,
                            "decoded_json": short_decoded},
                   help = {"specfile": help_specfile,
-                          "preprocessed": help_preprocessed,
                           "datatype": help_datatype,
                           "decoded_json": help_decoded_json}])

@@ -31,11 +31,7 @@ described by the datatype definition, or decoded (as string in JSON format).
 
 ## Common options
 **-s**, **--specfile=**FILENAME
-: specification file to use (REQUIRED)
-
-**-p**, **--preprocessed**
-: set this flag, when using a preprocessed specification
-  (see **tf_spec** manual)
+: specification file to use, YAML or preprocessed (REQUIRED)
 
 **-t**, **--datatype=**DATATYPE
 : which datatype to use among those defined by the specification (REQUIRED)

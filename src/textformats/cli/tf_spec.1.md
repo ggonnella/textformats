@@ -79,7 +79,9 @@ encoding and validations for each of the provided test examples.
 all subcommands:
 
 **-s**, **--specfile=**FILENAME
-: specification file to be used (REQUIRED)
+: specification file to be used (REQUIRED); YAML only for
+*preprocess* and *generate\_tests*; YAML or preprocessed
+for all other subcommands
 
 *show* subcommand:
 
@@ -92,11 +94,6 @@ all subcommands:
 : output filename for the preprocessed specification (REQUIRED)
 
 ## Further options
-
-*list*, *show*, *test* subcommands:
-
-**-p**, **--preprocessed**
-: set this flag, when using a preprocessed specification
 
 *test* subcommand:
 

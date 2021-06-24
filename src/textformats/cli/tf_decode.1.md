@@ -43,11 +43,8 @@ the specification to be used (-t).
 
 ## Common options
 **-s**, **--specfile=**FILENAME
-: specification file to use (REQUIRED)
-
-**-p**, **--preprocessed**
-: set this flag, when using a preprocessed specification
-  (see **tf_spec** manual)
+: specification file to use, YAML or preprocessed (REQUIRED); for
+*embedded* it must be YAML
 
 **-t**, **--datatype=**DATATYPE
 : which datatype to use, among those defined by the specification (REQUIRED)
