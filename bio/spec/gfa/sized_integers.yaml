@@ -1,0 +1,14 @@
+# current limitations:
+# - only uint32 up to INT32_MAX
+#   and uint64/int64 in 32bit range
+namespace: int
+datatypes:
+  u8: {unsigned_integer: {max: 255}}
+  i8: {integer: {min: -128, max: 127}}
+  u16: {unsigned_integer: {max: 65535}}
+  i16: {integer: {min: -32768, max: 32767}}
+  u32: {unsigned_integer: {max: 2147483647}}
+  i32: {integer: {min: -2147483648, max: 2147483647}}
+  u64: unsigned_integer
+  i64: integer
+

@@ -63,6 +63,7 @@ datatypes:
           composed_of:
             - pfx: {constant: ":"}
             - value: unsigned_integer
+          hide_constants: true
     required: 2
   uri_ip_literal:
     composed_of:
@@ -72,6 +73,7 @@ datatypes:
           - ipv6
           - ipv_future
       - sfx: {constant: "]"}
+    hide_constants: true
   uri_path:
     one_of:
       - uri_path_abempty
@@ -83,11 +85,13 @@ datatypes:
     composed_of:
       - pfx: {"constant": "?"}
       - value: uri_string_upsqs
+    hide_constants: true
     empty: {}
   uri_fragment:
     composed_of:
       - pfx: {"constant": "#"}
       - value: uri_string_upsqs
+    hide_constants: true
     empty: {}
   uri_path_abempty:
     as_string: true
@@ -95,6 +99,7 @@ datatypes:
       composed_of:
         - sep: {constant: "/"}
         - component: uri_segment
+      hide_constants: true
   uri_path_absolute:
     as_string: true
     composed_of:
@@ -104,6 +109,7 @@ datatypes:
           - uri_segment_nz
           - {list_of: uri_segment, sep: "/"}
           empty: []
+    hide_constants: true
   uri_path_noscheme:
     as_string: true
     composed_of:

@@ -14,6 +14,7 @@
 #   - consists of header and sequence
 #   - after an header there must be at least a sequence line
 #
+namespace: fasta
 datatypes:
   header:
     pfx: '>'

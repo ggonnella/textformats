@@ -1,0 +1,3 @@
+datatypes:
+  x: {character_class: "x"}
+  a: {regex: "[:xxx:]"}

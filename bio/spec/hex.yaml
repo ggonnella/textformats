@@ -1,0 +1,17 @@
+namespace: hex
+datatypes:
+  digit: {regex: "[0-9A-Fa-f]"}
+  byte:  {regex: "[0-9A-Fa-f]{2}"}
+  color:
+    composed_of:
+      - red: byte
+      - green: byte
+      - blue: byte
+  alpha_color:
+    composed_of:
+      - red: byte
+      - green: byte
+      - blue: byte
+      - alpha: byte
+    required: 3
+

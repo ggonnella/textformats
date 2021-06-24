@@ -1,60 +1,56 @@
 #
-# Formats of the fields used in GFA1 format
+# Formats used in the positional fields of GFA1 format
 #
 # Specification URL:
 #   https://github.com/GFA-spec/GFA-spec/blob/master/GFA1.md
 #
 
+namespace: gfa1
 datatypes:
-  gfa1_placeholder: {constant: {"*": null}}
+  placeholder: {constant: {"*": null}}
 
   # identifiers
-  gfa1_name: {regex: "[!-)+-<>-~][!-~]*"}
-  gfa1_orient: {regex: "[+-]"}
-  gfa1_oriented_name: {composed_of: [name: gfa1_name,
-                       orientation: gfa1_orient]}
-  gfa1_oriented_names_list: {list_of: gfa1_oriented_name,
-                             sep: ",", minlength: 1}
+  name: {regex: "[!-)+-<>-~][!-~]*"}
+  orient: {regex: "[+-]"}
+  oriented_name: {composed_of: [name: name,
+                                orientation: orient]}
+  oriented_names_list: {list_of: oriented_name,
+                        sep: ",", minlength: 1}
 
-  gfa1_sequence: {one_of: [gfa1_placeholder, regex: "[A-Za-z=.]+"]}
+  sequence: {one_of: [placeholder, regex: "[A-Za-z=.]+"]}
 
   # alignments
-  gfa1_cigar_op: {composed_of: [length: unsigned_integer,
-                  code: {regex: "[MIDNSHPX=]"}]}
-  gfa1_cigar: {list_of: gfa1_cigar_op, sep: "", minlength: 1}
-  gfa1_alignment: {one_of: [gfa1_placeholder, gfa1_cigar]}
-  gfa1_alignments_list: {list_of: gfa1_alignment, sep: ","}
-
-#
-# Testdata was created using generate_tests and
-# further examples were added manually
-#
+  cigar_op: {composed_of: [length: unsigned_integer,
+                           code: {regex: "[MIDNSHPX=]"}]}
+  cigar: {list_of: cigar_op, sep: "", minlength: 1}
+  alignment: {one_of: [placeholder, cigar]}
+  alignments_list: {list_of: alignment, sep: ","}
 
 testdata:
-  gfa1_placeholder:
+  placeholder:
     valid: {"*":null}
     invalid:
       encoded: ["", "a", "**"]
       decoded: [true, 1, 1.0, [], {}, "", "*"]
-  gfa1_name:
+  name:
     valid: ["Segment1", "Link1", "001", "1", "A", "Y)~*", "~ZWv7", "QLm=(",
             "a:q}", "l?F6#"]
     invalid:
       encoded: ["*~)Y", "*qq&", "=B", ""]
       decoded: [true, 1, 1.0, null, [], {}, "", "*~)Y", "*qq&", "=B"]
-  gfa1_orient:
+  orient:
     valid: ["-", "+"]
     invalid:
       encoded: ["*", "X", "-X", "+X", ""]
       decoded: [true, 1, 1.0, [], {}, "", "*", "X", "-X", "+X"]
-  gfa1_oriented_name:
+  oriented_name:
     valid:
       "ABC-": {"name":"ABC","orientation":"-"}
       "ABC+": {"name":"ABC","orientation":"+"}
     invalid:
       encoded: ["ABC*", ""]
       decoded: ["", true, 1, 1.0, [], {}, {"name": "ABC"}]
-  gfa1_oriented_names_list:
+  oriented_names_list:
     valid:
       "bac-": [{"name":"bac","orientation":"-"}]
       "bac+": [{"name":"bac","orientation":"+"}]
@@ -64,33 +60,33 @@ testdata:
       encoded: ["bac", "bac*"]
       decoded: [[], "", true, 1, 1.0, {"name": "bac"},
                {"name": "bac", "orientation": "*"}]
-  gfa1_sequence:
+  sequence:
     valid: {"*":null, "CGTG":"CGTG", "A":"A", "mg":"mg", "wEYkz":"wEYkz",
             "J":"J", "xpmF":"xpmF", "tZf":"tZf", "uVg":"uVg", "xp":"xp",
             "pef":"pef"}
     invalid:
       encoded: ["*c", "", "C G"]
       decoded: [true, 1, 1.0, [], {}, ""]
-  gfa1_cigar_op:
+  cigar_op:
     valid: {"1D":{"length":1,"code":"D"}, "1000M": {"length":1000, "code":"M"}}
     invalid:
       encoded: ["-1D", "", "L", "2O", "*"]
       decoded: [true, 1, 1.0, [], {}, "", {"length": 10}, {"code": "M"},
                 {"length": -1, "code": "M"}, {"length": 1, "code": "O"}]
-  gfa1_cigar:
+  cigar:
     valid: {"1M":[{"length":1,"code":"M"}],
             "0M0M": [{"length":0, "code": "M"}, {"length": 0, "code": "M"}],
             "1M1I":[{"length":1,"code":"M"},{"length":1,"code":"I"}]}
     invalid:
       encoded: ["", "1M1C", "12", "abc", "1M-1D1M", "*"]
       decoded: [true, 1, 1.0, [], {}, "", [[1, "M"]]]
-  gfa1_alignment:
+  alignment:
     valid: {"1D1M":[{"length":1,"code":"D"},{"length":1,"code":"M"}],
             "*":null, "1D":[{"length":1,"code":"D"}]}
     invalid:
       encoded: ["*c", ""]
       decoded: [true, 1, 1.0, [], {}, ""]
-  gfa1_alignments_list:
+  alignments_list:
     valid:
       "1D1D": [[{"length":1,"code":"D"},{"length":1,"code":"D"}]]
       "1D1D,*,1D": [[{"length":1,"code":"D"},{"length":1,"code":"D"}],

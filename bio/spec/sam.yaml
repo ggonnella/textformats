@@ -79,14 +79,13 @@ datatypes:
           AH:
             one_of:
             - placeholder
-            - sep: ":"
-              composed_of:
-                - chromosome: {regex: "[^:]+"}
-                - coords:
-                    composed_of:
-                      - start: {unsigned_integer: {min: 1}}
-                      - end: {unsigned_integer: {min: 1}}
-                    sep: "-"
+            - composed_of:
+              - chromosome: {regex: "[^:]+"}
+              - sep1: {constant: ":"}
+              - start: {unsigned_integer: {min: 1}}
+              - sep2: {constant: "-"}
+              - end: {unsigned_integer: {min: 1}}
+              hide_constants: true
           AN:
             list_of: rname
             sep: ","

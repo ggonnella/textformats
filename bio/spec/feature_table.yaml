@@ -6,8 +6,8 @@ datatypes:
   range: {composed_of: [{range_begin: {one_of: singlebase, lessthanpos},
                          range_end: {one_of: singlebase, morethanpos}],
           separator: ".."}
-  lessthanpos: {composed_of: [{lessthansym: {constant: "<"}}, pos: singlebase}]}
-  morethanpos: {composed_of: [{pos: singlebase, morethansym: {constant: ">"}]}
+  lessthanpos: {composed_of: [{sym: {constant: "<"}}, pos: singlebase}]}
+  morethanpos: {composed_of: [{pos: singlebase, sym: {constant: ">"}]}
   approximate: {composed_of: [{pos1: singlebase, pos2: singlebase}], sep: "."}
   betweenbases: {composed_of: [{pos1: singlebase, pos2: singlebase}], sep: "^"}
   rangecomplement: {composed_of: [{range: range}], left: "complement(", right: ")"}

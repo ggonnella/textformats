@@ -1,1 +1,90 @@
-include: [gfa2.lines.yaml, gfa.tags.yaml, gfa2.fields.yaml]
+#
+# Definitions of the different line types of the GFA format files
+#
+include: [gfa2.fields.yaml, gfa.tags.yaml]
+datatypes:
+  header:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {H: "header"}}
+      - tags: gfa::tags
+  segment:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {S: "segment"}}
+      - sid: gfa2::opt_id
+      - slen: unsigned_integer
+      - sequence: gfa2::sequence
+      - tags: gfa::tags
+    required: 4
+  edge:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {E: "edge"}}
+      - eid: gfa2::opt_id
+      - sid1: gfa2::ref
+      - sid2: gfa2::ref
+      - beg1: gfa2::position
+      - end1: gfa2::position
+      - beg2: gfa2::position
+      - end2: gfa2::position
+      - alignment: gfa2::alignment
+      - tags: gfa::tags
+    required: 9
+  ordered_group:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {O: "ordered_group"}}
+      - oid: gfa2::opt_id
+      - elements: gfa2::ref_list
+      - tags: gfa::tags
+    required: 3
+  unordered_group:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {U: "unordered_group"}}
+      - uid: gfa2::opt_id
+      - elements: gfa2::id_list
+      - tags: gfa::tags
+    required: 3
+  gap:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {G: "gap"}}
+      - gid: gfa2::opt_id
+      - sid1: gfa2::ref
+      - sid2: gfa2::ref
+      - dist: unsigned_integer
+      - var: gfa2::opt_integer
+      - tags: gfa::tags
+    required: 6
+  fragment:
+    sep: "\t"
+    composed_of:
+      - line_type: {constant: {F: "fragment"}}
+      - sid: gfa2::id
+      - external: gfa2::ref
+      - sbeg: gfa2::position
+      - send: gfa2::position
+      - fbeg: gfa2::position
+      - fend: gfa2::position
+      - alignment: gfa2::alignment
+      - tags: gfa::tags
+    required: 8
+  comment:
+    composed_of:
+      - line_type: {constant: {"#": "comment"}}
+      - content: string
+    required: 1
+  custom_line:
+    sep: "\t"
+    composed_of:
+      - descriptor: {regex: "[^HSEOUGF#]"}
+      - fields:
+          list_of: {regex: "[^\t]*"}
+          sep: "\t"
+    implicit: {line_type: "custom_line"}
+    required: 1
+  gfa2::line: {one_of: [header, segment, edge, ordered_group,
+                       unordered_group, gap, fragment, comment,
+                       custom_line]}
