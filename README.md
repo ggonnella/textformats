@@ -1,14 +1,106 @@
 # TextFormats
 
-## Introduction
+## Purpose
 
-TextFormats is a library for defining text formats for structured data.
+TextFormats is a library for rapidly defining and using text formats
+for structured data.
 
-Once a text format is defined, the library automatically provides a
-parser, which allows to encode, decode and validate data in the format.
-The library can be conveniently accessed from multiple programming languages:
-examples are given in Python, Nim and C. A command line tool is also provided to
-access the library functions from the command line.
+Given a format definition, the library provides functions for switching
+from the textual representation of data ("encoded string") to the actual
+data which the text represents ("decoded data") and vice-versa.
+
+The library aims at allowing rapid prototyping of libraries for supporting
+file formats in Nim, C and Python, by providing base functionality,
+on which further operations can be added. Furthermore, the definition
+of the formats aims at being human readable and reducing the requirement
+of complex regular expression. Finally, as opposed to lexers or regular
+expressions, it does not only validates and splits different parts of a
+format, but converts them to data in built-in scalar and compound datatypes,
+allowing for fine tuning of the conversion.
+
+The library, implemented in the programming language Nim, can be easily
+accessed and employed in programs and scripts written in Nim, Python and C/C++,
+or using the provided command line tools.
+
+# An example
+
+In multiple biological sequence analysis formats (e.g. SAM, GFA),
+a CIGAR string represents a list of multi-edit operations, each consisting
+of a length (positive integer value) and an operation code (one among a short
+list of possible codes).
+
+A textual representation of a CIGAR is for example
+"10M1D20M1I40M". The string compactly represents a list of mappings,
+each with two members "length" and "code". In JSON its representation would
+be: [{length: 10, code: "M"}, {length: 1, code: "D"}, {length: 20, code: "M"},
+{length: 1, code: "I"}, {length: 40, code: "M"}].
+
+The definition of a CIGAR in Textformats would be:
+```
+cigar:
+  list_of:
+    composed_of:
+    - length: {unsigned_integer: {min: 1}}
+    - code: {accepted_values: [M, D, I, P] }
+```
+
+Once the definition is provided, the library provides the following functions:
+```
+# decoding: textual representation => data
+"10M1D".decode(cigar)
+# => [{length: 10, code: "M"}, {length: 1, code: "D"}]
+
+# encoding: data => textual representation
+[{length: 10, code: "M"}, {length: 1, code: "D"}].encode(cigar)
+# => "10M1D"
+
+# validation of textual representation
+"10M1D".is_valid(cigar)
+# => true
+
+# validation of data
+[{length: 10, code: "M"}, {length: 1, code: "D"}].is_valid(cigar)
+# => true
+```
+
+Furthermore, definitions can refer to each other, which allows splitting
+a complex definition into smaller parts, and reuse them in different contexts.
+For example, the previous definition could have been written as:
+```
+cigar_code: {accepted_values: [M, D, I, P]}
+pos_integer: {unsigned_integer: {min: 1}}
+cigar_op: {composed_of: [length: pos_integer, code: cigar_code]}
+cigar: {list_of: cigar_op}
+```
+
+Since definitions can be re-used in different contexts and formats, they
+can be stored in modules, which can be imported from other specification files.
+The import mechanism is flexible, featuring namespaces, partial imports and
+redefinitions of parts of an imported module.
+
+Finally, sometimes fine tuning of the conversion between encoded and
+decoded data is necessary. Thus, the following operations can be included
+in the definitions:
+- providing more meaningful strings:
+e.g. in the example above of cigar operation code, one can
+decode the "M" to the string "replacement" and the "D" to "deletion"
+- converting to different types:
+e.g. in some formats the symbols "+" and "-" represent
+the boolean values true and false, and should be converted accordingly
+- add implicit values:
+e.g. in many formats, in a particular context
+of the file, multiple kind of information can be stored, and can be recognized
+from their different formatting; in this case, one
+can add a label to the decoded data, describing the type of information
+- remove formatting symbols:
+often structured elements contain formatting constant strings such
+as separators, prefixes and suffixes, which must not be included in the
+resulting decoded data
+- define default values:
+sometimes a given symbol or part of a textual representation is missing
+when representing a default value.
+
+## Defining a format
 
 In TextFormats, formats are defined in a specification file, which is written
 in a human-readable YAML format or is created automatically using the provided
