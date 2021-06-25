@@ -8,7 +8,7 @@
 ## The output is the decoded data, represented as JSON.
 ##
 
-import tables, strutils, json
+import tables, strutils, json, streams
 from ../../textformats import recognize_and_decode_lines
 from ../../textformats import nil
 import cli_helpers
@@ -54,7 +54,7 @@ proc decode_embedded(specfile: string, datatype: string): int =
   ## decode lines of embedded data under a specification
   if specfile.is_preprocessed:
     exit_with(ec_err_preproc)
-  let definition = get_datatype_definition(datatype, false)
+  let definition = get_datatype_definition(datatype)
   try:
     for decoded in textformats.decode_embedded(specfile, definition):
       echo decoded

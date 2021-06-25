@@ -8,7 +8,7 @@
 ## to the specification.
 ##
 
-import strutils, json, tables
+import strutils, json, tables, streams
 import ../../textformats
 import cli_helpers
 

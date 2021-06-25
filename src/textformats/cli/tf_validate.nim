@@ -5,7 +5,7 @@
 ## or the JSON representation of the decoded data.
 ##
 
-import strutils, tables, strformat, json
+import strutils, tables, strformat, json, streams
 import ../../textformats
 import cli_helpers
 

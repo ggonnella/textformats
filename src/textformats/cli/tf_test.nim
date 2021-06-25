@@ -3,7 +3,7 @@
 ## using a given datatype fulfill the expectations.
 ##
 
-import strutils, tables, strformat, json
+import strutils, tables, strformat, json, streams
 import ../../textformats
 import cli_helpers
 
