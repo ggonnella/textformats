@@ -1,10 +1,11 @@
 namespace: gfa
+include: "gfa.B.tags.yaml"
 datatypes:
   tags:
     tagname: "[A-Za-z][A-Za-z0-9]"
     tags:
       A: {regex: "[!-~]"}
-      B: tag_B::array
+      B: tagB::array
       H: {list_of: {regex: "[0-9a-fA-F]{2}"}}
       J: json
       Z: {regex: "[ -~]*"}

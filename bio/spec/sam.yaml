@@ -125,7 +125,7 @@ datatypes:
               - ILLUMINA
               - IONTORRENT
               - LS454
-              - 454
+              - "454"
               - ONT
               - PACBIO
               - SOLID
@@ -149,7 +149,7 @@ datatypes:
     sep: "\n"
     internal_sep: "\t"
     single: ["@HD"]
-  strvalue: {regex: "[^\t\n]+"}
+  strvalue: {regex: "[^\\t\\n]+"}
   md5: {regex: "[0-9a-fA-F]{32}"}
   alignments:
     list_of: alignment

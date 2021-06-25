@@ -28,7 +28,7 @@ datatypes:
       - regex: "[a-zA-Z]{6}[0-9]{9,11}"
   mga:
     regex: "[a-zA-Z]{5}[0-9]{7}"
-  trace:
+  trace_archive:
     regex: "TI[0-9]+"
   # https://www.ddbj.nig.ac.jp/prefix-e.html#dra
   read_archive:
