@@ -1,4 +1,4 @@
-import tables, marshal, strformat, os, json
+import tables, marshal, strformat, os, json, streams
 import datatype_definition, textformats_error
 
 export pairs
@@ -69,6 +69,21 @@ proc create_base_datatypes(definitions: var Specification) =
 proc newSpecification*(): Specification =
   result = newTable[string, DatatypeDefinition]()
   result.create_base_datatypes
+
+proc is_preprocessed*(specfile: string): bool =
+  let errmsg_pfx = "Error loading specification\n" &
+                   &"  Filename: '{specfile}'\n"
+  try:
+    let stream = newFileStream(specfile, mode = fmRead)
+    defer: stream.close()
+    var magic_string: char
+    discard stream.read_data(magic_string.addr, 1)
+    return magic_string == '['
+  except IOError:
+    let errmsg = block:
+      if not fileExists(specfile): "File not found"
+      else: get_current_exception().msg
+    raise newException(TextformatsRuntimeError, errmsg_pfx & errmsg)
 
 proc get_definition*(datatypes: Specification,
                      datatype: string): DatatypeDefinition =

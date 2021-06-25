@@ -8,14 +8,14 @@
 ## to the specification.
 ##
 
-import strutils, json, tables, streams
+import strutils, json, tables
 import ../../textformats
 import cli_helpers
 
 proc encode_json*(specfile: string, datatype: string, decoded_json: string):
                   int =
   ## encode decoded data (JSON) and output as encoded string
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     try:

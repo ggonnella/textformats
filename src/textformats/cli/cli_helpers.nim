@@ -56,22 +56,18 @@ template exit_with*(exit_code: untyped, info = "", errcodemsg = true): untyped =
     stderr.write_line ($info).indent(i)
   return exit_code.int
 
-template is_preprocessed*(specfile: string): bool =
-  if unlikely(not fileExists(specfile)):
-    exit_with(ec_err_spec_io)
-  let stream = newFileStream(specfile, mode = fmRead)
-  defer: stream.close()
-  var magic_string: char
-  discard stream.read_data(magic_string.addr, 1)
-  magic_string == '['
+template fail_if_preprocessed*(specfile) =
+  try:
+    if unlikely(textformats.is_preprocessed(specfile)):
+      exit_with(ec_err_preproc)
+  except textformats.TextformatsRuntimeError:
+    let e = get_current_exception()
+    exit_with(ec_err_spec_io, e.msg)
 
 template get_specification*(specfile): untyped =
   var datatypes: textformats.Specification
-  let preprocessed = is_preprocessed(specfile)
   try:
-    datatypes =
-      if preprocessed: textformats.load_specification(specfile)
-      else: textformats.parse_specification(specfile)
+    datatypes = textformats.specification_from_file(specfile)
   except textformats.InvalidSpecError:
     let e = get_current_exception()
     exit_with(ec_err_spec_invalid, e.msg)
@@ -80,7 +76,8 @@ template get_specification*(specfile): untyped =
     exit_with(ec_err_spec_io, e.msg)
   datatypes
 
-template get_datatype_definition*(datatype: untyped): untyped =
+template get_datatype_definition*(specfile: untyped,
+                                  datatype: untyped): untyped =
   let datatypes = get_specification(specfile)
   if datatype notin datatypes:
     exit_with ec_err_def_not_found

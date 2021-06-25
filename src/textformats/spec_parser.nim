@@ -220,6 +220,12 @@ proc parse_specification*(filename: string): Specification =
                       use_namespace = false)
   result.try_finalizing_definitions(filename)
 
+proc specification_from_file*(specfile: string): Specification =
+  ## Load specification if specfile is a preprocessed specification file
+  ## otherwise parse the file, assuming it is a YAML specification file
+  if specfile.is_preprocessed: load_specification(specfile)
+  else: parse_specification(specfile)
+
 proc list_specification_datatypes*(filename: string): seq[string] =
   ## List the datatypes in a yaml specification file
   ## omitting the included files.

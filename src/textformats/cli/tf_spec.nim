@@ -6,7 +6,7 @@
 ## running the test suite.
 ##
 
-import tables, strutils, sets, streams
+import tables, strutils, sets
 import ../testdata_generator, ../spec_parser, ../testdata_parser
 import ../types/datatype_definition
 import ../../textformats
@@ -14,8 +14,7 @@ import cli_helpers
 
 proc preprocess*(specfile: string, outfile: string): int =
   ## preprocess a specification file
-  if specfile.is_preprocessed:
-    exit_with(ec_err_preproc)
+  fail_if_preprocessed(specfile)
   let datatypes = parse_specification(specfile)
   datatypes.save_specification(outfile)
   exit_with(ec_success)
@@ -29,7 +28,7 @@ proc info*(specfile: string, datatype = ""): int =
       if datatype_name notin textformats.BaseDatatypes:
         echo $datatype_name
   else:
-    let definition = get_datatype_definition(datatype)
+    let definition = get_datatype_definition(specfile, datatype)
     echo definition.verbose_desc(0)
   exit_with(ec_success)
 
@@ -55,8 +54,7 @@ proc test*(specfile: string, testfile = ""): int =
 # the output can be appended to the input testfile
 proc generate_tests*(specfile: string, testfile = ""): int =
   ## auto-generate testdata for a specification file
-  if specfile.is_preprocessed:
-    exit_with(ec_err_preproc)
+  fail_if_preprocessed(specfile)
   let
     datatypes = list_specification_datatypes(specfile)
     specification = parse_specification(specfile)

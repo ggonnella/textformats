@@ -13,6 +13,8 @@ import textformats / [spec_parser, decoder, decoded_validator,
 export parse_specification
 export save_specification
 export load_specification
+export specification_from_file
+export is_preprocessed
 export get_definition
 export decode
 export decode_lines

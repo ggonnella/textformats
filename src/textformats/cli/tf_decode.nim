@@ -8,7 +8,7 @@
 ## The output is the decoded data, represented as JSON.
 ##
 
-import tables, strutils, json, streams
+import tables, strutils, json
 from ../../textformats import recognize_and_decode_lines
 from ../../textformats import nil
 import cli_helpers
@@ -16,7 +16,7 @@ import cli_helpers
 proc decode_string*(specfile: string, datatype: string,
                  encoded: string): int =
   ## decode an encoded string and output as JSON
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   try:
     echo $textformats.decode(encoded, definition)
   except textformats.DecodingError:
@@ -24,7 +24,7 @@ proc decode_string*(specfile: string, datatype: string,
 
 proc linetypes*(specfile: string, datatype: string, infile: string): int =
   ## recognize the line type and decode each line of a file
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   try:
     for decoded in infile.recognize_and_decode_lines(definition):
       echo decoded
@@ -33,7 +33,7 @@ proc linetypes*(specfile: string, datatype: string, infile: string): int =
 
 proc decode_units*(specfile: string, datatype: string, infile: string): int =
   ## decode file as list_of units, defined by 'composed_of'
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   try:
     for decoded in textformats.decode_units(infile, definition):
       echo decoded
@@ -42,7 +42,7 @@ proc decode_units*(specfile: string, datatype: string, infile: string): int =
 
 proc decode_lines*(specfile: string, datatype: string, infile: string): int =
   ## decode file line-by-line as defined by 'composed_of'
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   proc echo_jsonnode(j: JsonNode) =
     echo j
   try:
@@ -52,9 +52,8 @@ proc decode_lines*(specfile: string, datatype: string, infile: string): int =
 
 proc decode_embedded(specfile: string, datatype: string): int =
   ## decode lines of embedded data under a specification
-  if specfile.is_preprocessed:
-    exit_with(ec_err_preproc)
-  let definition = get_datatype_definition(datatype)
+  fail_if_preprocessed(specfile)
+  let definition = get_datatype_definition(specfile, datatype)
   try:
     for decoded in textformats.decode_embedded(specfile, definition):
       echo decoded

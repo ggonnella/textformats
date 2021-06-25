@@ -5,14 +5,14 @@
 ## or the JSON representation of the decoded data.
 ##
 
-import strutils, tables, strformat, json, streams
+import strutils, tables, strformat, json
 import ../../textformats
 import cli_helpers
 
 proc validate_encoded*(specfile: string,
                            datatype: string, encoded: string): int =
   ## validate an encoded string
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   if encoded.is_valid(definition):
     exit_with(ec_success, &"'{encoded}' is a valid encoded '{datatype}'")
   else:
@@ -21,7 +21,7 @@ proc validate_encoded*(specfile: string,
 proc validate_decoded*(specfile: string,
                        datatype: string, decoded_json: string): int =
   ## validate decoded data (JSON)
-  let definition = get_datatype_definition(datatype)
+  let definition = get_datatype_definition(specfile, datatype)
   try:
     let decoded = parse_float_or_json(decoded_json)
     if decoded.is_valid(definition):
