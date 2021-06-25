@@ -8,7 +8,7 @@ tf\_encode - encode data to a text representation, according to given datatype d
 
 # SYNOPSIS
 
-**tf_encode** json -s SPECFILE [-p] -t DATATYPE -d DECODED
+**tf_encode** json -s SPECFILE -t DATATYPE -d DECODED
 
 # DESCRIPTION
 

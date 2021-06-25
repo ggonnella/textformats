@@ -8,8 +8,8 @@ tf\_validate - validate data according to a given datatype definition
 
 # SYNOPSIS
 
-**tf\_validate** encoded -s SPECFILE [-p] -t DATATYPE -e ENCODED\
-**tf\_validate** decoded -s SPECFILE [-p] -t DATATYPE -d DECODED\
+**tf\_validate** encoded -s SPECFILE -t DATATYPE -e ENCODED\
+**tf\_validate** decoded -s SPECFILE -t DATATYPE -d DECODED\
 
 # DESCRIPTION
 

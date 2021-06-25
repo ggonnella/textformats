@@ -8,9 +8,9 @@ tf\_decode - decode text representation, according to given datatype definition
 
 # SYNOPSIS
 
-**tf_decode** string -s SPECFILE [-p] -t DATATYPE -e ENCODED\
-**tf_decode** (linetypes|units|lines) -s SPECFILE [-p] -t DATATYPE -i INFILE\
-**tf_decode** embedded -s SPECFILE [-p] -t DATATYPE
+**tf_decode** string -s SPECFILE -t DATATYPE -e ENCODED\
+**tf_decode** (linetypes|units|lines) -s SPECFILE -t DATATYPE -i INFILE\
+**tf_decode** embedded -s SPECFILE -t DATATYPE
 
 # DESCRIPTION
 

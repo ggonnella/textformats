@@ -8,11 +8,10 @@ tf\_spec - tools for working with specification files
 
 # SYNOPSIS
 
-**tf\_spec** list -s SPECFILE [-p]\
-**tf\_spec** show -s SPECFILE [-p] -t DATATYPE\
+**tf\_spec** info -s SPECFILE [-t DATATYPE]\
 **tf\_spec** preprocess -s SPECFILE -o OUTFILE\
 **tf\_spec** generate\_tests -s SPECFILE [-f TESTFILE]\
-**tf\_spec** test -s SPECFILE [-p] [-f TESTFILE]\
+**tf\_spec** test -s SPECFILE [-f TESTFILE]\
 
 # DESCRIPTION
 

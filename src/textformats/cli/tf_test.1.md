@@ -8,14 +8,14 @@ tf\_test - test the results of encoding, decoding and validation for a given dat
 
 # SYNOPSIS
 
-**tf_test** decoding -s SPECFILE [-p] -t DATATYPE -e ENCODED -d EXPECTED \
-**tf_test** fail\_decoding -s SPECFILE [-p] -t DATATYPE -e ENCODED \
+**tf_test** decoding -s SPECFILE -t DATATYPE -e ENCODED -d EXPECTED \
+**tf_test** fail\_decoding -s SPECFILE -t DATATYPE -e ENCODED \
 
-**tf_test** encoding -s SPECFILE [-p] -t DATATYPE -d DECODED -e EXPECTED \
-**tf_test** fail\_encoding -s SPECFILE [-p] -t DATATYPE -d DECODED \
+**tf_test** encoding -s SPECFILE -t DATATYPE -d DECODED -e EXPECTED \
+**tf_test** fail\_encoding -s SPECFILE -t DATATYPE -d DECODED \
 
-**tf_test** decoded\_validation -s SPECFILE [-p] -t DATATYPE -d DECODED [-v] \
-**tf_test** encoded\_validation -s SPECFILE [-p] -t DATATYPE -e ENCODED [-v] \
+**tf_test** decoded\_validation -s SPECFILE -t DATATYPE -d DECODED [-v] \
+**tf_test** encoded\_validation -s SPECFILE -t DATATYPE -e ENCODED [-v] \
 
 # DESCRIPTION
 
