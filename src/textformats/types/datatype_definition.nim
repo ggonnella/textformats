@@ -205,37 +205,41 @@ proc `$`*(dd: DatatypeDefinition): string =
 
 proc describe(kind: DatatypeDefinitionKind): string =
   case kind:
-  of ddkRef: "a reference to another definition"
+  of ddkRef: "reference to another definition"
   of ddkAnyInteger: "any integer number"
   of ddkAnyUInteger: "any unsigned integer number"
   of ddkAnyFloat: "any floating point number"
-  of ddkIntRange: "a range of integer numbers"
-  of ddkUIntRange: "a range of unsigned integer numbers"
-  of ddkFloatRange: "a range of floating point numbers"
-  of ddkAnyString: "any string value"
-  of ddkRegexMatch: "a string value matching a regular expression"
-  of ddkRegexesMatch: "a string value " &
+  of ddkIntRange: "range of integer numbers"
+  of ddkUIntRange: "range of unsigned integer numbers"
+  of ddkFloatRange: "range of floating point numbers"
+  of ddkAnyString: "string value"
+  of ddkRegexMatch: "string value matching a regular expression"
+  of ddkRegexesMatch: "string value " &
                     "matching one of a list of regular expressions"
-  of ddkConst: "a constant value"
-  of ddkEnum: "one of a list of accepted values"
-  of ddkJson: "a JSON string"
-  of ddkList: "a list of elements of the same type"
-  of ddkStruct: "a tuple of elements (of possibly different types)"
-  of ddkDict: "a list of key/value pairs, where the key determines semantic " &
-            "and datatype of the value"
-  of ddkTags: "a list of name/typecode/value tuples, where the name determines " &
-            "the semantic and the typecode determines the datatype of the value"
+  of ddkConst: "constant value"
+  of ddkEnum: "one of a set of accepted values"
+  of ddkJson: "JSON string"
+  of ddkList: "list of elements of the same type"
+  of ddkStruct: "tuple of elements (of possibly different types)"
+  of ddkDict: "list of key/value pairs (key determines semantic " &
+            "and datatype of value)"
+  of ddkTags: "list of tagname/typecode/value tuples (value semantic " &
+            "depends on tagname, datatype on typecode)"
   of ddkUnion: "one of a list of possible datatypes"
 
 proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
   let pfx="  ".repeat(indent)
   if d.is_nil:
     return "(nil)"
-  result &= &"{pfx}Datatype: '{d.name}': {d.kind.describe}\n"
+  if indent == 0:
+    result &= "Datatype: "
+  else:
+    result &= pfx
+  result &= &"'{d.name}': {d.kind.describe}\n"
   case d.kind:
   of ddkRef:
     if d.has_unresolved_ref:
-      result &= &"\n{pfx}  the target of the reference is: <{d.target_name}>;\n"
+      result &= &"\n{pfx}  the target of the reference is: <{d.target_name}>\n"
     else:
       assert not d.target.is_nil
       result &= &"\n{pfx}  the target of the reference is "
@@ -246,31 +250,32 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
       result &= &"defined as:\n"
       result &= d.target.verbose_desc(indent+2)
   of ddkIntRange:
-    result &= &"\n{pfx}  the range is {d.range_i};\n"
+    result &= &"\n{pfx}  the range is {d.range_i}\n"
   of ddkUIntRange:
-    result &= &"\n{pfx}  the range is {d.range_u};\n"
+    result &= &"\n{pfx}  the range is {d.range_u}\n"
   of ddkFloatRange:
     result &= &"\n{pfx}  the range is: ({d.min_f},{d.max_f})\n"
     if d.max_incl:
       if d.min_incl:
-        result &= &"{pfx}  (including the maximum and the minimum);\n"
+        result &= &"{pfx}  (including the maximum and the minimum)\n"
       else:
-        result &= &"{pfx}  (including the maximum but not the minimum);\n"
+        result &= &"{pfx}  (including the maximum but not the minimum)\n"
     else:
       if d.min_incl:
-        result &= &"{pfx}  (including the minimum but not the maximum);\n"
+        result &= &"{pfx}  (including the minimum but not the maximum)\n"
       else:
-        result &= &"{pfx}  (not including the minimum and the maximum);\n"
+        result &= &"{pfx}  (not including the minimum and the maximum)\n"
   of ddkConst:
-    result &= &"\n{pfx}  the constant value is {d.constant_element};\n"
+    result &= &"\n{pfx}  the constant value is {d.constant_element}\n"
     if d.decoded[0].is_some:
       result &= &"{pfx}  which is decoded as: {d.decoded[0].unsafe_get}\n"
   of ddkEnum:
-    result &= &"\n{pfx}  the accepted values are: {d.elements}\n"
-    for i, element in d.decoded:
-      if element.is_some:
-        result &= &"{pfx}    {d.elements[i]} " &
-                  &"is decoded as: {element.unsafe_get}\n"
+    result &= &"\n{pfx}  the accepted values are:\n"
+    for i, element in d.elements:
+      result &= &"{pfx}    {d.elements[i]}"
+      if d.decoded[i].is_some:
+        result &= &" decoded as: {d.decoded[i].unsafe_get}"
+      result &= "\n"
   of ddkRegexMatch:
     result &= &"\n{pfx}  the regular expression is: '{d.regex.raw}'\n"
     if d.decoded[0].is_some:
@@ -307,20 +312,23 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
               &"{len(d.dict_members)} keys:\n"
     var i = 1
     for k, v in d.dict_members:
-      result &= &"\n{pfx}  - [{i}] key {k}, for which the value has " &
+      result &= &"\n{pfx}  - [{i}] key '{k}', for which the value has " &
                "the following type:\n" & v.verbose_desc(indent+4)
       i += 1
-    result &= &"\n{pfx}- validation:\n"
-    result &= &"{pfx}  the following keys must always be present: " &
-              &" {d.required_keys}\n"
-    result &= &"{pfx}  the following keys can only be present once: " &
-              &" {d.single_keys}\n"
+    if len(d.required_keys) > 0 or len(d.single_keys) > 0:
+      result &= &"\n{pfx}- validation:\n"
+      if len(d.required_keys) > 0:
+        result &= &"{pfx}    the following keys must always be present: " &
+                  d.required_keys.join(", ") & "\n"
+      if len(d.single_keys) > 0:
+        result &= &"{pfx}    the following keys can only be present once: " &
+                  d.single_keys.join(", ") & "\n"
   of ddkTags:
     result &= &"\n{pfx}  thereby the tag name matches the " &
                 "regex '{d.tagname_regex_raw}'\n"
     result &= &"{pfx}  and the type code is one of the following:\n"
     for tagtype, valuedef in d.tagtypes:
-      result &= &"\n{pfx}  - type code {tagtype}, " &
+      result &= &"\n{pfx}  - type code '{tagtype}', " &
                  "for values with type:\n" &
                  valuedef.verbose_desc(indent+4)
     if len(d.predefined_tags) > 0:
@@ -362,25 +370,42 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
     if len(d.sfx) > 0:
       result &= &"{pfx}    after the last element is the suffix '{d.sfx}'\n"
     if len(d.sep) > 0:
-      result &= &"{pfx}    the elements are separated by '{d.sep}'\n"
-      result &= &"{pfx}    the separator "
-      if d.sep_excl: result &= &" is never found "
-      else:          result &= &" may also be present "
-      result &= "in the elements text\n"
-      result &= &"{pfx}    (thus "
+      if d.sep == "\t":
+        result &= &"{pfx}    the elements are separated by tabs\n"
+      elif d.sep == "\n":
+        result &= &"{pfx}    the elements are separated by newlines\n"
+      else:
+        result &= &"{pfx}    the elements are separated by '{d.sep}'\n"
+      result &= &"{pfx}    (which "
+      if d.sep_excl: result &= &"is never found "
+      else:          result &= &"may also be present "
+      result &= "in the elements text,\n"
+      result &= &"{pfx}    thus "
       if d.sep_excl: result &= &"can "
       else:          result &= &"shall not "
       result &= "be used for splitting the string into elements)\n"
     else:
       result &= &"{pfx}    the elements are justapoxed, without any separator\n"
     if d.kind == ddkTags:
-      result &= &"{pfx}    the name, type code and value are separated by " &
-                           &"'{d.tags_internal_sep}'\n"
+      if d.tags_internal_sep == "\t":
+        result &= &"{pfx}    the name, type code and value are separated by " &
+                             &"'{d.tags_internal_sep}'\n"
+      elif d.tags_internal_sep == "\n":
+        result &= &"{pfx}    the name, type code and value are separated by " &
+                             &"'{d.tags_internal_sep}'\n"
+      else:
+        result &= &"{pfx}    the name, type code and value are separated by " &
+                             &"'{d.tags_internal_sep}'\n"
       result &= &"{pfx}    (which can be present in the value, but not in " &
                            "the name or type code)\n"
     elif d.kind == ddkDict:
-      result &= &"{pfx}    the key and the value are separated by " &
-                &"'{d.dict_internal_sep}'\n"
+      if d.dict_internal_sep == "\t":
+        result &= &"{pfx}    the key and the value are separated by tabs\n"
+      elif d.dict_internal_sep == "\n":
+        result &= &"{pfx}    the key and the value are separated by newlines\n"
+      else:
+        result &= &"{pfx}    the key and the value are separated by " &
+                  &"'{d.dict_internal_sep}'\n"
       result &= &"{pfx}    (which can be present in the value, but not in " &
                            "the key)\n"
   if d.as_string:
@@ -394,12 +419,12 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
     if d.null_value.is_some:
       result &= &"\n{pfx}- default decoded value:\n"
       result &= &"{pfx}  the encoded string may be empty\n"
-      result &= &"{pfx}  in that case, the following decoded value is used:\n"
-      result &= &"{pfx}  " & $((d.null_value).unsafe_get) & "\n"
+      result &= &"{pfx}  which is decoded as: " &
+                $((d.null_value).unsafe_get) & "\n"
     if d.kind != ddkRegexMatch:
-      result &= &"\n{pfx}- regular expression:\n"
-      result &= &"{pfx}    regex which has been generated for the data type:\n"
-      if d.regex_computed:
+      if len(d.regex.raw) > 0:
+        result &= &"\n{pfx}- regular expression:\n"
+        result &= &"{pfx}    regex which has been generated for the data type:\n"
         result &= &"{pfx}      '{d.regex.raw}'\n"
         result &= &"{pfx}    a match "
         if d.regex.ensures_valid:

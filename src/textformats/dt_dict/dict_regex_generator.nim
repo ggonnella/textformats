@@ -3,6 +3,9 @@ import tables
 import ../types/datatype_definition
 import ../shared/seq_regex_generator
 
+proc dict_compute_regex*(dd: DatatypeDefinition)
+import ../regex_generator
+
 proc anykey_regex(dd: DatatypeDefinition): string =
   var i = 0
   result = "("
@@ -29,6 +32,8 @@ proc anyelem_regex(dd: DatatypeDefinition): string =
 proc dict_compute_regex*(dd: DatatypeDefinition) =
   assert dd.kind == ddkDict
   dd.regex.ensures_valid = false
+  for key, value in dd.dict_members:
+    discard value.compute_and_get_regex
   let
     anyelem_re = dd.anyelem_regex
     minlen = len(dd.required_keys)
