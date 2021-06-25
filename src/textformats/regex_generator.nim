@@ -69,7 +69,6 @@ proc compile_regex(dd: DatatypeDefinition) =
     reraise_prepend(
       &"Datatype definition: {dd}\n" &
       &"Error while trying to compile regex '{dd.regex.raw}'\n")
-  dd.regex_computed = true
 
 proc regex_apply_null_value(dd: DatatypeDefinition) =
   if dd.null_value.is_some:
@@ -99,6 +98,7 @@ proc compute_and_get_regex*(dd: DatatypeDefinition): DatatypeRegex =
     dd.regex_apply_formatting
     dd.regex_apply_null_value
     dd.compile_regex
+    dd.regex_computed = true
   return dd.regex
 
 proc compute_regex*(dd: DatatypeDefinition) =
