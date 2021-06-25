@@ -82,10 +82,11 @@ all subcommands:
 *preprocess* and *generate\_tests*; YAML or preprocessed
 for all other subcommands
 
-*show* subcommand:
+*info* subcommand:
 
 **-t**, **--datatype=**DATATYPE
-: datatype to be used, among those defined by the specification (REQUIRED)
+: specify a datatype, to show information about a datatype
+  (default: display the list of datatypes defined by the specification)
 
 *preprocess* subcommand:
 

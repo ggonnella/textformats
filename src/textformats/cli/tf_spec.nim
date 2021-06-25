@@ -8,14 +8,9 @@
 
 import tables, strutils, sets, streams
 import ../testdata_generator, ../spec_parser, ../testdata_parser
+import ../types/datatype_definition
 import ../../textformats
 import cli_helpers
-
-proc show*(specfile: string, datatype: string): int =
-  ## show a definition in a specification file
-  let definition = get_datatype_definition(datatype)
-  echo $definition
-  exit_with(ec_success)
 
 proc preprocess*(specfile: string, outfile: string): int =
   ## preprocess a specification file
@@ -25,12 +20,17 @@ proc preprocess*(specfile: string, outfile: string): int =
   datatypes.save_specification(outfile)
   exit_with(ec_success)
 
-proc list*(specfile: string): int =
-  ## list all definitions in a specification file
-  let datatypes = get_specification(specfile)
-  for datatype_name, datatype in datatypes:
-    if datatype_name notin textformats.BaseDatatypes:
-      echo $datatype_name
+proc info*(specfile: string, datatype = ""): int =
+  ## if no datatype is specified, list all definitions in a specification
+  ## otherwise: show info about a definition
+  if datatype == "":
+    let datatypes = get_specification(specfile)
+    for datatype_name, datatype in datatypes:
+      if datatype_name notin textformats.BaseDatatypes:
+        echo $datatype_name
+  else:
+    let definition = get_datatype_definition(datatype)
+    echo definition.verbose_desc(0)
   exit_with(ec_success)
 
 proc test*(specfile: string, testfile = ""): int =
@@ -75,10 +75,7 @@ proc generate_tests*(specfile: string, testfile = ""): int =
 when isMainModule:
   import cligen
   dispatch_multi(
-                 [list,
-                  short = {"specfile": short_specfile},
-                  help = {"specfile": help_specfile}],
-                 [show,
+                 [info,
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype},
                   help = {"specfile": help_specfile,
