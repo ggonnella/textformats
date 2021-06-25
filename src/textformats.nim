@@ -17,10 +17,7 @@ export specification_from_file
 export is_preprocessed
 export get_definition
 export decode
-export decode_lines
-export recognize_and_decode
-export recognize_and_decode_lines
-export decode_embedded
+export decoded_lines
 export is_valid
 export encode
 export unsafe_encode

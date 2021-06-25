@@ -1,7 +1,6 @@
 import strutils, strformat, options, json
 import regex
-import types / [datatype_definition, textformats_error,
-                def_syntax, lines_reader]
+import types / [datatype_definition, textformats_error, lines_reader]
 
 proc decode*(input: string, dd: DatatypeDefinition): JsonNode
 
@@ -121,29 +120,6 @@ proc decode*(input: string, dd: DatatypeDefinition): JsonNode =
       raise_decoding_error(input, e.msg, dd)
   return if dd.as_string: %input else: result
 
-proc recognize_and_decode*(input: string, dd: DatatypeDefinition):
-                          tuple[name: string, decoded: JsonNode] =
-  if dd.kind != ddkUnion:
-    raise newException(TextformatsRuntimeError,
-                       "Error while attempting to recognize and decode\n" &
-                       &"The datatype '{dd.name}' is not a '{UnionDefKey}'")
-  var
-    errmsg: string
-    i = 1
-  for c in dd.choices:
-    try:
-      let decoded = input.decode(c)
-      return (c.name, decoded)
-    except DecodingError:
-      let e = getCurrentException()
-      errmsg &= &"[Alternative {i}] {c.name}\n\n{e.msg}\n\n"
-    i += 1
-  raise newException(DecodingError,
-    &"Error while recognizing and decoding: '{input}'\n" &
-    "The value is invalid according to all specified alternative formats.\n" &
-    "The errors encountered for each of the alternatives are listed below.\n\n" &
-     errmsg)
-
 template open_input_file(filename: string): File =
   var file: File = nil
   try: file = open(filename)
@@ -154,60 +130,66 @@ template open_input_file(filename: string): File =
                        "'\n" & e.msg)
   file
 
-iterator decode_lines*(filename: string, dd: DatatypeDefinition): JsonNode =
-  ##
-  ## Decode a file line by line.
-  ## The dd defines a line and can have any type.
-  ##
-  let file = open_input_file(filename)
-  for line in lines(file):
-    yield line.decode(dd)
+type
+  dataParsingState = enum
+    dpsPre, dpsYaml, dpsData
 
-iterator decode_line_groups*(filename: string, dd: DatatypeDefinition,
-                             n_lines_at_once: Natural): JsonNode =
+iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
+                       embedded = false, wrapped = false,
+                       group_by = 1): JsonNode =
   ##
-  ## Decode a file by a pre-defined number of lines at once.
-  ## The dd defines the group of lines.
+  ## Decode a file applying the definition dd to each line independently
   ##
+  ## if embedded is set to true, the file is assumed to contain an
+  ## embedded specification in the header, which is skipped; i.e. only
+  ## the content after the first document separator --- is analyzed
+  ##
+  ## if wrapped is true, then, if the definition is a union, then the
+  ## definition wrapped flag is set
+  ##
+  assert group_by >= 1
   let file = open_input_file(filename)
-  var
-    linesgroup = newseq[string](n_lines_at_once)
-    i = 0
-  for line in lines(file):
-    linesgroup[i] = line
-    i += 1
-    if i == n_lines_at_once:
-      yield linesgroup.join("\n").decode(dd)
-    i = 0
-  if i > 0:
-    raise newException(DecodingError,
-                       "Final group of lines does not contain enough lines\n" &
-                       &"Found n. of lines: {i}\n" &
-                       &"Required n. of lines: {n_lines_at_once}")
-
-iterator recognize_and_decode_lines*(filename: string, dd: DatatypeDefinition):
-                          tuple[name: string, decoded: JsonNode] =
-  let file = open_input_file(filename)
-  for line in lines(file):
-    yield line.recognize_and_decode(dd)
-
-iterator decode_embedded*(filename: string, dd: DatatypeDefinition): JsonNode =
-  let file = open_input_file(filename)
+  var def = dd
+  if wrapped and dd.kind == ddkUnion:
+    def.wrapped = true
   var
     line_no = 0
-    datasection = false
+    state = if embedded: dpsPre else: dpsData
+    linesgroup = newseq[string](group_by)
+    n_in_group = 0
+    shall_decode = true
   for line in lines(file):
-    if datasection:
-      try:
-        yield line.decode(dd)
-        line_no += 1
-      except DecodingError:
-        var msg = &"Line content: '{line}'\n"
-        msg &= &"Line number: {line_no}\n"
-        raise newException(DecodingError, msg & getCurrentExceptionMsg())
-    else:
+    line_no += 1
+    case state:
+    of dpsData:
+      if group_by > 1:
+        linesgroup[n_in_group] = line
+        n_in_group += 1
+        shall_decode = (n_in_group == group_by)
+      if shall_decode:
+        try:
+          if group_by > 1:
+            yield linesgroup.join("\n").decode(def)
+            n_in_group = 0
+          else:
+            yield line.decode(def)
+        except DecodingError:
+          var msg = &"File: '{filename}'\n" &
+                    &"Line number: {line_no}\n"
+          raise newException(DecodingError, msg & getCurrentExceptionMsg())
+    of dpsPre:
+      let uncommented = line.split("#")[0]
+      if len(uncommented.strip) > 0:
+        state = dpsYaml
+    of dpsYaml:
       if line == "---":
-        datasection = true
+        state = dpsData
+  if n_in_group > 0:
+    raise newException(DecodingError,
+                       &"File: '{filename}'\n" &
+                       "Final group of lines does not contain enough lines\n" &
+                       &"Found n. of lines: {n_in_group}\n" &
+                       &"Required n. of lines: {group_by}")
 
 proc decode_multiline*(ls: var LinesReader, dd: DatatypeDefinition): JsonNode =
   if dd.kind == ddkRef:

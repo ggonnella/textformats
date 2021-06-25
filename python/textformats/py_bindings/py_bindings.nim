@@ -15,10 +15,6 @@ proc parse_specification*(filename: string):
 proc decode*(input: string, dd: DatatypeDefinition): JsonNode {.exportpy.} =
   textformats.decode(input, dd)
 
-proc recognize_and_decode*(input: string, dd: DatatypeDefinition):
-                           tuple[name: string, decoded: JsonNode] {.exportpy.} =
-  textformats.recognize_and_decode(input, dd)
-
 proc to_json*(input: string, dd: DatatypeDefinition):
                      string {.exportpy.} =
   $textformats.decode(input, dd)

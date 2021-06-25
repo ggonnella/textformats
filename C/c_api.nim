@@ -25,10 +25,6 @@ proc get_definition*(datatypes: Specification, datatype: cstring):
 proc decode*(input: cstring, dd: DatatypeDefinition): JsonNode {.exportc.} =
   textformats.decode($input, dd)
 
-proc recognize_and_decode*(input: string, dd: DatatypeDefinition):
-                        tuple[name: string, decoded: JsonNode] {.exportc.} =
-  textformats.recognize_and_decode(input, dd)
-
 proc to_json*(input: cstring, dd: DatatypeDefinition):
                      cstring {.exportc.} =
   ($textformats.decode($input, dd)).cstring

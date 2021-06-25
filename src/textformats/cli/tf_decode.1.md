@@ -9,8 +9,8 @@ tf\_decode - decode text representation, according to given datatype definition
 # SYNOPSIS
 
 **tf_decode** string -s SPECFILE -t DATATYPE -e ENCODED\
-**tf_decode** (linetypes|units|lines) -s SPECFILE -t DATATYPE -i INFILE\
-**tf_decode** embedded -s SPECFILE -t DATATYPE
+**tf_decode** (units|lines) -s SPECFILE -t DATATYPE -i INFILE\
+**tf_decode** linewise -s SPECFILE -t DATATYPE [-i INFILE] [-w] [-g N]
 
 # DESCRIPTION
 
@@ -29,11 +29,8 @@ the specification to be used (-t).
 **string**
 : decode an encoded string and output as JSON
 
-**linetype**
-: recognize the line type and decode each line of a file
-
-**embedded**
-: decode lines of embedded data under a specification
+**linewise**
+: decode lines of a file using the specification
 
 **units**
 : decode file as list\_of units, defined by 'composed\_of'
@@ -43,8 +40,9 @@ the specification to be used (-t).
 
 ## Common options
 **-s**, **--specfile=**FILENAME
-: specification file to use, YAML or preprocessed (REQUIRED); for
-*embedded* it must be YAML
+: specification file to use, YAML or preprocessed (REQUIRED
+  except for *linewise*, if the specification is embedded
+  in the input file
 
 **-t**, **--datatype=**DATATYPE
 : which datatype to use, among those defined by the specification (REQUIRED)
@@ -56,10 +54,11 @@ the specification to be used (-t).
 **-e**, **--encoded=**STRING
 : encoded string to be decoded (REQUIRED)
 
-*linetypes*, *units*, *lines* subcommands:
+*linewise*, *units*, *lines* subcommands:
 
 **-i**, **--infile=**FILENAME
-: input file, containing the encoded data (REQUIRED)
+: input file, containing the encoded data and, if **-s** is not used,
+  an embedded specification (REQUIRED)
 
 # EXIT VALUES
 The exit code is 0 on success, anything else on error.

@@ -6,7 +6,7 @@ from strutils import stripLineEnd
 from json import `$`, parse_json, JsonNode, `==`, JsonParsingError
 #import nimprof
 # this library
-from textformats import parse_specification, decode_lines
+from textformats import parse_specification, decoded_lines
 
 type
   ExitCode = enum
@@ -32,7 +32,7 @@ template get_datatype_definition(datatype: untyped): untyped =
 proc run_decode*(specfile: string, datatype: string, filename: string): int =
   let definition = get_datatype_definition(datatype)
   try:
-    for decoded in decode_lines(filename, definition):
+    for decoded in decoded_lines(filename, definition):
       echo $decoded
   except ValueError:
     exit_with(ec_invalid_data_for_datatype, getCurrentExceptionMsg())

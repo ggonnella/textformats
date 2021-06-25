@@ -184,30 +184,27 @@ The advantage is that in many cases not all the operations
 necessary for decoding are done, thus the method can be
 more efficient than using ``decode``.
 
+#### Decoding from file
+
+In many cases the textual representation of the data is contained in a file.
+Using the ``filename.decoded_lines(datatype_definition)`` iterator, each line of
+the file is passed to ``decode`` and the resulting JsonNode objects are yielded.
+
 #### Multiple alternative datatypes
 
 If a string contains one of multiple types of data, a ``one_of`` datatype
 definition can be used as datatype definition. The ``decode`` function then
-correctly decodes the string but does not tell which of the branches
-of the ``one_of`` definition have been used. If this is required,
-the ``string.recognize_and_decode(one_of_datatype_definition)`` can be
-used, which returns a named 2-tuple, where ``name`` is the
-name of the used branch (string) and ``decoded`` is the JsonNode object
-containing the decoded data.
-
-#### Decoding from file
-
-In many cases the textual representation of the data is contained in a file.
-Using the ``filename.decode_lines(datatype_definition)`` iterator, each line of
-the file is passed to ``decode`` and the resulting JsonNode objects are yielded.
+correctly decodes the string but does not tell which of the branches of the
+``one_of`` definition have been used. If this is required, the ``wrapped`` flag
+can be set, then the decoded value is a mapping, where ``type`` is the name of
+the used branch (string) and ``value`` is the decoded data itself.
 
 #### Files with different line types
 
 If different kind of lines exist and a ``one_of`` definition is used,
-the branch of ``one_of`` used for the decoding can be yielded as well,
-by using the ``filename.recognize_and_decode_lines(one_of_datatype_definition)``
-iterator. This is the file line iterator equivalent of ``recognize_and_decode``
-(described above).
+the branch of ``one_of`` used for the decoding can be recognized
+using the flag ``wrapped``, which adds information about the branch
+used for decoding to the output.
 
 #### Files with different line types in a specific order
 
@@ -225,19 +222,16 @@ recognize the borders of the units. as described by the
 
 #### Embedded specifications
 
-Data files can contain an embedded YAML specification which desribes the
-data format. For this, the file shall start with the YAML specification
-(without any initial document separator ``---```). The data shall then
-follow the first document separator in the file (line containing only exactly
-``---``).
+Data files can contain an embedded YAML specification which desribes the data
+format. The file is then supposed to contain first a YAML document, with
+the specification, then, after a line containing the document separator
+(``---``), the data to be decoded.
 
 Data files with embedded specifications are decoded as follows. First,
 the specification is parsed, as usual, using ``parse_specification(filename)``
 and a datatype definition is obtained from it, as described above.
 The same filename is then passed to the iterator
-``filename.decode_embedded(datatype_definition)``, which has the same
-interface as ``decode_lines``, but ignores the specification (i.e. everything
-up to the first ``---`` line found in the file).
+``decoded_lines`` by setting the ``embedded`` flag.
 
 TODO: is the name of ``decode_file_linewise`` appropriate?
 Because it looks like it actually decodes units (using
@@ -325,7 +319,6 @@ a Datatype object is extracted from the specification.
 The decoding, encoding and validation functions are then
 expressed as methods of the datatype object, i.e.
 ``datatype.decode(encoded_string)``,
-``datatype.recognize_and_decode(encoded_string)``,
 ``datatype.to_json(encoded_string)``,
 ``datatype.is_valid_encoded(encoded_string)``
 for handling the text representation, and
@@ -362,7 +355,7 @@ functions.
 
 The available encode, decoded, validation functions and their interfaces
 are the same as in the Nim and Python API. Encoded data is decoded using
-``decode``, ``recognize_and_decode``, or ``to_json``, or validated
+``decode``, ``to_json``, or validated
 using ``is_valid_encoded``. Decoded data is encoded using ``encode``,
 ``unsafe_encode``, ``from_json`` or ``unsafe_from_json``, or validated
 using ``is_valid_decoded``.
@@ -410,7 +403,7 @@ decoding is selected using the ``--datatype`` or ``-t``.
 
 #### Decode files
 
-TODO: describe ``decode_lines``, ``decode_embedded``, ``decode_units``,
+TODO: describe ``decoded_lines``, ``decode_units``,
 ``linetypes``.
 
 ### Encode data

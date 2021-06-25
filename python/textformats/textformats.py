@@ -8,9 +8,6 @@ class Datatype:
   def decode(self, s):
     return tf.decode(s, self.definition)
 
-  def recognize_and_decode(self, s):
-    return tf.recognize_and_decode(s. self.definition)
-
   def to_json(self, s):
     return tf.to_json(s, self.definition)
 

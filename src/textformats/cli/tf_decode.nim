@@ -9,8 +9,7 @@
 ##
 
 import tables, strutils, json
-from ../../textformats import recognize_and_decode_lines
-from ../../textformats import nil
+import ../../textformats
 import cli_helpers
 
 proc decode_string*(specfile: string, datatype: string,
@@ -22,16 +21,7 @@ proc decode_string*(specfile: string, datatype: string,
   except textformats.DecodingError:
     exit_with(ec_err_invalid_encoded, getCurrentExceptionMsg())
 
-proc linetypes*(specfile: string, datatype: string, infile: string): int =
-  ## recognize the line type and decode each line of a file
-  let definition = get_datatype_definition(specfile, datatype)
-  try:
-    for decoded in infile.recognize_and_decode_lines(definition):
-      echo decoded
-  except textformats.DecodingError:
-    exit_with(ec_err_invalid_encoded, getCurrentExceptionMsg())
-
-proc decode_units*(specfile: string, datatype: string, infile: string): int =
+proc d_units*(specfile: string, datatype: string, infile: string): int =
   ## decode file as list_of units, defined by 'composed_of'
   let definition = get_datatype_definition(specfile, datatype)
   try:
@@ -40,7 +30,7 @@ proc decode_units*(specfile: string, datatype: string, infile: string): int =
   except textformats.DecodingError:
     exit_with(ec_err_invalid_encoded, getCurrentExceptionMsg())
 
-proc decode_lines*(specfile: string, datatype: string, infile: string): int =
+proc d_lines*(specfile: string, datatype: string, infile: string): int =
   ## decode file line-by-line as defined by 'composed_of'
   let definition = get_datatype_definition(specfile, datatype)
   proc echo_jsonnode(j: JsonNode) =
@@ -50,12 +40,20 @@ proc decode_lines*(specfile: string, datatype: string, infile: string): int =
   except textformats.DecodingError:
     exit_with(ec_err_invalid_encoded, getCurrentExceptionMsg())
 
-proc decode_embedded(specfile: string, datatype: string): int =
-  ## decode lines of embedded data under a specification
-  fail_if_preprocessed(specfile)
-  let definition = get_datatype_definition(specfile, datatype)
+proc linewise(specfile = "", datatype: string,
+              infile: string, wrapped = false, group_by = 1): int =
+  ## decode file line by line (or in group of a predefined number
+  ## of lines) using a given datatype
+  let
+    embedded = (specfile == "")
+    specsrc = if embedded: infile else: specfile
+  if embedded:
+    fail_if_preprocessed(infile)
+  let
+    definition = get_datatype_definition(specsrc, datatype)
   try:
-    for decoded in textformats.decode_embedded(specfile, definition):
+    for decoded in textformats.decoded_lines(infile, definition,
+                     embedded, wrapped, group_by):
       echo decoded
   except textformats.DecodingError:
     exit_with(ec_err_invalid_encoded, getCurrentExceptionMsg())
@@ -70,26 +68,21 @@ when isMainModule:
                   help = {"specfile": help_specfile,
                           "datatype": help_datatype,
                           "encoded":  help_encoded}],
-                 [linetypes,
+                 [linewise,
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype,
                            "infile":  short_infile},
                   help = {"specfile": help_specfile,
                           "datatype": help_datatype,
                           "infile":  help_infile}],
-                 [decode_embedded, cmdname = "embedded",
-                  short = {"specfile": short_specfile,
-                           "datatype": short_datatype},
-                  help = {"specfile": help_specfile_yaml,
-                          "datatype": help_datatype}],
-                 [decode_units, cmdname = "units",
+                 [d_units, cmdname = "units",
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype,
                            "infile":  short_infile},
                   help = {"specfile": help_specfile,
                           "datatype": help_datatype,
                           "infile":  help_infile}],
-                 [decode_lines, cmdname = "lines",
+                 [d_lines, cmdname = "lines",
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype,
                            "infile":  short_infile},
