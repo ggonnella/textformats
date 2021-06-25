@@ -15,7 +15,7 @@ tf\_spec - tools for working with specification files
 
 # DESCRIPTION
 
-TextFormats specification files are YAML files or pre-processed files created
+TextFormats specification files are YAML files or preprocessed files created
 with this command.
 
 ## Introspection
@@ -28,13 +28,14 @@ The command allows to list the datatypes contained in the file
 
 A preprocessed version of the specification can be created
 using the *preprocess* subcommand.
+They can be used by most CLI commands instead of the YAML file.
 
 Preprocessed specifications can be faster to load in some cases, compared
 to the YAML specifications (which requires parsing and validation of the
 YAML content and generation of the regular expressions).
 
-Preprocessed
-specifications can be used by most CLI commands, adding the *-p* switch.
+Only the datatype specifications are contained in the preprocessed
+file, not the testdata and embedded data.
 
 ## Tests
 
