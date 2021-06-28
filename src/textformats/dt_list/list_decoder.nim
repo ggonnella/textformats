@@ -1,24 +1,23 @@
 import json, strutils, options, strformat
 import regex
 import ../support/openrange
-import ../types / [datatype_definition, textformats_error, regex_grppfx,
-                   lines_reader]
+import ../types / [datatype_definition, textformats_error, regex_grppfx]
 import ../shared/formatting_decoder
 import ../decoder
 
-proc raise_invalid_list_size(list_size: int, dd: DatatypeDefinition) =
+proc raise_invalid_list_size*(list_size: int, dd: DatatypeDefinition) =
   raise newException(DecodingError,
                     "Error: Invalid number of items in list.\n" &
-                    &"Minimum valid n. of items: '{dd.lenrange.low}'\n" &
+                    &"Minimum valid n. of items: '{dd.lenrange.lowstr}'\n" &
                     &"Maximum valid n. of items: '{dd.lenrange.highstr}'\n" &
                     &"Found n. of items: '{list_size}'\n")
 
-proc raise_invalid_list_element(i: int, dd: DatatypeDefinition,
+proc raise_invalid_list_element*(i: int, dd: DatatypeDefinition,
                                 errmsg: string) =
   raise newException(DecodingError,
                      "Error: Invalid element in list.\n" &
                      &"Element number: {i}\n" &
-                     &"Error while decoding element:\n" &
+                     "Error while decoding element:\n" &
                      errmsg.indent(2))
 
 proc raise_invalid_list_formatting(found: string, expected: string,
@@ -144,35 +143,4 @@ proc decode_list*(input: string, dd: DatatypeDefinition): JsonNode =
     return input.splitting_decode_list(dd)
   else:
     return input.elementwise_decode_list(dd)
-
-proc decode_multiline_list*(ls: var LinesReader, dd: DatatypeDefinition):
-                           JsonNode =
-  result = newJArray()
-  var i = 0
-  while i <= dd.lenrange.high:
-    if ls.eof:
-      if i < dd.lenrange.low: raise_invalid_list_size(i, dd)
-      else: break
-    try:
-      result.add(ls.decode_multiline(dd.members_def))
-      i += 1
-    except DecodingError:
-      if i == 0 or i < dd.lenrange.low:
-        raise_invalid_list_element(i, dd, get_current_exception_msg())
-      else: break
-
-proc decode_multiline_list_lines*(ls: var LinesReader, dd: DatatypeDefinition,
-                                  action: proc(j: JsonNode)) =
-  var i = 0
-  while i <= dd.lenrange.high:
-    if ls.eof:
-      if i < dd.lenrange.low: raise_invalid_list_size(i, dd)
-      else: break
-    try:
-      ls.decode_multiline_lines(dd.members_def, action)
-      i += 1
-    except DecodingError:
-      if i == 0 or i < dd.lenrange.low:
-        raise_invalid_list_element(i, dd, get_current_exception_msg())
-      else: break
 

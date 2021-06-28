@@ -28,6 +28,8 @@ const
   NullValueKey* = "empty"
   EncodedKey* = "reverse"
   AsStringKey* = "as_string"
+  ScopeKey* = "scope"
+  UnitSizeKey* = "n_lines"
   # ranges
   MinKey* = "min"
   MaxKey* = "max"

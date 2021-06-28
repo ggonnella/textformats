@@ -4,7 +4,7 @@ import yaml/dom
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../support / [error_support, yaml_support, openrange]
 import ../shared / [formatting_def_parser, null_value_def_parser,
-                    as_string_def_parser]
+                    as_string_def_parser, scope_def_parser]
 
 proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition
@@ -36,6 +36,8 @@ const
   - {PfxKey}: {PfxHelp}
   - {SfxKey}: {SfxHelp}
   - {AsStringKey}: {AsStringHelp}
+  - {ScopeKey}: {ScopeHelp}
+  - {UnitsizeKey}: {UnitsizeHelp}
 """
 
 proc parse_lenrange_min(minlength_optnode: Option[YamlNode]): Option[Natural] =
@@ -68,7 +70,8 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot, [DefKey, NullValueKey,
                                               LenrangeMinKey, LenrangeMaxKey,
                                               SepKey, PfxKey, SfxKey,
-                                              SepExclKey, AsStringKey, LenKey])
+                                              SepExclKey, AsStringKey, LenKey,
+                                              ScopeKey, UnitsizeKey])
     result = DatatypeDefinition(kind: ddkList, name: name,
         members_def: defnodes[0].unsafe_get.parse_members_def(
                        name & ListItemDefNameSfx),
@@ -77,7 +80,9 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
         pfx:         defnodes[5].parse_pfx,
         sfx:         defnodes[6].parse_sfx,
         sep_excl:    defnodes[7].parse_sep_excl,
-        as_string:   defnodes[8].parse_as_string)
+        as_string:   defnodes[8].parse_as_string,
+        scope:       defnodes[10].parse_scope,
+        unitsize:    defnodes[11].parse_unitsize)
     if defnodes[9].is_some:
       if defnodes[2].is_some:
         raise newException(DefSyntaxError,

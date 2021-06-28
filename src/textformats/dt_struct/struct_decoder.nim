@@ -1,16 +1,15 @@
 import strutils, strformat, options, json, tables
 import regex
-import ../types / [datatype_definition, textformats_error, regex_grppfx,
-                   lines_reader]
+import ../types / [datatype_definition, textformats_error, regex_grppfx]
 import ../shared/formatting_decoder
 import ../decoder
 
-proc raise_invalid_element(emsg: string, membername: string) =
+proc raise_invalid_element*(emsg: string, membername: string) =
   raise newException(DecodingError,
           "Error: invalid encoded value for structure element\n" &
           &"Element name: {membername}\n{emsg.indent(2)}")
 
-proc raise_invalid_min_n_elements(found: int, expected: int) =
+proc raise_invalid_min_n_elements*(found: int, expected: int) =
   raise newException(DecodingError,
           "Error: invalid number of elements in structure\n" &
           &"Expected minimum number of elements: {expected}\n" &
@@ -127,40 +126,3 @@ proc decode_struct*(input: string, dd: DatatypeDefinition): JsonNode =
     return input.splitting_decode_struct(dd)
   else:
     return input.elementwise_decode_struct(dd)
-
-proc decode_multiline_struct*(ls: var LinesReader, dd: DatatypeDefinition):
-                             JsonNode =
-  result = newJObject()
-  var i = 0
-  for member in dd.members:
-    if ls.eof:
-      if i < dd.n_required:
-        raise_invalid_min_n_elements(i, dd.n_required)
-      else:
-        break
-    try:
-      result[member.name] = ls.decode_multiline(member.def)
-      i += 1
-    except DecodingError:
-      if i < dd.n_required:
-        raise_invalid_element(get_current_exception_msg(), member.name)
-      else:
-        break
-
-proc decode_multiline_struct_lines*(ls: var LinesReader, dd: DatatypeDefinition,
-                                    action: proc(j: JsonNode)) =
-  var i = 0
-  for member in dd.members:
-    if ls.eof:
-      if i < dd.n_required:
-        raise_invalid_min_n_elements(i, dd.n_required)
-      else:
-        break
-    try:
-      ls.decode_multiline_lines(member.def, action)
-      i += 1
-    except DecodingError:
-      continue
-  if i < dd.n_required:
-    raise_invalid_min_n_elements(i, dd.n_required)
-

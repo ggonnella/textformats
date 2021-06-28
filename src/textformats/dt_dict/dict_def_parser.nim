@@ -3,7 +3,7 @@ import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../support/yaml_support
 import ../shared / [formatting_def_parser, implicit_def_parser,
                     null_value_def_parser, nameddef_def_parser,
-                    as_string_def_parser]
+                    as_string_def_parser, scope_def_parser]
 
 proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition
@@ -45,6 +45,8 @@ const
   - {ImplicitKey}: {ImplicitHelp}
   - {SingleKey}: {SingleHelp}
   - {AsStringKey}: {AsStringHelp}
+  - {ScopeKey}: {ScopeHelp}
+  - {UnitsizeKey}: {UnitsizeHelp}
   """
 
 proc parse_dict_members(n: YamlNode, name: string):
@@ -99,7 +101,7 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot,
                      [DefKey, SepKey, DictInternalSepKey, NullValueKey,
                      PfxKey, SfxKey, ImplicitKey, DictRequiredKey, SingleKey,
-                     AsStringKey],
+                     AsStringKey, ScopeKey, UnitsizeKey],
                      3)
     result = DatatypeDefinition(kind: ddkDict, name: name,
       dict_members:           defnodes[0].unsafe_get.parse_dict_members(name),
@@ -109,7 +111,9 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
       pfx:                    defnodes[4].parse_pfx,
       sfx:                    defnodes[5].parse_sfx,
       implicit:               defnodes[6].parse_implicit,
-      as_string:              defnodes[9].parse_as_string)
+      as_string:              defnodes[9].parse_as_string,
+      scope:                  defnodes[10].parse_scope,
+      unitsize:               defnodes[11].parse_unitsize)
     result.required_keys =
       defnodes[7].parse_keys_list(DictRequiredKey, result.dict_members)
     result.single_keys =

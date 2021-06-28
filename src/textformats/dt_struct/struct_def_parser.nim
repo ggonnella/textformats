@@ -5,7 +5,7 @@ import yaml/dom
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../shared / [formatting_def_parser, null_value_def_parser,
                     implicit_def_parser, nameddef_def_parser,
-                    as_string_def_parser]
+                    as_string_def_parser, scope_def_parser]
 import ../support / [yaml_support, error_support, openrange]
 
 proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
@@ -38,6 +38,8 @@ const
   - {NRequiredKey}: {NRequiredHelp}
   - {AsStringKey}: {AsStringHelp}
   - {HiddenKey}: {HiddenHelp}
+  - {ScopeKey}: {ScopeHelp}
+  - {UnitsizeKey}: {UnitsizeHelp}
   """
 
 proc parse_struct_members(n: YamlNode, name: string):
@@ -82,7 +84,7 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot,
                      [DefKey, NullValueKey, SepKey, PfxKey, SfxKey,
                       SepExclKey, NRequiredKey, ImplicitKey, AsStringKey,
-                      HiddenKey])
+                      HiddenKey, ScopeKey, UnitsizeKey])
     result = DatatypeDefinition(kind: ddkStruct, name: name,
                members:    defnodes[0].unsafe_get.parse_struct_members(name),
                null_value: defnodes[1].parse_null_value,
@@ -91,7 +93,9 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
                sfx:        defnodes[4].parse_sfx,
                sep_excl:   defnodes[5].parse_sep_excl,
                implicit:   defnodes[7].parse_implicit,
-               as_string:  defnodes[8].parse_as_string)
+               as_string:  defnodes[8].parse_as_string,
+               scope:      defnodes[10].parse_scope,
+               unitsize:   defnodes[11].parse_unitsize)
     result.parse_n_required(defnodes[6])
     validate_sep_if_sepexcl(defnodes[5], defnodes[2])
     result.validate_member_names_uniqueness

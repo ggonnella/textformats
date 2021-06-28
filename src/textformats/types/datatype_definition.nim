@@ -72,6 +72,14 @@ type
     raw*: string
     ensures_valid*: bool
 
+  DatatypeDefinitionScope* = enum
+    ddsUndef   = "any part of a file (default)",
+    ddsLine    = "a single line of a file",
+    ddsUnit    = "a fixed number of lines of a file",
+    ddsSection = "a section of a file, with as many " &
+                 "lines as fitting the definition",
+    ddsWhole   = "the entire file"
+
   DatatypeDefinition* = ref DatatypeDefinitionObj
   DatatypeDefinitionObj {.acyclic.} = object
 
@@ -114,6 +122,15 @@ type
                      ## but no decoding or encoding is done, i.e. the
                      ## encoded string is returned as decoded data;
                      ## ignored for datatypes whose decoded value are strings
+
+    # Scope of the definition when decoding files
+
+    scope*: DatatypeDefinitionScope ## if this definition is used for
+                                    ## representing a file, which part of
+                                    ## the file is covered by the definition
+
+    unitsize*: int                  ## if scope is ddsUnit, which
+                                    ## is the size of a unit, in number of lines
 
     # Kind-specific information
 
@@ -197,6 +214,12 @@ proc children*(dd: DatatypeDefinition): seq[DatatypeDefinition] =
     for name, def in dd.tagtypes: result.add(def)
   of ddkUnion:
     for c in dd.choices: result.add(c)
+
+proc dereference*(dd: DatatypeDefinition): DatatypeDefinition =
+  result = dd
+  while result.kind == ddkRef:
+    assert(not result.target.is_nil)
+    result = result.target
 
 proc tabular_desc(d: DatatypeDefinition, indent: int): string
 
@@ -435,6 +458,11 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
         if not d.regex.ensures_valid:
           result &= &"{pfx}    (i.e. further operation are performed to " &
                  "ensure validity)\n"
+  if d.scope != ddsUndef:
+    result &= &"\n{pfx}Scope of the definition:\n"
+    result &= &"{pfx}  {d.scope}\n"
+    if d.scope == ddsUnit:
+      result &= &"{pfx}  each unit consists of {d.unitsize} lines\n"
 
 proc tabular_desc(d: DatatypeDefinition, indent: int): string =
   let pfx=" ".repeat(indent)
@@ -541,3 +569,6 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
   if d.kind != ddkRef and d.kind != ddkAnyString and
      d.kind != ddkRegexMatch and d.kind != ddkRegexesMatch:
     result &= &"{pfx}- as_string: {d.as_string}\n"
+  result &= &"{pfx}- scope: {d.scope}\n"
+  if d.scope == ddsUnit:
+    result &= &"{pfx}- unitsize: {d.unitsize}\n"

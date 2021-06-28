@@ -8,8 +8,8 @@ export `$`
 export BaseDatatypes
 
 # API procs and iterators
-import textformats / [spec_parser, decoder, decoded_validator,
-                   encoded_validator, encoder, testdata_parser]
+import textformats / [spec_parser, decoder, file_decoder, decoded_validator,
+                     encoded_validator, encoder, testdata_parser]
 export parse_specification
 export save_specification
 export load_specification
@@ -21,8 +21,8 @@ export decoded_lines
 export is_valid
 export encode
 export unsafe_encode
-export decode_units
-export decode_file_linewise
+export decoded_file_sections
+export decode_file_section_lines
 export test_specification
 
 # API exceptions
