@@ -8,7 +8,7 @@ import ../../textformats
 import cli_helpers
 
 proc test_encoded_validation*(specfile: string,
-                            datatype: string, encoded: string,
+                            datatype = "default", encoded: string,
                             expected_valid=false): int =
   ## test the validation of an encoded string
   let definition = get_datatype_definition(specfile, datatype)
@@ -26,7 +26,7 @@ proc test_encoded_validation*(specfile: string,
                 &"'{encoded}' => invalid as encoded {datatype}")
 
 proc test_decoded_validation*(specfile: string,
-                            datatype: string, decoded_json: string,
+                            datatype = "default", decoded_json: string,
                             expected_valid=false): int =
   ## test the validation of decoded data (JSON)
   let definition = get_datatype_definition(specfile, datatype)
@@ -52,7 +52,7 @@ proc test_decoded_validation*(specfile: string,
     exit_with ec_err_json_syntax
 
 proc test_fail_encoding*(specfile: string,
-                         datatype: string, decoded_json: string): int =
+                         datatype = "default", decoded_json: string): int =
   ## test that encoding the provided decoded data (JSON) fails
   let definition = get_datatype_definition(specfile, datatype)
   try:
@@ -71,7 +71,7 @@ proc test_fail_encoding*(specfile: string,
   except JsonParsingError:
     exit_with ec_err_json_syntax
 
-proc test_encoding*(specfile: string, datatype: string,
+proc test_encoding*(specfile: string, datatype = "default",
                     decoded_json: string, expected: string): int =
   ## encode the decoded data (JSON) and compare to the expected encoding
   let definition = get_datatype_definition(specfile, datatype)
@@ -95,7 +95,7 @@ proc test_encoding*(specfile: string, datatype: string,
     exit_with ec_err_json_syntax
 
 proc test_fail_decoding*(specfile: string,
-                         datatype: string, encoded: string): int =
+                         datatype = "default", encoded: string): int =
   ## test that decoding the provided encoded string fails
   let definition = get_datatype_definition(specfile, datatype)
   try:
@@ -109,7 +109,7 @@ proc test_fail_decoding*(specfile: string,
     exit_with(ec_success, ok_pfx &
       &"'{encoded}' => decoding as {datatype} fails")
 
-proc test_decoding*(specfile: string, datatype: string,
+proc test_decoding*(specfile: string, datatype = "default",
                     encoded: string, expected_json: string): int =
   ## decode an encoded string and compare the result to the expected data (JSON)
   let definition = get_datatype_definition(specfile, datatype)

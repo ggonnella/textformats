@@ -12,7 +12,7 @@ import strutils, json, tables
 import ../../textformats
 import cli_helpers
 
-proc encode_json*(specfile: string, datatype: string, decoded_json: string):
+proc encode_json*(specfile: string, datatype = "default", decoded_json: string):
                   int =
   ## encode decoded data (JSON) and output as encoded string
   let definition = get_datatype_definition(specfile, datatype)

@@ -60,7 +60,8 @@ of data, provided as encoded in the defined text representation
 : specification file to use, YAML or preprocessed (REQUIRED)
 
 **-t**, **--datatype=**DATATYPE
-: which datatype to use among those defined by the specification (REQUIRED)
+: which datatype to use among those defined by the specification
+  (default: datatype with name 'default')
 
 ## Input data options
 

@@ -9,8 +9,8 @@ import strutils, tables, strformat, json
 import ../../textformats
 import cli_helpers
 
-proc validate_encoded*(specfile: string,
-                           datatype: string, encoded: string): int =
+proc validate_encoded*(specfile: string, datatype = "default",
+                       encoded: string): int =
   ## validate an encoded string
   let definition = get_datatype_definition(specfile, datatype)
   if encoded.is_valid(definition):
@@ -19,7 +19,7 @@ proc validate_encoded*(specfile: string,
     exit_with(ec_vdn_invalid_encoded)
 
 proc validate_decoded*(specfile: string,
-                       datatype: string, decoded_json: string): int =
+                       datatype = "default", decoded_json: string): int =
   ## validate decoded data (JSON)
   let definition = get_datatype_definition(specfile, datatype)
   try:

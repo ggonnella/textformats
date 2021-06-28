@@ -32,7 +32,8 @@ the specification to be used (-t).
 : specification file to use, YAML or preprocessed (REQUIRED)
 
 **-t**, **--datatype=**DATATYPE
-: which datatype to use, among those defined by the specification (REQUIRED)
+: which datatype to use, among those defined by the specification
+  (default: datatype with name 'default')
 
 **-d**, **--decoded_json=**STRING
 : data (JSON format) to be encoded (REQUIRED)

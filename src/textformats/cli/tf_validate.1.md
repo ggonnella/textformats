@@ -34,7 +34,8 @@ described by the datatype definition, or decoded (as string in JSON format).
 : specification file to use, YAML or preprocessed (REQUIRED)
 
 **-t**, **--datatype=**DATATYPE
-: which datatype to use among those defined by the specification (REQUIRED)
+: which datatype to use among those defined by the specification
+  (default: datatype with name 'default')
 
 ## Subcommand-specific options
 

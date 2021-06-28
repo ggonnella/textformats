@@ -9,8 +9,7 @@ tf\_decode - decode text representation, according to given datatype definition
 # SYNOPSIS
 
 **tf_decode** string -s SPECFILE -t DATATYPE -e ENCODED\
-**tf_decode** (units|lines) -s SPECFILE -t DATATYPE -i INFILE\
-**tf_decode** linewise -s SPECFILE -t DATATYPE [-i INFILE] [-w] [-g N]
+**tf_decode** file -s SPECFILE -t DATATYPE -i INFILE [-w] [-g N]\
 
 # DESCRIPTION
 
@@ -45,7 +44,8 @@ the specification to be used (-t).
   in the input file
 
 **-t**, **--datatype=**DATATYPE
-: which datatype to use, among those defined by the specification (REQUIRED)
+: which datatype to use, among those defined by the specification
+  (default: datatype with name 'default')
 
 ## Subcommand-specific options
 

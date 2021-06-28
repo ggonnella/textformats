@@ -13,7 +13,7 @@ import ../../textformats
 import ../types/datatype_definition
 import cli_helpers
 
-proc decode_string*(specfile: string, datatype: string,
+proc decode_string*(specfile: string, datatype = "default",
                  encoded: string): int =
   ## decode an encoded string and output as JSON
   let definition = get_datatype_definition(specfile, datatype)
