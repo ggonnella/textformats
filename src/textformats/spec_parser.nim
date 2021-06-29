@@ -226,6 +226,11 @@ proc specification_from_file*(specfile: string): Specification =
   if specfile.is_preprocessed: load_specification(specfile)
   else: parse_specification(specfile)
 
+proc preprocess_specification*(inputfile: string, outputfile: string) =
+  ## Parse YAML specification and output preprocessed specification
+  let spec = parse_specification(inputfile)
+  spec.save_specification(outputfile)
+
 proc list_specification_datatypes*(filename: string): seq[string] =
   ## List the datatypes in a yaml specification file
   ## omitting the included files.
