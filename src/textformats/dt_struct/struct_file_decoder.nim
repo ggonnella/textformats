@@ -3,7 +3,7 @@ import ../types / [datatype_definition, textformats_error, file_lines_reader]
 import struct_decoder
 import ../file_decoder
 
-proc decode_struct_file_section*(reader: var FileLinesReader,
+proc decode_struct_section*(reader: var FileLinesReader,
                                  dd: DatatypeDefinition): JsonNode =
   result = newJObject()
   var i = 0
@@ -14,7 +14,7 @@ proc decode_struct_file_section*(reader: var FileLinesReader,
       else:
         break
     try:
-      result[member.name] = reader.decode_file_section(member.def)
+      result[member.name] = reader.decode_section(member.def)
       i += 1
     except DecodingError:
       if i < dd.n_required:
@@ -22,7 +22,7 @@ proc decode_struct_file_section*(reader: var FileLinesReader,
       else:
         break
 
-proc decode_struct_file_section_lines*(reader: var FileLinesReader,
+proc decode_struct_section_lines*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string,
                         line_processor: proc(decoded_line: JsonNode)) =
   let pfx = if len(key) > 0: &"{key}." else: ""
@@ -34,7 +34,7 @@ proc decode_struct_file_section_lines*(reader: var FileLinesReader,
       else:
         break
     try:
-      reader.decode_file_section_lines(member.def, pfx & member.name,
+      reader.decode_section_lines(member.def, pfx & member.name,
                                        line_processor)
       i += 1
     except DecodingError:

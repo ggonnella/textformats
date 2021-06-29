@@ -10,7 +10,7 @@ import dict_decoder
 ## a more efficient way to handle large files is the
 ## decode_and_process_dict_lines
 ##
-proc decode_dict_file_section*(reader: var FileLinesReader,
+proc decode_dict_section*(reader: var FileLinesReader,
                                dd: DatatypeDefinition): JsonNode =
   result = newJObject()
   var i = 0
@@ -36,7 +36,7 @@ proc decode_dict_file_section*(reader: var FileLinesReader,
 ## each time a line is successfully decoded, the line is processed
 ## using the passed action proc
 ##
-proc decode_dict_file_section_lines*(reader: var FileLinesReader,
+proc decode_dict_section_lines*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string,
                         line_processor: proc(decoded_line: JsonNode)) =
   var

@@ -7,14 +7,12 @@ export `$`
 import textformats/types/specification
 export Specification
 export BaseDatatypes
-export save_specification
-export load_specification
-export is_preprocessed
 export get_definition
+export is_preprocessed
 
 import textformats/spec_parser
 export specification_from_file
-export parse_specification
+export preprocess_specification
 
 # decoding
 import textformats/decoder
@@ -23,8 +21,9 @@ export decode
 import textformats/file_decoder
 export decode_file
 export decoded_lines
-export decoded_file_sections
-export decode_file_section_lines
+export decoded_units
+export decoded_sections
+export decode_section_lines
 
 # encoding
 import textformats/encoder

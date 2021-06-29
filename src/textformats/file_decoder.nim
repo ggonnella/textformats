@@ -2,12 +2,12 @@ import strutils, strformat, options, json
 import decoder
 import types / [datatype_definition, textformats_error, file_lines_reader]
 
-proc decode_file_section*(reader: var FileLinesReader,
-                          dd: DatatypeDefinition): JsonNode
+proc decode_section*(reader: var FileLinesReader,
+                     dd: DatatypeDefinition): JsonNode
 
-proc decode_file_section_lines*(reader: var FileLinesReader,
-                                dd: DatatypeDefinition, key: string,
-                                line_processor: proc(decoded_line: JsonNode))
+proc decode_section_lines*(reader: var FileLinesReader,
+                           dd: DatatypeDefinition, key: string,
+                           line_processor: proc(decoded_line: JsonNode))
 
 import dt_list/list_file_decoder
 import dt_struct/struct_file_decoder
@@ -42,31 +42,10 @@ proc dps_pre_transition(line: string): dataParsingState {.inline.} =
 proc dps_yaml_transition(line: string): dataParsingState {.inline.} =
   if line == "---": dpsData else: dpsYaml
 
-iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
+iterator decoded_lines_or_units(filename: string, dd: DatatypeDefinition,
                        embedded = false, wrapped = false,
-                       group_by = 1): JsonNode =
-  ## Decode a file applying the definition dd to each line (or group
-  ## of a constant number of lines) independently
-  ##
-  ## Options:
-  ##
-  ## - embedded: (bool, default: false) if true, the file is assumed to
-  ##             contain an embedded specification before the data, which is
-  ##             then skipped; i.e. only the content after the first document
-  ##             separator "---" is decoded
-  ##
-  ## - wrapped: (bool, default: false) if true and dd.kind == ddkUnion
-  ##            (or ddkRef targeting a ddkUnion), then the wrapped flag of dd
-  ##            is set, i.e. the type information is added to the
-  ##            result; if any other kind of definition, or if the wrapped
-  ##            flag of the union was already set, then the option is ignored
-  ##
-  ## - group_by: (int > 0, default: 1) number of lines to decode at once;
-  ##             set this to a value higher than one, if the definition
-  ##             applies to a group of multiple lines (with a fixed number of
-  ##             lines, otherwise use decode_file_section[_lines] instead)
-  ##
-  assert group_by >= 1
+                       unitsize = 1): JsonNode =
+  assert unitsize >= 1
   let file = open_input_file(filename)
   var ddef = dereference(dd)
   if wrapped and dd.kind == ddkUnion:
@@ -74,20 +53,20 @@ iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
   var
     line_no = 0
     state = dps_init(embedded)
-    linesgroup = newseq[string](group_by)
+    linesgroup = newseq[string](unitsize)
     n_in_group = 0
     shall_decode = true
   for line in lines(file):
     line_no += 1
     case state:
     of dpsData:
-      if group_by > 1:
+      if unitsize > 1:
         linesgroup[n_in_group] = line
         n_in_group += 1
-        shall_decode = (n_in_group == group_by)
+        shall_decode = (n_in_group == unitsize)
       if shall_decode:
         try:
-          if group_by > 1:
+          if unitsize > 1:
             yield linesgroup.join("\n").decode(ddef)
             n_in_group = 0
           else:
@@ -105,8 +84,53 @@ iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
                        &"File: '{filename}'\n" &
                        "Final group of lines does not contain enough lines\n" &
                        &"Found n. of lines: {n_in_group}\n" &
-                       &"Required n. of lines: {group_by}")
+                       &"Required n. of lines: {unitsize}")
 
+iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
+                        embedded = false, wrapped = false): JsonNode =
+  ## Decode a file applying the definition dd to each line independently
+  ##
+  ## Options:
+  ##
+  ## - embedded: (bool, default: false) if true, the file is assumed to
+  ##             contain an embedded specification before the data, which is
+  ##             then skipped; i.e. only the content after the first document
+  ##             separator "---" is decoded
+  ##
+  ## - wrapped: (bool, default: false) if true and dd.kind == ddkUnion
+  ##            (or ddkRef targeting a ddkUnion), then the wrapped flag of dd
+  ##            is set, i.e. the type information is added to the
+  ##            result; if any other kind of definition, or if the wrapped
+  ##            flag of the union was already set, then the option is ignored
+  ##
+  for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped):
+    yield decoded
+
+iterator decoded_units*(filename: string, dd: DatatypeDefinition, unitsize: int,
+                        embedded = false, wrapped = false): JsonNode =
+  ## Decode a file applying the definition dd to each unit, i.e. group
+  ## of a constant number of lines, independently
+  ##
+  ## Options:
+  ##
+  ## - embedded: (bool, default: false) if true, the file is assumed to
+  ##             contain an embedded specification before the data, which is
+  ##             then skipped; i.e. only the content after the first document
+  ##             separator "---" is decoded
+  ##
+  ## - wrapped: (bool, default: false) if true and dd.kind == ddkUnion
+  ##            (or ddkRef targeting a ddkUnion), then the wrapped flag of dd
+  ##            is set, i.e. the type information is added to the
+  ##            result; if any other kind of definition, or if the wrapped
+  ##            flag of the union was already set, then the option is ignored
+  ##
+  ## - unitsize: (int > 1) number of lines to decode at once
+  ##
+  for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
+                                        unitsize=unitsize):
+    yield decoded
+
+#
 #
 # Note:
 #
@@ -133,41 +157,41 @@ template on_section_def(ddef, actions_true: untyped, actions_false: untyped) =
     actions_false
     reader.consume
 
-proc decode_file_section*(reader: var FileLinesReader,
-                          dd: DatatypeDefinition): JsonNode =
+proc decode_section*(reader: var FileLinesReader,
+                     dd: DatatypeDefinition): JsonNode =
   let ddef = dereference(dd)
   on_section_def(ddef):
       case ddef.kind:
-      of ddkStruct: result = reader.decode_struct_file_section(ddef)
-      of ddkList:   result = reader.decode_list_file_section(ddef)
-      of ddkDict:   result = reader.decode_dict_file_section(ddef)
-      #of ddkTags:   result = reader.decode_tags_file_section(ddef)
+      of ddkStruct: result = reader.decode_struct_section(ddef)
+      of ddkList:   result = reader.decode_list_section(ddef)
+      of ddkDict:   result = reader.decode_dict_section(ddef)
+      #of ddkTags:   result = reader.decode_tags_section(ddef)
       else: assert(false)
   do:
     result = reader.line.decode(ddef)
 
-proc decode_file_section_lines*(reader: var FileLinesReader,
-                                dd: DatatypeDefinition, key: string,
-                                line_processor: proc(decoded_line: JsonNode)) =
+proc decode_section_lines*(reader: var FileLinesReader,
+                           dd: DatatypeDefinition, key: string,
+                           line_processor: proc(decoded_line: JsonNode)) =
   let
     ddef = dereference(dd)
   on_section_def(ddef):
     case ddef.kind:
     of ddkStruct:
-      reader.decode_struct_file_section_lines(ddef, key, line_processor)
+      reader.decode_struct_section_lines(ddef, key, line_processor)
     of ddkList:
-      reader.decode_list_file_section_lines(ddef, key, line_processor)
+      reader.decode_list_section_lines(ddef, key, line_processor)
     of ddkDict:
-      reader.decode_dict_file_section_lines(ddef, key, line_processor)
+      reader.decode_dict_section_lines(ddef, key, line_processor)
     #of ddefkTags:
-    #  reader.decode_tags_file_section_lines(ddef, key, line_processor)
+    #  reader.decode_tags_section_lines(ddef, key, line_processor)
     else: assert(false)
   do:
     var obj = newJObject()
     obj[key] = reader.line.decode(ddef)
     line_processor(obj)
 
-proc validate_file_section_def(dd: DatatypeDefinition) =
+proc validate_section_def(dd: DatatypeDefinition) =
   if dd.kind != ddkStruct:
     raise newException(TextformatsRuntimeError,
             "Wrong datatype definition for file section\n" &
@@ -191,7 +215,7 @@ proc validate_file_section_def(dd: DatatypeDefinition) =
 
 template onDataLines(reader, ddef, actions: untyped) =
   var state = dps_init(embedded)
-  ddef.validate_file_section_def
+  ddef.validate_section_def
   while not reader.eof:
     case state:
     of dpsPre:
@@ -203,8 +227,8 @@ template onDataLines(reader, ddef, actions: untyped) =
     of dpsData:
       actions
 
-iterator decoded_file_sections*(filename: string, dd: DatatypeDefinition,
-                                embedded=false): JsonNode =
+iterator decoded_sections*(filename: string, dd: DatatypeDefinition,
+                           embedded=false): JsonNode =
   ##
   ## Decode a file as a list of multiline units.
   ##
@@ -221,18 +245,18 @@ iterator decoded_file_sections*(filename: string, dd: DatatypeDefinition,
   ## where the number of lines is not known in advance.
   ##
   ## This function returns the entire content of the file (or file section) at
-  ## once. For large files decoded_file_section_lines can be more efficient.
+  ## once. For large files decoded_section_lines can be more efficient.
   ##
   let
     ddef = dereference(dd)
     file = open_input_file(filename)
   var reader = new_file_lines_reader(file)
   onDataLines(reader, ddef):
-    yield reader.decode_file_section(ddef)
+    yield reader.decode_section(ddef)
 
-proc decode_file_section_lines*(filename: string, dd: DatatypeDefinition,
-                                line_processor: proc(decoded_line: JsonNode),
-                                whole=false, embedded=false) =
+proc decode_section_lines*(filename: string, dd: DatatypeDefinition,
+                           line_processor: proc(decoded_line: JsonNode),
+                           whole=false, embedded=false) =
   ##
   ## Decode a file using a definition which defines the entire
   ## structure of the file (or file section, see decode_by_unit_definition)
@@ -259,7 +283,7 @@ proc decode_file_section_lines*(filename: string, dd: DatatypeDefinition,
          &"Filename: {filename}\n" &
          "Expected: datatype definition for whole file\n" &
          &"Last line number of file section: {reader.lineno}")
-    reader.decode_file_section_lines(ddef, "", line_processor)
+    reader.decode_section_lines(ddef, "", line_processor)
     section += 1
 
 proc parse_scope_setting*(scope: string, dd: DatatypeDefinition):
@@ -336,14 +360,14 @@ proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
       else: 1
   var first_section = true
   if scope_param == ddsUnit or scope_param == ddsLine:
-    for decoded in decoded_lines(filename, dd, embedded, wrapped,
-                                 unitsize_param):
+    for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
+                                          unitsize_param):
       process_decoded(decoded)
   elif linewise:
-    decode_file_section_lines(filename, dd, process_decoded,
-                              scope_param == ddsWhole, embedded)
+    decode_section_lines(filename, dd, process_decoded,
+                         scope_param == ddsWhole, embedded)
   else:
-    for decoded in decoded_file_sections(filename, dd, embedded):
+    for decoded in decoded_sections(filename, dd, embedded):
       if scope_param == ddsWhole:
         if not first_section:
           raise newException(DecodingError, not_whole_msg)
