@@ -86,7 +86,7 @@ proc is_preprocessed*(specfile: string): bool =
     raise newException(TextformatsRuntimeError, errmsg_pfx & errmsg)
 
 proc get_definition*(datatypes: Specification,
-                     datatype: string): DatatypeDefinition =
+                     datatype = "default"): DatatypeDefinition =
   try:
     datatypes[datatype]
   except KeyError:
