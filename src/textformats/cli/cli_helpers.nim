@@ -105,6 +105,10 @@ template short_expected_valid*: untyped = 'v'
 template short_outfile*:        untyped = 'o'
 template short_infile*:         untyped = 'i'
 template short_testfile*:       untyped = 'f'
+template short_scope*:          untyped = 'c'
+template short_wrapped*:        untyped = 'w'
+template short_unitsize*:       untyped = 'u'
+template short_linewise*:       untyped = 'l'
 
 ##
 ## Help messages for the options;
@@ -112,9 +116,16 @@ template short_testfile*:       untyped = 'f'
 ##
 template help_specfile*: untyped =
   "datatypes specification (YAML or preprocessed)"
+template help_specfile_or_embedded*: untyped =
+  "datatypes specification (YAML or preprocessed); if not provided, " &
+  "the input file contains an embedded specification"
 template help_specfile_yaml*: untyped =
   "datatypes specification (YAML only)"
-template help_datatype*: untyped = "datatype"
+template help_datatype_no_default*: untyped = "datatype (if not provided, " &
+                                      "the list of datatypes is output)"
+template help_datatype*: untyped = "datatype to use (required unless a " &
+                                   "datatype named 'default' is defined " &
+                                   "in the specification)"
 template help_decoded_json*: untyped = "data to encode (JSON)"
 template help_encoded*: untyped = "encoded data"
 template help_expected_json*: untyped = "expected decoded data (JSON)"
@@ -126,4 +137,20 @@ template help_testfile*: untyped = "test data filename (YAML); " &
   "if not provided, the same file as the specification shall contain tests"
 template help_opt_testfile*: untyped = "optional: test data filename (YAML);" &
   "if provided, tests are generated only for datatypes not yet present in it"
-
+template help_scope*: untyped = "which part of the input file is targeted " &
+  "by the datatype definition; default: 'auto' (as specified by the scope " &
+  "key of the definition); other accepted values: line, unit, section, whole"
+template help_linewise*: untyped =
+  "if set, and scope is 'file' or 'section', the file/section structure " &
+  "is used for parsing but the decoded value of each line is output " &
+  "separately; advantage: it does not require to keep the whole file or file " &
+  "section in memory; scope 'line' is similar, but the structure of the " &
+  "file/section is not defined"
+template help_wrapped*: untyped =
+  "if set and the datatype definition is 'one_of', the decoded value is " &
+  "wrapped in a single-entry mapping, where the key is the name of the " &
+  "'one_of' branch which has been used for decoding, and the value is " &
+  "the unwrapped decoded value"
+template help_unitsize*: untyped =
+  "how many lines does a unit contain (only accepted if scope is 'unit'; " &
+  "required for scope 'unit' if no 'n_lines' key is given in the definition)"

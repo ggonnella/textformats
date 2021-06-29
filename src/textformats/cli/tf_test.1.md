@@ -8,14 +8,14 @@ tf\_test - test the results of encoding, decoding and validation for a given dat
 
 # SYNOPSIS
 
-**tf_test** decoding -s SPECFILE -t DATATYPE -e ENCODED -d EXPECTED \
-**tf_test** fail\_decoding -s SPECFILE -t DATATYPE -e ENCODED \
+**tf\_test** decoding -s SPECFILE -t DATATYPE -e ENCODED -d EXPECTED \
+**tf\_test** fail\_decoding -s SPECFILE -t DATATYPE -e ENCODED \
 
-**tf_test** encoding -s SPECFILE -t DATATYPE -d DECODED -e EXPECTED \
-**tf_test** fail\_encoding -s SPECFILE -t DATATYPE -d DECODED \
+**tf\_test** encoding -s SPECFILE -t DATATYPE -d DECODED -e EXPECTED \
+**tf\_test** fail\_encoding -s SPECFILE -t DATATYPE -d DECODED \
 
-**tf_test** decoded\_validation -s SPECFILE -t DATATYPE -d DECODED [-v] \
-**tf_test** encoded\_validation -s SPECFILE -t DATATYPE -e ENCODED [-v] \
+**tf\_test** decoded\_validation -s SPECFILE -t DATATYPE -d DECODED [-v] \
+**tf\_test** encoded\_validation -s SPECFILE -t DATATYPE -e ENCODED [-v] \
 
 # DESCRIPTION
 
@@ -27,11 +27,11 @@ also **tf\_spec generate_tests** and **tf\_spec test**), but is intended
 for running a single test manually, instead of the entire test suite
 automatically.
 
-The available tests are decoding (subcommands **decoding** and **fail_decoding**),
-encoding (subcommands **encoding** and **fail_encoding**), validation
-of data, provided as encoded in the defined text representation
-(subcommand **encoded_validation**) or as decoded data in JSON format
-(subcommand **decoded_validation**).
+The available tests are decoding (subcommands **decoding** and
+**fail\_decoding**), encoding (subcommands **encoding** and **fail\_encoding**),
+validation of data, provided as encoded in the defined text representation
+(subcommand **encoded\_validation**) or as decoded data in JSON format
+(subcommand **decoded\_validation**).
 
 # OPTIONS
 
@@ -49,17 +49,17 @@ of data, provided as encoded in the defined text representation
 **fail\_encoding**
 : test that encoding the provided decoded data (JSON) fails
 
-**encoded_validation**
+**encoded\_validation**
 : test the validation of an encoded string
 
-**decoded_validation**
+**decoded\_validation**
 : test the validation of decoded data (JSON)
 
 ## Common options
-**-s**, **--specfile=**FILENAME
+**-s**, **\-\-specfile=**FILENAME
 : specification file to use, YAML or preprocessed (REQUIRED)
 
-**-t**, **--datatype=**DATATYPE
+**-t**, **\-\-datatype=**DATATYPE
 : which datatype to use among those defined by the specification
   (default: datatype with name 'default')
 
@@ -67,30 +67,30 @@ of data, provided as encoded in the defined text representation
 
 *decoding*, *fail\_decoding*, *encoded\_validation* subcommands:
 
-**-e**, **--encoded**=STRING
+**-e**, **\-\-encoded**=STRING
 : encoded data (in the specified text representation) to be decoded or validated
 (REQUIRED)
 
 *encoding, *fail\_encoding*, *decoded\_validation* subcommands:
 
-**-d**, **--decoded\_json**=STRING
+**-d**, **\-\-decoded\_json**=STRING
 : decoded data (as JSON) to be encoded or validated (REQUIRED)
 
 ## Expected results
 
 *encoding* subcommand:
 
-**-e**, **--expected**=STRING
+**-e**, **\-\-expected**=STRING
 : encoded data which is expected as an output of the encoding (REQUIRED)
 
 *decoding* subcommand:
 
-**-d**, **--expected\_json**=STRING
+**-d**, **\-\-expected\_json**=STRING
 : encoded data which is expected as an output of the encoding (REQUIRED)
 
 *encoded\_validation* and *decoded\_validation* subcommands:
 
-**-v**, **--expected\_valid**
+**-v**, **\-\-expected\_valid**
 : set this flag if the validation is expected to succeed (default:
   expect that the validation fails)
 

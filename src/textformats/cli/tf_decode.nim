@@ -75,44 +75,8 @@ proc parse_unitsize(unitsize: int, scope: DatatypeDefinitionScope,
 
 proc decode_file*(specfile = "", datatype = "default", infile: string,
                   scope = "auto", linewise = false,
-                  showbranch = false, unitsize = 1): int =
+                  wrapped = false, unitsize = 1): int =
   ## decode a file, given a datatype definition
-  ##
-  ## specfile: if not provided, the infile must also contain the specification
-  ##   (in the first part of the file, separated from the data by a YAML
-  ##    document separator, i.e. a line consisting of ---)
-  ##
-  ## datatype: which datatype of the specificatio shall be used;
-  ##   if none provided, the "default" datatype is used (if exists)
-  ##
-  ## 'scope' describes which part of the file is targeted by the definition:
-  ##   'line': each line of the file by itself;
-  ##   'unit': units of fixed number of lines (<unitsize> lines);
-  ##   'section': sections of variable number of lines
-  ##              (greedy, as many as possible fit the definition);
-  ##   'whole': the entire file
-  ##   'auto': as specified in the datatype definition ('scope' key)
-  ##
-  ## # scope 'section' and 'whole':
-  ##
-  ##   - the definition must be composed_of, list_of or named_values or
-  ##     a reference to one of those
-  ##   - the separator must be the newline, and prefix and suffix must be empty;
-  ##   - parsing is greedy, i.e. as many lines as possible are assigned to
-  ##     each element of the compound datatype
-  ##
-  ## linewise: if set, validate the file or section structure (vs scope line,
-  ## which does not), but output the decoding results of each line separately
-  ## (i.e. not requiring to keep the whole file or file section in memory)
-  ##
-  ## # scope 'line' and 'unit':
-  ##
-  ## unitsize: how many lines does a unit contain (required for scope unit)
-  ##
-  ## showbranch: if set and the definition is a one_of, return a mapping with
-  ## information about which of the one_of branches has been used
-  ##
-  ## #
   let
     embedded = (specfile == "")
     specsrc = block:
@@ -129,7 +93,7 @@ proc decode_file*(specfile = "", datatype = "default", infile: string,
   try:
     if scope_param == ddsUnit or scope_param == ddsLine:
       for decoded in textformats.decoded_lines(infile, definition,
-                       embedded, showbranch, unitsize_param):
+                       embedded, wrapped, unitsize_param):
         echo decoded
     elif linewise:
       proc show_decoded_line(decoded: JsonNode) =
@@ -151,8 +115,7 @@ proc decode_file*(specfile = "", datatype = "default", infile: string,
 
 when isMainModule:
   import cligen
-  dispatch_multi(
-                 [decode_string, cmdname = "string",
+  dispatch_multi([decode_string, cmdname = "string",
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype,
                            "encoded":  short_encoded},
@@ -162,7 +125,15 @@ when isMainModule:
                  [decode_file, cmdname = "file",
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype,
-                           "infile":  short_infile},
-                  help = {"specfile": help_specfile,
+                           "infile":  short_infile,
+                           "scope": short_scope,
+                           "linewise": short_linewise,
+                           "wrapped": short_wrapped,
+                           "unitsize": short_unitsize},
+                  help = {"specfile": help_specfile_or_embedded,
                           "datatype": help_datatype,
-                          "infile":  help_infile}])
+                          "infile":  help_infile,
+                          "scope": help_scope,
+                          "linewise": help_linewise,
+                          "wrapped": help_wrapped,
+                          "unitsize": help_unitsize}])

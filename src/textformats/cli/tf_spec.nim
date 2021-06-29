@@ -77,7 +77,7 @@ when isMainModule:
                   short = {"specfile": short_specfile,
                            "datatype": short_datatype},
                   help = {"specfile": help_specfile,
-                          "datatype": help_datatype}],
+                          "datatype": help_datatype_no_default}],
                  [generate_tests,
                   short = {"specfile": short_specfile,
                            "testfile": short_testfile},

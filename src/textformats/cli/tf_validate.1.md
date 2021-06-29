@@ -30,10 +30,10 @@ described by the datatype definition, or decoded (as string in JSON format).
 : validate decoded data (provided as JSON) according to the datatype definition
 
 ## Common options
-**-s**, **--specfile=**FILENAME
+**-s**, **\-\-specfile=**FILENAME
 : specification file to use, YAML or preprocessed (REQUIRED)
 
-**-t**, **--datatype=**DATATYPE
+**-t**, **\-\-datatype=**DATATYPE
 : which datatype to use among those defined by the specification
   (default: datatype with name 'default')
 
@@ -41,13 +41,13 @@ described by the datatype definition, or decoded (as string in JSON format).
 
 *decoded* subcommand:
 
-**-e**, **--encoded**=STRING
+**-e**, **\-\-encoded**=STRING
 : encoded data (in the specified text representation) to be validated
 (REQUIRED)
 
 *encoded* subcommand:
 
-**-d**, **--decoded\_json**=STRING
+**-d**, **\-\-decoded\_json**=STRING
 : decoded data (as JSON) to be validated (REQUIRED)
 
 # EXIT VALUES

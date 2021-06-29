@@ -8,7 +8,7 @@ tf\_encode - encode data to a text representation, according to given datatype d
 
 # SYNOPSIS
 
-**tf_encode** json -s SPECFILE -t DATATYPE -d DECODED
+**tf\_encode** json -s SPECFILE -t DATATYPE -d DECODED
 
 # DESCRIPTION
 
@@ -28,14 +28,14 @@ the specification to be used (-t).
 : encode an input JSON string according to the datatype definition
 
 ## Options
-**-s**, **--specfile=**FILENAME
+**-s**, **\-\-specfile=**FILENAME
 : specification file to use, YAML or preprocessed (REQUIRED)
 
-**-t**, **--datatype=**DATATYPE
+**-t**, **\-\-datatype=**DATATYPE
 : which datatype to use, among those defined by the specification
   (default: datatype with name 'default')
 
-**-d**, **--decoded_json=**STRING
+**-d**, **\-\-decoded_json=**STRING
 : data (JSON format) to be encoded (REQUIRED)
 
 # EXIT VALUES

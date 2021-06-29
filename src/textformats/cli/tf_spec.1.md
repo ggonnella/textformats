@@ -78,34 +78,34 @@ encoding and validations for each of the provided test examples.
 
 all subcommands:
 
-**-s**, **--specfile=**FILENAME
+**-s**, **\-\-specfile=**FILENAME
 : specification file to be used (REQUIRED); YAML only for
 *preprocess* and *generate\_tests*; YAML or preprocessed
 for all other subcommands
 
 *info* subcommand:
 
-**-t**, **--datatype=**DATATYPE
+**-t**, **\-\-datatype=**DATATYPE
 : specify a datatype, to show information about a datatype
   (default: display the list of datatypes defined by the specification)
 
 *preprocess* subcommand:
 
-**-o**, **--outfile=**FILENAME
+**-o**, **\-\-outfile=**FILENAME
 : output filename for the preprocessed specification (REQUIRED)
 
 ## Further options
 
 *test* subcommand:
 
-**-f**, **--testfile=**FILENAME
+**-f**, **\-\-testfile=**FILENAME
 : file containing tests; this option must be used if the test data is in
 a different file than the specification (default: the test data are contained
 in the specification file)
 
 *generate_tests* subcommand:
 
-**-f**, **--testfile=**FILENAME
+**-f**, **\-\-testfile=**FILENAME
 : file containing tests; if this option is used, the command only generates
 testdata of those datatypes for which tests are not yet available; the output
 in this case is so formatted, that it can be appended to an existing
