@@ -2,7 +2,8 @@ import options, strformat, sets
 import yaml/dom
 import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../support / [yaml_support, error_support, messages_support]
-import ../shared / [null_value_def_parser, as_string_def_parser]
+import ../shared / [null_value_def_parser, as_string_def_parser,
+                    scope_def_parser]
 
 proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
                                  DatatypeDefinition
@@ -35,6 +36,7 @@ const
   - {BranchNamesKey}: {BranchNamesHelp}
   - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
+  - {ScopeKey}: {ScopeHelp}
   """
 
 proc parse_choices(defnode: YamlNode, name: string): seq[DatatypeDefinition] =
@@ -101,12 +103,13 @@ proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
   try:
     var defnodes = collect_defnodes(defroot, [DefKey,
                       NullValueKey, AsStringKey, WrappedKey,
-                      BranchNamesKey])
+                      BranchNamesKey, ScopeKey])
     result = DatatypeDefinition(kind: ddkUnion, name: name,
         choices:    defnodes[0].unsafe_get.parse_choices(name),
         null_value: defnodes[1].parse_null_value,
         as_string:  defnodes[2].parse_as_string,
-        wrapped:    defnodes[3].to_bool(default=false, WrappedKey))
+        wrapped:    defnodes[3].to_bool(default=false, WrappedKey),
+        scope:      defnodes[5].parse_scope)
     result.branch_names = defnodes[4].parse_branch_names(name,
                                         defnodes[0].unsafe_get)
   except YamlSupportError, DefSyntaxError:
