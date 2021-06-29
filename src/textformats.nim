@@ -1,31 +1,44 @@
-# API types
-import textformats/types / [datatype_definition, specification]
+# datatype definition
+import textformats/types/datatype_definition
 export DatatypeDefinition
-export Specification
 export `$`
 
-# API constants
+# specification
+import textformats/types/specification
+export Specification
 export BaseDatatypes
-
-# API procs and iterators
-import textformats / [spec_parser, decoder, file_decoder, decoded_validator,
-                     encoded_validator, encoder, testdata_parser]
-export parse_specification
 export save_specification
 export load_specification
-export specification_from_file
 export is_preprocessed
 export get_definition
+
+import textformats/spec_parser
+export specification_from_file
+export parse_specification
+
+# decoding
+import textformats/decoder
 export decode
-export decoded_lines
+
+import textformats/file_decoder
 export decode_file
+export decoded_lines
 export decoded_file_sections
 export decode_file_section_lines
-export is_valid
+
+# encoding
+import textformats/encoder
 export encode
 export unsafe_encode
+
+# test
+import textformats/testdata_parser
 export test_specification
 
-# API exceptions
+# validation
+import textformats / [decoded_validator, encoded_validator]
+export is_valid
+
+# exceptions
 import textformats/types/textformats_error
 export textformats_error
