@@ -13,7 +13,7 @@ datatypes:
   cigar_operation: {composed_of: [length: unsigned_integer,
                                   code: {regex: "[MDIP]"}]}
   cigar:  {list_of: cigar_operation, minlength: 1}
-  cigars: {list_of: cigar, splitted_by: ",", minlength: 2}
+  cigars: {list_of: cigar, splitted_by: ",", minlength: 1}
   trace:  {list_of: unsigned_integer, splitted_by: ",", minlength: 1}
   alignment: {one_of: [placeholder, cigars, trace]}
 

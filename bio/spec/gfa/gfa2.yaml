@@ -85,6 +85,5 @@ datatypes:
           splitted_by: "\t"
     implicit: {line_type: "custom_line"}
     required: 1
-  gfa2::line: {one_of: [header, segment, edge, ordered_group,
-                       unordered_group, gap, fragment, comment,
-                       custom_line]}
+  line: {one_of: [header, segment, edge, ordered_group, unordered_group, gap,
+                  fragment, comment, custom_line]}
