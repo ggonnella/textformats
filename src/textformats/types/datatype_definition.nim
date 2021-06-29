@@ -221,7 +221,8 @@ proc dereference*(dd: DatatypeDefinition): DatatypeDefinition =
     assert(not result.target.is_nil)
     result = result.target
 
-proc tabular_desc(d: DatatypeDefinition, indent: int): string
+proc tabular_desc*(d: DatatypeDefinition, indent: int): string
+proc verbose_desc*(d: DatatypeDefinition, indent: int): string
 
 proc `$`*(dd: DatatypeDefinition): string =
   dd.verbose_desc(0)
@@ -464,7 +465,7 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
     if d.scope == ddsUnit:
       result &= &"{pfx}  each unit consists of {d.unitsize} lines\n"
 
-proc tabular_desc(d: DatatypeDefinition, indent: int): string =
+proc tabular_desc*(d: DatatypeDefinition, indent: int): string =
   let pfx=" ".repeat(indent)
   if d.is_nil:
     return &"{pfx}(nil)"
