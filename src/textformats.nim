@@ -18,11 +18,12 @@ export is_preprocessed
 export get_definition
 export decode
 export decoded_lines
+export decode_file
+export decoded_file_sections
+export decode_file_section_lines
 export is_valid
 export encode
 export unsafe_encode
-export decoded_file_sections
-export decode_file_section_lines
 export test_specification
 
 # API exceptions

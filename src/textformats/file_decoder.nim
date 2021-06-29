@@ -262,3 +262,91 @@ proc decode_file_section_lines*(filename: string, dd: DatatypeDefinition,
     reader.decode_file_section_lines(ddef, "", line_processor)
     section += 1
 
+proc parse_scope_setting*(scope: string, dd: DatatypeDefinition):
+                          DatatypeDefinitionScope =
+  ##
+  ## Compute the scope of a definition given a scope setting parameter (string)
+  ##
+  ## The scope setting parameter must be either one of the scope values
+  ## (whole, section, unit, line) or "auto". In the latter case, the
+  ## scope must be defined in the datatype definition.
+  ##
+  let valid_definition_types = @["whole", "section", "unit", "line", "auto"]
+  if scope notin valid_definition_types:
+    let scope_errmsg = block:
+      var msg = "Error: scope must be one of the following values:\n"
+      for t in valid_definition_types:
+        msg &= &"- {t}\n"
+      msg
+    raise newException(TextformatsRuntimeError, scope_errmsg)
+  case scope:
+  of "whole": return ddsWhole
+  of "section": return ddsSection
+  of "unit": return ddsUnit
+  of "line": return ddsLine
+  of "auto":
+    let ddef = dereference(dd)
+    if ddef.scope == ddsUndef:
+      raise newException(TextformatsRuntimeError,
+         "Error: scope 'auto' requires a " &
+         "'scope' key in the datatype definition")
+    return ddef.scope
+
+proc parse_unitsize_setting*(unitsize: int, dd: DatatypeDefinition): int =
+  ##
+  ## Compute the unit size of a definition given a setting parameter (int)
+  ##
+  ## If the unitsize setting parameter is 1, then the value is taken
+  ## from the datatype definition (which must define it, in this case);
+  ## otherwise the setting is used.
+  ##
+  let
+    wrong_value_msg =
+        "The unitsize parameter for the scope 'unit' must be > 1"
+  if unitsize < 1:
+    raise newException(TextformatsRuntimeError, wrong_value_msg)
+  elif unitsize == 1:
+    let ddef = dereference(dd)
+    if ddef.unitsize > 1:
+      return ddef.unitsize
+    else:
+      raise newException(TextformatsRuntimeError,
+                         wrong_value_msg)
+  return unitsize
+
+let
+  not_whole_msg =
+      "Error: the specified datatype definition applies " &
+      "only to part of the file\n" &
+      "Expected: definition applying to the whole file\n"
+
+proc show_decoded(decoded: JsonNode) = echo $decoded
+
+proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
+                  scope = "auto", linewise = false, wrapped = false,
+                  unitsize = 1,
+                  process_decoded: proc(decoded: JsonNode) = show_decoded) =
+  ##
+  ## Decode a file applying the specified definition
+  ##
+  let
+    scope_param = scope.parse_scope_setting(dd)
+    unitsize_param =
+      if scope_param == ddsUnit: parse_unitsize_setting(unitsize, dd)
+      else: 1
+  var first_section = true
+  if scope_param == ddsUnit or scope_param == ddsLine:
+    for decoded in decoded_lines(filename, dd, embedded, wrapped,
+                                 unitsize_param):
+      process_decoded(decoded)
+  elif linewise:
+    decode_file_section_lines(filename, dd, process_decoded,
+                              scope_param == ddsWhole, embedded)
+  else:
+    for decoded in decoded_file_sections(filename, dd, embedded):
+      if scope_param == ddsWhole:
+        if not first_section:
+          raise newException(DecodingError, not_whole_msg)
+        first_section = false
+      process_decoded(decoded)
+

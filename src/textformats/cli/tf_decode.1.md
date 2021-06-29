@@ -88,6 +88,7 @@ each element of the compound datatype.
   line is output separately; advantage: it does not require to
   keep the whole file or file section in memory; scope 'line'
   is similar, but the structure of the file/section is not defined
+  (default: false; ignored if scope is not 'file' or 'section')
 
 **-c**, **\-\-scope=**S
 : which part of the input file is targeted by the datatype
@@ -100,9 +101,9 @@ each element of the compound datatype.
   'whole' (the entire file)
 
 **-u**, **\-\-unitsize=**N
-: how many lines does a unit contain (only accepted if scope
-  is 'unit'; required for scope 'unit' if no 'n\_lines' key is
-  given in the definition)
+: how many lines does a unit contain (required if scope is 'unit'
+  and no 'n\_lines' key is given in the definition; ignored if
+  scope is not 'unit')
 
 # EXIT VALUES
 The exit code is 0 on success, anything else on error.
