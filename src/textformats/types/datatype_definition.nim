@@ -224,7 +224,7 @@ proc dereference*(dd: DatatypeDefinition): DatatypeDefinition =
 proc tabular_desc(d: DatatypeDefinition, indent: int): string
 
 proc `$`*(dd: DatatypeDefinition): string =
-  dd.tabular_desc(0)
+  dd.verbose_desc(0)
 
 proc describe(kind: DatatypeDefinitionKind): string =
   case kind:
