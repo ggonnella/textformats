@@ -23,9 +23,9 @@ proc parse_scope*(node: Option[YamlNode]): DatatypeDefinitionScope =
                        &"Expected: {ScopeValues}\nFound: {value}\n")
 
 proc parse_unitsize*(node: Option[YamlNode]): int =
-  let value = node.to_int(default=1, UnitsizeKey)
-  if value < 1:
+  result = node.to_int(default=1, UnitsizeKey)
+  if result < 1:
     raise newException(DefSyntaxError,
                        &"Invalid value for key '{UnitsizeKey}'\n" &
-                       &"Expected: integer >= 1\nFound: {value}\n")
+                       &"Expected: integer >= 1\nFound: {result}\n")
 
