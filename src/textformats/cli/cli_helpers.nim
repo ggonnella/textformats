@@ -80,7 +80,10 @@ template get_datatype_definition*(specfile: untyped,
                                   datatype: untyped): untyped =
   let datatypes = get_specification(specfile)
   if datatype notin datatypes:
-    exit_with ec_err_def_not_found
+    var errmsg = "\nDatatypes defined/included in " & specfile & ":\n"
+    for datatype in datatypes.keys:
+      errmsg &= "  - " & datatype & "\n"
+    exit_with ec_err_def_not_found, errmsg
     nil
   else: datatypes[datatype]
 
