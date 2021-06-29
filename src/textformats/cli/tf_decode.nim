@@ -31,7 +31,7 @@ proc parse_scope(scope: string, dd: DatatypeDefinition):
       for t in valid_definition_types:
         msg &= &"- {t}\n"
       msg
-    raise newException(textformats.TextFormatsRuntimeError, scope_errmsg)
+    raise newException(textformats.TextformatsRuntimeError, scope_errmsg)
   case scope:
   of "whole": return ddsWhole
   of "section": return ddsSection
@@ -40,7 +40,7 @@ proc parse_scope(scope: string, dd: DatatypeDefinition):
   of "auto":
     let ddef = dereference(dd)
     if ddef.scope == ddsUndef:
-      raise newException(textformats.TextFormatsRuntimeError,
+      raise newException(textformats.TextformatsRuntimeError,
          "Error: scope 'auto' requires a " &
          "'scope' key in the datatype definition")
     return ddef.scope
@@ -51,20 +51,29 @@ let
       "only to part of the file\n" &
       "Expected: definition applying to the whole file\n"
 
-proc validate_unitsize(unitsize: int, scope: DatatypeDefinitionScope) =
+proc parse_unitsize(unitsize: int, scope: DatatypeDefinitionScope,
+                    dd: DatatypeDefinition): int =
   let
     wrong_scope_msg =
         "The unitsize parameter is only used for the unit scope"
     wrong_value_msg =
         "The unitsize parameter for the scope 'unit' must be > 1"
   if scope == ddsUnit:
-    if unitsize <= 1:
-      raise newException(textformats.TextFormatsRuntimeError, wrong_value_msg)
+    if unitsize < 1:
+      raise newException(textformats.TextformatsRuntimeError, wrong_value_msg)
+    elif unitsize == 1:
+      let ddef = dereference(dd)
+      if ddef.unitsize > 1:
+        return ddef.unitsize
+      else:
+        raise newException(textformats.TextformatsRuntimeError,
+                           wrong_value_msg)
   else:
     if unitsize != 1:
-      raise newException(textformats.TextFormatsRuntimeError, wrong_scope_msg)
+      raise newException(textformats.TextformatsRuntimeError, wrong_scope_msg)
+  return unitsize
 
-proc decode_file*(specfile: string, datatype = "default", infile: string,
+proc decode_file*(specfile = "", datatype = "default", infile: string,
                   scope = "auto", linewise = false,
                   showbranch = false, unitsize = 1): int =
   ## decode a file, given a datatype definition
@@ -113,24 +122,26 @@ proc decode_file*(specfile: string, datatype = "default", infile: string,
       else:
         specfile
     definition = get_datatype_definition(specsrc, datatype)
-  let resolved_scope = scope.parse_scope(definition)
-  unitsize.validate_unitsize(resolved_scope)
+  let
+    scope_param = scope.parse_scope(definition)
+    unitsize_param = parse_unitsize(unitsize, scope_param, definition)
   var first_section = true
   try:
-    if resolved_scope == ddsUnit or resolved_scope == ddsLine:
+    if scope_param == ddsUnit or scope_param == ddsLine:
       for decoded in textformats.decoded_lines(infile, definition,
-                       embedded, showbranch, unitsize):
+                       embedded, showbranch, unitsize_param):
         echo decoded
     elif linewise:
       proc show_decoded_line(decoded: JsonNode) =
         echo decoded
       textformats.decode_file_section_lines(infile, definition,
                                             show_decoded_line,
-                                            resolved_scope == ddsWhole,
+                                            scope_param == ddsWhole,
                                             embedded)
     else:
-      for decoded in textformats.decoded_file_sections(infile, definition):
-        if resolved_scope == ddsWhole:
+      for decoded in textformats.decoded_file_sections(infile, definition,
+                       embedded=embedded):
+        if scope_param == ddsWhole:
           if not first_section:
             exit_with(ec_err_invalid_encoded, not_whole_msg)
           first_section = false
