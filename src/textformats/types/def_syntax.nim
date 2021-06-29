@@ -59,7 +59,7 @@ const
   PredefinedTagsKey* = "predefined"
   # unions
   WrappedKey* = "wrapped"
-  TypeLabelsKey* = "type_labels"
+  BranchNamesKey* = "branch_names"
 
   # testdata syntax
   TestdataRootKey* = "testdata"

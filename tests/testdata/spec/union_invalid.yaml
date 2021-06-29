@@ -13,24 +13,24 @@ datatypes:
       - {constant: "a"}
       - json
     x: 0
-  u_w_too_less_labels:
+  u_w_too_less_branch_names:
     one_of:
       - {constant: {"a": true}}
       - json
       - string
     wrapped: true
-    type_labels: ["json", "string"]
-  u_w_too_many_labels:
+    branch_names: ["json", "string"]
+  u_w_too_many_branch_names:
     one_of:
       - {constant: {"a": true}}
       - json
       - string
     wrapped: true
-    type_labels: ["a", "json", "string", "b"]
+    branch_names: ["a", "json", "string", "b"]
   u_w_labels_not_string:
     one_of:
       - {constant: {"a": true}}
       - json
       - string
     wrapped: true
-    type_labels: ["a", "json", ["string"]]
+    branch_names: ["a", "json", ["string"]]

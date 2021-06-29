@@ -1,4 +1,4 @@
-import json, sets, tables, sequtils
+import json, tables, sequtils
 import ../types/datatype_definition
 import ../support/json_support
 
@@ -8,15 +8,11 @@ from ../decoded_validator import is_valid
 proc union_is_valid*(item: JsonNode, dd: DatatypeDefinition): bool =
   if dd.wrapped:
     if item.is_object:
-      let keys = to_seq(item.get_fields.keys).to_hash_set()
-      if len(keys) == 2 and "type" in keys and "value" in keys:
-        let i = dd.type_labels.find(item["type"])
-        if i == -1:
-          return false
-        else:
-          return item["value"].is_valid(dd.choices[i])
-      else:
-        return false
+      if len(item) != 1: return false
+      let
+        branch_name= to_seq(item.get_fields.keys)[0]
+        i = dd.branch_names.find(branch_name)
+      return if i == -1: false else: item[branch_name].is_valid(dd.choices[i])
     else:
       return false
   else:

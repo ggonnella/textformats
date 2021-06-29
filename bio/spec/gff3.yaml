@@ -6,6 +6,9 @@
 #
 namespace: gff3
 include: [uri.yaml, fasta.yaml]
+defaults:
+  file: file
+  line: line
 datatypes:
   #
   # (1) Main definition for parsing GFF lines
@@ -34,7 +37,7 @@ datatypes:
       - comment
       - annotation
     wrapped: true
-    type_labels: ["directive", "comment", "annotation_line"]
+    branch_names: ["directive", "comment", "annotation_line"]
   comment:
     regex: "#([^#].*)?"
   annotation:
@@ -67,7 +70,7 @@ datatypes:
       - genome_build_directive
       - forward_references_solved_directive
     wrapped: true
-    type_labels: auto
+    branch_names: auto
   sequence_region_directive:
     composed_of:
       - seqid: id
@@ -129,7 +132,6 @@ datatypes:
       - dbxref_attribute
       - generic_attribute
       wrapped: true
-      type_labels: auto
     sep: ";"
 
   #

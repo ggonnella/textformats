@@ -1,39 +1,36 @@
-import json, sets, tables, strformat, strutils, sequtils
+import json, tables, strformat, strutils, sequtils
 import ../types / [datatype_definition, textformats_error]
 import ../support / [json_support]
 import ../encoder
 
+proc unwrap(wrapped: JsonNode): (string, JsonNode) =
+  let branch_name = to_seq(wrapped.get_fields.keys)[0]
+  (branch_name, wrapped[branch_name])
+
 proc wrapped_union_encode*(value: JsonNode, dd: DatatypeDefinition): string =
+  let expmsg = "Expected: wrapped value, " &
+               "i.e. a mapping with one entry, with:\n" &
+               " - key:   string, which one_of branch to use for encoding\n" &
+               " - value: the unwrapped decoded value\n"
   if not value.is_object:
     raise newException(EncodingError,
-            &"Error: value ({value}) is a '{describe_kind(value)}'\n" &
-            "Expected: a mapping with the keys 'type' and 'value'\n")
-  for key, subvalue in value:
-    if key != "type" and key == "value":
-      raise newException(EncodingError,
-            &"Error: invalid key in mapping ('{key}')\n" &
-            "Expected: a mapping with the keys 'type' and 'value'\n")
-  let keys = to_seq(value.get_fields.keys).to_hash_set
-  if "type" notin keys:
+            &"Error: value ({value}) is a '{describe_kind(value)}'\n" & expmsg)
+  if len(value) != 1:
     raise newException(EncodingError,
-             &"Error: missing key 'type' in mapping\n" &
-             "Expected: a mapping with the keys 'type' and 'value'\n")
-  if "value" notin keys:
-    raise newException(EncodingError,
-             &"Error: missing key 'value' in mapping\n" &
-             "Expected: a mapping with the keys 'type' and 'value'\n")
+            &"Error: wrapped value has {len(value)} entries\n" & expmsg)
+  let (branch_name, unwrapped) = value.unwrap
   for i, c in dd.choices:
-    if value["type"] == dd.type_labels[i]:
-      try: return value["value"].encode(c)
+    if branch_name == dd.branch_names[i]:
+      try: return unwrapped.encode(c)
       except EncodingError:
         raise newException(EncodingError,
                 &"Error: invalid value '" &
-                value["value"] & "' for type '" &
-                value["type"] & "'\n" &
+                unwrapped & "' for type '" &
+                branch_name & "'\n" &
                 get_current_exception_msg().indent(2) & "\n")
   raise newException(EncodingError,
-        &"Error: invalid type ('" & value["type"] & "')\n" &
-        &"Expected one of: {dd.type_labels}\n")
+        &"Error: invalid branch name: '" & branch_name & "'\n" &
+        &"Expected one of: {dd.branch_names}\n")
 
 proc union_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.wrapped:
@@ -53,9 +50,10 @@ proc union_encode*(value: JsonNode, dd: DatatypeDefinition): string =
 
 proc union_unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.wrapped:
+    let (branch_name, unwrapped) = value.unwrap
     for i, c in dd.choices:
-      if value["type"] == dd.type_labels[i]:
-        return value["value"].unsafe_encode(c)
+      if branch_name == dd.branch_names[i]:
+        return unwrapped.unsafe_encode(c)
     assert(false)
   else:
     for c in dd.choices:

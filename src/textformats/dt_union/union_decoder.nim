@@ -18,7 +18,7 @@ template appenderr(errmsg, i, choice: untyped) =
     get_current_exception_msg().indent(2) & "\n"
 
 template wrapped(value: JsonNode, dd: DatatypeDefinition): JsonNode =
-  if dd.wrapped: %{"type": %dd.type_labels[i], "value": value}
+  if dd.wrapped: %{dd.branch_names[i]: value}
   else: value
 
 proc decode_union*(input: string, dd: DatatypeDefinition): JsonNode =

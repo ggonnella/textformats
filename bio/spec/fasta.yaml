@@ -10,12 +10,13 @@
 #   - empty lines are allowed
 #   - any kind of symbol is allowed (including spacing characters);
 #     the only restriction is that the line shall not start with >
-# - unit:
+# - entry:
 #   - consists of header and sequence
 #   - after an header there must be at least a sequence line
 #
 namespace: fasta
 datatypes:
+  default: entry
   header:
     pfx: '>'
     sep: " "
@@ -29,12 +30,13 @@ datatypes:
   sequence:
     list_of: sequence_line
     sep: "\n"
-  unit:
+  entry:
     composed_of:
       - header: header
       - sequence: sequence
     sep: "\n"
     split_by_sep: False
+    scope: section
 testdata:
   header:
     valid: {">TDPy A":{"fastaid":"TDPy","desc":"A"},
@@ -48,7 +50,7 @@ testdata:
     invalid:
       encoded: [">", ">1", "> 1"]
       decoded: [">", ">1", "> 1"]
-  unit:
+  entry:
     valid: {">X\x0A`E]mi":{"header":{"fastaid":"X"},"sequence":["`E]mi"]}}
     invalid:
       encoded: [""]

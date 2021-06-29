@@ -20,7 +20,7 @@ proc valid_for_any(v: string or JsonNode, dd: DatatypeDefinition,
   return false
 
 template wrapped(value: JsonNode, dd: DatatypeDefinition): JsonNode =
-  if dd.wrapped: %{"type": %dd.type_labels[i], "value": value}
+  if dd.wrapped: %{dd.branch_names[i]: value}
   else: value
 
 proc union_generate_testdata*(t: var TestData, dd: DatatypeDefinition) =

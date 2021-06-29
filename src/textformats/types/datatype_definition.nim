@@ -190,7 +190,7 @@ type
     of ddkUnion:
       choices*: seq[DatatypeDefinition]
       wrapped*: bool
-      type_labels*: seq[string]
+      branch_names*: seq[string]
 
     # Construction flags
 
@@ -367,7 +367,7 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
                   "two keys 'type' and 'value'\n" &
                 &"{pfx}  'type' indicates which " &
                   "of the possible datatypes is used by the 'value' and is " &
-                  "one of the following: {d.type_labels}\n"
+                  "one of the following: {d.branch_names}\n"
     result &= &"{pfx}  the possible datatypes are:\n"
     for i, c in d.choices:
       result &= &"\n{pfx}  - datatype '<{i}>' defined as\n" &
@@ -555,7 +555,7 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
     for i, c in d.choices:
       result &= &"{pfx}  - <{i}>:\n" & c.tabular_desc(indent+4)
     if d.wrapped:
-      result &= &"{pfx}- wrapped; type labels {d.type_labels}\n"
+      result &= &"{pfx}- wrapped; branch names: {d.branch_names}\n"
   of ddkAnyInteger, ddkAnyUInteger, ddkAnyFloat, ddkAnyString, ddkJson:
     discard
   if d.kind == ddkStruct or d.kind == ddkDict or d.kind == ddkTags:

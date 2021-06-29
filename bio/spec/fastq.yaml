@@ -13,49 +13,58 @@
 ---
 include: quality_score.yaml
 datatypes:
-  fastq_unit:
+  default: fastq_entry
+  fastq_entry:
     composed_of:
-      - sdesc: fastq_unit_sdesc
-      - seq: fastq_unit_seq
-      - qdesc: fastq_unit_qdesc
-      - qual: fastq_unit_qual
+      - sdesc: fastq_entry_sdesc
+      - seq: fastq_entry_seq
+      - qdesc: fastq_entry_qdesc
+      - qual: fastq_entry_qual
     sep: "\n"
-    # validation: # external validations required to ensure valid fastq_unit
-    # (len(fastq_unit['seq']) == len(fastq_unit['qual'])) and
-    #   ((fastq_unit['qdesc']['fastaid'] == "") or
-    #   (fastq_unit['qdesc']['fastaid'] == fastq_unit['sdesc']['fastaid']))
-  fastq_unit_sdesc:
+    scope: section
+    n_lines: 4
+    # validation: # external validations required to ensure valid fastq_entry
+    # (len(fastq_entry['seq']) == len(fastq_entry['qual'])) and
+    #   ((fastq_entry['qdesc']['fastaid'] == "") or
+    #   (fastq_entry['qdesc']['fastaid'] == fastq_entry['sdesc']['fastaid']))
+  fastq_line:
+    one_of:
+      - fastq_entry_sdesc
+      - fastq_entry_qdesc
+      - fastq_entry_seq
+      - fastq_entry_qual
+  fastq_entry_sdesc:
     composed_of:
-      - fastaid: fastq_unit_sdesc_fastaid
-      - desc: fastq_unit_sdesc_desctxt
+      - fastaid: fastq_entry_sdesc_fastaid
+      - desc: fastq_entry_sdesc_desctxt
     required: 1
     sep: " "
     split_by_sep: false
     pfx: "@"
-  fastq_unit_sdesc_fastaid:
+  fastq_entry_sdesc_fastaid:
       regex: "[!-~]+"
-  fastq_unit_sdesc_desctxt: string
-  fastq_unit_seq: string
-  fastq_unit_qdesc:
+  fastq_entry_sdesc_desctxt: string
+  fastq_entry_seq: string
+  fastq_entry_qdesc:
     composed_of:
-      - fastaid: fastq_unit_qdesc_fastaid
-      - desc: fastq_unit_qdesc_desctxt
+      - fastaid: fastq_entry_qdesc_fastaid
+      - desc: fastq_entry_qdesc_desctxt
     required: 1
     sep: " "
     split_by_sep: false
     pfx: "+"
-  fastq_unit_qdesc_fastaid:
+  fastq_entry_qdesc_fastaid:
     regex: "[!-~]+"
     empty: null
-  fastq_unit_qdesc_desctxt: string
-  fastq_unit_qual: quality_score
+  fastq_entry_qdesc_desctxt: string
+  fastq_entry_qual: quality_score
 testdata:
-  fastq_unit_seq:
+  fastq_entry_seq:
     valid: ["A", ",-d~!", "1", " ", "a"]
     invalid:
       encoded: [""]
       decoded: [0, 0.0, [], {}, ""]
-  fastq_unit:
+  fastq_entry:
     valid:
       "@bla\nACGT\n+\n0!#2":
         {"sdesc":{"fastaid":"bla"}, "seq":"ACGT",
@@ -71,41 +80,41 @@ testdata:
                 "@bla\n+bla\n0!#2",
                 "@bla\nACGT\n@bla\n0!#2"]
       decoded: [""]
-  fastq_unit_qual:
+  fastq_entry_qual:
     valid:
       "U": [52]
       "U_b)?DEFHPX\\g28yzx*-w.7il}jf+~L|t#/Y]Tvm>c@eMWdo;V0'$4BC&1<:GKQpZ=9nNa\"3{O6R[IA`khSJ^u5q(rs!,%": [52,62,65,8,30,35,36,37,39,47,55,59,70,17,23,88,89,87,9,12,86,13,22,72,75,92,73,69,10,93,43,91,83,2,14,56,60,51,85,76,29,66,31,68,44,54,67,78,26,53,15,6,3,19,33,34,5,16,27,25,38,42,48,79,57,28,24,77,45,64,1,18,90,46,21,49,58,40,32,63,74,71,50,41,61,84,20,80,7,81,82,0,11,4]
     invalid:
       encoded: [""]
       decoded: [[], ""]
-  fastq_unit_sdesc_desctxt:
+  fastq_entry_sdesc_desctxt:
     valid: ["A", "1", "V/zQ,", " ", "a"]
     invalid:
       encoded: [""]
       decoded: [0, 0.0, [], {}, ""]
-  fastq_unit_qdesc_fastaid:
+  fastq_entry_qdesc_fastaid:
     valid: {"]=":"]=", "Un8":"Un8", "vxv|3":"vxv|3", "":null, "PA":"PA",
             "d`do":"d`do"}
     invalid:
       encoded: []
       decoded: []
-  fastq_unit_sdesc_fastaid:
+  fastq_entry_sdesc_fastaid:
     valid: ["22", "%*jFi", "o8w.", "^Q", "(", "bFf", "r", "tS", ";V", "0%lF"]
     invalid:
       encoded: [""]
       decoded: [""]
-  fastq_unit_qdesc:
+  fastq_entry_qdesc:
     valid: {"+/ A":{"fastaid":"/","desc":"A"}, "+/":{"fastaid":"/"}}
     invalid:
       encoded: [""]
       decoded: [""]
-  fastq_unit_sdesc:
+  fastq_entry_sdesc:
     valid: {"@2p":{"fastaid":"2p"},
             "@2p Ri;i/":{"fastaid":"2p","desc":"Ri;i/"}}
     invalid:
       encoded: [""]
       decoded: [""]
-  fastq_unit_qdesc_desctxt:
+  fastq_entry_qdesc_desctxt:
     valid: ["A", "1", " ", "{3I=K", "a"]
     invalid:
       encoded: [""]

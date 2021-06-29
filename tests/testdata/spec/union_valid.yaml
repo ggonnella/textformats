@@ -16,17 +16,17 @@ datatypes:
       - json
       - string
     wrapped: true
-  u_w_auto:
+  u_w_default:
     one_of:
       - {constant: {"a": true}}
       - json
       - string
     wrapped: true
-    type_labels: auto
+    branch_names: default
   u_w_l:
     one_of:
       - {constant: {"a": true}}
       - json
       - string
     wrapped: true
-    type_labels: ["a", "json", "string"]
+    branch_names: ["a", "json", "string"]
