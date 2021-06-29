@@ -491,10 +491,12 @@ proc tabular_desc(d: DatatypeDefinition, indent: int): string =
       result &= &"{pfx}- null_value: -\n"
   if d.kind == ddkList or d.kind == ddkStruct or
      d.kind == ddkDict or d.kind == ddkTags:
-    result &= &"{pfx}- pfx: '{d.pfx}'\n"
-    result &= &"{pfx}- sep: '{d.sep}'\n"
-    result &= &"{pfx}- split_by_sep: {d.sep_excl}\n"
-    result &= &"{pfx}- sfx: '{d.sfx}'\n"
+    result &= &"{pfx}- prefix: '{d.pfx}'\n"
+    if d.sep_excl:
+      result &= &"{pfx}- splitted_by: {d.sep_excl}\n"
+    else:
+      result &= &"{pfx}- separator: '{d.sep}'\n"
+    result &= &"{pfx}- suffix: '{d.sfx}'\n"
   case d.kind:
   of ddkRef:
     if d.has_unresolved_ref:

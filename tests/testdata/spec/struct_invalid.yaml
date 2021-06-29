@@ -3,29 +3,30 @@ datatypes:
     composed_of:
     - name: string
     - a: {constant: a}
-    sep: ","
+    splitted_by: ","
     x: ""
   s_composed_of_map:
     composed_of:
       name: string
       a: {constant: a}
-    sep: ","
+    splitted_by: ","
   s_composed_of_scalar:
     composed_of: a
-    sep: ","
+    splitted_by: ","
   s_composed_of_seq_scalar:
     composed_of:
     - name
     - a
-    sep: ","
-  s_sep_excl_wo_sep:
+    splitted_by: ","
+  s_sep_double:
     composed_of:
     - name: string
     - a: {constant: a}
-    split_by_sep: true
+    splitted_by: ","
+    separator: ","
   s_no_values:
     composed_of: {}
-    sep: ","
+    separator: ","
   s_repeated_name:
     composed_of:
     - name: string

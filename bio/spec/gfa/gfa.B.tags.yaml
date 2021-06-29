@@ -1,12 +1,12 @@
 namespace: tagB
 include: sized_integers.yaml
 datatypes:
-  c_array: {list_of: int::i8, sep: ",", pfx: "c,", empty: []}
-  C_array: {list_of: int::u8, sep: ",", pfx: "C,", empty: []}
-  s_array: {list_of: int::i16, sep: ",", pfx: "s,", empty: []}
-  S_array: {list_of: int::u16, sep: ",", pfx: "S,", empty: []}
-  i_array: {list_of: int::i32, sep: ",", pfx: "i,", empty: []}
-  I_array: {list_of: int::u32, sep: ",", pfx: "I,", empty: []}
-  f_array: {list_of: float, sep: ",", pfx: "f,", empty: []}
+  c_array: {list_of: int::i8, splitted_by: ",", prefix: "c,", empty: []}
+  C_array: {list_of: int::u8, splitted_by: ",", prefix: "C,", empty: []}
+  s_array: {list_of: int::i16, splitted_by: ",", prefix: "s,", empty: []}
+  S_array: {list_of: int::u16, splitted_by: ",", prefix: "S,", empty: []}
+  i_array: {list_of: int::i32, splitted_by: ",", prefix: "i,", empty: []}
+  I_array: {list_of: int::u32, splitted_by: ",", prefix: "I,", empty: []}
+  f_array: {list_of: float, splitted_by: ",", prefix: "f,", empty: []}
   array: {one_of: [c_array, C_array, s_array, S_array,
                    i_array, I_array, f_array]}

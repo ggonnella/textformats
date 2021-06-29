@@ -32,7 +32,7 @@ const
       - <t2>: <y2>
       - ...
     {TagnameKey}: ...
-    {SepKey}: ...
+    {SplittedKey}: ...
     {TagsInternalSepKey}: ...
     [optional keys]
 
@@ -44,15 +44,25 @@ const
     - a datatype name (string); or
     - a datatype definition (map)
   - {TagnameKey}: {TagnameDefHelp}
-  - {SepKey}: {SepHelp}
-  - {TagsInternalSepKey}: {TagsInternalSepHelp}
-  - {SepKey} and {TagsInternalSepKey} must be different, non-empty strings
-    and {TagsInternalSepKey} must not be contain {SepKey}
 
-  Optional keys:
-  - {PredefinedTagsKey}: {PredefinedTagsHelp}
+  Separators:
+  - {SplittedKey}: {SplittedHelp}
+  - {TagsInternalSepKey}: {TagsInternalSepHelp}
+  - the values of '{SplittedKey}' and '{TagsInternalSepKey}' must be non-empty
+    strings; the must be different from each other and the value of
+    '{TagsInternalSepKey}' cannot contain the value of '{SplittedKey}'
+  - limitations: as currently implemented, if the elements contain the
+    '{SplittedKey}' value (also in escaped form), the datatype cannot be
+    represented using a '{DefKey}' definition
+
+  Optional keys for formatting:
   - {PfxKey}: {PfxHelp}
   - {SfxKey}: {SfxHelp}
+
+  Optional keys for validation:
+  - {PredefinedTagsKey}: {PredefinedTagsHelp}
+
+  Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
   - {ImplicitKey}: {ImplicitHelp}
   - {AsStringKey}: {AsStringHelp}
@@ -127,12 +137,13 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
   try:
     let defnodes = collect_defnodes(defroot,
-                     [DefKey, TagnameKey, SepKey, TagsInternalSepKey,
+                     [DefKey, TagnameKey, SplittedKey, TagsInternalSepKey,
                      PfxKey, SfxKey, NullValueKey, PredefinedTagsKey,
                      ImplicitKey, AsStringKey], n_required=4)
     result = DatatypeDefinition(kind: ddkTags, name: name,
       tagtypes:          defnodes[0].unsafe_get.parse_tagtypes(name),
-      sep:               defnodes[2].parse_sep,
+      sep:               defnodes[2].to_string("", SplittedKey),
+      sep_excl:          true,
       tags_internal_sep: defnodes[3].parse_tags_internal_sep,
       pfx:               defnodes[4].parse_pfx,
       sfx:               defnodes[5].parse_sfx,

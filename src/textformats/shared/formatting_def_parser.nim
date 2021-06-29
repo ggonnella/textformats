@@ -6,20 +6,35 @@ import ../support/yaml_support
 import ../types / [def_syntax, textformats_error]
 
 const
-  SepHelp* = "separator between elements, if any " &
-                "(string, default: none)"
-  SepExclHelp* = "is the separator string NOT present " &
-                "in the elements (even not escaped)? (bool, default: true)"
+  SepHelp* = "separator between elements, which also be contained in the " &
+             "elements (string, default: none)"
+  SplittedHelp* = "separator between elements, which is never contained in " &
+             "the elements (also not escaped), thus can be used to split " &
+             "them (string, default: none)"
+  SplittedLastHelp* = "separator between elements, which is never contained " &
+             "in the elements (also not escaped), with the possible " &
+             "exception of the last element (if all elements are present); " &
+             "thus it can be used to split the elements (string, default: none)"
   PfxHelp* = "constant prefix before first element, if any " &
                 " (string, default: none)"
   SfxHelp* = "constant suffix after last element, if any " &
                 " (string, default: none)"
 
-proc parse_sep*(node: Option[YamlNode]): string =
-  node.to_string(default="", SepKey)
-
-proc parse_sep_excl*(node: Option[YamlNode]): bool =
-  node.to_bool(default=true, SepExclKey)
+proc parse_sep*(sep_node: Option[YamlNode],
+                splitted_node: Option[YamlNode]): (string, bool) =
+  if sep_node.is_some:
+    if splitted_node.is_some:
+      raise newException(DefSyntaxError,
+              &"The keys '{SepKey}' and '{SplittedKey}' " &
+              "are mutually exclusive\n")
+    else:
+      let sep = sep_node.to_string(default="", SepKey)
+      return (sep, false)
+  elif splitted_node.is_some:
+      let sep = splitted_node.to_string(default="", SplittedKey)
+      return (sep, len(sep) > 0)
+  else:
+    return ("", false)
 
 proc parse_pfx*(node: Option[YamlNode]): string =
   node.to_string(default="", PfxKey)
@@ -31,7 +46,7 @@ proc validate_separators*(sep: string, internal_sep: string,
                           internal_sep_key: string, internal_sep_lbl: string) =
   if sep.len == 0:
       raise newException(DefSyntaxError,
-              &"Separator (key '{SepKey}') " &
+              &"Separator (key '{SplittedKey}') " &
               "cannot be an empty string\n")
   if internal_sep.len == 0:
       raise newException(DefSyntaxError,
@@ -40,18 +55,14 @@ proc validate_separators*(sep: string, internal_sep: string,
   if sep == internal_sep:
     raise newException(DefSyntaxError,
       &"The {internal_sep_lbl} separator (key '{internal_sep_key}') " &
-      &"cannot be equal to the elements separator (key '{SepKey}')\n" &
+      &"cannot be equal to the elements separator (key '{SplittedKey}')\n" &
       &"Found: {sep}\n")
   if sep.escape_re.re in internal_sep:
     raise newException(DefSyntaxError,
       &"The {internal_sep_lbl} separator (key '{internal_sep_key}') " &
-      &"cannot contain the elements separator (key '{SepKey}')\n" &
-      &"Found '{SepKey}': {sep}\n" &
+      &"cannot contain the elements separator (key '{SplittedKey}')\n" &
+      &"Found '{SplittedKey}': {sep}\n" &
       &"Found '{internal_sep_key}': {internal_sep}\n")
-
-template validate_sep_if_sepexcl*(sepexclnode: Option[YamlNode],
-                                  sepnode: Option[YamlNode]) =
-    validate_requires(SepExclKey, sepexclnode, SepKey, sepnode)
 
 proc validate_names_vs_separator*(names: seq[string], namelbl: string,
                                   sep: string, seplbl: string) =

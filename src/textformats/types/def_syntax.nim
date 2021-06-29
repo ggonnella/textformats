@@ -36,10 +36,10 @@ const
   MinExcludedKey* = "min_excluded"
   MaxExcludedKey* = "max_excluded"
   # list/dict/struct/tags
-  SepKey* = "sep"
-  SepExclKey* = "split_by_sep"
-  PfxKey* = "pfx"
-  SfxKey* = "sfx"
+  SepKey* = "separator"
+  SplittedKey* = "splitted_by"
+  PfxKey* = "prefix"
+  SfxKey* = "suffix"
   # list
   LenrangeMinKey*  = "minlength"
   LenrangeMaxKey*  = "maxlength"
@@ -47,7 +47,7 @@ const
   # dict/struct/tags
   ImplicitKey* = "implicit"
   # dict
-  DictInternalSepKey* = "internal_sep"
+  DictInternalSepKey* = "value_separator"
   DictRequiredKey* = "required"
   SingleKey* = "single"
   # struct
@@ -55,7 +55,7 @@ const
   HiddenKey* = "hide_constants"
   # tags
   TagnameKey* = "tagname"
-  TagsInternalSepKey* = "internal_sep"
+  TagsInternalSepKey* = "internal_separator"
   PredefinedTagsKey* = "predefined"
   # unions
   WrappedKey* = "wrapped"

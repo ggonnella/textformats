@@ -22,7 +22,7 @@ suite "test_struct_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.n_required == 1
   test "s_nosep":
     let d = new_struct_datatype_definition(v["s_nosep"], "s_nosep")
@@ -37,7 +37,7 @@ suite "test_struct_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.n_required == 2
   test "s_sep":
     let d = new_struct_datatype_definition(v["s_sep"], "s_sep")
@@ -69,7 +69,7 @@ suite "test_struct_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.n_required == 3
   test "s_nosplit":
     let d = new_struct_datatype_definition(v["s_nosplit"], "s_nosplit")
@@ -100,7 +100,7 @@ suite "test_struct_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.n_required == 1
   test "s_sep_lastopt":
     let d = new_struct_datatype_definition(v["s_sep_lastopt"],
@@ -150,7 +150,7 @@ suite "test_struct_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.n_required == 2
   test "s_sep_varlen":
     let d = new_struct_datatype_definition(v["s_sep_varlen"],

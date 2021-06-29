@@ -26,8 +26,8 @@ const
     {EncodedKey}: {{<scalar>: <string>}}
     [optional_keys]
 
-  Optional keys:
-    {NullValueKey}: {NullValueHelp}
+  Optional keys for decoding:
+  - {NullValueKey}: {NullValueHelp}
 """
   InvalidContentMsg = &"Invalid content of key '{DefKey}':\n"
 

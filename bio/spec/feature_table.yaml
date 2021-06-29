@@ -5,15 +5,21 @@ datatypes:
   singlebase: {unsigned_integer: {min: 1}}
   range: {composed_of: [{range_begin: {one_of: singlebase, lessthanpos},
                          range_end: {one_of: singlebase, morethanpos}],
-          separator: ".."}
+          splitted_by: ".."}
   lessthanpos: {composed_of: [{sym: {constant: "<"}}, pos: singlebase}]}
   morethanpos: {composed_of: [{pos: singlebase, sym: {constant: ">"}]}
-  approximate: {composed_of: [{pos1: singlebase, pos2: singlebase}], sep: "."}
-  betweenbases: {composed_of: [{pos1: singlebase, pos2: singlebase}], sep: "^"}
-  rangecomplement: {composed_of: [{range: range}], left: "complement(", right: ")"}
-  join: {list_of: {one_of: [range, rangecomplement]}, left: "join(", right: ")", sep: ","}
-  joincomplement: {composed_of: [{joined: join}], left: "complement(", right: ")"}
+  approximate: {composed_of: [{pos1: singlebase, pos2: singlebase}],
+                splitted_by: "."}
+  betweenbases: {composed_of: [{pos1: singlebase, pos2: singlebase}],
+                 splitted_by: "^"}
+  rangecomplement: {composed_of: [{range: range}],
+                    prefix: "complement(", suffix: ")"}
+  join: {list_of: {one_of: [range, rangecomplement]},
+                   prefix: "join(", suffix: ")", splitted_by: ","}
+  joincomplement: {composed_of: [{joined: join}],
+                   prefix: "complement(", suffix: ")"}
   complement: {one_of: [rangecomplement, joincomplement]}
   external: {composed_of: [{external_ref: versioned_accession,
-                            location: internal_location}], sep: ":"}
+                            location: internal_location}],
+             splitted_by: ":"}
   versioned_accession: {composed_of: [accession, version]}

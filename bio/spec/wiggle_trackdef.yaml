@@ -4,7 +4,7 @@ datatypes:
   double_quoted_string: {regex: "\"(\\\\\"|[^\"])*\""}
 
   wiggle_trackdef_line: {list_of: wiggle_trackdef_line_item,
-                         minlength: 1, sep: " ", split_by_sep: false, pfx: "track "}
+                         minlength: 1, separator: " ", prefix: "track "}
 
   wiggle_trackdef_line_item: {one_of:
     [wiggle_trackdef_line_item_type,
@@ -29,55 +29,52 @@ datatypes:
 
   wiggle_trackdef_line_item_type:
     composed_of: [key: {constant: type}, value: {constant: wiggle_0}]
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_name:
     composed_of: [key: {constant: name}, value: double_quoted_string]
-    sep: =
-    split_by_sep: false
+    separator: =
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: description}, value: double_quoted_string]
-    sep: =
-    split_by_sep: false
+    separator: =
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: visibility},
                   value: accepted_values: [full, dense, hide]]
-    sep: =
+    splitted_by: =
 
   uint8: {unsigned_integer: {min: 0, max: 255}}
 
   wiggle_colordef:
     composed_of: [red: uint8, green: uint8, blue: uint8]
-    sep: ,
+    splitted_by: ,
 
   wiggle_trackdef_line_item_color:
     composed_of: [key: {constant: color}, value: wiggle_colordef]
-    sep: =
-
+    splitted_by: =
 
   wiggle_trackdef_line_item_altColor:
     composed_of: [key: {constant: altColor}, value: wiggle_colordef]
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_priority:
     composed_of: [key: {constant: priority}, value: unsigned_integer]
-    sep: =
+    splitted_by: =
 
   wiggle_bool: {accepted_values: ["on": true, "off": false]}
 
   wiggle_trackdef_line_item_autoScale:
     composed_of: [key: {constant: autoScale}, value: wiggle_bool]
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_alwaysZero:
     composed_of: [key: {constant: alwaysZero}, value: wiggle_bool]
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_gridDefault:
     composed_of: [key: {constant: gridDefault}, value: wiggle_bool]
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_maxHeightPixels:
     composed_of:
@@ -87,14 +84,14 @@ datatypes:
           max: unsigned_integer
           default: unsigned_integer
           min: unsigned_integer
-          sep: :
-    sep: =
+          splitted_by: :
+    splitted_by: =
 
   wiggle_trackdef_line_item_graphType:
     composed_of:
       key: {constant: graphType}
       value: {accepted_values: ["bar", "points"]}
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_viewLimits:
     composed_of:
@@ -103,26 +100,26 @@ datatypes:
         composed_of:
           lower: float
           upper: float
-        sep: :
-    sep: =
+        splitted_by: :
+    splitted_by: =
 
   wiggle_trackdef_line_item_yLineMark:
     composed_of:
       key: {constant: yLineMark}
       value: float
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_yLineOnOff:
     composed_of:
       key: {constant: yLineOnOff}
       value: wiggle_bool
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_windowingFunction:
     composed_of:
       key: {constant: windowingFunction}
       value: {accepted_values: ["mean+whiskers", "maximum", "mean", "minimum"]}
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_smoothingWindow:
     composed_of:
@@ -131,13 +128,13 @@ datatypes:
         one_of:
           - {constant: {off: null}}
           - {unsigned_integer: {min: 2, max: 16}}
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_transformFunc:
     composed_of:
       key: {constant: transformFunc}
       value: {accepted_values: ["NONE", "LOG"]}
-    sep: =
+    splitted_by: =
 
   wiggle_trackdef_line_item_viewLimitsMax:
     composed_of:
@@ -146,6 +143,6 @@ datatypes:
         composed_of:
           lower: float
           upper: float
-        sep: :
-    sep: =
+        splitted_by: :
+    splitted_by: =
 

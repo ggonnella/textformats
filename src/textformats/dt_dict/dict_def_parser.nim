@@ -32,18 +32,28 @@ const
   - 'y<N>' is either:
     - a datatype name (string); or
     - a datatype definition (map)
-  - {SepKey}: {SepHelp}
-  - {DictInternalSepKey}: {DictInternalSepHelp}
-  - {SepKey} and {DictInternalSepKey} must be different, non-empty strings
-    and {DictInternalSepKey} must not be contain {SepKey}
 
-  Optional keys:
-  - {DictRequiredKey}: {DictRequiredHelp}
+  Separators:
+  - {SplittedKey}: {SplittedHelp}
+  - {DictInternalSepKey}: {DictInternalSepHelp}
+  - the values of '{SplittedKey}' and '{DictInternalSepKey}' must be non-empty
+    strings; the must be different from each other and the value of
+    '{DictInternalSepKey}' cannot contain the value of '{SplittedKey}'
+  - limitations: as currently implemented, if the elements contain the
+    '{SplittedKey}' value (also in escaped form), the datatype cannot be
+    represented using a '{DefKey}' definition
+
+  Optional keys for formatting:
   - {PfxKey}: {PfxHelp}
   - {SfxKey}: {SfxHelp}
+
+  Optional keys for validation:
+  - {DictRequiredKey}: {DictRequiredHelp}
+  - {SingleKey}: {SingleHelp}
+
+  Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
   - {ImplicitKey}: {ImplicitHelp}
-  - {SingleKey}: {SingleHelp}
   - {AsStringKey}: {AsStringHelp}
   - {ScopeKey}: {ScopeHelp}
   - {UnitsizeKey}: {UnitsizeHelp}
@@ -99,13 +109,14 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
   try:
     let defnodes = collect_defnodes(defroot,
-                     [DefKey, SepKey, DictInternalSepKey, NullValueKey,
+                     [DefKey, SplittedKey, DictInternalSepKey, NullValueKey,
                      PfxKey, SfxKey, ImplicitKey, DictRequiredKey, SingleKey,
                      AsStringKey, ScopeKey, UnitsizeKey],
                      3)
     result = DatatypeDefinition(kind: ddkDict, name: name,
       dict_members:           defnodes[0].unsafe_get.parse_dict_members(name),
-      sep:                    defnodes[1].parse_sep,
+      sep:                    defnodes[1].to_string("", SplittedKey),
+      sep_excl:               true,
       dict_internal_sep:      defnodes[2].parse_dict_internal_sep,
       null_value:             defnodes[3].parse_null_value,
       pfx:                    defnodes[4].parse_pfx,

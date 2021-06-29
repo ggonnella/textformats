@@ -15,7 +15,7 @@ datatypes:
   oriented_name: {composed_of: [name: name,
                                 orientation: orient]}
   oriented_names_list: {list_of: oriented_name,
-                        sep: ",", minlength: 1}
+                        splitted_by: ",", minlength: 1}
 
   sequence: {one_of: [placeholder, regex: "[A-Za-z=.]+"]}
 

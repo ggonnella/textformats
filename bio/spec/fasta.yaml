@@ -18,9 +18,8 @@ namespace: fasta
 datatypes:
   default: entry
   header:
-    pfx: '>'
-    sep: " "
-    split_by_sep: False
+    prefix: '>'
+    separator: " "
     composed_of:
       - fastaid: {regex: '\w*'}
       - desc: {regex: '.*'}
@@ -29,13 +28,12 @@ datatypes:
     regex: "([^>]*|[^>].*)"
   sequence:
     list_of: sequence_line
-    sep: "\n"
+    splitted_by: "\n"
   entry:
     composed_of:
       - header: header
       - sequence: sequence
-    sep: "\n"
-    split_by_sep: False
+    separator: "\n"
     scope: section
 testdata:
   header:

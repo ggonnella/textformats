@@ -11,5 +11,5 @@ datatypes:
       Z: {regex: "[ -~]*"}
       i: integer
       f: float
-    sep: "\t"
-    internal_sep: ":"
+    splitted_by: "\t"
+    internal_separator: ":"

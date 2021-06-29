@@ -35,7 +35,7 @@ const
     ...
   [optional_keys]
 
-  Optional keys:
+  Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
 """

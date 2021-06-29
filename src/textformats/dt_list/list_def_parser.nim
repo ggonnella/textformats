@@ -26,15 +26,19 @@ const
   - a datatype name (YAML scalar node)
   - a datatype definition (YAML mapping node)
 
-  Optional keys:
+  Optional keys for validation:
   - {LenrangeMinKey}: {LenrangeMinHelp}
   - {LenrangeMaxKey}: {LenrangeMaxHelp}
   - {LenKey}: {LenHelp}
-  - {NullValueKey}: {NullValueHelp}
-  - {SepKey}: {SepHelp}
-  - {SepExclKey}: {SepExclHelp}
+
+  Optional keys for formatting:
   - {PfxKey}: {PfxHelp}
   - {SfxKey}: {SfxHelp}
+  - {SepKey}: {SepHelp}
+  - {SplittedKey}: {SplittedHelp}
+
+  Optional keys for decoding:
+  - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
   - {ScopeKey}: {ScopeHelp}
   - {UnitsizeKey}: {UnitsizeHelp}
@@ -70,19 +74,20 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot, [DefKey, NullValueKey,
                                               LenrangeMinKey, LenrangeMaxKey,
                                               SepKey, PfxKey, SfxKey,
-                                              SepExclKey, AsStringKey, LenKey,
+                                              SplittedKey, AsStringKey, LenKey,
                                               ScopeKey, UnitsizeKey])
     result = DatatypeDefinition(kind: ddkList, name: name,
         members_def: defnodes[0].unsafe_get.parse_members_def(
                        name & ListItemDefNameSfx),
         null_value:  defnodes[1].parse_null_value,
-        sep:         defnodes[4].parse_sep,
         pfx:         defnodes[5].parse_pfx,
         sfx:         defnodes[6].parse_sfx,
-        sep_excl:    defnodes[7].parse_sep_excl,
         as_string:   defnodes[8].parse_as_string,
         scope:       defnodes[10].parse_scope,
         unitsize:    defnodes[11].parse_unitsize)
+    let (sep, sep_excl) = parse_sep(defnodes[4], defnodes[7])
+    result.sep = sep
+    result.sep_excl = sep_excl
     if defnodes[9].is_some:
       if defnodes[2].is_some:
         raise newException(DefSyntaxError,
@@ -95,7 +100,6 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
     else:
       result.lenrange = (defnodes[2].parse_lenrange_min,
                          defnodes[3].parse_lenrange_max)
-    validate_sep_if_sepexcl(defnodes[7], defnodes[4])
     result.lenrange.validate
   except YamlSupportError, DefSyntaxError, ValueError:
     reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)

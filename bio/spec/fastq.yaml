@@ -20,7 +20,7 @@ datatypes:
       - seq: fastq_entry_seq
       - qdesc: fastq_entry_qdesc
       - qual: fastq_entry_qual
-    sep: "\n"
+    splitted_by: "\n"
     scope: section
     n_lines: 4
     # validation: # external validations required to ensure valid fastq_entry
@@ -38,9 +38,8 @@ datatypes:
       - fastaid: fastq_entry_sdesc_fastaid
       - desc: fastq_entry_sdesc_desctxt
     required: 1
-    sep: " "
-    split_by_sep: false
-    pfx: "@"
+    separator: " "
+    prefix: "@"
   fastq_entry_sdesc_fastaid:
       regex: "[!-~]+"
   fastq_entry_sdesc_desctxt: string
@@ -50,9 +49,8 @@ datatypes:
       - fastaid: fastq_entry_qdesc_fastaid
       - desc: fastq_entry_qdesc_desctxt
     required: 1
-    sep: " "
-    split_by_sep: false
-    pfx: "+"
+    separator: " "
+    prefix: "+"
   fastq_entry_qdesc_fastaid:
     regex: "[!-~]+"
     empty: null

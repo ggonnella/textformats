@@ -14,8 +14,8 @@ datatypes:
       - name: {regex: "[A-Za-z][A-Za-z0-9]"}
       - type: {regex: "[ABHJZif]"}
       - value: {regex: "[ -~]*"}
-    sep: ":"
+    splitted_by: ":"
   gfa_tags:
     list_of: gfa_tag_generic
-    sep: "\t"
+    splitted_by: "\t"
     minlength: 0

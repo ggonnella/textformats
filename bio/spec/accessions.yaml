@@ -48,7 +48,6 @@ datatypes:
           - Z: Analysis
       - entry_id:
           regex: "[0-9]{6,}"
-    sep: ""
   bioproject:
     composed_of:
       - institution:
@@ -72,7 +71,7 @@ datatypes:
     composed_of:
       - molecule_type: {regex: "(AC|N[CGTWZMR]|X[MR]|[ANYXW]P)"}
       - number: {regex: "[0-9]+"}
-    sep: "_"
+    splitted_by: "_"
   # https://www.uniprot.org/help/accession_numbers
   uniprotkb:
     regex: "[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}"
@@ -95,4 +94,3 @@ datatypes:
       - entry_id:
           regex:
             "[0-9]{11}"
-    sep: ""

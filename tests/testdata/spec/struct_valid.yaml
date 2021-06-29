@@ -10,7 +10,7 @@ datatypes:
     composed_of:
     - name: {regex: "[^,]+"}
     - a: {constant: a}
-    sep: ","
+    splitted_by: ","
   s_hide:
     composed_of:
     - a: {constant: a}
@@ -21,8 +21,7 @@ datatypes:
     composed_of:
     - name: {regex: "[^,]+\\\\,[^,]+"}
     - a: {constant: a}
-    sep: ","
-    split_by_sep: false
+    separator: ","
   s_nosep_lastopt:
     composed_of:
     - name: {regex: "[^a]+"}
@@ -32,14 +31,13 @@ datatypes:
     composed_of:
     - name: {regex: "[^,]+"}
     - a: {constant: a}
-    sep: ","
+    splitted_by: ","
     required: 1
   s_nosplit_lastopt:
     composed_of:
     - name: {regex: "[^,]+\\\\,[^,]+"}
     - a: {constant: a}
-    sep: ","
-    split_by_sep: false
+    separator: ","
     required: 1
   s_nosep_varlen:
     composed_of:
@@ -48,29 +46,28 @@ datatypes:
   s_sep_varlen:
     composed_of:
     - name: {regex: "[^,]+"}
-    - a: {list_of: {constant: a}, sep: ","}
-    sep: ","
+    - a: {list_of: {constant: a}, splitted_by: ","}
+    splitted_by: ","
   s_nosplit_varlen:
     composed_of:
     - name: {regex: "[^,]+\\\\,[^,]+"}
-    - a: {list_of: {constant: a}, sep: ","}
-    sep: ","
-    split_by_sep: false
+    - a: {list_of: {constant: a}, splitted_by: ","}
+    separator: ","
   s_sep_varlen_min:
     composed_of:
     - name: {regex: "[^,]+"}
-    - a: {list_of: {constant: a}, minlength: 2, sep: ","}
-    sep: ","
+    - a: {list_of: {constant: a}, minlength: 2, splitted_by: ","}
+    splitted_by: ","
   s_sep_varlen_max:
     composed_of:
     - name: {regex: "[^,]+"}
-    - a: {list_of: {constant: a}, maxlength: 2, sep: ","}
-    sep: ","
+    - a: {list_of: {constant: a}, maxlength: 2, splitted_by: ","}
+    splitted_by: ","
   s_sep_varlen_minmax:
     composed_of:
     - name: {regex: "[^,]+"}
-    - a: {list_of: {constant: a}, minlength: 2, maxlength: 3, sep: ","}
-    sep: ","
+    - a: {list_of: {constant: a}, minlength: 2, maxlength: 3, splitted_by: ","}
+    splitted_by: ","
   s_fullopts:
     composed_of:
     - name: {regex: "[^,]+"}
@@ -84,11 +81,11 @@ datatypes:
             - "false": false
         minlength: 2
         maxlength: 3
-        sep: ","
+        splitted_by: ","
     required: 2
-    sep: ","
-    pfx: "<<<"
-    sfx: ">>>"
+    splitted_by: ","
+    prefix: "<<<"
+    suffix: ">>>"
     empty: {"n": null}
     implicit:
       ii: 1

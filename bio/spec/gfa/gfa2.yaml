@@ -4,12 +4,12 @@
 include: [gfa2.fields.yaml, gfa.tags.yaml]
 datatypes:
   header:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {H: "header"}}
       - tags: gfa::tags
   segment:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {S: "segment"}}
       - sid: gfa2::opt_id
@@ -18,7 +18,7 @@ datatypes:
       - tags: gfa::tags
     required: 4
   edge:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {E: "edge"}}
       - eid: gfa2::opt_id
@@ -32,7 +32,7 @@ datatypes:
       - tags: gfa::tags
     required: 9
   ordered_group:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {O: "ordered_group"}}
       - oid: gfa2::opt_id
@@ -40,7 +40,7 @@ datatypes:
       - tags: gfa::tags
     required: 3
   unordered_group:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {U: "unordered_group"}}
       - uid: gfa2::opt_id
@@ -48,7 +48,7 @@ datatypes:
       - tags: gfa::tags
     required: 3
   gap:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {G: "gap"}}
       - gid: gfa2::opt_id
@@ -59,7 +59,7 @@ datatypes:
       - tags: gfa::tags
     required: 6
   fragment:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {F: "fragment"}}
       - sid: gfa2::id
@@ -77,12 +77,12 @@ datatypes:
       - content: string
     required: 1
   custom_line:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - descriptor: {regex: "[^HSEOUGF#]"}
       - fields:
           list_of: {regex: "[^\t]*"}
-          sep: "\t"
+          splitted_by: "\t"
     implicit: {line_type: "custom_line"}
     required: 1
   gfa2::line: {one_of: [header, segment, edge, ordered_group,

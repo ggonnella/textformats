@@ -19,7 +19,7 @@ suite "test_list_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.lenrange.low == 1
     check d.lenrange.highstr == "Inf"
   test "l_sep":
@@ -52,7 +52,7 @@ suite "test_list_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.lenrange.low == 2
     check d.lenrange.high == 3
   test "l_sep_minmaxlen":
@@ -86,7 +86,7 @@ suite "test_list_def_parser":
     check d.sep == ""
     check d.pfx == ""
     check d.sfx == ""
-    check d.sep_excl == true
+    check d.sep_excl == false
     check d.lenrange.low == 0
     check d.lenrange.highstr == "Inf"
   test "l_sep_minlen_zero":

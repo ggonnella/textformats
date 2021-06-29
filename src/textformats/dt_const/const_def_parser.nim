@@ -32,7 +32,8 @@ const
     <scalar> is an integer, float, string, bool or null
     <value> is any valid YAML node
 
-  Optional keys:
+  Optional keys for decoding:
+  - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
   """
 

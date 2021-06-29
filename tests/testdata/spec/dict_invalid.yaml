@@ -2,88 +2,88 @@ datatypes:
   d_unknown_key:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     x: 1
-  d_no_sep:
+  d_no_splitted_by:
     named_values:
       name: string
-    internal_sep: ":"
+    value_separator: ":"
   d_named_values_scalar:
     named_values: a
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
   d_named_values_seq:
     named_values: [a, b]
-    sep: ","
-    internal_sep: ":"
-  d_sep_clash:
+    splitted_by: ","
+    value_separator: ":"
+  d_splitted_by_clash:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ","
-  d_no_isep:
+    splitted_by: ","
+    value_separator: ","
+  d_no_value_separator:
     named_values:
       name: string
-    sep: ","
-  d_isep_empty:
+    splitted_by: ","
+  d_value_separator_empty:
     named_values:
       name: string
-    sep: ","
-    isep: ""
-  d_sep_empty:
+    splitted_by: ","
+    value_separator: ""
+  d_splitted_by_empty:
     named_values:
       name: string
-    sep: ""
-    isep: ":"
-  d_isep_contains_sep:
+    splitted_by: ""
+    value_separator: ":"
+  d_value_separator_contains_splitted_by:
     named_values:
       name: string
-    sep: ","
-    isep: ":,"
+    splitted_by: ","
+    value_separator: ":,"
   d_no_values:
     named_values: {}
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
   d_unknown_required:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     required: [name, a]
   d_invalid_required_str:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     required: name
   d_invalid_required_map:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     required: {name: true}
   d_unknown_single:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     single: [name, a]
   d_invalid_single_str:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     single: name
   d_invalid_single_map:
     named_values:
       name: string
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    value_separator: ":"
     single: {name: true}
-  d_name_contains_sep:
+  d_name_contains_splitted_by:
     named_values:
       x: string
       bab: {constant: a}
-    sep: "a"
-    internal_sep: ":"
+    splitted_by: "a"
+    value_separator: ":"

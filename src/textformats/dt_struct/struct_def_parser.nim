@@ -30,14 +30,20 @@ const
     - a datatype name (string); or
     - a datatype definition (map)
 
-  Optional keys:
+  Optional keys for formatting:
+  - {PfxKey}: {PfxHelp}
+  - {SfxKey}: {SfxHelp}
   - {SepKey}: {SepHelp}
-  - {SepExclKey}: {SepExclHelp}
-  - {NullValueKey}: {NullValueHelp}
-  - {ImplicitKey}: {ImplicitHelp}
+  - {SplittedKey}: {SplittedLastHelp}
+
+  Optional keys for validation:
   - {NRequiredKey}: {NRequiredHelp}
-  - {AsStringKey}: {AsStringHelp}
+
+  Optional keys for decoding:
+  - {ImplicitKey}: {ImplicitHelp}
   - {HiddenKey}: {HiddenHelp}
+  - {NullValueKey}: {NullValueHelp}
+  - {AsStringKey}: {AsStringHelp}
   - {ScopeKey}: {ScopeHelp}
   - {UnitsizeKey}: {UnitsizeHelp}
   """
@@ -83,21 +89,21 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
   try:
     let defnodes = collect_defnodes(defroot,
                      [DefKey, NullValueKey, SepKey, PfxKey, SfxKey,
-                      SepExclKey, NRequiredKey, ImplicitKey, AsStringKey,
+                      SplittedKey, NRequiredKey, ImplicitKey, AsStringKey,
                       HiddenKey, ScopeKey, UnitsizeKey])
     result = DatatypeDefinition(kind: ddkStruct, name: name,
                members:    defnodes[0].unsafe_get.parse_struct_members(name),
                null_value: defnodes[1].parse_null_value,
-               sep:        defnodes[2].parse_sep,
                pfx:        defnodes[3].parse_pfx,
                sfx:        defnodes[4].parse_sfx,
-               sep_excl:   defnodes[5].parse_sep_excl,
                implicit:   defnodes[7].parse_implicit,
                as_string:  defnodes[8].parse_as_string,
                scope:      defnodes[10].parse_scope,
                unitsize:   defnodes[11].parse_unitsize)
     result.parse_n_required(defnodes[6])
-    validate_sep_if_sepexcl(defnodes[5], defnodes[2])
+    let (sep, sep_excl) = parse_sep(defnodes[2], defnodes[5])
+    result.sep = sep
+    result.sep_excl = sep_excl
     result.validate_member_names_uniqueness
     if defnodes[9].to_bool(default=false, HiddenKey):
       var i = 0

@@ -14,13 +14,13 @@ datatypes:
       - content: string
     required: 1
   header:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {H: "header"}}
       - tags: gfa::tags
     required: 1
   segment:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {S: "segment"}}
       - name: gfa1::name
@@ -28,7 +28,7 @@ datatypes:
       - tags: gfa::tags
     required: 3
   link:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {L: "link"}}
       - from: gfa1::name
@@ -39,7 +39,7 @@ datatypes:
       - tags: gfa::tags
     required: 6
   containment:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {C: "containment"}}
       - container: gfa1::name
@@ -51,7 +51,7 @@ datatypes:
       - tags: gfa::tags
     required: 7
   path:
-    sep: "\t"
+    splitted_by: "\t"
     composed_of:
       - line_type: {constant: {P: "path"}}
       - path_name: gfa1::name

@@ -3,14 +3,14 @@ datatypes:
     tags:
       x: {constant: x}
     tagname: "[a-z]{2}"
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    internal_separator: ":"
   t_predefined_only:
     tags:
       x: {constant: x}
     tagname: ""
-    sep: ","
-    internal_sep: ":"
+    splitted_by: ","
+    internal_separator: ":"
     predefined:
       abc: x
       CD: x
@@ -21,10 +21,10 @@ datatypes:
       "y": string
       z: integer
     tagname: "[a-z]{2}"
-    sep: ","
-    internal_sep: ":"
-    pfx: "<<<"
-    sfx: ">>>"
+    splitted_by: ","
+    internal_separator: ":"
+    prefix: "<<<"
+    suffix: ">>>"
     predefined:
       abc: x
       CD: x

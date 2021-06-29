@@ -4,84 +4,78 @@ datatypes:
     composed_of:
       - a: {regex: "[0-9A-Fa-f]+"}
       - b: {regex: "[A-Za-z0-9.+!&'()*+-,;=:]+"}
-    sep: "."
-    pfx: "v"
+    splitted_by: "."
+    prefix: "v"
   h16:
     regex: "[0-9a-f]{1,4}"
   ls32:
     as_string: true
     one_of:
     - ipv4
-    - {list_of: h16, sep: ":", length: 2}
+    - {list_of: h16, splitted_by: ":", length: 2}
   ipv4:
     as_string: true
     list_of: {unsigned_integer: {min: 0, max: 255}}
     minlength: 4
     maxlength: 4
-    sep: "."
+    splitted_by: "."
   ipv6:
     as_string: true
     one_of:
       - composed_of:
-        - a: {list_of: h16, sep: ":", length: 6}
+        - a: {list_of: h16, splitted_by: ":", length: 6}
         - b: ls32
-        sep: ":"
-        split_by_sep: false
-      - pfx: "::"
+        separator: ":"
+      - prefix: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", length: 5}
+        - a: {list_of: h16, splitted_by: ":", length: 5}
         - b: ls32
-        sep: ":"
-        split_by_sep: false
-      - sep: "::"
+        separator: ":"
+      - splitted_by: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 1}
+        - a: {list_of: h16, splitted_by: ":", minlength: 0, maxlength: 1}
         - b:
             composed_of:
-            - c: {list_of: h16, sep: ":", length: 4}
+            - c: {list_of: h16, splitted_by: ":", length: 4}
             - d: ls32
-            sep: ":"
-            split_by_sep: false
-      - sep: "::"
+            separator: ":"
+      - splitted_by: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 2}
+        - a: {list_of: h16, splitted_by: ":", minlength: 0, maxlength: 2}
         - b:
             composed_of:
-            - c: {list_of: h16, sep: ":", length: 3}
+            - c: {list_of: h16, splitted_by: ":", length: 3}
             - d: ls32
-            sep: ":"
-            split_by_sep: false
-      - sep: "::"
+            separator: ":"
+      - splitted_by: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 3}
+        - a: {list_of: h16, splitted_by: ":", minlength: 0, maxlength: 3}
         - b:
             composed_of:
-            - c: {list_of: h16, sep: ":", length: 2}
+            - c: {list_of: h16, splitted_by: ":", length: 2}
             - d: ls32
-            sep: ":"
-            split_by_sep: false
-      - sep: "::"
+            separator: ":"
+      - splitted_by: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 4}
+        - a: {list_of: h16, splitted_by: ":", minlength: 0, maxlength: 4}
         - b:
             composed_of:
             - c: h16
             - d: ls32
-            sep: ":"
-            split_by_sep: false
-      - sep: "::"
+            separator: ":"
+      - splitted_by: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 5}
+        - a: {list_of: h16, splitted_by: ":", minlength: 0, maxlength: 5}
         - b: ls32
-      - sep: "::"
+      - splitted_by: "::"
         composed_of:
-        - a: {list_of: h16, sep: ":", minlength: 0, maxlength: 6}
+        - a: {list_of: h16, splitted_by: ":", minlength: 0, maxlength: 6}
         - b: h16
       - list_of: h16
-        sep: ":"
+        splitted_by: ":"
         minlength: 0
         maxlength: 7
-        sfx: "::"
+        suffix: "::"
 testdata:
   ipv_future:
     valid: ["v17.In!0"]

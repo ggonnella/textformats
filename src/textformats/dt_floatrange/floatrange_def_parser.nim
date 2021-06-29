@@ -27,7 +27,7 @@ const
   - {MaxKey} is Infinite
   - {MaxKey} is included (is a valid value)
 
-  Optional keys:
+  Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
 """

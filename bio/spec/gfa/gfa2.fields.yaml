@@ -12,17 +12,17 @@ datatypes:
   # alignments:
   cigar_operation: {composed_of: [length: unsigned_integer,
                                   code: {regex: "[MDIP]"}]}
-  cigar:  {list_of: cigar_operation, sep: "", minlength: 1}
-  cigars: {list_of: cigar, sep: ",", minlength: 2}
-  trace:  {list_of: unsigned_integer, sep: ",", minlength: 1}
+  cigar:  {list_of: cigar_operation, minlength: 1}
+  cigars: {list_of: cigar, splitted_by: ",", minlength: 2}
+  trace:  {list_of: unsigned_integer, splitted_by: ",", minlength: 1}
   alignment: {one_of: [placeholder, cigars, trace]}
 
   # identifiers and references:
   id: {regex: "[!-)+-~][!-~]*"}  # different from original
   opt_id: {one_of: [placeholder, id]}
   ref: {composed_of: [id: id, orientation: {regex: "[+-]"}]}
-  id_list: {list_of: id, sep: " ", minlength: 1}
-  ref_list: {list_of: ref, sep: " ", minlength: 1}
+  id_list: {list_of: id, splitted_by: " ", minlength: 1}
+  ref_list: {list_of: ref, splitted_by: " ", minlength: 1}
 
   # sequence
   sequence: {one_of: [placeholder, regex: "[!-~]+"]}

@@ -18,18 +18,15 @@ datatypes:
       - version: version_directive
       - content:
           list_of: content_line
-          sep: "\n"
+          splitted_by: "\n"
       - fasta:
           composed_of:
             - directive: fasta_directive
             - data:
-                list_of: fasta::unit
-                sep: "\n"
-                split_by_sep: false
-          sep: "\n"
-          split_by_sep: false
-    sep: "\n"
-    split_by_sep: false
+                list_of: fasta::entry
+                separator: "\n"
+          separator: "\n"
+    separator: "\n"
     required: 2
   content_line:
     one_of:
@@ -46,7 +43,7 @@ datatypes:
                  end: column_end, score: column_score,
                  strand: column_strand, phase: column_phase,
                  attributes: column_attributes]
-    sep: "\t"
+    splitted_by: "\t"
   #
   # (2) Directives
   #
@@ -55,8 +52,8 @@ datatypes:
       - version: {constant: "3"}
       - major_revision: unsigned_integer
       - minor_revision: unsigned_integer
-    sep: "."
-    pfx: "##gff-version "
+    splitted_by: "."
+    prefix: "##gff-version "
     required: 1
   internal_directive:
     one_of:
@@ -76,8 +73,8 @@ datatypes:
       - seqid: id
       - start: unsigned_integer
       - end: unsigned_integer
-    sep: " "
-    pfx: "##sequence-region "
+    splitted_by: " "
+    prefix: "##sequence-region "
   ontology_directive:
     composed_of:
       - pragma:
@@ -85,14 +82,14 @@ datatypes:
                             "source-ontology",
                             "feature-ontology"]
       - uri: uri
-    pfx: "##"
-    sep: " "
+    prefix: "##"
+    splitted_by: " "
   genome_build_directive:
     composed_of:
       - source: valid_string
       - build_name: valid_string
-    sep: " "
-    pfx: "##genome-build "
+    splitted_by: " "
+    prefix: "##genome-build "
   forward_references_solved_directive: {constant: "###"}
   #
   # note: the following also matches all previous directives,
@@ -103,9 +100,8 @@ datatypes:
     composed_of:
       - pragma: valid_string
       - content: valid_string
-    pfx: "##"
-    sep: " "
-    split_by_sep: false
+    prefix: "##"
+    separator: " "
   #
   # (3) Columns of annotation lines
   #
@@ -132,7 +128,7 @@ datatypes:
       - dbxref_attribute
       - generic_attribute
       wrapped: true
-    sep: ";"
+    splitted_by: ";"
 
   #
   # (4) Attributes (column 9 of annotation lines)
@@ -141,13 +137,13 @@ datatypes:
     composed_of:
     - tag: {accepted_values: ["ID", "Name"]}
     - value: id
-    sep: "="
+    splitted_by: "="
   #
   id_list_attribute:
     composed_of:
     - tag: {accepted_values: ["Parent", "Alias"]}
-    - value: {list_of: id, sep: ","}
-    sep: "="
+    - value: {list_of: id, splitted_by: ","}
+    splitted_by: "="
   #
   # "The format of the value is "target_id start end [strand]",
   # where strand is optional and may be "+" or "-". If the target_id
@@ -162,8 +158,8 @@ datatypes:
         - end: {unsigned_integer: {min: 1}}
         - strand: {accepted_values: ["+", "-"]}
         required: 3
-        sep: " "
-    sep: "="
+        splitted_by: " "
+    splitted_by: "="
 
   # "The Gap attribute's format consists of a series of (operation,length) pairs
   # separated by space characters [...] Each operation is a single-letter code:
@@ -176,8 +172,8 @@ datatypes:
           composed_of:
           - operation: {accepted_values: ["M", "I", "D", "F", "R"]}
           - length: {unsigned_integer: {min: 1}}
-        sep: " "
-    sep: "="
+        splitted_by: " "
+    splitted_by: "="
 
   # "The value of both Ontology_term and Dbxref is the ID of the cross
   # referenced object in the form "DBTAG:ID"
@@ -185,18 +181,17 @@ datatypes:
     composed_of:
       - dbtag: dbtag
       - id: attr_string
-    sep: ":"
-    split_by_sep: false # because ID can contain colons
+    separator: ":" # ID can contain colons
   ontology_term_attribute:
     composed_of:
     - tag: {constant: "Ontology_term"}
-    - value: {list_of: xref, sep: ","}
-    sep: "="
+    - value: {list_of: xref, splitted_by: ","}
+    splitted_by: "="
   dbxref_attribute:
     composed_of:
     - tag: {constant: "Dbxref"}
-    - value: {list_of: xref, sep: ","}
-    sep: "="
+    - value: {list_of: xref, splitted_by: ","}
+    splitted_by: "="
   #
   # note: the following also matches all previous attributes,
   # but it works if used after them in one_of, since the first
@@ -208,8 +203,8 @@ datatypes:
     - value:
         one_of:
         - attr_string
-        - {list_of: attr_string, sep: ","}
-    sep: "="
+        - {list_of: attr_string, splitted_by: ","}
+    splitted_by: "="
   #
   # (4) Strings and special values
   #

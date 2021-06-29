@@ -30,7 +30,7 @@ const
     - a datatype name (string); or
     - a datatype definition (map)
 
-  Optional keys:
+  Optional keys for decoding:
   - {WrappedKey}: {WrappedHelp}
   - {BranchNamesKey}: {BranchNamesHelp}
   - {NullValueKey}: {NullValueHelp}

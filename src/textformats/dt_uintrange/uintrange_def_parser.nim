@@ -28,7 +28,7 @@ const
   - {MaxKey} is the largest available signed int as unsigned
   - {MaxKey} is included (is a valid value)
 
-  Optional keys:
+  Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
 """

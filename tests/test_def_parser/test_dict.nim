@@ -22,6 +22,7 @@ suite "test_dict_def_parser":
       check d.kind == ddkDict
     test dn & "_new_dict_formatting_defkeys":
       check d.sep == ","
+      check d.sep_excl == true
       check d.dict_internal_sep == ":"
       if dn != "d_fullopt":
         check d.pfx == ""

@@ -34,7 +34,7 @@ const
     A mapping must be included under {EncodedKey},
     where keys are all scalar values used under {DefKey}.
 
-  Optional keys:
+  Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
   """
 

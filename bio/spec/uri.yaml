@@ -49,9 +49,8 @@ datatypes:
           composed_of:
             - username: uri_string_ups
             - password: uri_string_upsc
-          sep: ":"
-          split_by_sep: false
-          sfx: "@"
+          separator: ":"
+          suffix: "@"
           required: 0
           empty: {}
       - host:
@@ -107,7 +106,7 @@ datatypes:
       - path:
           one_of:
           - uri_segment_nz
-          - {list_of: uri_segment, sep: "/"}
+          - {list_of: uri_segment, splitted_by: "/"}
           empty: []
     hide_constants: true
   uri_path_noscheme:
@@ -116,25 +115,24 @@ datatypes:
       - first: uri_segment_nz_nc
       - subpath:
           list_of: uri_segment
-          sep: "/"
+          splitted_by: "/"
     required: 1
-    sep: "/"
-    split_by_sep: false
+    separator: "/"
   uri_path_rootless:
     as_string: true
     composed_of:
       - first: uri_segment_nz
       - subpath:
           list_of: uri_segment
-          sep: "/"
+          splitted_by: "/"
     required: 1
-    sep: "/"
-    split_by_sep: false
+    separator: "/"
+  #
   # the following regexes are composed of:
-  #   pct_encoded: %[0-9A-Fa-z]{2}
-  #   unreserved:  [A-Za-z0-9.+-]
-  #   subdelim:    [!$&'()*+,;=]
-  #   gendelim:    [:@?/]
+  #    pct_encoded: %[0-9A-Fa-z]{2}
+  #    unreserved:  [A-Za-z0-9.+-]
+  #    subdelim:    [!$&'()*+,;=]
+  #    gendelim:    [:@?/]
   uri_string_us: # unreserved or subdelim
     regex: "([A-Za-z0-9.+!&'()*+,;=-])+"
   uri_string_ups: # unreserved, pct_endoded or subdelim
