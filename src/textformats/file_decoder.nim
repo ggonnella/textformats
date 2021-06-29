@@ -173,8 +173,7 @@ proc decode_section*(reader: var FileLinesReader,
 proc decode_section_lines*(reader: var FileLinesReader,
                            dd: DatatypeDefinition, key: string,
                            line_processor: proc(decoded_line: JsonNode)) =
-  let
-    ddef = dereference(dd)
+  let ddef = dereference(dd)
   on_section_def(ddef):
     case ddef.kind:
     of ddkStruct:
@@ -190,6 +189,30 @@ proc decode_section_lines*(reader: var FileLinesReader,
     var obj = newJObject()
     obj[key] = reader.line.decode(ddef)
     line_processor(obj)
+
+iterator decoded_section_elements*(reader: var FileLinesReader,
+                                   dd: DatatypeDefinition, key: string):
+                                     JsonNode =
+  let ddef = dereference(dd)
+  on_section_def(ddef):
+    case ddef.kind:
+    of ddkStruct:
+      for line in reader.decoded_struct_section_elements(ddef, key):
+        yield line
+    of ddkList:
+      for line in reader.decoded_list_section_elements(ddef, key):
+        yield line
+    of ddkDict:
+      for line in reader.decoded_dict_section_elements(ddef, key):
+        yield line
+    #of ddefkTags:
+    #  for line in reader.decoded_tags_section_elements(ddef, key):
+    #    yield line
+    else: assert(false)
+  do:
+    var obj = newJObject()
+    obj[key] = reader.line.decode(ddef)
+    yield obj
 
 proc validate_section_def(dd: DatatypeDefinition) =
   if dd.kind != ddkStruct:
@@ -213,8 +236,20 @@ proc validate_section_def(dd: DatatypeDefinition) =
             "Expected: empty string\n" &
             &"Found: '{dd.sfx}'")
 
-template onDataLines(reader, ddef, actions: untyped) =
-  var state = dps_init(embedded)
+template raise_not_whole(filename: string, reader: FileLinesReader) =
+  raise newException(DecodingError,
+     "Error: Datatype definition applies to a section of the file only\n" &
+     "Filename: " & filename &
+     "\nExpected: datatype definition for whole file\n" &
+     "Last line number of file section: " & $reader.lineno & "\n")
+
+template onDataLines(filename, embedded, dd, whole, actions: untyped) =
+  var
+    file = open_input_file(filename)
+    reader {.inject.} = new_file_lines_reader(file)
+    state = dps_init(embedded)
+    section = 0
+  let ddef {.inject.} = dd.dereference
   ddef.validate_section_def
   while not reader.eof:
     case state:
@@ -225,66 +260,113 @@ template onDataLines(reader, ddef, actions: untyped) =
       state = dps_yaml_transition(reader.line)
       reader.consume
     of dpsData:
+      if whole and section > 0:
+        raise_not_whole(filename, reader)
       actions
+      inc section
 
 iterator decoded_sections*(filename: string, dd: DatatypeDefinition,
                            embedded=false): JsonNode =
   ##
-  ## Decode a file as a list of multiline units.
-  ##
-  ## Each of the units is defined by the passed datatype definition,
-  ## as a multiline unit, i.e. a ddkStruct definition (or a reference to it)
-  ## with a "\n" separator, and no pfx or sfx.
-  ##
-  ##
-  ## Decode a file section (or entire file) using a definition for a compound
-  ## datatype with newline as element separator, which describes its entire
-  ## content, consisting of multiple lines.
+  ## Decode a file as a list of multiline sections.
+  ## Each of the sections is defined by the datatype definition,
+  ## as a multiline section, i.e. a ddkStruct, ddkList or ddkDict definition
+  ## (or a reference to it) ## with a "\n" separator, and no pfx or sfx.
   ##
   ## This is targeted at sections of a file, consisting of multiple lines,
   ## where the number of lines is not known in advance.
   ##
-  ## This function returns the entire content of the file (or file section) at
-  ## once. For large files decoded_section_lines can be more efficient.
+  ## This iterator yields the entire content of each file section at
+  ## once. For large files decoded_section_lines/elements can be more efficient.
   ##
-  let
-    ddef = dereference(dd)
-    file = open_input_file(filename)
-  var reader = new_file_lines_reader(file)
-  onDataLines(reader, ddef):
+  onDataLines(filename, embedded, dd, false):
     yield reader.decode_section(ddef)
+
+proc decoded_whole_file*(filename: string, dd: DatatypeDefinition,
+                         embedded=false): JsonNode =
+  ##
+  ## Decode a file using a datatype definition for the whole file,
+  ## i.e. a ddkStruct, ddkList or ddkDict definition (or a reference to it)
+  ## with a "\n" separator, and no pfx or sfx.
+  ##
+  ## This is targeted at files, consisting of multiple lines,
+  ## where the number of lines is not known in advance.
+  ##
+  ## This function returns the entire content of the file at once.
+  ## For large files decoded_whole_file_lines/elements can be more efficient.
+  ##
+  onDataLines(filename, embedded, dd, true):
+    result = reader.decode_section(ddef)
 
 proc decode_section_lines*(filename: string, dd: DatatypeDefinition,
                            line_processor: proc(decoded_line: JsonNode),
-                           whole=false, embedded=false) =
+                           embedded=false) =
   ##
-  ## Decode a file using a definition which defines the entire
-  ## structure of the file (or file section, see decode_by_unit_definition)
-  ## as a compound datatype with newline as separator.
+  ## Decode a file using a definition which defines the structure of the file
+  ## section, as a compound datatype with newline as separator, but processing
+  ## each of the decoded lines separately.
   ##
-  ## This function passes each of the lines to the line_processor.
+  ## This function passes each of the decoded lines to line_processor.
   ## For a similar function returning the decoded compound value
   ## see decode_by_file_def.
   ##
   ## The function pointer argument is used, since the function cannot be
   ## implemented as iterator because recursive iterators are not available in
-  ## Nim.
+  ## Nim. The iterator version is decoded_section_elements, which, however,
+  ## does not split recursively into lines if a section definitions
+  ## are nested.
   ##
-  let
-    ddef = dereference(dd)
-    file = open_input_file(filename)
-  var
-    reader = new_file_lines_reader(file)
-    section = 0
-  onDataLines(reader, ddef):
-    if whole and section > 0:
-      raise newException(DecodingError,
-         "Error: Datatype definition applies to a section of the file only" &
-         &"Filename: {filename}\n" &
-         "Expected: datatype definition for whole file\n" &
-         &"Last line number of file section: {reader.lineno}")
+  onDataLines(filename, embedded, dd, false):
     reader.decode_section_lines(ddef, "", line_processor)
-    section += 1
+
+proc decode_whole_file_lines*(filename: string, dd: DatatypeDefinition,
+                              line_processor: proc(decoded_line: JsonNode),
+                              embedded=false) =
+  ##
+  ## Decode a file using a definition which defines the entire structure of the
+  ## file as a compound datatype with newline as separator, but processing each
+  ## of the decoded lines separately.
+  ##
+  ## This function passes each of the decoded lines to line_processor.
+  ## For a similar function returning the decoded compound value
+  ## see decode_by_file_def.
+  ##
+  ## The function pointer argument is used, since the function cannot be
+  ## implemented as iterator because recursive iterators are not available in
+  ## Nim. The iterator version is decoded_whole_file_elements, which, however,
+  ## does not split recursively into lines if a section definitions
+  ## are nested.
+  ##
+  onDataLines(filename, embedded, dd, true):
+    reader.decode_section_lines(ddef, "", line_processor)
+
+iterator decoded_section_elements*(filename: string, dd: DatatypeDefinition,
+                                   embedded=false): JsonNode =
+  ##
+  ## Decode a file using a definition which defines an entire
+  ## file section as a compound datatype with newline as separator.
+  ##
+  ## This iterator works as decoded_section_lines, however, due to
+  ## limitations ## of the iterators (which cannot be recursive)
+  ## if a section element is multi-line, then it will be yield at once.
+  ##
+  onDataLines(filename, embedded, dd, false):
+    for line in reader.decoded_section_elements(ddef, ""):
+      yield line
+
+iterator decoded_whole_file_elements*(filename: string, dd: DatatypeDefinition,
+                                   embedded=false): JsonNode =
+  ##
+  ## Decode a whole file using a definition which defines the entire
+  ## structure of the file as a compound datatype with newline as separator.
+  ##
+  ## This iterator works as decoded_whole_file_lines, however, due to
+  ## limitations ## of the iterators (which cannot be recursive)
+  ## if a section element is multi-line, then it will be yield at once.
+  ##
+  onDataLines(filename, embedded, dd, true):
+    for line in reader.decoded_section_elements(ddef, ""):
+      yield line
 
 proc parse_scope_setting*(scope: string, dd: DatatypeDefinition):
                           DatatypeDefinitionScope =
@@ -338,12 +420,6 @@ proc parse_unitsize_setting*(unitsize: int, dd: DatatypeDefinition): int =
                          wrong_value_msg)
   return unitsize
 
-let
-  not_whole_msg =
-      "Error: the specified datatype definition applies " &
-      "only to part of the file\n" &
-      "Expected: definition applying to the whole file\n"
-
 proc show_decoded(decoded: JsonNode) = echo $decoded
 
 proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
@@ -358,19 +434,48 @@ proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
     unitsize_param =
       if scope_param == ddsUnit: parse_unitsize_setting(unitsize, dd)
       else: 1
-  var first_section = true
   if scope_param == ddsUnit or scope_param == ddsLine:
     for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
                                           unitsize_param):
       process_decoded(decoded)
   elif linewise:
-    decode_section_lines(filename, dd, process_decoded,
-                         scope_param == ddsWhole, embedded)
+    if scope_param == ddsWhole:
+      decode_whole_file_lines(filename, dd, process_decoded, embedded)
+    else:
+      decode_section_lines(filename, dd, process_decoded, embedded)
   else:
-    for decoded in decoded_sections(filename, dd, embedded):
-      if scope_param == ddsWhole:
-        if not first_section:
-          raise newException(DecodingError, not_whole_msg)
-        first_section = false
-      process_decoded(decoded)
+    if scope_param == ddsWhole:
+      process_decoded(decoded_whole_file(filename, dd, embedded))
+    else:
+      for decoded in decoded_sections(filename, dd, embedded):
+        process_decoded(decoded)
+
+iterator decoded_file_values*(filename: string, dd: DatatypeDefinition,
+                  embedded = false, scope = "auto", elemwise = false,
+                  wrapped = false, unitsize = 1): JsonNode =
+  ##
+  ## Decode a file applying the specified definition
+  ##
+  let
+    scope_param = scope.parse_scope_setting(dd)
+    unitsize_param =
+      if scope_param == ddsUnit: parse_unitsize_setting(unitsize, dd)
+      else: 1
+  if scope_param == ddsUnit or scope_param == ddsLine:
+    for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
+                                          unitsize_param):
+      yield decoded
+  elif elemwise:
+    if scope_param == ddsWhole:
+      for decoded in decoded_whole_file_elements(filename, dd, embedded):
+        yield decoded
+    else:
+      for decoded in decoded_section_elements(filename, dd, embedded):
+        yield decoded
+  else:
+    if scope_param == ddsWhole:
+      yield decoded_whole_file(filename, dd, embedded)
+    else:
+      for decoded in decoded_sections(filename, dd, embedded):
+        yield decoded
 

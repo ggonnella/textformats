@@ -20,10 +20,12 @@ export decode
 
 import textformats/file_decoder
 export decode_file
+export decoded_file_values
 export decoded_lines
 export decoded_units
 export decoded_sections
 export decode_section_lines
+export decoded_section_elements
 
 # encoding
 import textformats/encoder
