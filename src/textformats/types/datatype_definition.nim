@@ -73,12 +73,11 @@ type
     ensures_valid*: bool
 
   DatatypeDefinitionScope* = enum
-    ddsUndef   = "any part of a file (default)",
-    ddsLine    = "a single line of a file",
-    ddsUnit    = "a fixed number of lines of a file",
-    ddsSection = "a section of a file, with as many " &
-                 "lines as fitting the definition",
-    ddsWhole   = "the entire file"
+    ddsUndef   = "undefined",
+    ddsLine    = "line",
+    ddsUnit    = "unit",
+    ddsSection = "section"
+    ddsFile    = "file"
 
   DatatypeDefinition* = ref DatatypeDefinitionObj
   DatatypeDefinitionObj {.acyclic.} = object
@@ -224,6 +223,9 @@ proc dereference*(dd: DatatypeDefinition): DatatypeDefinition =
 proc tabular_desc*(d: DatatypeDefinition, indent: int): string
 proc verbose_desc*(d: DatatypeDefinition, indent: int): string
 
+proc get_unitsize*(d: DatatypeDefinition): int = d.unitsize
+proc get_scope*(d: DatatypeDefinition): string = $d.scope
+
 proc `$`*(dd: DatatypeDefinition): string =
   dd.verbose_desc(0)
 
@@ -250,6 +252,15 @@ proc describe(kind: DatatypeDefinitionKind): string =
   of ddkTags: "list of tagname/typecode/value tuples (value semantic " &
             "depends on tagname, datatype on typecode)"
   of ddkUnion: "one of a list of possible datatypes"
+
+proc describe(scope: DatatypeDefinitionScope): string =
+  case scope:
+  of ddsUndef: "any part of a file (default)"
+  of ddsLine: "a single line of a file"
+  of ddsUnit: "a fixed number of lines of a file"
+  of ddsSection: "a section of a file, with as many " &
+                 "lines as fitting the definition"
+  of ddsFile: "the entire file"
 
 proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
   let pfx="  ".repeat(indent)
@@ -461,7 +472,7 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
                  "ensure validity)\n"
   if d.scope != ddsUndef:
     result &= &"\n{pfx}Scope of the definition:\n"
-    result &= &"{pfx}  {d.scope}\n"
+    result &= &"{pfx}  {describe(d.scope)}\n"
     if d.scope == ddsUnit:
       result &= &"{pfx}  each unit consists of {d.unitsize} lines\n"
 

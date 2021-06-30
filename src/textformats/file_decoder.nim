@@ -215,10 +215,10 @@ iterator decoded_section_elements*(reader: var FileLinesReader,
     yield obj
 
 proc validate_section_def(dd: DatatypeDefinition) =
-  if dd.kind != ddkStruct:
+  if dd.kind notin @[ddkStruct, ddkList, ddkDict]:
     raise newException(TextformatsRuntimeError,
             "Wrong datatype definition for file section\n" &
-            "Expected: structure (kind: ddkStruct)\n" &
+            "Expected: composed_of, list_of or named_values\n" &
             &"Found: '{dd.kind}'")
   if dd.sep != "\n":
     raise newException(TextformatsRuntimeError,
@@ -374,10 +374,10 @@ proc parse_scope_setting*(scope: string, dd: DatatypeDefinition):
   ## Compute the scope of a definition given a scope setting parameter (string)
   ##
   ## The scope setting parameter must be either one of the scope values
-  ## (whole, section, unit, line) or "auto". In the latter case, the
+  ## (file, section, unit, line) or "auto". In the latter case, the
   ## scope must be defined in the datatype definition.
   ##
-  let valid_definition_types = @["whole", "section", "unit", "line", "auto"]
+  let valid_definition_types = @["file", "section", "unit", "line", "auto"]
   if scope notin valid_definition_types:
     let scope_errmsg = block:
       var msg = "Error: scope must be one of the following values:\n"
@@ -386,7 +386,7 @@ proc parse_scope_setting*(scope: string, dd: DatatypeDefinition):
       msg
     raise newException(TextformatsRuntimeError, scope_errmsg)
   case scope:
-  of "whole": return ddsWhole
+  of "file": return ddsFile
   of "section": return ddsSection
   of "unit": return ddsUnit
   of "line": return ddsLine
@@ -439,12 +439,12 @@ proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
                                           unitsize_param):
       process_decoded(decoded)
   elif linewise:
-    if scope_param == ddsWhole:
+    if scope_param == ddsFile:
       decode_whole_file_lines(filename, dd, process_decoded, embedded)
     else:
       decode_section_lines(filename, dd, process_decoded, embedded)
   else:
-    if scope_param == ddsWhole:
+    if scope_param == ddsFile:
       process_decoded(decoded_whole_file(filename, dd, embedded))
     else:
       for decoded in decoded_sections(filename, dd, embedded):
@@ -466,14 +466,14 @@ iterator decoded_file_values*(filename: string, dd: DatatypeDefinition,
                                           unitsize_param):
       yield decoded
   elif elemwise:
-    if scope_param == ddsWhole:
+    if scope_param == ddsFile:
       for decoded in decoded_whole_file_elements(filename, dd, embedded):
         yield decoded
     else:
       for decoded in decoded_section_elements(filename, dd, embedded):
         yield decoded
   else:
-    if scope_param == ddsWhole:
+    if scope_param == ddsFile:
       yield decoded_whole_file(filename, dd, embedded)
     else:
       for decoded in decoded_sections(filename, dd, embedded):

@@ -159,5 +159,5 @@ datatypes:
     - header: header
     - alignments: alignments
     splitted_by: "\n"
-    scope: whole
+    scope: file
   default: file

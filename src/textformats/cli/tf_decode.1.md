@@ -29,9 +29,9 @@ YAML document separator, i.e. a line consisting of --- only.
 If a specification contains a datatype named 'default', this is used by default,
 and the **\-\-datatype** option is not required.
 
-## Scope section/whole
+## Scope section/file
 
-If the **\-\-scope** option is set to 'section' or 'whole', the definition must
+If the **\-\-scope** option is set to 'section' or 'file', the definition must
 be of kind 'composed\_of', 'list\_of' or 'named\_values', or a reference to
 one of those. The separator must be the newline, and prefix and suffix must be
 empty. Parsing is greedy, i.e. as many lines as possible are assigned to
@@ -98,7 +98,7 @@ each element of the compound datatype.
   'unit' (units of fixed number of lines; see \-\-unitsize),
   'section' (sections of variable number of lines,
              as many as possible fit the definition, greedy),
-  'whole' (the entire file)
+  'file' (the entire file)
 
 **-u**, **\-\-unitsize=**N
 : how many lines does a unit contain (required if scope is 'unit'

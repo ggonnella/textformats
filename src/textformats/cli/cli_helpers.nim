@@ -139,7 +139,7 @@ template help_opt_testfile*: untyped = "optional: test data filename (YAML);" &
   "if provided, tests are generated only for datatypes not yet present in it"
 template help_scope*: untyped = "which part of the input file is targeted " &
   "by the datatype definition; default: 'auto' (as specified by the scope " &
-  "key of the definition); other accepted values: line, unit, section, whole"
+  "key of the definition); other accepted values: line, unit, section, file"
 template help_linewise*: untyped =
   "if set, and scope is 'file' or 'section', the file/section structure " &
   "is used for parsing but the decoded value of each line is output " &

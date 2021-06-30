@@ -35,6 +35,10 @@ datatypes:
       - sequence: sequence
     separator: "\n"
     scope: section
+  file:
+    list_of: entry
+    separator: "\n"
+    scope: file
 testdata:
   header:
     valid: {">TDPy A":{"fastaid":"TDPy","desc":"A"},

@@ -2,6 +2,8 @@
 import textformats/types/datatype_definition
 export DatatypeDefinition
 export `$`
+export get_scope
+export get_unitsize
 
 # specification
 import textformats/types/specification
@@ -9,6 +11,7 @@ export Specification
 export BaseDatatypes
 export get_definition
 export is_preprocessed
+export datatype_names
 
 import textformats/spec_parser
 export specification_from_file
@@ -19,13 +22,21 @@ import textformats/decoder
 export decode
 
 import textformats/file_decoder
-export decode_file
-export decoded_file_values
+#
+# iterators
+#
+# scope: line
 export decoded_lines
+# scope: unit
 export decoded_units
+# scope: section
 export decoded_sections
-export decode_section_lines
 export decoded_section_elements
+# scope: file
+export decoded_whole_file
+export decoded_whole_file_elements
+# scope: auto/specified
+export decoded_file_values
 
 # encoding
 import textformats/encoder

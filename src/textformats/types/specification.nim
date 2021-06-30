@@ -85,6 +85,11 @@ proc is_preprocessed*(specfile: string): bool =
       else: get_current_exception().msg
     raise newException(TextformatsRuntimeError, errmsg_pfx & errmsg)
 
+proc datatype_names*(spec: Specification): seq[string] =
+  for name, dd in spec:
+    if name notin BaseDatatypes:
+      result.add(name)
+
 proc get_definition*(datatypes: Specification,
                      datatype = "default"): DatatypeDefinition =
   try:
