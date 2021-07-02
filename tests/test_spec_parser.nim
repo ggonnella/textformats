@@ -15,7 +15,7 @@ suite "test_spec_parser":
       "to_be_included_namespace.yaml", "include_namespace.yaml",
       "include_include_namespace.yaml"]:
     test "valid_" & filename:
-      check len(parse_specification(goodspecdir & filename)) > 0
+      check len(specification_from_file(goodspecdir & filename)) > 0
   for filename in @["broken_ref.yaml", "circular_aba.yaml",
       "circular_abca.yaml", "circular_abcda.yaml", "circular_dict.yaml",
       "circular_list.yaml", "circular_struct.yaml", "circular_tags.yaml",
@@ -26,9 +26,9 @@ suite "test_spec_parser":
       "wrong_yaml_syntax.yaml", "ref_included_wo_namespace.yaml"]:
     test "invalid_" & filename:
       expect(InvalidSpecError):
-        discard parse_specification(badspecdir & filename)
+        discard specification_from_file(badspecdir & filename)
   for filename in @["include_not_existing.yaml"]:
     test "invalid_" & filename:
       expect(TextFormatsRuntimeError):
-        discard parse_specification(badspecdir & filename)
+        discard specification_from_file(badspecdir & filename)
 
