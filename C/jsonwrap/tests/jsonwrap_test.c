@@ -2,13 +2,11 @@
 #include "stdbool.h"
 #include "stdio.h"
 
-typedef void JsonNode;
-
 void test_null_node() {
   printf("Test NullNode:\n");
   JsonNode *node = newJNull();
   printf("%s\n", to_string(node));
-  GC_unref_node(node);
+  delete_node(node);
   printf("\n\n");
 }
 
@@ -18,7 +16,7 @@ void test_bool_node() {
   printf("%s\n", to_string(node));
   if (getBool(node))
     printf("value read from node is: true\n");
-  GC_unref_node(node);
+  delete_node(node);
   printf("\n\n");
 }
 
@@ -27,7 +25,7 @@ void test_int_node() {
   JsonNode *node = newJInt(-10);
   printf("%s\n", to_string(node));
   printf("value read from node is: %li\n", getInt(node));
-  GC_unref_node(node);
+  delete_node(node);
   printf("\n\n");
 }
 
@@ -36,7 +34,7 @@ void test_float_node() {
   JsonNode *node = newJFloat(1.0);
   printf("%s\n", to_string(node));
   printf("value read from node is: %f\n", getFloat(node));
-  GC_unref_node(node);
+  delete_node(node);
   printf("\n\n");
 }
 
@@ -49,7 +47,7 @@ void test_string_node() {
   s[0]='B';
   printf("changed char 0 to B\n");
   printf("node content is now: %s\n", getStr(node));
-  GC_unref_node(node);
+  delete_node(node);
   printf("\n\n");
 }
 
@@ -84,7 +82,7 @@ void test_array_node() {
   printf("str value for index 3: %s\n", to_string(JArray_get(node, 3)));
   printf("int value for index 3: %li\n", getInt(JArray_get(node, 3)));
   printf("\n\n");
-  GC_unref_node(node);
+  delete_node(node);
 }
 
 void fill_object(JsonNode* node) {
@@ -113,7 +111,7 @@ void test_object_node() {
   JObject_add(node, "f", newJFloat(2.0));
   printf("float value of key \"f\": %f\n", getFloat(JObject_get(node, "f")));
   printf("\n\n");
-  GC_unref_node(node);
+  delete_node(node);
 }
 
 int main() {
