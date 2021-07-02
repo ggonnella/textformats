@@ -1,3 +1,4 @@
+{.used.}
 import unittest
 import sets
 import textformats/support/directed_graph

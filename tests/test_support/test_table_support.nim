@@ -1,3 +1,4 @@
+{.used.}
 import unittest
 import textformats/support/tables_support
 import tables
