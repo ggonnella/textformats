@@ -400,6 +400,7 @@ proc get_yamlfile_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
        filedesc, get_current_exception_msg()))
   try:
     yaml = load_dom(filestream)
+    filestream.close
   except:
     raise newException(parsing_errtype,
        yamlfile_errmsg(filename, filedesc,
