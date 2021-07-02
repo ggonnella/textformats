@@ -43,9 +43,11 @@ template foreach_dict_section_line(reader, dd, line_actions: untyped) =
 
 proc decode_dict_section_lines*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string,
-                        line_processor: proc(decoded_line: JsonNode)) =
+                        line_processor:
+                          proc(decoded_line: JsonNode, data: pointer = nil),
+                        line_processor_data: pointer = nil) =
   foreach_dict_section_line(reader, dd):
-    line_processor(obj)
+    line_processor(obj, line_processor_data)
 
 iterator decoded_dict_section_elements*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string): JsonNode =

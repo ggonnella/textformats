@@ -33,10 +33,13 @@ proc decode_struct_section*(reader: var FileLinesReader,
 
 proc decode_struct_section_lines*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string,
-                        line_processor: proc(decoded_line: JsonNode)) =
+                        line_processor: proc(decoded_line: JsonNode,
+                                             data: pointer = nil),
+                        line_processor_data: pointer = nil) =
   let pfx = if len(key) > 0: &"{key}." else: ""
   foreach_struct_section_element(reader, dd, false):
-    reader.decode_section_lines(member.def, pfx & member.name, line_processor)
+    reader.decode_section_lines(member.def, pfx & member.name, line_processor,
+                                line_processor_data)
 
 iterator decoded_struct_section_elements*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string): JsonNode =

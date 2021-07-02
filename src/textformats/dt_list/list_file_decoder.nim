@@ -26,10 +26,12 @@ proc decode_list_section*(reader: var FileLinesReader,
 
 proc decode_list_section_lines*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string,
-                        line_processor: proc(decoded_line: JsonNode)) =
+                        line_processor:
+                          proc(decoded_line: JsonNode, data: pointer = nil),
+                        line_processor_data: pointer = nil) =
   foreach_list_section_element(reader, dd):
     reader.decode_section_lines(dd.members_def, &"{key}[{element_num+1}]",
-                                line_processor)
+                                line_processor, line_processor_data)
 
 iterator decoded_list_section_elements*(reader: var FileLinesReader,
                         dd: DatatypeDefinition, key: string): JsonNode =
