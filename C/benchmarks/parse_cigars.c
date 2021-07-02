@@ -20,10 +20,6 @@ typedef enum {
   OpToJson
 } TextformatsOperation;
 
-typedef void Specification;
-typedef void DatatypeDefinition;
-typedef void JsonNode;
-
 int parse_args(int argc, char *argv[],
                DatatypeDefinition **def,
                FILE **input_file,
@@ -34,7 +30,7 @@ int parse_args(int argc, char *argv[],
     printf(HELPMSG, argv[0]);
     return EXIT_FAILURE;
   }
-  spec = parse_specification(argv[1]);
+  spec = specification_from_file(argv[1]);
   *def = get_definition(spec, argv[2]);
   *input_file = fopen(argv[3], "r");
   if (*input_file == NULL)
@@ -71,7 +67,7 @@ int input_file_decode(DatatypeDefinition *def, FILE *input_file)
       rstrip(encoded);
       node = (JsonNode*)decode(encoded, def);
       printf("%s\n", to_string(node));
-      GC_unref_node(node);
+      delete_node(node);
     }
     free(encoded);
 }

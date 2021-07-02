@@ -3,22 +3,25 @@
 
 int main(void)
 {
-  void *spec, *datatype, *node;
-  const char *encoded = "1M100D1I2M3M4M";
-  printf("Encoded: %s\n", encoded);
-
-  /* (1) initialize Nim library (at program begin) */
+  /* (1) initialize Nim library */
   NimMain();
 
-  /* (2) parse specification and get datatype definition  */
-  spec = parse_specification(
-      "../../bio/benchmarks/cigars/cigar.datatypes.yaml");
-  datatype = get_definition(spec, "cigar");
+  char *encoded = "1M100D1I2M3M4M";
+  printf("Encoded: %s\n", encoded);
 
-  /* (3) decode to a "node", convert to_string(), release memory */
-  node = decode((char*)encoded, datatype);
+  /* (2) parse specification and get datatype definition  */
+  Specification *spec = specification_from_file(
+      "../../bio/benchmarks/cigars/cigar.datatypes.yaml");
+  DatatypeDefinition *datatype = get_definition(spec, "cigar");
+
+  /* (3) decode to a "node", convert to_string() */
+  JsonNode *node = decode(encoded, datatype);
   printf("%s\n", to_string(node));
-  GC_unref_node(node);
+
+  /* (4) tell the GC that the references are not used anymore */
+  delete_node(node);
+  delete_specification(spec);
+  delete_definition(datatype);
 
   return 0;
 }
