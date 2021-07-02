@@ -86,7 +86,8 @@ proc prematched_decode*(input: string, slice: Slice[int],
       else: assert(false)
   return if dd.as_string: %sliced else: result
 
-proc decode*(input: string, dd: DatatypeDefinition): JsonNode =
+proc decode*(input: string, dd: DatatypeDefinition): JsonNode
+            {.raises: [DecodingError].} =
   if input.len == 0 and dd.null_value.is_some:
     assert dd.kind != ddkRef
     result = dd.null_value.unsafe_get
