@@ -59,24 +59,34 @@ proc is_valid_decoded*(
        obj: PyObject, dd: DatatypeDefinition): bool {.exportpy.} =
   textformats.is_valid(obj.to_json, dd)
 
-iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
-                       embedded: bool = false, wrapped: bool = false):
-                         JsonNode {.exportpy.} =
-  for decoded in textformats.decoded_lines(filename, dd, embedded, wrapped):
+proc is_valid_decoded_json*(
+       json_str: string, dd: DatatypeDefinition): bool {.exportpy.} =
+  textformats.is_valid(parse_json(json_str), dd)
+
+iterator decoded_file_values*(filename: string, dd: DatatypeDefinition,
+                  embedded: bool = false, scope: string = "auto",
+                  elemwise: bool = false, wrapped: bool = false,
+                  unitsize: int = 1): JsonNode {.exportpy.} =
+  for decoded in textformats.decoded_file_values(filename, dd, embedded, scope,
+                                                 elemwise, wrapped, unitsize):
     yield decoded
 
-iterator decoded_units*(filename: string, dd: DatatypeDefinition, unitsize: int,
-                        embedded: bool = false, wrapped: bool = false):
-                         JsonNode {.exportpy.} =
-  for decoded in textformats.decoded_units(filename, dd, unitsize,
-                                           embedded, wrapped):
-    yield decoded
+iterator file_values_to_json*(filename: string, dd: DatatypeDefinition,
+                  embedded: bool = false, scope: string = "auto",
+                  elemwise: bool = false, wrapped: bool = false,
+                  unitsize: int = 1): string {.exportpy.} =
+  for decoded in textformats.decoded_file_values(filename, dd, embedded, scope,
+                                                 elemwise, wrapped, unitsize):
+    yield $decoded
 
-iterator decoded_sections*(filename: string, dd: DatatypeDefinition,
-                           embedded: bool = false): JsonNode {.exportpy.} =
-  for decoded in textformats.decoded_sections(filename, dd, embedded):
-    yield decoded
+proc test_specification(spec: Specification, testfile: string) {.exportpy.} =
+  textformats.test_specification(spec, testfile)
 
-##export decode_file
-##export decode_file_section_lines
-##export test_specification
+proc datatype_names(spec: Specification): seq[string] {.exportpy.} =
+  textformats.datatype_names(spec)
+
+proc get_unitsize(dd: DatatypeDefinition): int {.exportpy.} =
+  textformats.get_unitsize(dd)
+
+proc get_scope(dd: DatatypeDefinition): string {.exportpy.} =
+  textformats.get_scope(dd)

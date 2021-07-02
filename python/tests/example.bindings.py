@@ -33,13 +33,24 @@ print(is_valid_encoded(encoded, gfa2_position))
 #  print(line)
 #
 fasta_spec = specification_from_file(fasta_specfile)
+test_specification(fasta_spec, fasta_specfile)
+
 fasta_entry = get_definition(fasta_spec, "entry")
-#for section in decoded_sections(fasta_datafile, fasta_entry):
-#  print(section)
-#for section in decoded_sections(fasta_specfile, fasta_entry,
-#                                     embedded=True):
-#  print(section)
-#
+
+for section in decoded_sections(fasta_datafile, fasta_entry):
+  print(section)
+
+for element in decoded_section_elements(fasta_datafile, fasta_entry):
+  print(element)
+
+fasta_file_def = get_definition(fasta_spec, "file")
+
+print(decoded_whole_file(fasta_datafile, fasta_file_def))
+
+for element in decoded_whole_file_elements(fasta_datafile, fasta_file_def):
+  print(element)
+
+
 #fastq_spec = specification_from_file(fastq_specfile)
 #fastq_entry = get_definition(fastq_spec, "fastq_entry")
 #for unit in decoded_units(fastq_datafile, fastq_entry, 4):
@@ -47,8 +58,4 @@ fasta_entry = get_definition(fasta_spec, "entry")
 #for unit in decoded_units(fastq_specfile, fastq_entry, 4, True):
 #  print(unit)
 
-def line_processor(decoded):
-  print(f"DECODED: {decoded}")
 
-decode_section_lines(fasta_specfile, fasta_entry,
-                     line_processor, False, True)
