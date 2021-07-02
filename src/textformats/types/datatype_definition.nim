@@ -1,11 +1,7 @@
 # standard library
-import options
-import tables
-import strformat
-import json
-import strutils
+import options, tables, strformat, json, strutils
 import regex
-import match_element
+import match_element, textformats_error
 import ../support/openrange
 
 ## DatatypeDefinition
@@ -223,8 +219,50 @@ proc dereference*(dd: DatatypeDefinition): DatatypeDefinition =
 proc tabular_desc*(d: DatatypeDefinition, indent: int): string
 proc verbose_desc*(d: DatatypeDefinition, indent: int): string
 
-proc get_unitsize*(d: DatatypeDefinition): int = d.unitsize
-proc get_scope*(d: DatatypeDefinition): string = $d.scope
+proc parse_scope*(scope: string): DatatypeDefinitionScope =
+  let valid_definition_types = @["file", "section", "unit", "line"]
+  if scope notin valid_definition_types:
+    let scope_errmsg = block:
+      var msg = "Error: scope must be one of the following values:\n"
+      for t in valid_definition_types:
+        msg &= &"- {t}\n"
+      msg
+    raise newException(TextformatsRuntimeError, scope_errmsg)
+  case scope:
+  of "file": return ddsFile
+  of "section": return ddsSection
+  of "unit": return ddsUnit
+  of "line": return ddsLine
+
+# "deep" getters and setters
+
+proc get_unitsize*(d: DatatypeDefinition): int =
+  let dd = dereference(d)
+  dd.unitsize
+
+proc set_unitsize*(d: DatatypeDefinition, unitsize: int) =
+  let dd = dereference(d)
+  dd.unitsize = unitsize
+
+proc get_scope*(d: DatatypeDefinition): string =
+  let dd = dereference(d)
+  $dd.scope
+
+proc set_scope*(d: DatatypeDefinition, scope: string) =
+  let dd = dereference(d)
+  dd.scope = parse_scope(scope)
+
+proc get_wrapped*(d: DatatypeDefinition): bool =
+  let dd = dereference(d)
+  dd.wrapped
+
+proc set_wrapped*(d: DatatypeDefinition) =
+  let dd = dereference(d)
+  dd.wrapped = true
+
+proc unset_wrapped*(d: DatatypeDefinition) =
+  let dd = dereference(d)
+  dd.wrapped = false
 
 proc `$`*(dd: DatatypeDefinition): string =
   dd.verbose_desc(0)
