@@ -2,8 +2,13 @@
 import textformats/types/datatype_definition
 export DatatypeDefinition
 export `$`
-export get_scope
 export get_unitsize
+export set_unitsize
+export get_scope
+export set_scope
+export get_wrapped
+export set_wrapped
+export unset_wrapped
 
 # specification
 import textformats/types/specification
@@ -54,3 +59,6 @@ export is_valid
 # exceptions
 import textformats/types/textformats_error
 export textformats_error
+
+# workaround to avoid spurious warning in c_api
+const avoid_module_unused_warning* = true
