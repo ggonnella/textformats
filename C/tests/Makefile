@@ -1,25 +1,23 @@
 VERSION:=1.4.8
 NIMLIB:=${HOME}/.choosenim/toolchains/nim-${VERSION}/lib
 
-default: run
+default: run_test
 
 nimcache/c_api.h: ../c_api.nim
 	nim c --gc:mark_and_sweep --d:danger --noMain \
 		    --noLinking --header:c_api.h \
 	    	--nimcache:nimcache ../c_api.nim
 
-%_example: nimcache/c_api.h %_example.c
+%: nimcache/c_api.h %.c
 	gcc -o $@ -O3 -Inimcache -I${NIMLIB} \
 		nimcache/*.o $@.c
 
-run: small_example large_example
-	./large_example
-	./small_example
+run_test: test_c_api
+	./test_c_api
 
 clean:
 	rm -rf nimcache
 
 cleanup: clean
-	rm -rf small_example
-	rm -rf large_example
+	rm -rf test_c_api
 

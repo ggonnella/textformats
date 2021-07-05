@@ -1,0 +1,5 @@
+testdata:
+  header:
+    valid: {">valid valid":{"fastaid":"valid","desc":"valid"},
+            ">also_valid":{"fastaid":"also_valid"},
+            "invalid": {"fastaid": "invalid"}}

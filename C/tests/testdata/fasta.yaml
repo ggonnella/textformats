@@ -1,0 +1,54 @@
+datatypes:
+  default: entry
+  header:
+    prefix: '>'
+    separator: " "
+    composed_of:
+      - fastaid: {regex: '\w*'}
+      - desc: {regex: '.*'}
+    required: 0
+  sequence_line:
+    regex: "([^>]*|[^>].*)"
+  sequence:
+    list_of: sequence_line
+    splitted_by: "\n"
+  double_header_symbol_line: # for testing purposes
+    regex: '>>.*'
+  line:
+    one_of:
+      - header
+      - sequence_line
+  line_failing: # for testing purposes
+    one_of:
+      - double_header_symbol_line
+      - sequence_line
+    scope: line
+  unit_for_tests:
+    # this definition is only for tests, it requires that each entry is exactly
+    # 3 lines long, which is not the case (thus it's failing);
+    #
+    # generally Fasta has no fixed number of lines; in the test file, each
+    # entry is composed by exactly 4 lines, for testing units parsing;
+    # thus setting the unitsize to 4, the definition will work
+    composed_of:
+      - header: header
+      - sequence: sequence
+    n_lines: 3
+    scope: unit
+  entry:
+    # will fail if scope is set to file; will succeed for scope section
+    composed_of:
+      - header: header
+      - sequence: sequence
+    separator: "\n"
+    scope: section
+  file:
+    list_of: entry
+    separator: "\n"
+    scope: file
+---
+>0
+CAGTGCTAGCTG
+ATCGCT
+>1
+GCTAGTCGTGC

@@ -1,0 +1,4 @@
+testdata:
+  header:
+    valid: {">TDPy A":{"fastaid":"TDPy","desc":"A"},
+            ">TDPy":{"fastaid":"TDPy"}}

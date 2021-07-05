@@ -241,8 +241,12 @@ proc get_unitsize*(d: DatatypeDefinition): int =
   dd.unitsize
 
 proc set_unitsize*(d: DatatypeDefinition, unitsize: int) =
-  let dd = dereference(d)
-  dd.unitsize = unitsize
+  if unitsize < 1:
+    raise newException(TextformatsRuntimeError,
+                       "Error: unit size must be >= 1\n")
+  else:
+    let dd = dereference(d)
+    dd.unitsize = unitsize
 
 proc get_scope*(d: DatatypeDefinition): string =
   let dd = dereference(d)
