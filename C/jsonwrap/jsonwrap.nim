@@ -1,3 +1,4 @@
+import sequtils
 from json import nil
 
 type
@@ -6,129 +7,120 @@ type
   JsonNode* {.exportc.} = object
     value*: json.JsonNode
 
-# not exporting "kind" because enums cannot anyway be exported
-proc describe_kind*(n: JsonNodeRef): cstring {.exportc.} =
+proc jsonnode_kind(n: JsonNodeRef): int {.exportc.} =
+  case n.value.kind:
+  of json.JNull:    0
+  of json.JBool:    1
+  of json.JInt:     2
+  of json.JFloat:   3
+  of json.JString:  4
+  of json.JArray:   5
+  of json.JObject:  6
+
+proc jsonnode_describe_kind*(n: JsonNodeRef): cstring {.exportc.} =
   result = ($n.value.kind).cstring
 
-proc newJString*(s: cstring): JsonNodeRef {.exportc.} =
-  result = new JsonNodeRef
-  result.value = json.newJString($s)
-  GC_ref(result.value)
-
-proc newJInt*(i: cint): JsonNodeRef {.exportc.} =
-  result = new JsonNodeRef
-  result.value = json.newJInt(i.BiggestInt)
-  GC_ref(result.value)
-
-proc newJFloat*(f: cfloat): JsonNodeRef {.exportc.} =
-  result = new JsonNodeRef
-  result.value = json.newJFloat(f.float)
-  GC_ref(result.value)
-
-proc newJBool*(b: bool): JsonNodeRef {.exportc.} =
-  result = new JsonNodeRef
-  result.value = json.newJBool(b)
-  GC_ref(result.value)
-
-proc newJNull*(): JsonNodeRef {.exportc.} =
+proc new_j_null*(): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
   result.value = json.newJNull()
   GC_ref(result.value)
 
-proc newJObject*(): JsonNodeRef {.exportc.} =
+proc new_j_bool*(b: bool): JsonNodeRef {.exportc.} =
+  result = new JsonNodeRef
+  result.value = json.newJBool(b)
+  GC_ref(result.value)
+
+proc new_j_int*(i: cint): JsonNodeRef {.exportc.} =
+  result = new JsonNodeRef
+  result.value = json.newJInt(i.BiggestInt)
+  GC_ref(result.value)
+
+proc new_j_float*(f: cfloat): JsonNodeRef {.exportc.} =
+  result = new JsonNodeRef
+  result.value = json.newJFloat(f.float)
+  GC_ref(result.value)
+
+proc new_j_string*(s: cstring): JsonNodeRef {.exportc.} =
+  result = new JsonNodeRef
+  result.value = json.newJString($s)
+  GC_ref(result.value)
+
+proc new_j_object*(): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
   result.value = json.newJObject()
   GC_ref(result.value)
 
-proc newJArray*(): JsonNodeRef {.exportc.} =
+proc new_j_array*(): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
   result.value = json.newJArray()
   GC_ref(result.value)
 
-proc getStr*(n: JsonNodeRef): cstring {.exportc.} =
-  result = json.getStr(n.value).cstring
-
-proc getInt*(n: JsonNodeRef): cint {.exportc.} =
-  result = json.getInt(n.value).cint
-
-proc getBiggestInt*(n: JsonNodeRef): cint {.exportc.} =
-  result = json.getBiggestInt(n.value).cint
-
-proc getFloat*(n: JsonNodeRef): cfloat {.exportc.} =
-  result = json.getFloat(n.value).cfloat
-
-proc getBool*(n: JsonNodeRef): bool {.exportc.} =
-  result = json.getBool(n.value)
-
-# getFields skipped
-
-# getElems skipped
-
-proc JArray_add*(father: JsonNodeRef, child: JsonNodeRef) {.exportc.} =
+proc j_array_add*(father: JsonNodeRef, child: JsonNodeRef) {.exportc.} =
   json.add(father.value, child.value)
 
-proc JObject_add*(father: JsonNodeRef, key: cstring,
+proc j_object_add*(father: JsonNodeRef, key: cstring,
                  val: JsonNodeRef) {.exportc.} =
   json.add(father.value, $key, val.value)
 
-# % skipped
-# == skipped
-# hash skipped
+proc j_bool_get*(n: JsonNodeRef): bool {.exportc.} =
+  result = json.getBool(n.value)
 
-proc len*(n: JsonNodeRef): cint {.exportc.} =
+proc j_int_get*(n: JsonNodeRef): cint {.exportc.} =
+  result = json.getBiggestInt(n.value).cint
+
+proc j_float_get*(n: JsonNodeRef): cfloat {.exportc.} =
+  result = json.getFloat(n.value).cfloat
+
+proc j_string_get*(n: JsonNodeRef): cstring {.exportc.} =
+  result = json.getStr(n.value).cstring
+
+proc j_array_len*(n: JsonNodeRef): cint {.exportc.} =
   result = json.len(n.value).cint
 
-proc JObject_get*(n: JsonNodeRef, name: cstring): JsonNodeRef {.exportc.} =
+proc j_object_len*(n: JsonNodeRef): cint {.exportc.} =
+  result = json.len(n.value).cint
+
+proc j_object_get_key*(n: JsonNodeRef, index: cint): cstring {.exportc.} =
+  to_seq(json.keys(n.value))[index]
+
+proc j_object_get*(n: JsonNodeRef, name: cstring): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
   result.value = json.`[]`(n.value, $name)
   GC_ref(result.value)
 
-proc JArray_get*(n: JsonNodeRef, indevalue: cint): JsonNodeRef {.exportc.} =
+proc j_array_get*(n: JsonNodeRef, index: cint): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
-  result.value = json.`[]`(n.value, indevalue)
+  result.value = json.`[]`(n.value, index)
   GC_ref(result.value)
 
-proc has_key*(n: JsonNodeRef, key: cstring): bool {.exportc.} =
-  result = json.has_key(n.value, $key)
-
-proc JObject_contains*(n: JsonNodeRef, key: cstring): bool {.exportc.} =
+proc j_object_contains*(n: JsonNodeRef, key: cstring): bool {.exportc.} =
   result = json.contains(n.value, $key)
 
-proc JArray_contains*(n: JsonNodeRef, val: JsonNodeRef): bool {.exportc.} =
+proc j_array_contains*(n: JsonNodeRef, val: JsonNodeRef): bool {.exportc.} =
   result = json.contains(n.value, val.value)
 
-# {} skipped
-# getOrDefault skipped
-# {}= skipped
-
-proc JObject_delete*(n: JsonNodeRef, key: cstring) {.exportc.} =
+proc j_object_delete*(n: JsonNodeRef, key: cstring) {.exportc.} =
   json.delete(n.value, $key)
 
-proc copy*(n: JsonNodeRef): JsonNodeRef {.exportc.} =
-  result = new JsonNodeRef
-  result.value = json.copy(n.value)
-  GC_ref(result.value)
-
-# escape... skipped
-# pretty skipped
-# toUgly skipped
-
-proc to_string*(n: JsonNodeRef): cstring {.exportc.} =
+proc jsonnode_to_string*(n: JsonNodeRef): cstring {.exportc.} =
   json.`$`(n.value).cstring
 
-# parseJson buffer skipped
-
-proc parseJson*(buffer: cstring): JsonNodeRef {.exportc.} =
+proc jsonnode_from_string*(buffer: cstring): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
   result.value = json.parseJson($buffer)
   GC_ref(result.value)
 
-proc parseFile*(filename: cstring): JsonNodeRef {.exportc.} =
+proc jsonnode_from_file*(filename: cstring): JsonNodeRef {.exportc.} =
   result = new JsonNodeRef
   result.value = json.parseFile($filename)
   GC_ref(result.value)
 
-proc delete_node*(n: JsonNodeRef) {.exportc.} =
+proc copy_jsonnode*(n: JsonNodeRef): JsonNodeRef {.exportc.} =
+  result = new JsonNodeRef
+  result.value = json.copy(n.value)
+  GC_ref(result.value)
+
+proc delete_jsonnode*(n: JsonNodeRef) {.exportc.} =
   let node = n.value
   case node.kind:
     of json.JObject:
@@ -141,7 +133,20 @@ proc delete_node*(n: JsonNodeRef) {.exportc.} =
       discard
   GC_unref(node)
 
+# % skipped
+# == skipped
+# hash skipped
+# {} skipped
+# getOrDefault skipped
+# {}= skipped
+# escape... skipped
+# pretty skipped
+# toUgly skipped
 # to skipped
 # iterators skipped
 # %* macro skipped
 # % template skipped
+# parseJson buffer skipped
+# getFields skipped
+# getElems skipped
+

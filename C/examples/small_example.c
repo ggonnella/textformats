@@ -12,27 +12,27 @@ int main(void)
   printf("Encoded: %s\n", encoded);
 
   /* (2) parse specification and get datatype definition  */
-  Specification *spec = specification_from_file(
+  Specification *spec = tf_specification_from_file(
       "../../bio/benchmarks/cigars/cigar.datatypes.yaml");
-  DatatypeDefinition *datatype = get_definition(spec, "cigar");
+  DatatypeDefinition *datatype = tf_get_definition(spec, "cigar");
 
   /* (3) decode to a "node", convert to_string() */
-  JsonNode *node = decode(encoded, datatype);
+  JsonNode *node = tf_decode(encoded, datatype);
   assert(!tf_haderr);
-  printf("[Decoding succeeded]\n%s\n", to_string(node));
-  delete_node(node);
+  printf("[Decoding succeeded]\n%s\n", jsonnode_to_string(node));
+  delete_jsonnode(node);
 
   /* (4) failing decode example */
-  node = decode(encoded_wrong, datatype);
+  node = tf_decode(encoded_wrong, datatype);
   assert(tf_haderr);
   assert(node == NULL);
   printf("[%s, as expected]\n%s\n", tf_errname, tf_errmsg);
-  unset_tf_err();
+  tf_unseterr();
   assert(!tf_haderr);
 
   /* (5) tell the GC that the references are not used anymore */
-  delete_specification(spec);
-  delete_definition(datatype);
+  tf_delete_specification(spec);
+  tf_delete_definition(datatype);
 
   return 0;
 }

@@ -49,7 +49,7 @@ template on_failure_seterr(actions) =
   except:
     seterr()
 
-proc unset_tf_err() {.exportc.} =
+proc tf_unseterr() {.exportc.} =
   tf_haderr = false
   tf_errname = "".cstring
   tf_errmsg = "".cstring
@@ -65,7 +65,8 @@ proc tf_checkerr() {.exportc.} =
 
 # Specifications
 
-proc specification_from_file*(filename: cstring): SpecificationRef {.exportc.} =
+proc tf_specification_from_file*(filename: cstring):
+                                 SpecificationRef {.exportc.} =
   on_failure_seterr_and_return:
     if not fileExists($filename):
       raise newException(textformats.TextformatsRuntimeError,
@@ -74,10 +75,10 @@ proc specification_from_file*(filename: cstring): SpecificationRef {.exportc.} =
     result = SpecificationRef(s: spec)
     GC_ref(result.s)
 
-proc delete_specification*(datatypes: SpecificationRef) {.exportc.} =
+proc tf_delete_specification*(datatypes: SpecificationRef) {.exportc.} =
   GC_unref(datatypes.s)
 
-proc preprocess_specification*(inputfile: cstring, outputfile: cstring)
+proc tf_preprocess_specification*(inputfile: cstring, outputfile: cstring)
                               {.exportc.} =
   on_failure_seterr:
     if not fileExists($inputfile):
@@ -85,148 +86,157 @@ proc preprocess_specification*(inputfile: cstring, outputfile: cstring)
                          "File not found:" & $inputfile)
     textformats.preprocess_specification($inputfile, $outputfile)
 
-proc is_preprocessed*(filename: cstring): bool {.exportc.} =
+proc tf_is_preprocessed*(filename: cstring): bool {.exportc.} =
   on_failure_seterr_and_return:
     if not fileExists($filename):
       raise newException(textformats.TextformatsRuntimeError,
                          "File not found:" & $filename)
     return textformats.is_preprocessed($filename)
 
-proc test_specification(spec: SpecificationRef, testfile: cstring) {.exportc.} =
+proc tf_test_specification(spec: SpecificationRef, testfile: cstring)
+                          {.exportc.} =
   on_failure_seterr:
     textformats.test_specification(spec.s, $testfile)
 
-proc datatype_names(spec: SpecificationRef): cstring {.exportc.} =
+proc tf_datatype_names(spec: SpecificationRef): cstring {.exportc.} =
   on_failure_seterr_and_return:
     return join(textformats.datatype_names(spec.s), " ").cstring
 
 # Datatype definitions
 
-proc get_definition*(datatypes: SpecificationRef, datatype: cstring):
-                     DatatypeDefinitionRef {.exportc.} =
+proc tf_get_definition*(datatypes: SpecificationRef, datatype: cstring):
+                        DatatypeDefinitionRef {.exportc.} =
   on_failure_seterr_and_return:
     result = new DatatypeDefinitionRef
     result.value = textformats.get_definition(datatypes.s, $datatype)
     GC_ref(result.value)
 
-proc delete_definition*(dd: DatatypeDefinitionRef) {.exportc.} =
+proc tf_delete_definition*(dd: DatatypeDefinitionRef) {.exportc.} =
   GC_unref(dd.value)
 
-proc default_definition*(datatypes: SpecificationRef):
+proc tf_default_definition*(datatypes: SpecificationRef):
                          DatatypeDefinitionRef {.exportc.} =
   on_failure_seterr_and_return:
-    result = get_definition(datatypes, "default")
+    result = tf_get_definition(datatypes, "default")
 
-proc describe*(dd: DatatypeDefinitionRef): cstring {.exportc.} =
+proc tf_describe*(dd: DatatypeDefinitionRef): cstring {.exportc.} =
   on_failure_seterr_and_return:
     result = (textformats.`$`(dd.value)).cstring
 
 # Handling encoded strings
 
-proc decode*(input: cstring, dd: DatatypeDefinitionRef):
+proc tf_decode*(input: cstring, dd: DatatypeDefinitionRef):
              JsonNodeRef {.exportc, raises: [].} =
   on_failure_seterr_and_return:
     return JsonNodeRef(value: textformats.decode($input, dd.value))
 
-proc to_json*(input: cstring, dd: DatatypeDefinitionRef):
+proc tf_decode_to_json*(input: cstring, dd: DatatypeDefinitionRef):
               cstring {.exportc.} =
   on_failure_seterr_and_return:
-    return ($textformats.decode($input, dd.value)).cstring
+    return ($(textformats.decode($input, dd.value))).cstring
 
-proc is_valid_encoded*(input: cstring, dd: DatatypeDefinitionRef):
+proc tf_is_valid_encoded*(input: cstring, dd: DatatypeDefinitionRef):
                        bool {.exportc.} =
   on_failure_seterr_and_return:
     return textformats.is_valid($input, dd.value)
 
 # Handling decoded data
 
-proc encode*(obj: JsonNodeRef, dd: DatatypeDefinitionRef): cstring {.exportc.} =
+proc tf_encode*(obj: JsonNodeRef, dd: DatatypeDefinitionRef):
+                cstring {.exportc.} =
   on_failure_seterr_and_return:
     return (textformats.encode(obj.value, dd.value)).cstring
 
-proc unsafe_encode*(obj: JsonNodeRef, dd: DatatypeDefinitionRef):
+proc tf_unsafe_encode*(obj: JsonNodeRef, dd: DatatypeDefinitionRef):
                     cstring {.exportc.} =
   assert_no_failure:
     return (textformats.unsafe_encode(obj.value, dd.value)).cstring
 
-proc is_valid_decoded*(
+proc tf_is_valid_decoded*(
        obj: JsonNodeRef, dd: DatatypeDefinitionRef): bool {.exportc.} =
   on_failure_seterr_and_return:
     return textformats.is_valid(obj.value, dd.value)
 
 # Handling decoded Json
 
-proc from_json*(json_str: cstring, dd: DatatypeDefinitionRef):
+proc tf_encode_json*(json_str: cstring, dd: DatatypeDefinitionRef):
                 cstring {.exportc.} =
   on_failure_seterr_and_return:
-    return (textformats.encode(parse_json($json_str), dd.value)).cstring
+    return (textformats.encode(
+              json.parse_json($json_str), dd.value)).cstring
 
-proc unsafe_from_json*(json_str: cstring, dd: DatatypeDefinitionRef):
+proc tf_unsafe_encode_json*(json_str: cstring, dd: DatatypeDefinitionRef):
                       cstring {.exportc.} =
   assert_no_failure:
-    return (textformats.unsafe_encode(parse_json($json_str), dd.value)).cstring
+    return (textformats.unsafe_encode(
+              json.parse_json($json_str), dd.value)).cstring
 
-proc is_valid_decoded_json*(
+proc tf_is_valid_decoded_json*(
       json_str: cstring, dd: DatatypeDefinitionRef): bool {.exportc.} =
   on_failure_seterr_and_return:
-    return textformats.is_valid(parse_json($json_str), dd.value)
+    return textformats.is_valid(json.parse_json($json_str), dd.value)
 
 # Handling encoded files
 
-proc set_scope(dd: DatatypeDefinitionRef, scope: cstring) {.exportc.} =
+proc tf_set_scope(dd: DatatypeDefinitionRef, scope: cstring) {.exportc.} =
   on_failure_seterr:
     textformats.set_scope(dd.value, $scope)
 
-proc set_unitsize(dd: DatatypeDefinitionRef, unitsize: int) {.exportc.} =
+proc tf_set_unitsize(dd: DatatypeDefinitionRef, unitsize: int) {.exportc.} =
   on_failure_seterr:
     textformats.set_unitsize(dd.value, unitsize)
 
-proc set_wrapped(dd: DatatypeDefinitionRef) {.exportc.} =
+proc tf_set_wrapped(dd: DatatypeDefinitionRef) {.exportc.} =
   on_failure_seterr:
     textformats.set_wrapped(dd.value)
 
-proc unset_wrapped(dd: DatatypeDefinitionRef) {.exportc.} =
+proc tf_unset_wrapped(dd: DatatypeDefinitionRef) {.exportc.} =
   on_failure_seterr:
     textformats.unset_wrapped(dd.value)
 
-proc get_wrapped*(dd: DatatypeDefinitionRef): bool {.exportc.} =
+proc tf_get_wrapped*(dd: DatatypeDefinitionRef): bool {.exportc.} =
   on_failure_seterr_and_return:
     return textformats.get_wrapped(dd.value)
 
-proc get_unitsize(dd: DatatypeDefinitionRef): int {.exportc.} =
+proc tf_get_unitsize(dd: DatatypeDefinitionRef): int {.exportc.} =
   on_failure_seterr_and_return:
     return textformats.get_unitsize(dd.value)
 
-proc get_scope(dd: DatatypeDefinitionRef): cstring {.exportc.} =
+proc tf_get_scope(dd: DatatypeDefinitionRef): cstring {.exportc.} =
   on_failure_seterr_and_return:
     return (textformats.get_scope(dd.value)).cstring
 
-type ValueProcessor = ref object
+type DecodedValueProcessor = ref object
   processor: proc(n: JsonNodeRef, data: pointer) {.cdecl.}
   data: pointer
   refnode: JsonNodeRef
 
-proc deref_value_processor(n: json.JsonNode, data: pointer) =
-  let vp = cast[ValueProcessor](data)
-  vp.refnode.value = n
-  vp.processor(vp.refnode, vp.data)
+proc deref_decoded_processor(n: json.JsonNode, data: pointer) =
+  # The C code does not see the JsonNode instance, but a JsonNodeRef
+  # instance instead (defined in jsonwrap); this processor function is used
+  # internally as an adapter to the correct processing function type
+  # (which accessed the JsonNode instead of the JsonNodeRef).
+  let dvp = cast[DecodedValueProcessor](data)
+  dvp.refnode.value = n
+  dvp.processor(dvp.refnode, dvp.data)
 
-proc decode_file_values*(filename: cstring, embedded: bool,
-                  dd: DatatypeDefinitionRef,
-                  value_processor:
-                    proc (n: JsonNodeRef, data: pointer) {.cdecl.},
-                  value_processor_data: pointer,
-                  elemwise: bool = false) {.exportc.} =
+proc tf_decode_file*(filename: cstring, embedded: bool,
+                     dd: DatatypeDefinitionRef,
+                     decoded_processor:
+                       proc (n: JsonNodeRef, data: pointer) {.cdecl.},
+                     decoded_processor_data: pointer,
+                     splitted_processing: bool) {.exportc.} =
   let
-    scope = dd.get_scope
-    unitsize = dd.get_unitsize
-    wrapped = dd.get_wrapped
-    vp = ValueProcessor(processor: value_processor,
-                        data: value_processor_data,
-                        refnode: new JsonNodeRef)
+    scope = dd.tf_get_scope
+    unitsize = dd.tf_get_unitsize
+    wrapped = dd.tf_get_wrapped
+    dvp = DecodedValueProcessor(processor: decoded_processor,
+                                data: decoded_processor_data,
+                                refnode: new JsonNodeRef)
   on_failure_seterr:
     for decoded in textformats.decoded_file_values($filename, dd.value,
-                                                   embedded, $scope, elemwise,
+                                                   embedded, $scope,
+                                                   splitted_processing,
                                                    wrapped, unitsize):
-        deref_value_processor(decoded, cast[pointer](vp))
+        deref_decoded_processor(decoded, cast[pointer](dvp))
 

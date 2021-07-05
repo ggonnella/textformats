@@ -1,117 +1,126 @@
+#include <stdbool.h>
+#include <stdio.h>
+#include <assert.h>
 #include "jsonwrap.h"
-#include "stdbool.h"
-#include "stdio.h"
+#include "jsonkind.h"
 
 void test_null_node() {
   printf("Test NullNode:\n");
-  JsonNode *node = newJNull();
-  printf("%s\n", to_string(node));
-  delete_node(node);
+  JsonNode *node = new_j_null();
+  assert(json_node_kind(node) == J_NULL);
+  printf("%s\n", jsonnode_to_string(node));
+  delete_jsonnode(node);
   printf("\n\n");
 }
 
 void test_bool_node() {
   printf("Test BoolNode:\n");
-  JsonNode *node = newJBool(true);
-  printf("%s\n", to_string(node));
-  if (getBool(node))
+  JsonNode *node = new_j_bool(true);
+  assert(json_node_kind(node) == J_BOOL);
+  printf("%s\n", jsonnode_to_string(node));
+  if (j_bool_get(node))
     printf("value read from node is: true\n");
-  delete_node(node);
+  delete_jsonnode(node);
   printf("\n\n");
 }
 
 void test_int_node() {
   printf("Test IntNode:\n");
-  JsonNode *node = newJInt(-10);
-  printf("%s\n", to_string(node));
-  printf("value read from node is: %li\n", getInt(node));
-  delete_node(node);
+  JsonNode *node = new_j_int(-10);
+  assert(json_node_kind(node) == J_INT);
+  printf("%s\n", jsonnode_to_string(node));
+  printf("value read from node is: %li\n", j_int_get(node));
+  delete_jsonnode(node);
   printf("\n\n");
 }
 
 void test_float_node() {
   printf("Test FloatNode:\n");
-  JsonNode *node = newJFloat(1.0);
-  printf("%s\n", to_string(node));
-  printf("value read from node is: %f\n", getFloat(node));
-  delete_node(node);
+  JsonNode *node = new_j_float(1.0);
+  assert(json_node_kind(node) == J_FLOAT);
+  printf("%s\n", jsonnode_to_string(node));
+  printf("value read from node is: %f\n", j_float_get(node));
+  delete_jsonnode(node);
   printf("\n\n");
 }
 
 void test_string_node() {
   printf("Test StringNode:\n");
-  JsonNode *node = newJString("Hello, world!");
-  printf("%s\n", to_string(node));
-  char *s = getStr(node);
+  JsonNode *node = new_j_string("Hello, world!");
+  assert(json_node_kind(node) == J_STRING);
+  printf("%s\n", jsonnode_to_string(node));
+  char *s = j_string_get(node);
   printf("value read from node is: \"%s\"\n", s);
   s[0]='B';
   printf("changed char 0 to B\n");
-  printf("node content is now: %s\n", getStr(node));
-  delete_node(node);
+  printf("node content is now: %s\n", j_string_get(node));
+  delete_jsonnode(node);
   printf("\n\n");
 }
 
 void fill_array(JsonNode* node) {
   JsonNode *item;
-  JArray_add(node, newJNull());
-  JArray_add(node, newJBool(true));
-  JArray_add(node, newJInt(1));
-  JArray_add(node, newJFloat(1.0));
-  JArray_add(node, newJString("str"));
-  item = newJArray();
-  JArray_add(item, newJBool(false));
-  JArray_add(item, newJInt(-1));
-  JArray_add(item, newJFloat(-1.0));
-  JArray_add(item, newJString("rts"));
-  JArray_add(node, item);
-  item = newJObject();
-  JObject_add(item, "b", newJBool(false));
-  JObject_add(item, "i", newJInt(-1));
-  JObject_add(item, "f", newJFloat(-1.0));
-  JObject_add(item, "s", newJString("rts"));
-  JArray_add(node, item);
+  j_array_add(node, new_j_null());
+  j_array_add(node, new_j_bool(true));
+  j_array_add(node, new_j_int(1));
+  j_array_add(node, new_j_float(1.0));
+  j_array_add(node, new_j_string("str"));
+  item = new_j_array();
+  j_array_add(item, new_j_bool(false));
+  j_array_add(item, new_j_int(-1));
+  j_array_add(item, new_j_float(-1.0));
+  j_array_add(item, new_j_string("rts"));
+  j_array_add(node, item);
+  item = new_j_object();
+  j_object_add(item, "b", new_j_bool(false));
+  j_object_add(item, "i", new_j_int(-1));
+  j_object_add(item, "f", new_j_float(-1.0));
+  j_object_add(item, "s", new_j_string("rts"));
+  j_array_add(node, item);
 }
 
 void test_array_node() {
   printf("Test ArrayNode:\n");
-  JsonNode *node = newJArray();
-  printf("Before calling fill_array: %s\n", to_string(node));
+  JsonNode *node = new_j_array();
+  assert(json_node_kind(node) == J_ARRAY);
+  printf("Before calling fill_array: %s\n", jsonnode_to_string(node));
   fill_array(node);
-  printf("%s\n", to_string(node));
-  printf("array length: %lu\n", len(node));
-  printf("str value for index 3: %s\n", to_string(JArray_get(node, 3)));
-  printf("int value for index 3: %li\n", getInt(JArray_get(node, 3)));
+  printf("%s\n", jsonnode_to_string(node));
+  printf("array length: %lu\n", j_array_len(node));
+  printf("str value for index 3: %s\n", jsonnode_to_string(j_array_get(node, 3)));
+  printf("int value for index 3: %li\n", j_int_get(j_array_get(node, 3)));
   printf("\n\n");
-  delete_node(node);
+  delete_jsonnode(node);
 }
 
 void fill_object(JsonNode* node) {
-  JObject_add(node, "n", newJNull());
-  JObject_add(node, "b", newJBool(false));
-  JObject_add(node, "i", newJInt(1));
-  JObject_add(node, "f", newJFloat(1.0));
-  JObject_add(node, "s", newJString("str"));
-  JObject_add(node, "e", newJArray());
-  JsonNode *item = newJArray();
-  JArray_add(item, newJInt(1));
-  JArray_add(item, newJFloat(2.0));
-  JArray_add(item, newJString("3"));
-  JObject_add(node, "a", item);
+  j_object_add(node, "n", new_j_null());
+  j_object_add(node, "b", new_j_bool(false));
+  j_object_add(node, "i", new_j_int(1));
+  j_object_add(node, "f", new_j_float(1.0));
+  j_object_add(node, "s", new_j_string("str"));
+  j_object_add(node, "e", new_j_array());
+  JsonNode *item = new_j_array();
+  j_array_add(item, new_j_int(1));
+  j_array_add(item, new_j_float(2.0));
+  j_array_add(item, new_j_string("3"));
+  j_object_add(node, "a", item);
 }
 
 void test_object_node() {
   printf("Test ObjectNode:\n");
-  JsonNode *node = newJObject();
-  printf("Before calling fill_object: %s\n", to_string(node));
+  JsonNode *node = new_j_object();
+  assert(json_node_kind(node) == J_OBJECT);
+  printf("Before calling fill_object: %s\n", jsonnode_to_string(node));
   fill_object(node);
-  printf("%s\n", to_string(node));
-  printf("str value of key \"f\": %s\n", to_string(JObject_get(node, "f")));
-  printf("float value of key \"f\": %f\n", getFloat(JObject_get(node, "f")));
+  printf("%s\n", jsonnode_to_string(node));
+  printf("str value of key \"f\": %s\n", jsonnode_to_string(j_object_get(node, "f")));
+  printf("float value of key \"f\": %f\n", j_float_get(j_object_get(node, "f")));
   printf("changing value to 2.0...\n");
-  JObject_add(node, "f", newJFloat(2.0));
-  printf("float value of key \"f\": %f\n", getFloat(JObject_get(node, "f")));
+  j_object_add(node, "f", new_j_float(2.0));
+  printf("float value of key \"f\": %f\n", j_float_get(j_object_get(node, "f")));
   printf("\n\n");
-  delete_node(node);
+  delete_jsonnode(node);
 }
 
 int main() {

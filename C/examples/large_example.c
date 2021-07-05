@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <assert.h>
 
-void value_processor(JsonNode* node, void* data)
+void decoded_processor(JsonNode* node, void* data)
 {
-  printf("Node: %s\n", to_string(node));
+  printf("Decoded value: %s\n", jsonnode_to_string(node));
 }
 
 int main(void)
@@ -18,42 +18,42 @@ int main(void)
   char *decoded_header_json =
     "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}";
   printf("Encoded: %s\n", header);
-  fas_spec = specification_from_file("../../bio/spec/fasta.yaml");
-  if (!is_preprocessed("../../bio/spec/fasta.yaml"))
+  fas_spec = tf_specification_from_file("../../bio/spec/fasta.yaml");
+  if (!tf_is_preprocessed("../../bio/spec/fasta.yaml"))
     printf("Spec fasta.yaml is not preprocessed");
   else assert(false);
-  preprocess_specification("../../bio/spec/fasta.yaml", "fasta.tfs");
-  if (is_preprocessed("fasta.tfs"))
+  tf_preprocess_specification("../../bio/spec/fasta.yaml", "fasta.tfs");
+  if (tf_is_preprocessed("fasta.tfs"))
     printf("Spec fasta.tfs is preprocessed");
   else assert(false);
-  test_specification(fas_spec, "../../bio/spec/fasta.yaml");
-  fas_entry = default_definition(fas_spec);
-  fas_header = get_definition(fas_spec, "header");
-  printf("%s\n", describe(fas_header));
-  printf("Datatypes: %s\n", datatype_names(fas_spec));
-  node = decode(header, fas_header);
-  printf("%s\n", to_string(node));
-  delete_node(node);
-  printf("%s\n", to_json(header, fas_header));
-  if (is_valid_encoded(header, fas_header))
+  tf_test_specification(fas_spec, "../../bio/spec/fasta.yaml");
+  fas_entry = tf_default_definition(fas_spec);
+  fas_header = tf_get_definition(fas_spec, "header");
+  printf("%s\n", tf_describe(fas_header));
+  printf("Datatypes: %s\n", tf_datatype_names(fas_spec));
+  node = tf_decode(header, fas_header);
+  printf("%s\n", jsonnode_to_string(node));
+  delete_jsonnode(node);
+  printf("%s\n", tf_decode_to_json(header, fas_header));
+  if (tf_is_valid_encoded(header, fas_header))
     printf("%s is_valid\n", header);
   else assert(false);
-  printf("%s\n", from_json(decoded_header_json, fas_header));
-  node = newJObject();
-  JObject_add(node, "fastaid", newJString("ABCD"));
-  JObject_add(node, "desc", newJString("some sequence"));
-  printf("%s\n", encode(node, fas_header));
-  if (is_valid_decoded(node, fas_header))
+  printf("%s\n", tf_encode_json(decoded_header_json, fas_header));
+  node = new_j_object();
+  j_object_add(node, "fastaid", new_j_string("ABCD"));
+  j_object_add(node, "desc", new_j_string("some sequence"));
+  printf("%s\n", tf_encode(node, fas_header));
+  if (tf_is_valid_decoded(node, fas_header))
     printf("decoded is_valid\n");
   else assert(false);
-  delete_node(node);
-  if (is_valid_decoded_json(decoded_header_json, fas_header))
+  delete_jsonnode(node);
+  if (tf_is_valid_decoded_json(decoded_header_json, fas_header))
     printf("%s is_valid\n", decoded_header_json);
   else assert(false);
-  decode_file_values("../../bio/data/test.fas", false, fas_entry,
-                     value_processor, NULL, false);
-  delete_definition(fas_entry);
-  delete_definition(fas_header);
-  delete_specification(fas_spec);
+  tf_decode_file("../../bio/data/test.fas", false, fas_entry,
+                 decoded_processor, NULL, false);
+  tf_delete_definition(fas_entry);
+  tf_delete_definition(fas_header);
+  tf_delete_specification(fas_spec);
   return 0;
 }
