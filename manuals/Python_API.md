@@ -2,6 +2,16 @@
 
 The subdirectory ``python`` contains the Python API, as a pip package.
 
+## Building from source code
+
+In order to build the Python API package from the source code, the Python
+library `nimporter` is required, which can be installed using `pip`.  Also, of
+course, `nim` and a C compiler must be installed.
+
+The provided `Makefile` can be used. Its default goal is to compile and
+install the package. If necessary, provide the path to the python interpreter
+in the variable PYTHON.
+
 ## Quick tutorial by examples
 Assuming the specification file ``myspec.yaml`` contains:
 ``YAML
@@ -17,18 +27,20 @@ and use it for decoding and encoding data:
 ``Python
 import textformats as tf
 
-/* get the datatype definition */
+# get the datatype definition
 s = Specification("myspec.yaml")
 d = s["mydatatype"]
 
-/* convert to/from the data (Python objects) */
+# convert between data (Python objects) and their encoded representation
 decoded = d.decode("1--2--3")
 encoded = d.encode([1, 2, 3])
 
-/* convert to/from JSON strings representing the data */
+# convert to/from JSON strings representing the data and encoded representation
 decoded = d.decode("1--2--3", True)
 encoded = d.encode("[1,2,3]", True)
 ``
+
+More examples are provided under `python/examples`.
 
 ## Specifications
 
@@ -56,7 +68,7 @@ definition instance can be used for decoding, encoding and validating data.
 The string representation `str(datatype_definition)` is the verbose
 description of the specification.
 
-## Decoding an encoded string
+## Decoding the string representation of data
 
 The method `datatype_definition.decode(string, to_json=False)` is used to
 decode a string which follows the given datatype definition.
@@ -65,7 +77,7 @@ of `NoneType`, `bool`, `int`, `float`, `str`, `list` or `dict`.
 If the optional boolean flag `to_json` is set a JSON string representation
 of the decoded data is returned instead.
 
-## Encoding data
+### Encoding data to their string representation
 
 The method `datatype_definition.encode(item, from_json=False)` is used to
 encode data using the given datatype definition.
@@ -74,7 +86,7 @@ By default the data to be encoded is passed as an instance of
 Alternatively the JSON string representation of the data can be passed;
 in this case the `from_json` optional boolean flag must be set.
 
-## Validating encoded strings and data
+## Validating data or their string representation
 
 If is only necessary to know if encoded or decoded data follow a
 datatype definition, and no access to the result of decoding or encoding is
@@ -84,8 +96,9 @@ definition, they can be faster than full decoding or encoding.
 The method `datatype_definition.is_valid_encoded(string)`
 can be used to validate an encoded string.
 
-The method `datatype_definition.is_valid_decoded(item, json=False)` is used
-to validate decoded data. By default, instead of directly providing the data
+The method `datatype_definition.is_valid_decoded(data, json=False)` is used
+to determine if the data could be validly represented using the definition.
+By default, instead of directly providing the data
 to the method, its JSON representation can be passed; in this case
 the optional boolean flag `json` must be set.
 
@@ -117,7 +130,7 @@ Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
 `list_of` or `named_values`), which consist of multiple elements (each in one
 or multiple lines).
 
-If the optional boolean parameter `splitted_processing` of
+If the optional boolean parameter `splitted` of
 `decoded_file` is set to
  `True`, the values yielded by the iterator are not the entire
 data in the file section or whole file, but instead the single elements of
@@ -144,7 +157,7 @@ either in the datatype definition, or setting the property
 `datatype_definition.unitsize=n_lines` where `n_lines` is a integer
 larger than 1.
 
-### Reporting the branch of `one_of` decodings
+### Reporting the branch of "one of" used by decoding
 
 When a `one_of` definition is used for decoding, it is possible to set the
 decoded value to contain information about which branch was used for the

@@ -38,23 +38,21 @@ and use it for decoding and encoding data to/from JSON strings:
 
 int main() {
   NimMain() /* init Nim library */
+  tf_quit_on_err = true; /* if any exception occurs, print msg and exit(1) */
 
   /* get the datatype definition */
-  Specification *s = tf_specification_from_file("myspec.yaml"); tf_checkerr();
-  DatatypeDefinition *d = tf_get_definition(s, "mydatatype"); tf_checkerr();
+  Specification *s = tf_specification_from_file("myspec.yaml");
+  DatatypeDefinition *d = tf_get_definition(s, "mydatatype");
 
   /* convert to/from JSON strings */
-  char *decoded = tf_decode_to_json("1--2--3", d); tf_checkerr();
-  char *encoded = tf_encode_json("[1,2,3]", d); tf_checkerr();
+  char *decoded = tf_decode_to_json("1--2--3", d);
+  char *encoded = tf_encode_json("[1,2,3]", d);
 
   tf_delete_definition(d);
   tf_delete_specification(d);
   return 0;
 }
 ``
-
-Note that `tf_checkerr()` is called after each call to a textformats library
-function, to check that there was no error (see below).
 
 To decode and encode data to/from binary C types, the provided wrapped to the
 Nim json library is used.
@@ -71,7 +69,7 @@ according to the definition of the `mydatatype` datatype:
      j_array_add(array, new_j_int(elems[i]));
 
   /* encode the JArray using the datatype */
-  char *encoded = tf_encode(array, d); tf_checkerr();
+  char *encoded = tf_encode(array, d);
   delete_jsonnode(array);
 
   /* do something with the resulting string... */
@@ -82,7 +80,7 @@ The following example shows how to decode a string, encoded as by definition of
 the `mydatatype` datatype, to an array of int:
 ``C
   /* decode the string to a JArray JsonNode */
-  JsonNode *array = tf_decode("1--2--3", d); tf_checkerr();
+  JsonNode *array = tf_decode("1--2--3", d);
 
   /* create an int array with the contents of the JArray */
   size_t n_elems = len(array), i;
@@ -103,19 +101,47 @@ the `mydatatype` datatype, to an array of int:
 ## Error state
 
 A runtime error can result from calling any of the API functions.
+In case the Nim code raises an exception, the C code must decide
+how to react. Two ways of handling errors are provided.
 
-If in case of error, the program should just print a message to the
-standard error stream and quit, just call the function
-`tf_checkerr()` after the API call.
+### Quitting the program after any error
 
-In alternative, it is possible to handle the error state, by checking
-the global variable `tf_haderr` and using the following code to
-print the error message and to clear the error state:
+The easies way to handle errors is to print an error message to
+the standard output and quit the program in case of any error.
+For this behaviour, just set the global variable `tf_quit_on_err`
+to `true`.
+
+### Handling errors
+
+In alternative, it is possible to decide case-by-case if, after an API call
+which resulted in an error, the program shall be quit or the error should
+be handled.
+
+For this behaviour, after function calls for which the program shall be quit
+in case of error, call the function `tf_checkerr()`
+
+For functions, for which the error state shall be handled, the global
+variable `tf_haderr` is checked. The error message can be printed using
+`void tf_printerr()`.
+The kind of error (e.g. "DecodingError") is stored as string
+in the variable `tf_errname`.
+After handling the error, the error state is cleared calling the function
+`void tf_unseterr()`.
+
+Example code:
 ``C
+
+encoded = tf_encode("[1,2,3]",d);
+/* exit program if the above fails */
+tf_checkerr();
+
+decoded = tf_decode("[1--2--3]",d);
+/* handle the error if the above fails*/
 if (tf_haderr) {
-  tf_printerr(); /* print error message */
-  tf_unseterr(); /* unset the error state */
-  /* do something here to recover */
+  decoded = default_value;
+  printf("Error while decoding the value, the default will be used instead\n");
+  tf_printerr();
+  tf_unseterr();
 }
 ``
 
@@ -131,7 +157,7 @@ that no reference to it is needed anymore.
 
 ### List of datatype names
 
-To output the names of the datatypes contained in the specification,
+To output the names of the datatypes defined by a specification,
 use the `char* datatype_names(Specification *spec)` function.
 The datatype names are space-separated.
 
@@ -175,7 +201,7 @@ the Nim Garbage Collector using the function
 A verbose textual description of the content of the definition is obtained
 using ``char* tf_describe(DatatypeDefinition* dd)``.
 
-## Decoding an encoded string
+## Decoding the string representation of data
 
 The functions `JsonNode* tf_decode(char *encoded, DatatypeDefinition* dd)`
 and `char* decode_to_json(char *encoded, DatatypeDefinition* dd)` are used to
@@ -184,7 +210,7 @@ a `JsonNode` (from which the binary data can be obtained, using the
 provided wrapper to the Nim `json` library, see below) or a string,
 representing the data as JSON.
 
-## Encoding data
+### Encoding data to their string representation
 
 The functions `char* tf_encode(JsonNode *node, DatatypeDefinition *dd)`
 and `char* encode_json(char *json, DatatypeDefinition *dd)` are used
@@ -193,7 +219,7 @@ to encode data using the given datatype definition, from, respectively, a
 library, see below) or a string,
 representing the data as JSON.
 
-## Validating encoded strings and data
+## Validating data or their string representation
 
 If is only necessary to know if encoded or decoded data follow a
 datatype definition, and no access to the result of decoding or encoding is
@@ -204,8 +230,9 @@ The function `bool tf_is_valid_encoded(char *encoded, DatatypeDefinition* dd)`
 can be used to validate an encoded string.
 
 The functions `bool tf_is_valid_decoded(JsonNode *node, DatatypeDefinition* dd)`
-and `bool tf_is_valid_decoded_json(char *json, DatatypeDefinition* dd)` are
-used to validate decoded data, provided as, respectively,
+and `bool tf_is_valid_decoded_json(char *json, DatatypeDefinition* dd)` are used
+to determine if the data could be validly represented using the definition.
+The data is provided as, respectively,
 a `JsonNode` or a string representing the data as JSON.
 
 ## Decoding a file
@@ -269,7 +296,7 @@ If the scope is set to `unit`, the number of lines of a unit must be set,
 either in the datatype definition, or using
 `void tf_set_unitsize(DatatypeDefinition *dd, int n_lines)`.
 
-### Reporting the branch of `one_of` decodings
+### Reporting the branch of "one of" used by decoding
 
 When a `one_of` definition is used for decoding, it is possible to set the
 decoded value to contain information about which branch was used for the
