@@ -5,3 +5,4 @@ nim-extensions
 *.so
 *.egg-info/
 dist/
+prv.*
