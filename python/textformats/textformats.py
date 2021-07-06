@@ -46,7 +46,7 @@ class Datatype:
     else:
       self._unitsize = value
 
-  def decoded_file_values(self, filename, embedded=False, elemwise=False,
+  def decoded_file(self, filename, embedded=False, splitted=False,
                           wrapped=False, to_json=False):
     if self.scope == "undefined":
       raise "Error: undefined scope\n" +\
@@ -61,12 +61,12 @@ class Datatype:
               "setting the unitsize property of this object"
     if to_json:
       for value in tf.file_values_to_json(filename, self._definition, embedded,
-                                       self.scope, elemwise, wrapped,
+                                       self.scope, splitted, wrapped,
                                        self.unitsize):
         yield value
     else:
       for value in tf.decoded_file_values(filename, self._definition, embedded,
-                                       self.scope, elemwise, wrapped,
+                                       self.scope, splitted, wrapped,
                                        self.unitsize):
         yield value
 
@@ -107,7 +107,7 @@ class Specification:
     dd.name = datatype
     return dd
 
-  def test(self, filename):
+  def test(self, filename = self._filename):
     tf.test_specification(self._spec, testfile)
 
   @property
