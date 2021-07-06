@@ -1,5 +1,7 @@
 # Python API
 
+The subdirectory ``python`` contains the Python API, as a pip package.
+
 ## Quick tutorial by examples
 Assuming the specification file ``myspec.yaml`` contains:
 ``YAML

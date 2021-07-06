@@ -1,5 +1,25 @@
 # C API
 
+The subdirectory ``C`` contains a ``c_api.nim`` file.  which contains simple
+wrappers for the API functions of TextFormats, which allow to pass C strings as
+arguments, and export the functions to C using the {.exportc.} Nim pragma. The
+wrapper is compiled using ``nim c`` with the flags ``--noMain --noLinking
+--header:c_api.h --nimcache:$NIMCACHE``, where $NIMCACHE is the location where
+the compiled files will be stored.
+
+The API is then included into the C file (``#include "c_api.h"``) and linked
+using the following compiler flags before the name of the C file to compile:
+``-I$NIMCACHE -I$NIMLIB $NIMCACHE/*.o`` where NIMLIB is the location of the NIM
+library[^1].
+
+In the C code, the Nim library must be initialized calling the function
+NimMain().
+
+[^1] If you use choosenim for managing Nim versions, the location of the
+library will be in the choosenim directory (default: ~/.choosenim) under
+toolchains/nim-$VERSION/lib where $VERSION is the version of Nim you are
+using (e.g. 1.4.8).
+
 ## Quick tutorial by examples
 
 Assuming the specification file ``myspec.yaml`` contains:
