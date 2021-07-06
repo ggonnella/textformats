@@ -43,12 +43,13 @@ described by the datatype definition, or decoded (as string in JSON format).
 
 **-e**, **\-\-encoded**=STRING
 : encoded data (in the specified text representation) to be validated
-(REQUIRED)
+  (default: standard input, or empty string if none)
 
 *encoded* subcommand:
 
 **-d**, **\-\-decoded\_json**=STRING
-: decoded data (as JSON) to be validated (REQUIRED)
+: decoded data (as JSON) to be validated
+  (default: standard input, or empty string if none)
 
 # EXIT VALUES
 The exit code is 0 on validation success, anything else on validation

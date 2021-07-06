@@ -35,6 +35,7 @@ type
     ec_test_unexp_encoding_result=fld_pfx & enc_out & err_dff
     ec_test_unexp_decoding_result=fld_pfx & dec_out & err_dff
     # errors
+    ec_err_setting = err_pfx & "Invalid setting"
     ec_err_json_syntax=err_pfx & dec_in & ": invalid JSON syntax"
     ec_err_def_not_found=err_pfx &
       "The specification does not include the datatype"
@@ -93,6 +94,13 @@ template parse_float_or_json*(s: string): JsonNode =
   elif s == "NaN":       %*NaN
   else:                  s.parse_json
 
+template str_or_stdin*(argname: string): string =
+  if argname == "":
+    if isatty(stdin): ""
+    else: read_all(stdin).strip()
+  else:
+    argname
+
 ##
 ## Short version of the options;
 ## defined here so that they are consistant among the tools
@@ -108,7 +116,7 @@ template short_testfile*:       untyped = 'f'
 template short_scope*:          untyped = 'c'
 template short_wrapped*:        untyped = 'w'
 template short_unitsize*:       untyped = 'u'
-template short_linewise*:       untyped = 'l'
+template short_splitted*:       untyped = 'x'
 
 ##
 ## Help messages for the options;
@@ -140,7 +148,7 @@ template help_opt_testfile*: untyped = "optional: test data filename (YAML);" &
 template help_scope*: untyped = "which part of the input file is targeted " &
   "by the datatype definition; default: 'auto' (as specified by the scope " &
   "key of the definition); other accepted values: line, unit, section, file"
-template help_linewise*: untyped =
+template help_splitted*: untyped =
   "if set, and scope is 'file' or 'section', the file/section structure " &
   "is used for parsing but the decoded value of each line is output " &
   "separately; advantage: it does not require to keep the whole file or file " &

@@ -8,16 +8,18 @@
 ## to the specification.
 ##
 
-import strutils, json, tables
+import strutils, json, tables, terminal
 import ../../textformats
 import cli_helpers
 
-proc encode_json*(specfile: string, datatype = "default", decoded_json: string):
+proc encode_json*(specfile: string, datatype = "default", decoded_json = ""):
                   int =
   ## encode decoded data (JSON) and output as encoded string
-  let definition = get_datatype_definition(specfile, datatype)
+  let
+    definition = get_datatype_definition(specfile, datatype)
+    to_encode = str_or_stdin(decoded_json)
   try:
-    let decoded = parse_float_or_json(decoded_json)
+    let decoded = parse_float_or_json(to_encode)
     try:
       echo encode(decoded, definition)
     except EncodingError:

@@ -390,17 +390,21 @@ proc get_yamlfile_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
   var
     filestream: FileStream = nil
     yaml: YamlDocument = YamlDocument(root: YamlNode())
-  if not fileExists(filename):
-    raise newException(io_errtype, yamlfile_errmsg(filename, filedesc,
-      "File not found"))
   try:
-    filestream = newFileStream(filename, fmRead)
+    if filename == "":
+      filestream = newFileStream(stdin)
+    else:
+      if not fileExists(filename):
+        raise newException(io_errtype, yamlfile_errmsg(filename, filedesc,
+                           "File not found"))
+      filestream = newFileStream(filename, fmRead)
   except IOError:
     raise newException(io_errtype, yamlfile_errmsg(filename,
        filedesc, get_current_exception_msg()))
   try:
     yaml = load_dom(filestream)
-    filestream.close
+    if (filename != ""):
+      filestream.close
   except:
     raise newException(parsing_errtype,
        yamlfile_errmsg(filename, filedesc,

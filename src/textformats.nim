@@ -27,26 +27,12 @@ import textformats/decoder
 export decode
 
 import textformats/file_decoder
-#
-# iterators
-#
-# scope: line
-export decoded_lines
-# scope: unit
-export decoded_units
-# scope: section
-export decoded_sections
-export decoded_section_elements
-# scope: file
-export decoded_whole_file
-export decoded_whole_file_elements
-# scope: auto/specified
-export decoded_file_values
+export decoded_file
+export decode_file
 
 # encoding
 import textformats/encoder
 export encode
-export unsafe_encode
 
 # test
 import textformats/testdata_parser

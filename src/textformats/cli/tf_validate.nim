@@ -5,27 +5,31 @@
 ## or the JSON representation of the decoded data.
 ##
 
-import strutils, tables, strformat, json
+import strutils, tables, strformat, json, terminal
 import ../../textformats
 import cli_helpers
 
 proc validate_encoded*(specfile: string, datatype = "default",
-                       encoded: string): int =
+                       encoded = ""): int =
   ## validate an encoded string
-  let definition = get_datatype_definition(specfile, datatype)
-  if encoded.is_valid(definition):
-    exit_with(ec_success, &"'{encoded}' is a valid encoded '{datatype}'")
+  let
+    to_validate = str_or_stdin(encoded)
+    definition = get_datatype_definition(specfile, datatype)
+  if to_validate.is_valid(definition):
+    exit_with(ec_success, &"'{to_validate}' is a valid encoded '{datatype}'")
   else:
     exit_with(ec_vdn_invalid_encoded)
 
 proc validate_decoded*(specfile: string,
-                       datatype = "default", decoded_json: string): int =
+                       datatype = "default", decoded_json = ""): int =
   ## validate decoded data (JSON)
-  let definition = get_datatype_definition(specfile, datatype)
+  let
+    to_validate = str_or_stdin(decoded_json)
+    definition = get_datatype_definition(specfile, datatype)
   try:
-    let decoded = parse_float_or_json(decoded_json)
+    let decoded = parse_float_or_json(to_validate)
     if decoded.is_valid(definition):
-      exit_with(ec_success, &"'{decoded_json}' is a valid decoded '{datatype}'")
+      exit_with(ec_success, &"'{to_validate}' is a valid decoded '{datatype}'")
     else:
       exit_with(ec_vdn_invalid_decoded)
   except JsonParsingError:

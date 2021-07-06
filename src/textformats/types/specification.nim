@@ -1,4 +1,4 @@
-import tables, marshal, strformat, os, json, streams
+import tables, marshal, strformat, os, json, streams, strutils
 import datatype_definition, textformats_error
 
 export pairs
@@ -25,7 +25,10 @@ proc save_specification*(table: Specification, filename: string) =
   try:
     for name, dd in table:
       dd.remove_references
-    filename.writeFile($$table)
+    if filename == "":
+      stdout.write($$table)
+    else:
+      filename.writeFile($$table)
   except IOError:
     let e = get_current_exception()
     raise newException(TextformatsRuntimeError,
@@ -36,7 +39,11 @@ proc load_specification*(filename: string): Specification =
   let errmsg_pfx = "Error loading preprocessed specification\n" &
                    &"  Filename: '{filename}'\n"
   try:
-    let filecontent = filename.readFile()
+    let filecontent =
+      if filename == "":
+        stdin.read_all.strip()
+      else:
+        filename.readFile()
     result = filecontent.to[:Specification]
     for name, dd in result:
       dd.restore_references(result)
@@ -71,6 +78,8 @@ proc newSpecification*(): Specification =
   result.create_base_datatypes
 
 proc is_preprocessed*(specfile: string): bool =
+  if specfile == "":
+    return false
   let errmsg_pfx = "Error loading specification\n" &
                    &"  Filename: '{specfile}'\n"
   try:

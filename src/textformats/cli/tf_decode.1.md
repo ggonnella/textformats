@@ -9,7 +9,7 @@ tf\_decode - decode text representation, according to given datatype definition
 # SYNOPSIS
 
 **tf_decode** string -s SPECFILE [-t DATATYPE] -e ENCODED\
-**tf_decode** file [-s SPECFILE] [t DATATYPE] -i INFILE [-c S] [-w] [-l] [-u N]\
+**tf_decode** file [-s SPECFILE] [t DATATYPE] -i INFILE [-c S] [-w] [-x] [-u N]\
 
 # DESCRIPTION
 
@@ -44,14 +44,8 @@ each element of the compound datatype.
 **string**
 : decode an encoded string and output as JSON
 
-**linewise**
-: decode lines of a file using the specification
-
-**units**
-: decode file as list\_of units, defined by 'composed\_of'
-
-**lines**
-: decode file line-by-line as defined by 'composed\_of'
+**file**
+: decode a file using the specification
 
 ## Common options
 **-s**, **\-\-specfile=**FILENAME
@@ -68,13 +62,15 @@ each element of the compound datatype.
 *string* subcommand:
 
 **-e**, **\-\-encoded=**STRING
-: encoded string to be decoded (REQUIRED)
+: encoded string to be decoded
+  (default: standard input, or empty string if none)
 
 *file* subcommands:
 
 **-i**, **\-\-infile=**FILENAME
 : input file, containing the encoded data and, if **-s** is not used,
-  an embedded specification (REQUIRED)
+  an embedded specification (default: standard input; embedded specifications
+  are not supported in this case)
 
 **-w**, **\-\-wrapped**
 : if set, and the datatype definition is 'one\_of', the decoded
@@ -82,7 +78,7 @@ each element of the compound datatype.
   is the name of the 'one\_of' branch which has been used for
   decoding, and the value is the unwrapped decoded value
 
-**-l**, **\-\-linewise**
+**-x**, **\-\-splitted**
 : if set, and scope is 'file' or 'section', the file/section
   structure is used for parsing but the decoded value of each
   line is output separately; advantage: it does not require to

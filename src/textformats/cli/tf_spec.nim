@@ -6,20 +6,22 @@
 ## running the test suite.
 ##
 
-import tables, strutils, sets
+import tables, strutils, sets, terminal
 import ../testdata_generator, ../spec_parser, ../testdata_parser
 import ../types/datatype_definition
 import ../../textformats
 import cli_helpers
 
-proc preprocess*(specfile: string, outfile: string): int =
+proc preprocess*(specfile = "", outfile = ""): int =
   ## preprocess a specification file
-  fail_if_preprocessed(specfile)
-  let datatypes = parse_specification(specfile)
-  datatypes.save_specification(outfile)
+  if isatty(stdin) and specfile == "":
+    exit_with(ec_err_setting,
+              "You must provide an input specification file as a " &
+              "filename or standard input")
+  preprocess_specification(specfile, outfile)
   exit_with(ec_success)
 
-proc info*(specfile: string, datatype = ""): int =
+proc info*(specfile = "", datatype = ""): int =
   ## if no datatype is specified, list all definitions in a specification
   ## otherwise: show info about a definition
   if datatype == "":
@@ -32,7 +34,7 @@ proc info*(specfile: string, datatype = ""): int =
     echo definition.verbose_desc(0)
   exit_with(ec_success)
 
-proc test*(specfile: string, testfile = ""): int =
+proc test*(specfile = "", testfile = ""): int =
   ## test a specification using a testdata file
   let datatypes = get_specification(specfile)
   let test_or_specfile =
@@ -52,9 +54,8 @@ proc test*(specfile: string, testfile = ""): int =
 # if a testfile is provided, only datatypes not present in the testfile
 # are considered, and the initial "testdata:" is not printed, so that
 # the output can be appended to the input testfile
-proc generate_tests*(specfile: string, testfile = ""): int =
+proc generate_tests*(specfile = "", testfile = ""): int =
   ## auto-generate testdata for a specification file
-  fail_if_preprocessed(specfile)
   let
     datatypes = list_specification_datatypes(specfile)
     specification = parse_specification(specfile)

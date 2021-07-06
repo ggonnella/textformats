@@ -36,7 +36,8 @@ the specification to be used (-t).
   (default: datatype with name 'default')
 
 **-d**, **\-\-decoded_json=**STRING
-: data (JSON format) to be encoded (REQUIRED)
+: data (JSON format) to be encoded
+  (default: standard input, or empty string if none)
 
 # EXIT VALUES
 The exit code is 0 on success, anything else on error.

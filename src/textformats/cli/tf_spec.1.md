@@ -36,6 +36,7 @@ YAML content and generation of the regular expressions).
 
 Only the datatype specifications are contained in the preprocessed
 file, not the testdata and embedded data.
+Preprocessed specifications cannot be provided from the standard input.
 
 ## Tests
 
@@ -79,9 +80,11 @@ encoding and validations for each of the provided test examples.
 all subcommands:
 
 **-s**, **\-\-specfile=**FILENAME
-: specification file to be used (REQUIRED); YAML only for
-*preprocess* and *generate\_tests*; YAML or preprocessed
-for all other subcommands
+: specification file to be used (default: standard input);
+  YAML or preprocessed;
+  preprocessed specifications can be used except for
+  *preprocess* and *generate\_tests* and cannot be provided
+  as standard input
 
 *info* subcommand:
 
@@ -92,7 +95,8 @@ for all other subcommands
 *preprocess* subcommand:
 
 **-o**, **\-\-outfile=**FILENAME
-: output filename for the preprocessed specification (REQUIRED)
+: output filename for the preprocessed specification
+  (default: standard output)
 
 ## Further options
 

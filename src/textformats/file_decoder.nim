@@ -17,14 +17,17 @@ import dt_dict/dict_file_decoder
 #import dt_tags/tags_file_decoder
 
 template open_input_file(filename: string): File =
-  var file: File = nil
-  try: file = open(filename)
-  except IOError:
-    let e = getCurrentException()
-    raise newException(TextformatsRuntimeError,
-                       "Error while reading input file '" & filename &
-                       "'\n" & e.msg)
-  file
+  if filename == "":
+    stdin
+  else:
+    var file: File = nil
+    try: file = open(filename)
+    except IOError:
+      let e = getCurrentException()
+      raise newException(TextformatsRuntimeError,
+                         "Error while reading input file '" & filename &
+                         "'\n" & e.msg)
+    file
 
 #
 # State for parsing embedded specification files
@@ -88,50 +91,6 @@ iterator decoded_lines_or_units(filename: string, dd: DatatypeDefinition,
                        "Final group of lines does not contain enough lines\n" &
                        &"Found n. of lines: {n_in_group}\n" &
                        &"Required n. of lines: {unitsize}")
-
-iterator decoded_lines*(filename: string, dd: DatatypeDefinition,
-                        embedded = false, wrapped = false): JsonNode =
-  ## Decode a file applying the definition dd to each line independently
-  ##
-  ## Options:
-  ##
-  ## - embedded: (bool, default: false) if true, the file is assumed to
-  ##             contain an embedded specification before the data, which is
-  ##             then skipped; i.e. only the content after the first document
-  ##             separator "---" is decoded
-  ##
-  ## - wrapped: (bool, default: false) if true and dd.kind == ddkUnion
-  ##            (or ddkRef targeting a ddkUnion), then the wrapped flag of dd
-  ##            is set, i.e. the type information is added to the
-  ##            result; if any other kind of definition, or if the wrapped
-  ##            flag of the union was already set, then the option is ignored
-  ##
-  for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped):
-    yield decoded
-
-iterator decoded_units*(filename: string, dd: DatatypeDefinition, unitsize: int,
-                        embedded = false, wrapped = false): JsonNode =
-  ## Decode a file applying the definition dd to each unit, i.e. group
-  ## of a constant number of lines, independently
-  ##
-  ## Options:
-  ##
-  ## - embedded: (bool, default: false) if true, the file is assumed to
-  ##             contain an embedded specification before the data, which is
-  ##             then skipped; i.e. only the content after the first document
-  ##             separator "---" is decoded
-  ##
-  ## - wrapped: (bool, default: false) if true and dd.kind == ddkUnion
-  ##            (or ddkRef targeting a ddkUnion), then the wrapped flag of dd
-  ##            is set, i.e. the type information is added to the
-  ##            result; if any other kind of definition, or if the wrapped
-  ##            flag of the union was already set, then the option is ignored
-  ##
-  ## - unitsize: (int > 1) number of lines to decode at once
-  ##
-  for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
-                                        unitsize=unitsize):
-    yield decoded
 
 #
 #
@@ -199,8 +158,8 @@ proc decode_section_lines*(reader: var FileLinesReader,
     obj[key] = reader.line.decode(ddef)
     line_processor(obj, line_processor_data)
 
-iterator decoded_section_elements*(reader: var FileLinesReader,
-                                   dd: DatatypeDefinition, key: string):
+iterator decoded_section_elements(reader: var FileLinesReader,
+                                  dd: DatatypeDefinition, key: string):
                                      JsonNode =
   let ddef = dereference(dd)
   on_section_def(ddef):
@@ -275,8 +234,8 @@ template onDataLines(filename, embedded, dd, whole, actions: untyped) =
       inc section
   file.close
 
-iterator decoded_sections*(filename: string, dd: DatatypeDefinition,
-                           embedded=false): JsonNode =
+iterator decoded_sections(filename: string, dd: DatatypeDefinition,
+                          embedded=false): JsonNode =
   ##
   ## Decode a file as a list of multiline sections.
   ## Each of the sections is defined by the datatype definition,
@@ -292,8 +251,8 @@ iterator decoded_sections*(filename: string, dd: DatatypeDefinition,
   onDataLines(filename, embedded, dd, false):
     yield reader.decode_section(ddef)
 
-proc decoded_whole_file*(filename: string, dd: DatatypeDefinition,
-                         embedded=false): JsonNode =
+proc decoded_whole_file(filename: string, dd: DatatypeDefinition,
+                        embedded=false): JsonNode =
   ##
   ## Decode a file using a datatype definition for the whole file,
   ## i.e. a ddkStruct, ddkList or ddkDict definition (or a reference to it)
@@ -308,7 +267,7 @@ proc decoded_whole_file*(filename: string, dd: DatatypeDefinition,
   onDataLines(filename, embedded, dd, true):
     result = reader.decode_section(ddef)
 
-proc decode_section_lines*(filename: string, dd: DatatypeDefinition,
+proc decode_section_lines(filename: string, dd: DatatypeDefinition,
                            line_processor: proc(decoded_line: JsonNode,
                                                 data: pointer),
                            line_processor_data: pointer,
@@ -331,7 +290,7 @@ proc decode_section_lines*(filename: string, dd: DatatypeDefinition,
   onDataLines(filename, embedded, dd, false):
     reader.decode_section_lines(ddef, "", line_processor, line_processor_data)
 
-proc decode_whole_file_lines*(filename: string, dd: DatatypeDefinition,
+proc decode_whole_file_lines(filename: string, dd: DatatypeDefinition,
                               line_processor: proc(decoded_line: JsonNode,
                                                    data: pointer),
                               line_processor_data: pointer,
@@ -354,7 +313,7 @@ proc decode_whole_file_lines*(filename: string, dd: DatatypeDefinition,
   onDataLines(filename, embedded, dd, true):
     reader.decode_section_lines(ddef, "", line_processor, line_processor_data)
 
-iterator decoded_section_elements*(filename: string, dd: DatatypeDefinition,
+iterator decoded_section_elements(filename: string, dd: DatatypeDefinition,
                                    embedded=false): JsonNode =
   ##
   ## Decode a file using a definition which defines an entire
@@ -368,7 +327,7 @@ iterator decoded_section_elements*(filename: string, dd: DatatypeDefinition,
     for line in reader.decoded_section_elements(ddef, ""):
       yield line
 
-iterator decoded_whole_file_elements*(filename: string, dd: DatatypeDefinition,
+iterator decoded_whole_file_elements(filename: string, dd: DatatypeDefinition,
                                    embedded=false): JsonNode =
   ##
   ## Decode a whole file using a definition which defines the entire
@@ -382,111 +341,58 @@ iterator decoded_whole_file_elements*(filename: string, dd: DatatypeDefinition,
     for line in reader.decoded_section_elements(ddef, ""):
       yield line
 
-proc parse_scope_setting*(scope: string, dd: DatatypeDefinition):
-                          DatatypeDefinitionScope =
-  ##
-  ## Compute the scope of a definition given a scope setting parameter (string)
-  ##
-  ## The scope setting parameter must be either one of the scope values
-  ## (file, section, unit, line) or "auto". In the latter case, the
-  ## scope must be defined in the datatype definition.
-  ##
-  if scope == "auto":
-    let ddef = dereference(dd)
-    if ddef.scope == ddsUndef:
-      raise newException(TextformatsRuntimeError,
-         "Error: scope 'auto' requires a " &
-         "'scope' key in the datatype definition")
-    return ddef.scope
-  else:
-    try:
-      return parse_scope(scope)
-    except TextformatsRuntimeError:
-      raise newException(TextformatsRuntimeError,
-              get_current_exception_msg() & "- auto\n")
-
-proc parse_unitsize_setting*(unitsize: int, dd: DatatypeDefinition): int =
-  ##
-  ## Compute the unit size of a definition given a setting parameter (int)
-  ##
-  ## If the unitsize setting parameter is 1, then the value is taken
-  ## from the datatype definition (which must define it, in this case);
-  ## otherwise the setting is used.
-  ##
-  let
-    wrong_value_msg =
-        "The unitsize parameter for the scope 'unit' must be > 1"
-  if unitsize < 1:
-    raise newException(TextformatsRuntimeError, wrong_value_msg)
-  elif unitsize == 1:
-    let ddef = dereference(dd)
-    if ddef.unitsize > 1:
-      return ddef.unitsize
-    else:
-      raise newException(TextformatsRuntimeError,
-                         wrong_value_msg)
-  return unitsize
-
 proc show_decoded(decoded: JsonNode, data: pointer) =
   echo $decoded
 
 proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
-                  scope = "auto", linewise = false, wrapped = false,
-                  unitsize = 1,
                   process_decoded:
                     proc(decoded: JsonNode, data: pointer) = show_decoded,
-                  process_decoded_data: pointer) =
+                  process_decoded_data: pointer = nil, splitted = false,
+                  wrapped = false) =
   ##
   ## Decode a file applying the specified definition
   ##
-  let
-    scope_param = scope.parse_scope_setting(dd)
-    unitsize_param =
-      if scope_param == ddsUnit: parse_unitsize_setting(unitsize, dd)
-      else: 1
-  if scope_param == ddsUnit or scope_param == ddsLine:
+  ## This proc is provided to more easily support programming languages for
+  ## which iterators are not available (C).
+  ##
+  if dd.scope == ddsUnit or dd.scope == ddsLine:
     for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
-                                          unitsize_param):
+                                          dd.unitsize):
       process_decoded(decoded, process_decoded_data)
-  elif linewise:
-    if scope_param == ddsFile:
+  elif splitted:
+    if dd.scope == ddsFile:
       decode_whole_file_lines(filename, dd, process_decoded,
                               process_decoded_data, embedded)
     else:
       decode_section_lines(filename, dd, process_decoded,
                            process_decoded_data, embedded)
   else:
-    if scope_param == ddsFile:
+    if dd.scope == ddsFile:
       process_decoded(decoded_whole_file(filename, dd, embedded),
                       process_decoded_data)
     else:
       for decoded in decoded_sections(filename, dd, embedded):
         process_decoded(decoded, process_decoded_data)
 
-iterator decoded_file_values*(filename: string, dd: DatatypeDefinition,
-                  embedded = false, scope = "auto", elemwise = false,
-                  wrapped = false, unitsize = 1): JsonNode =
+iterator decoded_file*(filename: string, dd: DatatypeDefinition,
+                       embedded = false, splitted = false,
+                       wrapped = false): JsonNode =
   ##
   ## Decode a file applying the specified definition
   ##
-  let
-    scope_param = scope.parse_scope_setting(dd)
-    unitsize_param =
-      if scope_param == ddsUnit: parse_unitsize_setting(unitsize, dd)
-      else: 1
-  if scope_param == ddsUnit or scope_param == ddsLine:
+  if dd.scope == ddsUnit or dd.scope == ddsLine:
     for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
-                                          unitsize_param):
+                                          dd.unitsize):
       yield decoded
-  elif elemwise:
-    if scope_param == ddsFile:
+  elif splitted:
+    if dd.scope == ddsFile:
       for decoded in decoded_whole_file_elements(filename, dd, embedded):
         yield decoded
     else:
       for decoded in decoded_section_elements(filename, dd, embedded):
         yield decoded
   else:
-    if scope_param == ddsFile:
+    if dd.scope == ddsFile:
       yield decoded_whole_file(filename, dd, embedded)
     else:
       for decoded in decoded_sections(filename, dd, embedded):
