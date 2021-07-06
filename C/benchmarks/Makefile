@@ -3,11 +3,11 @@ NIMLIB:=${HOME}/.choosenim/toolchains/nim-${VERSION}/lib
 
 default: run
 
-nimcache/c_api.h: ../c_api.nim
-	nim c -d:danger --gc:mark_and_sweep --noMain --noLinking --header:c_api.h \
-	    	--nimcache:nimcache ../c_api.nim
+nimcache/textformats_c.h: ../textformats_c.nim
+	nim c -d:danger --gc:mark_and_sweep --noMain --noLinking --header:textformats_c.h \
+	    	--nimcache:nimcache ../textformats_c.nim
 
-parse_cigars: nimcache/c_api.h parse_cigars.c
+parse_cigars: nimcache/textformats_c.h parse_cigars.c
 	gcc -DNDEBUG -o $@ -O3 -Inimcache -I${NIMLIB} \
 		nimcache/*.o parse_cigars.c
 

@@ -1,0 +1,476 @@
+Error (InvalidSpecError):
+  Error parsing YAML specification
+    Filename: 'testdata/wrong_yaml_syntax.yaml'
+    Unexpected token: ltStreamEnd
+
+Error (TextformatsRuntimeError):
+  File not found:testdata/xyz.yaml
+
+Error (TextformatsRuntimeError):
+  File not found:testdata/xyz.yaml
+
+Textformats C API tests
+======== test loading specfile with syntax errors
+
+[OK]: Error, as expected:
+
+======== test loading non-existing specfile
+
+[OK]: Error, as expected:
+
+======== test loading valid specification
+
+[OK]: no errors
+
+======== test is_preprocessed on non-existing file
+
+[OK]: Error, as expected:
+
+======== test is_preprocessed on YAML file
+
+[OK]: false as expected
+
+[OK]: no errors
+
+======== test run failing specification tests
+
+[OK] Datatype: 'header': '>also_valid' =(decode)=> {"fastaid":"also_valid"}
+[OK] Datatype: 'header': '>also_valid' (encoded) validated
+[OK] Datatype: 'header': '{"fastaid":"also_valid"}' =(encode)=> '>also_valid'
+[OK] Datatype: 'header': {"fastaid":"also_valid"} (decoded) validated
+Error (UnexpectedEncodedInvalidError):
+  [Failed] Datatype: 'header':
+    Encoded string: 'invalid'
+    Expected decoded data (JSON): {"fastaid":"invalid"}
+    Instead, decoding failed with an error:
+      Error: invalid encoded string according to datatype
+      Datatype name: header
+      Encoded string: 'invalid'
+        Error: encoded structure content not matching regular expression.
+        Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+        Reason for not matching: 
+          Error: wrong format for encoded structure
+          Error: invalid prefix
+          Prefix found: i
+          Expected prefix: >
+
+[OK]: Error, as expected:
+
+======== test run specification tests
+
+[OK] Datatype: 'header': '>TDPy A' =(decode)=> {"fastaid":"TDPy","desc":"A"}
+[OK] Datatype: 'header': '>TDPy A' (encoded) validated
+[OK] Datatype: 'header': '{"fastaid":"TDPy","desc":"A"}' =(encode)=> '>TDPy A'
+[OK] Datatype: 'header': {"fastaid":"TDPy","desc":"A"} (decoded) validated
+[OK] Datatype: 'header': '>TDPy' =(decode)=> {"fastaid":"TDPy"}
+[OK] Datatype: 'header': '>TDPy' (encoded) validated
+[OK] Datatype: 'header': '{"fastaid":"TDPy"}' =(encode)=> '>TDPy'
+[OK] Datatype: 'header': {"fastaid":"TDPy"} (decoded) validated
+Error (TextformatsRuntimeError):
+  The datatype 'heder' is not defined in the specification.
+
+Error (DecodingError):
+  Error: invalid encoded string according to datatype
+  Datatype name: header
+  Encoded string: 'ABCD some sequence'
+    Error: encoded structure content not matching regular expression.
+    Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+    Reason for not matching: 
+      Error: wrong format for encoded structure
+      Error: invalid prefix
+      Prefix found: A
+      Expected prefix: >
+
+Error (DecodingError):
+  Error: invalid encoded string according to datatype
+  Datatype name: header
+  Encoded string: 'ABCD some sequence'
+    Error: encoded structure content not matching regular expression.
+    Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+    Reason for not matching: 
+      Error: wrong format for encoded structure
+      Error: invalid prefix
+      Prefix found: A
+      Expected prefix: >
+
+Error (EncodingError):
+  Error: invalid value for datatype
+  Invalid value (as JSON): '{"desc":"some sequence"}'
+  Datatype: header
+  Error: required dictionary key missing
+  Optional key 'desc' is present, requiring all optional keys before it to be present as well
+  Partial encoded string (before missing value): >
+  Missing key: fastaid
+  
+
+Error (EncodingError):
+  Error: invalid value for datatype
+  Invalid value (as JSON): '{"desc":"some sequence"}'
+  Datatype: header
+  Error: required dictionary key missing
+  Optional key 'desc' is present, requiring all optional keys before it to be present as well
+  Partial encoded string (before missing value): >
+  Missing key: fastaid
+  
+
+Error (TextformatsRuntimeError):
+  Error: scope must be one of the following values:
+  - file
+  - section
+  - unit
+  - line
+  
+
+Error (TextformatsRuntimeError):
+  Error: unit size must be >= 1
+  
+
+Error (TextformatsRuntimeError):
+  Wrong datatype definition for file section
+  Expected: composed_of, list_of or named_values
+  Found: 'ddkUnion'
+
+Error (DecodingError):
+  File: 'testdata/test.fas'
+  Line number: 1
+  Error: invalid encoded string according to datatype
+  Datatype name: line_failing
+  Encoded string: '>seq1 shorter'
+    Error: value is invalid for all specified formats
+    Error messages for each specified format:
+    ==== [0: line_failing.double_header_symbol_line] ====
+      Error: invalid encoded string according to datatype
+      Datatype name: line_failing.double_header_symbol_line
+      Encoded string: '>seq1 shorter'
+        Error: invalid encoded string according to datatype
+        Datatype name: double_header_symbol_line
+        Encoded string: '>seq1 shorter'
+          Error: Encoded string does not match the specified regular expression
+          Regular expression: >>.*
+    ==== [1: line_failing.sequence_line] ====
+      Error: invalid encoded string according to datatype
+      Datatype name: line_failing.sequence_line
+      Encoded string: '>seq1 shorter'
+        Error: invalid encoded string according to datatype
+        Datatype name: sequence_line
+        Encoded string: '>seq1 shorter'
+          Error: Encoded string does not match the specified regular expression
+          Regular expression: ([^>]*|[^>].*)
+
+[OK]: no errors
+
+======== test datatype_names
+
+[OK]: no errors
+
+datatype names:
+  - entry
+  - sequence
+  - default
+  - header
+  - sequence_line
+  - unit_for_tests
+  - file
+  - double_header_symbol_line
+  - line
+  - line_failing
+
+======== test loading non-existing datatype
+
+[OK]: Error, as expected:
+
+======== test loading valid specification
+
+[OK]: no errors
+
+======== test describe datatype definition
+
+
+Datatype: 'header': tuple of elements (of possibly different types)
+
+  the tuple contains 2 elements
+  of these, the first 0 must be present, the remaining are optional
+
+  the elements of the tuple are, in this order:
+
+  - [1] element 'fastaid', defined as:
+        'header.fastaid': string value matching a regular expression
+
+          the regular expression is: '\w*'
+
+  - [2] element 'desc', defined as:
+        'header.desc': string value matching a regular expression
+
+          the regular expression is: '.*'
+
+- formatting:
+    before the first element is the prefix '>'
+    the elements are separated by ' '
+    (which may also be present in the elements text,
+    thus shall not be used for splitting the string into elements)
+
+- regular expression:
+    regex which has been generated for the data type:
+      '\x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?'
+    a match ensures validity of the encoded string
+
+[OK]: no errors
+
+======== test decoding invalid data
+
+[OK]: Error, as expected:
+
+======== test decoding valid data: no error
+
+[OK]: no errors
+
+======== test decoding valid data: expected result
+
+[OK]: '{"fastaid":"ABCD","desc":"some sequence"}' as expected
+
+
+======== test decoding invalid data to json
+
+[OK]: Error, as expected:
+
+======== test decoding valid data to json: no error
+
+[OK]: no errors
+
+======== test decoding valid data to json: expected result
+
+[OK]: '{"fastaid":"ABCD","desc":"some sequence"}' as expected
+
+
+======== test validating invalid encoded data
+
+[OK]: false as expected
+
+
+======== test validating valid encoded data
+
+[OK]: true as expected
+
+
+======== test encoding invalid data
+
+[OK]: Error, as expected:
+
+======== test encoding valid data: no error
+
+[OK]: no errors
+
+======== test encoding valid data: expected result
+
+[OK]: '>ABCD some sequence' as expected
+
+
+======== test validating invalid decoded data
+
+[OK]: false as expected
+
+
+======== test validating valid decoded data
+
+[OK]: true as expected
+
+
+======== test encoding invalid Json data
+
+[OK]: Error, as expected:
+
+======== test encoding valid Json data: no error
+
+[OK]: no errors
+
+======== test encoding valid Json data: expected result
+
+[OK]: '>ABCD some sequence' as expected
+
+
+======== test validating invalid decoded Json data
+
+[OK]: false as expected
+
+
+======== test validating valid decoded Json data
+
+[OK]: true as expected
+
+
+======== test loading line datatype
+
+[OK]: no errors
+
+======== test loading line_failing datatype
+
+[OK]: no errors
+
+======== test loading unit datatype
+
+[OK]: no errors
+
+======== test loading section datatype
+
+[OK]: no errors
+
+======== test loading file datatype
+
+[OK]: no errors
+
+======== test tf_get_scope
+
+[OK]: 'undefined' as expected
+
+[OK]: 'line' as expected
+
+[OK]: 'unit' as expected
+
+[OK]: 'section' as expected
+
+[OK]: 'file' as expected
+
+[OK]: no errors
+
+======== test tf_set_scope
+
+[OK]: Error, as expected:
+[OK]: 'unit' as expected
+
+[OK]: no errors
+
+======== test tf_get_unitsize
+
+[OK]: 3 as expected
+
+[OK]: 1 as expected
+
+[OK]: no errors
+
+======== test set_unitsize
+
+[OK]: Error, as expected:
+[OK]: no errors
+[OK]: 2 as expected
+
+
+======== test tf_get_wrapped
+
+[OK]: false as expected
+
+[OK]: no errors
+
+======== test tf_set_wrapped
+
+[OK]: true as expected
+
+[OK]: no errors
+
+======== test tf_unset_wrapped
+
+[OK]: false as expected
+
+[OK]: no errors
+
+======== test decoding file values, scope undefined, failing
+
+[OK]: Error, as expected:
+
+======== test decoding file values, scope line, failing
+
+[OK]: Error, as expected:
+
+======== test decoding file values, scope line
+
+Next decoded value found: '{"fastaid":"seq1","desc":"shorter"}'
+Next decoded value found: '"CAGTCGATCGAA"'
+Next decoded value found: '"TGCTGCAGCATG"'
+Next decoded value found: '"Error (DecodingError):
+  File: 'testdata/test.fas'
+  Line number: 4
+  Error: invalid encoded string according to datatype
+  Datatype name: unit_for_tests
+  Encoded string: 'TGCTGCAGCATG
+  CATGCTGATGC'
+    Error: encoded structure content not matching regular expression.
+    Regular expression: (?P<0>\x3E(?:(?P<0_0>\w*)(?:\x20(?P<0_1>.*))?)?)(?P<1>(?P<1_0>([^>]*|[^>].*))(\x0A(?P<1_1>([^>]*|[^>].*))){0,})
+    Reason for not matching: 
+      Error: invalid encoded value for structure element
+      Element name: header
+        Error: invalid encoded string according to datatype
+        Datatype name: unit_for_tests.header
+        Encoded string: ''
+          Error: invalid encoded string according to datatype
+          Datatype name: header
+          Encoded string: ''
+            Error: encoded structure content not matching regular expression.
+            Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+            Reason for not matching: 
+              Error: wrong format for encoded structure
+              Error: invalid prefix
+              Prefix found: 
+
+CATGCTGATGC"'
+Next decoded value found: '{"fastaid":"seq2","desc":"longer"}'
+Next decoded value found: '"GCAGTCATGCTAGCTAGC"'
+Next decoded value found: '"CGGATCGTAGCTAGCTAG"'
+Next decoded value found: '"CGTGAGCATGCATGC"'
+[OK]: no errors
+
+======== test decoding file values, scope line, wrapped
+
+Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"}}'
+Next decoded value found: '{"sequence_line":"CAGTCGATCGAA"}'
+Next decoded value found: '{"sequence_line":"TGCTGCAGCATG"}'
+Next decoded value found: '{"sequence_line":"CATGCTGATGC"}'
+Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"}}'
+Next decoded value found: '{"sequence_line":"GCAGTCATGCTAGCTAGC"}'
+Next decoded value found: '{"sequence_line":"CGGATCGTAGCTAGCTAG"}'
+Next decoded value found: '{"sequence_line":"CGTGAGCATGCATGC"}'
+[OK]: no errors
+
+======== test decoding file values, scope unit, failing
+
+Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["\nCAGTCGATCGAA"]}'
+[OK]: Error, as expected:
+
+======== test decoding file values, scope unit
+
+Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["\nCAGTCGATCGAA\nTGCTGCAGCATG\nCATGCTGATGC"]}'
+Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["\nGCAGTCATGCTAGCTAGC\nCGGATCGTAGCTAGCTAG\nCGTGAGCATGCATGC"]}'
+[OK]: no errors
+
+======== test decoding file values, scope section
+
+Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]}'
+Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}'
+[OK]: no errors
+
+======== test decoding file values, scope section, elemwise
+
+Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"}}'
+Next decoded value found: '{"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]}'
+Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"}}'
+Next decoded value found: '{"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}'
+[OK]: no errors
+
+======== test decoding file values, scope file
+
+Next decoded value found: '[{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]},{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}]'
+[OK]: no errors
+
+======== test decoding file values, scope file, elemwise
+
+Next decoded value found: '{"[1]":{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]}}'
+Next decoded value found: '{"[2]":{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}}'
+[OK]: no errors
+
+======== test decoding file values, scope file, embedded
+
+Next decoded value found: '[{"header":{"fastaid":"0"},"sequence":["CAGTGCTAGCTG","ATCGCT"]},{"header":{"fastaid":"1"},"sequence":["GCTAGTCGTGC"]}]'
+[OK]: no errors
+
+==================================================================================================
+
+All tests ended successfully!
+

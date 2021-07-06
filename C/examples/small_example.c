@@ -1,4 +1,4 @@
-#include "c_api.h"
+#include "textformats_c.h"
 #include <stdio.h>
 #include <assert.h>
 

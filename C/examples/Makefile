@@ -3,12 +3,12 @@ NIMLIB:=${HOME}/.choosenim/toolchains/nim-${VERSION}/lib
 
 default: run
 
-nimcache/c_api.h: ../c_api.nim
+nimcache/textformats_c.h: ../textformats_c.nim
 	nim c --gc:mark_and_sweep --d:danger --noMain \
-		    --noLinking --header:c_api.h \
-	    	--nimcache:nimcache ../c_api.nim
+		    --noLinking --header:textformats_c.h \
+	    	--nimcache:nimcache ../textformats_c.nim
 
-%_example: nimcache/c_api.h %_example.c
+%_example: nimcache/textformats_c.h %_example.c
 	gcc -o $@ -O3 -Inimcache -I${NIMLIB} \
 		nimcache/*.o $@.c
 

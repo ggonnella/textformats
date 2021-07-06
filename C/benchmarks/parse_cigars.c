@@ -1,4 +1,4 @@
-#include "c_api.h"
+#include "textformats_c.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,8 +30,8 @@ int parse_args(int argc, char *argv[],
     printf(HELPMSG, argv[0]);
     return EXIT_FAILURE;
   }
-  spec = specification_from_file(argv[1]);
-  *def = get_definition(spec, argv[2]);
+  spec = tf_specification_from_file(argv[1]);
+  *def = tf_get_definition(spec, argv[2]);
   *input_file = fopen(argv[3], "r");
   if (*input_file == NULL)
     return EXIT_FAILURE;
@@ -60,26 +60,29 @@ int parse_args(int argc, char *argv[],
 int input_file_decode(DatatypeDefinition *def, FILE *input_file)
 {
     JsonNode* node;
-    char *encoded;
+    char *encoded, *decoded;
     XMALLOC(encoded, MAXLINESIZE+1);
     while (fgets(encoded, MAXLINESIZE, input_file) != NULL)
     {
       rstrip(encoded);
-      node = (JsonNode*)decode(encoded, def);
-      printf("%s\n", to_string(node));
-      delete_node(node);
+      node = (JsonNode*)tf_decode(encoded, def);
+      decoded = jsonnode_to_string(node);
+      printf("%s\n", decoded);
+      delete_jsonnode(node);
     }
     free(encoded);
 }
 
 int input_file_to_json(DatatypeDefinition *def, FILE *input_file)
 {
-    char *encoded;
+    char *encoded, *decoded;
     XMALLOC(encoded, MAXLINESIZE+1);
     while (fgets(encoded, MAXLINESIZE, input_file) != NULL)
     {
       rstrip(encoded);
-      printf("%s\n", to_json(encoded, def));
+      decoded = tf_decode_to_json(encoded, def);
+      tf_checkerr();
+      printf("%s\n", decoded);
     }
     free(encoded);
 }
@@ -90,6 +93,7 @@ int main(int argc, char *argv[]) {
   TextformatsOperation op;
   int (*operation)(DatatypeDefinition*, FILE*);
   NimMain();
+  tf_quit_on_err = true;
   if (parse_args(argc, argv, &def, &input_file, &op) != EXIT_SUCCESS)
     exit(EXIT_FAILURE);
   operation = (op == OpToJson) ? input_file_to_json : input_file_decode;

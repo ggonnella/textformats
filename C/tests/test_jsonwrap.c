@@ -7,7 +7,7 @@
 void test_null_node() {
   printf("Test NullNode:\n");
   JsonNode *node = new_j_null();
-  assert(json_node_kind(node) == J_NULL);
+  assert(jsonnode_kind(node) == J_NULL);
   printf("%s\n", jsonnode_to_string(node));
   delete_jsonnode(node);
   printf("\n\n");
@@ -16,7 +16,7 @@ void test_null_node() {
 void test_bool_node() {
   printf("Test BoolNode:\n");
   JsonNode *node = new_j_bool(true);
-  assert(json_node_kind(node) == J_BOOL);
+  assert(jsonnode_kind(node) == J_BOOL);
   printf("%s\n", jsonnode_to_string(node));
   if (j_bool_get(node))
     printf("value read from node is: true\n");
@@ -27,7 +27,7 @@ void test_bool_node() {
 void test_int_node() {
   printf("Test IntNode:\n");
   JsonNode *node = new_j_int(-10);
-  assert(json_node_kind(node) == J_INT);
+  assert(jsonnode_kind(node) == J_INT);
   printf("%s\n", jsonnode_to_string(node));
   printf("value read from node is: %li\n", j_int_get(node));
   delete_jsonnode(node);
@@ -37,7 +37,7 @@ void test_int_node() {
 void test_float_node() {
   printf("Test FloatNode:\n");
   JsonNode *node = new_j_float(1.0);
-  assert(json_node_kind(node) == J_FLOAT);
+  assert(jsonnode_kind(node) == J_FLOAT);
   printf("%s\n", jsonnode_to_string(node));
   printf("value read from node is: %f\n", j_float_get(node));
   delete_jsonnode(node);
@@ -47,7 +47,7 @@ void test_float_node() {
 void test_string_node() {
   printf("Test StringNode:\n");
   JsonNode *node = new_j_string("Hello, world!");
-  assert(json_node_kind(node) == J_STRING);
+  assert(jsonnode_kind(node) == J_STRING);
   printf("%s\n", jsonnode_to_string(node));
   char *s = j_string_get(node);
   printf("value read from node is: \"%s\"\n", s);
@@ -82,7 +82,7 @@ void fill_array(JsonNode* node) {
 void test_array_node() {
   printf("Test ArrayNode:\n");
   JsonNode *node = new_j_array();
-  assert(json_node_kind(node) == J_ARRAY);
+  assert(jsonnode_kind(node) == J_ARRAY);
   printf("Before calling fill_array: %s\n", jsonnode_to_string(node));
   fill_array(node);
   printf("%s\n", jsonnode_to_string(node));
@@ -110,7 +110,7 @@ void fill_object(JsonNode* node) {
 void test_object_node() {
   printf("Test ObjectNode:\n");
   JsonNode *node = new_j_object();
-  assert(json_node_kind(node) == J_OBJECT);
+  assert(jsonnode_kind(node) == J_OBJECT);
   printf("Before calling fill_object: %s\n", jsonnode_to_string(node));
   fill_object(node);
   printf("%s\n", jsonnode_to_string(node));
