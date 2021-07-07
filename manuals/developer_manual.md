@@ -17,20 +17,20 @@ required by the Nimble package manager.
 
 Generic modules (data structures, helper methods) independent from
 the rest of the library are implemented under the directory
-``src/textformats/support``. By convention, they are not allowed
+`src/textformats/support`. By convention, they are not allowed
 to import anything from the library outside of this directory.
 
 ### Types
 
-Types are defined under ``src/textformats/types``. This includes
+Types are defined under `src/textformats/types`. This includes
 the types for specification, datatype definitions and the errors.
 All keys used in the specifications are stored as constants
-under ``src/textformats/types/def_syntax.nim``
+under `src/textformats/types/def_syntax.nim`
 
 ### Main functionality
 
 Modules which define the main functionality of the library are directly
-found under ``src/textformats``.
+found under `src/textformats`.
 
 ### Datatypes
 
@@ -53,7 +53,7 @@ are provided as Markdown in the same directory and are compiled to
 The CLI tools are based on `cligen`. Multiple dispatching is used, thus
 after the binary name the user will need to input the subcommand as first
 argument. The other available arguments depend on the subcommand. Some
-are required, but they are all provided as ``--options/-o`` because of
+are required, but they are all provided as `--options/-o` because of
 limitations of `cligen`.
 
 However, default values are provided whenever possible.
@@ -65,14 +65,14 @@ files or strings are not provided, the standard input is used.
 
 In order to have the same short option code and help text for the same option
 across the tools and subcommands, they are all defined in the module
-``cli_helper``. This also defines a ``exit_with`` template, to exit
+`cli_helper`. This also defines a `exit_with` template, to exit
 the program in case of error, as well as common error codes and messages.
 Also functions for obtaining a specification and/or datatype definition
 from the command line arguments are defined in it.
 
 ## Tests
 
-The test suite is provided under ``tests`` and is called using ``nimble test``.
+The test suite is provided under `tests` and is called using `nimble test`.
 
 ## Python API
 
@@ -153,7 +153,7 @@ in `textformats_c` and for `JsonNode` in `jsonwrap`.
 ### Header flag
 
 The limitations regarding type export, as well as the impossibility to export
-enums, arises from the fact that the ``--header`` flag of ``nim`` is not
+enums, arises from the fact that the `--header` flag of `nim` is not
 accepted by part of the Nim developers, including the project head. They
 suggest instead of using it, to generate the header from the C file, if
 necessary.

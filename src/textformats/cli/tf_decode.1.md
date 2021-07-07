@@ -20,11 +20,11 @@ The output of the command is the decoded data, in JSON format.
 
 ## Specifications
 
-The specification file is either a YAML or preprocessed specification.
+The specification file is either a YAML, JSON or preprocessed specification.
 
 For the *file* subcommand, the specification may also be embedded, i.e.
-provided, as YAML, in the beginning of the file, separated from the data by a
-YAML document separator, i.e. a line consisting of --- only.
+provided, as YAML/JSON, in the beginning of the file, separated from the data
+by a YAML document separator, i.e. a line consisting of --- only.
 
 If a specification contains a datatype named 'default', this is used by default,
 and the **\-\-datatype** option is not required.
@@ -49,7 +49,7 @@ each element of the compound datatype.
 
 ## Common options
 **-s**, **\-\-specfile=**FILENAME
-: specification file to use, YAML or preprocessed
+: specification file to use, YAML/JSON or preprocessed
   (not required for *file*, if the specification is embedded
   in the input file; always required for *string*)
 

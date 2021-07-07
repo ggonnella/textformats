@@ -27,6 +27,10 @@ proc specification_from_file*(filename: string):
                        "File not found:" & filename)
   textformats.specification_from_file(filename)
 
+proc parse_specification*(specdata: string):
+                          Specification {.exportpy.} =
+  textformats.parse_specification(specdata)
+
 proc preprocess_specification*(inputfile: string, outputfile: string)
                               {.exportpy.} =
   if not fileExists(inputfile):
@@ -40,8 +44,13 @@ proc is_preprocessed*(filename: string): bool {.exportpy.} =
                        "File not found:" & filename)
   textformats.is_preprocessed(filename)
 
-proc test_specification(spec: Specification, testfile: string) {.exportpy.} =
-  textformats.test_specification(spec, testfile)
+proc run_specification_testfile(spec: Specification, testfile: string)
+                                {.exportpy.} =
+  textformats.run_specification_testfile(spec, testfile)
+
+proc run_specification_tests(spec: Specification, testdata: string)
+                             {.exportpy.} =
+  textformats.run_specification_tests(spec, testdata)
 
 proc datatype_names(spec: Specification): seq[string] {.exportpy.} =
   textformats.datatype_names(spec)
@@ -81,9 +90,9 @@ iterator decoded_file*(filename: string, dd: DatatypeDefinition,
 
 iterator decoded_file_as_json*(filename: string, dd: DatatypeDefinition,
                   embedded: bool = false, splitted: bool = false,
-                  wrapped: bool = false): JsonNode {.exportpy.} =
+                  wrapped: bool = false): string {.exportpy.} =
   for decoded in textformats.decoded_file(filename, dd, embedded,
-                                          splitted, wrapped)
+                                          splitted, wrapped):
     yield $decoded
 
 proc get_unitsize(dd: DatatypeDefinition): int {.exportpy.} =

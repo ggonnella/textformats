@@ -1,4 +1,5 @@
 import nimporter
+import json
 import textformats.py_bindings as tf
 
 class Datatype:
@@ -55,10 +56,17 @@ class Datatype:
     return tf.describe(self._definition)
 
 class Specification:
-  def __init__(self, filename):
-    self._spec = tf.specification_from_file(filename)
-    self._preprocessed = tf.is_preprocessed(filename)
-    self._filename = filename
+  def __init__(self, dict_or_fn):
+    if isinstance(dict_or_fn, str):
+      self._source = dict_or_fn
+      self._source_is_file = True
+      self._spec = tf.specification_from_file(self._source)
+      self._preprocessed = tf.is_preprocessed(self._source)
+    else:
+      self._source = json.dumps(dict_or_fn)
+      self._source_is_file = False
+      self._spec = tf.parse_specification(json.dumps(dict_or_fn))
+      self._preprocessed = False
 
   @property
   def default(self):
@@ -70,8 +78,16 @@ class Specification:
     dd.name = datatype
     return dd
 
-  def test(self, filename = self._filename):
-    tf.test_specification(self._spec, testfile)
+  def test(self, testdata_or_filename = None):
+    if testdata_or_filename is None:
+      if self._source_is_file:
+        tf.run_specification_testfile(self._spec, self._source)
+      else:
+        tf.run_specification_tests(self._spec, self._source)
+    elif isinstance(testdata_or_filename, str):
+      tf.run_specification_testfile(self._spec, testdata_or_filename)
+    else:
+      tf.run_specification_tests(self._spec, json.dumps(testdata_or_filename))
 
   @property
   def datatype_names(self):
@@ -83,15 +99,31 @@ class Specification:
 
   @property
   def filename(self):
-    return self._filename
+    return self._source
+
+  MAX_VERBOSE_REPR = 100
 
   def __repr__(self):
-    return f"Specification(\"{self._filename}\")"
+    src = self._source
+    if self._source_is_file:
+      src = f"\"{src}\""
+    elif len(src) > self.MAX_VERBOSE_REPR:
+      src = f"... ({len(self._source)})"
+    return f"Specification({src})"
 
   def __str__(self):
+    if self._source_is_file:
+      if self._preprocessed:
+        src = f"- filename (preprocessed): {self._source}\n"
+      else:
+        src = f"- filename (YAML): {self._source}\n"
+    else:
+      if len(self._source) > self.MAX_VERBOSE_REPR:
+        src = f"- content: ... ({len(self._source)} chars long)\n"
+      else:
+        src = f"- content: {self._source}\n"
     preprocstr = "preprocessed" if self._preprocessed else "YAML"
-    return "Textformats Specification table\n" +\
-      f"- source file ({preprocstr}): {self._filename}\n" +\
+    return "Textformats Specification table\n" + src +\
       f"- defined/included datatypes:\n" +\
       "\n".join([f"  - {n}"for n in datatype_names])
 

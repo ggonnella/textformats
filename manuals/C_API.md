@@ -1,16 +1,16 @@
 # C API
 
-The subdirectory ``C`` contains a ``c_api.nim`` file.  which contains simple
+The subdirectory `C` contains a `textformats_c.nim` file.  which contains simple
 wrappers for the API functions of TextFormats, which allow to pass C strings as
 arguments, and export the functions to C using the {.exportc.} Nim pragma. The
-wrapper is compiled using ``nim c`` with the flags ``--noMain --noLinking
---header:c_api.h --nimcache:$NIMCACHE``, where $NIMCACHE is the location where
-the compiled files will be stored.
+wrapper is compiled using `nim c` with the flags `--noMain --noLinking
+--header:textformats_c.h --nimcache:$NIMCACHE`, where $NIMCACHE is the location
+where the compiled files will be stored.
 
-The API is then included into the C file (``#include "c_api.h"``) and linked
-using the following compiler flags before the name of the C file to compile:
-``-I$NIMCACHE -I$NIMLIB $NIMCACHE/*.o`` where NIMLIB is the location of the NIM
-library[^1].
+The API is then included into the C file (`#include "textformats_c.h"`) and
+linked using the following compiler flags before the name of the C file to
+compile: `-I$NIMCACHE -I$NIMLIB $NIMCACHE/*.o` where NIMLIB is the location of
+the NIM library[^1].
 
 In the C code, the Nim library must be initialized calling the function
 NimMain().
@@ -22,19 +22,19 @@ using (e.g. 1.4.8).
 
 ## Quick tutorial by examples
 
-Assuming the specification file ``myspec.yaml`` contains:
-``YAML
+Assuming the specification file `myspec.yaml` contains:
+```YAML
 datatypes:
   mydatatype:
     list_of: unsigned_integer
     splitted_by: "--"
-``
+```
 
 The following code example shows how to load the datatype from the specification
 and use it for decoding and encoding data to/from JSON strings:
 
-``C
-#include <c_api.h>
+```C
+#include <textformats_c.h>
 
 int main() {
   NimMain() /* init Nim library */
@@ -52,14 +52,14 @@ int main() {
   tf_delete_specification(d);
   return 0;
 }
-``
+```
 
 To decode and encode data to/from binary C types, the provided wrapped to the
 Nim json library is used.
 
 The following example shows how to encode an array of ints to a string,
 according to the definition of the `mydatatype` datatype:
-``C
+```C
   size_t n_elems = 2, i;
   int elems[2] = [3,5];
 
@@ -74,11 +74,11 @@ according to the definition of the `mydatatype` datatype:
 
   /* do something with the resulting string... */
   printf("Encoded: %s\n", encoded);
-``
+```
 
 The following example shows how to decode a string, encoded as by definition of
 the `mydatatype` datatype, to an array of int:
-``C
+```C
   /* decode the string to a JArray JsonNode */
   JsonNode *array = tf_decode("1--2--3", d);
 
@@ -96,7 +96,7 @@ the `mydatatype` datatype, to an array of int:
   for (i=0; i<n_elems; i++)
      printf("Element %i = %i\n", i, elems[i]);
   free(elems);
-``
+```
 
 ## Error state
 
@@ -129,8 +129,7 @@ After handling the error, the error state is cleared calling the function
 `void tf_unseterr()`.
 
 Example code:
-``C
-
+```C
 encoded = tf_encode("[1,2,3]",d);
 /* exit program if the above fails */
 tf_checkerr();
@@ -143,13 +142,39 @@ if (tf_haderr) {
   tf_printerr();
   tf_unseterr();
 }
-``
+```
 
 ## Specifications
 
-The function `Specification* specification_from_file(char *filename)` is
+The function `Specification* tf_specification_from_file(char *filename)` is
 used to parse a YAML specification or load a preprocessed specification and
 get a pointer to the specification, which can be passed to other functions.
+
+Alternatively a specification can be constructed using a JSON or YAML string
+as argument of `Specification* tf_parse_specification(char *specdata)`.
+
+The latter can be combined with the `jsonwrap` functions (see below) to create
+the specification programmatically, e.g.:
+```C
+JsonNode
+  *specdata = new_j_object(), *datatypes = new_j_object(),
+  *mydatatype = new_j_object(),
+  *list_of_value = new_j_string("unsigned_integer"),
+  *splitted_by_value = new_j_string("--");
+
+j_object_add(mydatatype, "list_of", list_of_value);
+j_object_add(mydatatype, "splitted_by", splitted_by_value);
+j_object_add(datatypes, "myspecdata", myspecdata);
+j_object_add(specdata, "datatypes", datatypes);
+
+Specification *spec = tf_parse_specification(jsonnode_to_string(specdata));
+
+jsonnode_delete(specdata);
+jsonnode_delete(datatypes);
+jsonnode_delete(mydatatype);
+jsonnode_delete(list_of_value);
+jsonnode_delete(splitted_by_value);
+```
 
 The function `void delete_specification(Specification *spec)` is used after
 the last access to the specification, to inform the Nim garbage collector
@@ -162,7 +187,7 @@ use the `char* datatype_names(Specification *spec)` function.
 The datatype names are space-separated.
 
 Example usage:
-``C
+```C
 // requires #include <string.h>
 char *dnames = tf_datatype_names(spec);
 char *dname = strtok(dnames, " ");
@@ -170,7 +195,7 @@ while (dname != NULL) {
   printf("%s\n", dname);
   dname = strtok(NULL, " ");
 }
-``
+```
 
 ### Preprocessing
 
@@ -184,8 +209,12 @@ specification files is present).
 
 ### Running tests
 
-It is possible to run a test suite for a specification using the
-function `void tf_test_specification(Specification *spec, char *testfile)`.
+It is possible to run a test suite for a specification using the function
+ `void tf_run_specification_testfile(Specification *spec, char *testfile)`.
+Alternatively, it is possible to provide the testdata as a string
+in JSON or YAML format, using
+`void tf_run_specification_tests(Specification *spec, char *testdata)`.
+
 In case the test is unsuccessful, the `tf_haderr` flag is set.
 
 ## Datatype definitions
@@ -199,7 +228,7 @@ the Nim Garbage Collector using the function
 `void tf_delete_definition(DatatypeDefinition* dd)`.
 
 A verbose textual description of the content of the definition is obtained
-using ``char* tf_describe(DatatypeDefinition* dd)``.
+using `char* tf_describe(DatatypeDefinition* dd)`.
 
 ## Decoding the string representation of data
 
@@ -238,12 +267,12 @@ a `JsonNode` or a string representing the data as JSON.
 ## Decoding a file
 
 To decode a file, the following function is used:
- ``C
+```C
 void tf_decode_file(char *filename, bool embedded, DatatypeDefinition* dd,
                     void decoded_processor(JsonNode *n, void *data),
                     void *decoded_processor_data,
                     bool splitted_processing)
-``
+```
 
 Thereby the file is decoded into one or multiple values, which are passed
 to the `decoded_processor` function. Further data can be passed to
@@ -251,12 +280,12 @@ the same function, by providing a pointer to it (`decoded_processor_data`).
 
 For example after passing a `FILE*` as `decoded_processor_data`,
  the `decoded_processor` could be something like:
-``C
+```C
 void decoded_processor(JsonNode *int_node, void *data) {
   FILE *file = (FILE*)data;
   fprintf(file, "%i\n", j_int_get(int_node));
 }
-``
+```
 
 ### Embedded specifications
 

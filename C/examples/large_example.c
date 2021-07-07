@@ -26,7 +26,7 @@ int main(void)
   if (tf_is_preprocessed("fasta.tfs"))
     printf("Spec fasta.tfs is preprocessed");
   else assert(false);
-  tf_test_specification(fas_spec, "../../bio/spec/fasta.yaml");
+  tf_run_specification_testfile(fas_spec, "../../bio/spec/fasta.yaml");
   fas_entry = tf_default_definition(fas_spec);
   fas_header = tf_get_definition(fas_spec, "header");
   printf("%s\n", tf_describe(fas_header));

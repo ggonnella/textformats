@@ -20,6 +20,7 @@ export datatype_names
 
 import textformats/spec_parser
 export specification_from_file
+export parse_specification
 export preprocess_specification
 
 # decoding
@@ -36,7 +37,8 @@ export encode
 
 # test
 import textformats/testdata_parser
-export test_specification
+export run_specification_testfile
+export run_specification_tests
 
 # validation
 import textformats / [decoded_validator, encoded_validator]

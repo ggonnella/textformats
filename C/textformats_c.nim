@@ -29,6 +29,13 @@ proc tf_specification_from_file*(filename: cstring):
     result = SpecificationRef(s: spec)
     GC_ref(result.s)
 
+proc tf_parse_specification*(input: cstring):
+                             SpecificationRef {.exportc, raises: [].} =
+  on_failure_seterr_and_return:
+    let spec = textformats.parse_specification($input)
+    result = SpecificationRef(s: spec)
+    GC_ref(result.s)
+
 proc tf_delete_specification*(datatypes: SpecificationRef)
                              {.exportc, raises: [].} =
   assert_no_failure:
@@ -49,10 +56,15 @@ proc tf_is_preprocessed*(filename: cstring): bool {.exportc, raises: [].} =
                          "File not found:" & $filename)
     return textformats.is_preprocessed($filename)
 
-proc tf_test_specification(spec: SpecificationRef, testfile: cstring)
+proc tf_run_specification_testfile(spec: SpecificationRef, testfile: cstring)
                           {.exportc, raises: [].} =
   on_failure_seterr:
-    textformats.test_specification(spec.s, $testfile)
+    textformats.run_specification_testfile(spec.s, $testfile)
+
+proc tf_run_specification_tests(spec: SpecificationRef, testdata: cstring)
+                          {.exportc, raises: [].} =
+  on_failure_seterr:
+    textformats.run_specification_tests(spec.s, $testdata)
 
 proc tf_datatype_names(spec: SpecificationRef):
                        cstring {.exportc, raises: [].} =

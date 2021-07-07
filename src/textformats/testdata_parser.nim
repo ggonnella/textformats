@@ -1,5 +1,5 @@
 ##
-## Parse a YAML testdata node and run tests
+## Parse a YAML/JSON testdata node and run tests
 ##
 
 import types / [specification, textformats_error, def_syntax,
@@ -9,10 +9,9 @@ import strutils, strformat, tables, json
 import decoder, encoder, encoded_validator, decoded_validator
 import yaml, yaml / [dom, serialization, hints]
 
-proc get_yaml_root(filename: string): YamlNode =
-  get_yamlfile_mapping_root(TextformatsRuntimeError,
-                            InvalidTestdataError, filename,
-                            "testdata")
+proc get_yaml_root(input: string, strinput: bool): YamlNode =
+  get_yaml_mapping_root(TextformatsRuntimeError, InvalidTestdataError,
+                        input, strinput, "testdata")
 
 proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
   # ignore ProveInit warning thrown by options library
@@ -27,7 +26,7 @@ proc get_testdata_node(root: YamlNode): YamlNode =
   var node = YamlNode.none
   try:
     let whole_errmsg = &"Expected: mapping with key '{TestdataRootKey}'"
-    root.validate_is_mapping("Invalid YAML content\n", "\n" & whole_errmsg)
+    root.validate_is_mapping("Invalid content\n", "\n" & whole_errmsg)
     node = root.get_map_node(TestdataRootKey)
     if node.is_some:
       node.unsafe_get.validate_is_mapping(
@@ -36,7 +35,7 @@ proc get_testdata_node(root: YamlNode): YamlNode =
       return node.unsafe_get
     else:
       raise newException(InvalidTestdataError,
-        "  Invalid content of YAML mapping\n" & whole_errmsg)
+        "  Invalid content of mapping\n" & whole_errmsg)
   except NodeValueError:
     raise newException(InvalidTestdataError, get_current_exception_msg())
 
@@ -241,9 +240,9 @@ proc run_invalid_data_map_tests(datatype: DatatypeDefinition,
       raise newException(InvalidTestdataError, dtmsg &
         whole_err.indent(2) & helpmsg.indent(2))
 
-proc test_specification*(spec: Specification, filename: string) =
+proc test_specification(spec: Specification, input: string, strinput: bool) =
   let
-    root = filename.get_yaml_root
+    root = input.get_yaml_root(strinput)
     testdata_node = root.get_testdata_node()
   for datatype_name_node, datatype_testdata in testdata_node:
     var datatype: DatatypeDefinition
@@ -307,11 +306,17 @@ proc test_specification*(spec: Specification, filename: string) =
           &"  Accepted keys: '{TestdataValidKey}', " &
           &"'{TestdataOnewayKey}', '{TestdataInvalidKey}'.")
 
+proc run_specification_testfile*(spec: Specification, filename: string) =
+  spec.test_specification(filename, false)
+
+proc run_specification_tests*(spec: Specification, testdata: string) =
+  spec.test_specification(testdata, true)
+
 proc list_testdata_datatypes*(filename: string): seq[string] =
-  ## List the datatypes in a yaml testdata file
+  ## List the datatypes in testdata YAML/JSON file
   result = newSeq[string]()
   let
-    root = filename.get_yaml_root
+    root = filename.get_yaml_root(false)
     testdata_node = root.get_testdata_node()
   for datatype_name_node, datatype_testdata in testdata_node:
     result.add(datatype_name_node.to_string())

@@ -9,5 +9,5 @@ index fa5c678..c8f99db 100644
 -#import nimprof
 +import nimprof
  # this library
- from textformats import parse_specification, decode
+ from textformats import specification_from_file, decode
  

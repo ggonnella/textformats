@@ -7,7 +7,7 @@ from json import `$`, parse_json, JsonNode, `==`, JsonParsingError
 # external libraries
 import nimpy
 # this library
-from textformats import parse_specification, decode
+from textformats import specification_from_file, decode
 
 type
   ExitCode = enum
@@ -24,7 +24,7 @@ template exit_with(exit_code: untyped, info = ""): untyped =
   return exit_code.int
 
 template get_datatype_definition(datatype: untyped): untyped =
-  let datatypes = parse_specification(specfile)
+  let datatypes = specification_from_file(specfile)
   if datatype notin datatypes:
     exit_with ec_datatype_not_in_specification
     nil

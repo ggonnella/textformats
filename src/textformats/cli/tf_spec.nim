@@ -41,7 +41,7 @@ proc test*(specfile = "", testfile = ""): int =
     if len(testfile) == 0: specfile
     else: testfile
   try:
-    datatypes.test_specification(test_or_specfile)
+    datatypes.run_specification_testfile(test_or_specfile)
   except textformats.InvalidTestdataError, textformats.TestError:
     exit_with(ec_testerror, get_current_exception_msg(), false)
   exit_with(ec_success)
@@ -49,26 +49,28 @@ proc test*(specfile = "", testfile = ""): int =
 # not accepting preprocessed specifications because in the preprocessed
 # there is no information if a datatype is defined in the specification
 # itself or in an included file; thus list_specification_datatypes is only
-# accepting a YAML specification
+# accepting a YAML/JSON specification
 #
 # if a testfile is provided, only datatypes not present in the testfile
 # are considered, and the initial "testdata:" is not printed, so that
 # the output can be appended to the input testfile
-proc generate_tests*(specfile = "", testfile = ""): int =
+proc generate_tests*(specfile = "", testfile = "", datatypes = ""): int =
   ## auto-generate testdata for a specification file
-  let
-    datatypes = list_specification_datatypes(specfile)
-    specification = parse_specification(specfile)
-  let skip_datatypes =
-    if len(testfile) > 0:
-      toHashSet(list_testdata_datatypes(testfile))
-    else:
-      initHashSet[string]()
-  if len(testfile) == 0:
+  let specification = parse_specification_file(specfile)
+  var to_generate = initHashSet[string]()
+  if len(datatypes) > 0:
+    for datatype in datatypes.split(','):
+      to_generate.incl(datatype)
+  else:
+    for datatype in list_specification_datatypes(specfile):
+      to_generate.incl(datatype)
+  if len(testfile) > 0:
+    for datatype in list_testdata_datatypes(testfile):
+      to_generate.excl(datatype)
+  else:
     echo "testdata:"
-  for ddn in datatypes:
-    if ddn notin skip_datatypes:
-      echo specification[ddn].to_testdata(ddn)
+  for ddn in to_generate:
+    echo specification[ddn].to_testdata(ddn)
   exit_with(ec_success)
 
 when isMainModule:
@@ -81,9 +83,11 @@ when isMainModule:
                           "datatype": help_datatype_no_default}],
                  [generate_tests,
                   short = {"specfile": short_specfile,
-                           "testfile": short_testfile},
+                           "testfile": short_testfile,
+                           "datatypes": short_datatypes},
                   help = {"specfile": help_specfile_yaml,
-                          "testfile": help_opt_testfile}],
+                          "testfile": help_opt_testfile,
+                          "datatypes": help_datatypes}],
                  [preprocess,
                   short = {"specfile": short_specfile,
                            "outfile": short_outfile},

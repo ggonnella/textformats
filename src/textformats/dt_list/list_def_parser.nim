@@ -23,8 +23,8 @@ const
     [optional_keys]
 
   where <ref_or_def> is either:
-  - a datatype name (YAML scalar node)
-  - a datatype definition (YAML mapping node)
+  - a datatype name (string)
+  - a datatype definition (mapping)
 
   Optional keys for validation:
   - {LenrangeMinKey}: {LenrangeMinHelp}

@@ -1,58 +1,74 @@
 # Nim API
 
-The public API of the library is defined in the file ``src/textformats.nim``.
+The public API of the library is defined in the file `src/textformats.nim`.
 
 ## Quick tutorial by examples
 
-Assuming the specification file ``myspec.yaml`` contains:
-``YAML
+Assuming the specification file `myspec.yaml` contains:
+```YAML
 datatypes:
   mydatatype:
     list_of: unsigned_integer
     splitted_by: "--"
-``
+```
 
 The following code example shows how to load the datatype from the specification
 and use it for decoding and encoding data:
 
-``Nim
+```Nim
 import textformats
 
-# get the datatype definition
-s = specification_from_file("myspec.yaml")
-d = s.get_datatype("mydatatype")
+# get the specification and datatype definition from file
+let
+  s = specification_from_file("myspec.yaml")
+  d = s.get_definition("mydatatype")
 
-# convert between data and their encoded representation
-decoded = d.decode("1--2--3")
-encoded = d.encode(%[1, 2, 3])
-``
+# convert between data and their text representation, using the definition
+let
+  decoded = "1--2--3".decode(d)
+  encoded = %[1, 2, 3].encode(d)
+```
 
 ## Types
 
-The types used when working with the API are ``Specification`` and
-``DatatypeDefinition``. A ``Specification`` object is a table
+The types used when working with the API are `Specification` and
+`DatatypeDefinition`. A `Specification` object is a table
 whose keys are datatype names and values datatype definitions.
 
-A ``DatatypeDefinition`` contains the definition, including references
+A `DatatypeDefinition` contains the definition, including references
 to other nested definitions, the regular expression needed for
 parsing, rules for validation and data conversion/transformation.
 
-Exceptions are defined in ``src/textformats/types/textformats_error``
-and are descandants of ``TextFormatsError``.
+Exceptions are defined in `src/textformats/types/textformats_error`
+and are descandants of `TextFormatsError`.
 
 ## Working with the specification
 
-The proc ``specification_from_file(filename: string): Specification``
-is used to obtain a specification from a YAML or preprocessed
+The proc `specification_from_file(filename: string): Specification`
+is used to obtain a specification from a YAML, JSON or preprocessed
 specification file.
 
-The proc ``datatype_names(spec: Specification): seq[string]`` returns the list
+The proc `parse_specification(specdata: string): Specification`
+can be used to parse a specification string in YAML or JSON format;
+combined with the `%` macro and `$` proc of the `json` library,
+it can be used for creating a specification programmatically, e.g.:
+```Nim
+import tables, json, textformats
+let
+   mydatatypedef = %{"list_of": "unsigned_integer",
+                     "splitted_by": "--"}.to_table
+   specdata = %{"datatypes": {"mydatatype": mydatatypedef}}.to_table
+   s = parse_specification($specdata)
+   d = s.get_definition("mydatatype")
+```
+
+The proc `datatype_names(spec: Specification): seq[string]` returns the list
 of names of datatypes defined in the specification `spec`.
 
 ### Preprocessing
 
 Specifications can be preprocessed using the proc
-``preprocess_specification(yamlfilename: string, outputfilename: string)``.
+`preprocess_specification(yamlfilename: string, outputfilename: string)`.
 Preprocessed specifications are marshalled specification objects,
 after parsing from the YAML file. Preprocessed files are automatically
 recognized by the `specification_from_file` proc.
@@ -62,13 +78,17 @@ test data or be embedded in data files.
 ### Running tests
 
 It is possible to run a test suite for a specification using the
-proc ``test_specification(s: Specification, testfile: string)`.
+proc `run_specification_testfile(s: Specification, testfile: string)`.
+Alternatively it is possible to provide the test data as a YAML or JSON
+string, using the proc
+`run_specification_tests(s: Specification, testdata: string)`.
+
 In case the test is unsuccessful, an exception is raised.
 
 ## Datatype definitions
 
 To obtain a datatype definition from a specification, use the proc
-``get_definition(s: Specification, datatype_name: string): DatatypeDefinition``.
+`get_definition(s: Specification, datatype_name: string): DatatypeDefinition`.
 
 The textual representation of the definition (`$(d: DatatypeDefinition)`)
 is a verbose text describing the definition in detail.
@@ -77,7 +97,7 @@ is a verbose text describing the definition in detail.
 
 For decoding a string containing the string representation of the data,
 as defined in one of the datatypes of the specification, the proc
-``decode(s: string, d: DatatypeDefinition): JsonNode`` is used.
+`decode(s: string, d: DatatypeDefinition): JsonNode` is used.
 
 JsonNode is a variant type (described in the documentation of
 the Nim `json` library), capable to represent scalar values (null, strings,
@@ -90,14 +110,14 @@ In order to encode data to their string representation, according to
 a datatype definition, it is first necessary to create
 a JsonNode object containing the data.
 
-This is easily done using the ``%`` macro For example: `%(@[1,2,3])` constructs
+This is easily done using the `%` macro For example: `%(@[1,2,3])` constructs
 a JsonNode containing the sequence @[1,2,3]. This is usually the only
 necessary step. In some cases, such as compound datatypes with
-heterologous elements, more functions of the ``json`` library could be
+heterologous elements, more functions of the `json` library could be
 needed (see its documentation).
 
 The string representation is obtained by calling the proc
-``encode(n: JsonNode, d: DatatypeDefinition): string``.
+`encode(n: JsonNode, d: DatatypeDefinition): string`.
 
 ## Validating data or their string representation
 
@@ -116,11 +136,11 @@ to determine if data could be validly represented using the definition.
 ## Decoding a file
 
 To decode a file, the following iterator is used:
-``Nim
+```Nim
 decoded_file(filename: string, dd: DatatypeDefinition,
              embedded = false, splitted = false,
              wrapped = false): JsonNode
-``
+```
 
 Thereby the file is decoded into one or multiple values, which are yielded
 by the iterator as JsonNode instances.
@@ -155,11 +175,10 @@ Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
 `list_of` or `named_values`), which consist of multiple elements (each in one
 or multiple lines).
 
-If the optional boolean parameter `splitted` of
-`decoded_file` is set to
- `True`, the values yielded by the iterator are not the entire
-data in the file section or whole file, but instead the single elements of
-the compound datatype.
+If the optional boolean parameter `splitted` of `decoded_file` is set to
+`True`, the values yielded by the iterator are not the entire data in the file
+section or whole file, but instead the single elements of the compound
+datatype.
 
 This is more efficient in the case of
 large files, since it is not necessary to represent in memory and process

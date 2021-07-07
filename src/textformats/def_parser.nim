@@ -1,5 +1,5 @@
 ##
-## Parse a YAML specification node defining a datatype
+## Parse a specification node defining a datatype
 ## and create a DatatypeDefinition object
 ##
 
@@ -55,11 +55,11 @@ const
      StructDefKey, DictDefKey, TagsDefKey, UnionDefKey]
   DefKeysListStr = DefKeysList.join(", ")
   SyntaxHelp = &"""
-  (1) reference to another datatype (YAML scalar node):
+  (1) reference to another datatype (scalar):
 
     <datatype_name>: <target_datatype_name>
 
-  (2) new definition (YAML mapping node):
+  (2) new definition (mapping):
 
     <datatype_name>:
       <defkey>: <value>
@@ -81,7 +81,7 @@ proc validate_requires*(key1: string, optnode1: Option[YamlNode],
               &"Key '{key1}' requires key '{key2}'\n")
 
 proc parse_datatype_definition_map(defroot: YamlNode, name: string):
-                                          DatatypeDefinition {.inline.} =
+                                   DatatypeDefinition {.inline.} =
   for defkey, _ in defroot.pairs:
     case defkey.content:
     of IntRangeDefKey:   return newIntRangeDatatypeDefinition(defroot, name)
@@ -98,9 +98,9 @@ proc parse_datatype_definition_map(defroot: YamlNode, name: string):
     of TagsDefKey:       return newTagsDatatypeDefinition(defroot, name)
     of UnionDefKey:      return newUnionDatatypeDefinition(defroot, name)
     else: discard
-  let emsg = "The definition YAML mapping node does not " &
+  let emsg = "The definition mapping does not " &
     "include any of the keys for defining a datatype.\n"  &
-    &"Node content (parsed YAML): {defroot}"
+    &"Node content (JSON): {defroot.to_json_node}"
   raise_def_syntax_error(name, emsg, SyntaxHelp)
 
 proc mark_unresolved_ref(dd: var DatatypeDefinition) =
@@ -120,6 +120,6 @@ proc newDatatypeDefinition*(node: YamlNode, name: string):
     result = parse_datatype_definition_map(node, name)
     result.mark_unresolved_ref
   of ySequence:
-    let emsg = "Definition content is a YAML sequence node.\n" &
-               &"Node content (as JSON): {node.to_json_node}"
+    let emsg = "Definition content is a sequence.\n" &
+               &"Node content (JSON): {node.to_json_node}"
     raise_def_syntax_error(name, emsg, SyntaxHelp)

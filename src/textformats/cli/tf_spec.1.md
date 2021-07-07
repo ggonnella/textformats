@@ -15,8 +15,10 @@ tf\_spec - tools for working with specification files
 
 # DESCRIPTION
 
-TextFormats specification files are YAML files or preprocessed files created
-with this command.
+The command offers several tools for working with specification
+files, which are YAML files, JSON files,
+or preprocessed specifications
+(which can be created with the command itself).
 
 ## Introspection
 
@@ -28,11 +30,11 @@ The command allows to list the datatypes contained in the file
 
 A preprocessed version of the specification can be created
 using the *preprocess* subcommand.
-They can be used by most CLI commands instead of the YAML file.
+They can be used by most CLI commands instead of the YAML or JSON file.
 
 Preprocessed specifications can be faster to load in some cases, compared
-to the YAML specifications (which requires parsing and validation of the
-YAML content and generation of the regular expressions).
+to the YAML or JSON specifications (which requires parsing and validation of the
+content and generation of the regular expressions).
 
 Only the datatype specifications are contained in the preprocessed
 file, not the testdata and embedded data.
@@ -41,8 +43,8 @@ Preprocessed specifications cannot be provided from the standard input.
 ## Tests
 
 The specification can be accompanied by examples of valid and invalid encoded
-and decoded data (in YAML format). This test data can be included in the same
-file as the specification or be written to a different file.
+and decoded data (in YAML or JSON format). This test data can be included
+in the same file as the specification or be written to a different file.
 
 Examples for each of the datatypes in a specification can be automatically
 generated using the *generate_tests* subcommand. The automatic generation
@@ -81,7 +83,7 @@ all subcommands:
 
 **-s**, **\-\-specfile=**FILENAME
 : specification file to be used (default: standard input);
-  YAML or preprocessed;
+  YAML, JSON or preprocessed;
   preprocessed specifications can be used except for
   *preprocess* and *generate\_tests* and cannot be provided
   as standard input
@@ -113,8 +115,14 @@ in the specification file)
 : file containing tests; if this option is used, the command only generates
 testdata of those datatypes for which tests are not yet available; the output
 in this case is so formatted, that it can be appended to an existing
-testdata YAML file (default: test data is generated for all datatypes
-of the specification file)
+testdata YAML or JSON file (default: test data is generated for all datatypes
+of the specification file or provided to the option \-\-datatypes)
+
+**-t**, **\-\-datatypes=**DATATYPES
+: specify one or multiple datatype names (comma separated, without spaces),
+  to limit the output to those datatypes
+  (default: test data is generated for all datatypes
+   of the specification file)
 
 # EXIT VALUES
 The exit code is 0 on success, anything else on error.

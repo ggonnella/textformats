@@ -33,7 +33,7 @@ print(is_valid_encoded(encoded, gfa2_position))
 #  print(line)
 #
 fasta_spec = specification_from_file(fasta_specfile)
-test_specification(fasta_spec, fasta_specfile)
+run_specification_testfile(fasta_spec, fasta_specfile)
 
 fasta_entry = get_definition(fasta_spec, "entry")
 

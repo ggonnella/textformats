@@ -43,7 +43,7 @@ type
     ec_err_spec_io=err_pfx &
       "The specification file does not exist or cannot be read"
     ec_err_preproc=err_pfx &
-      "The specification file is preprocessed; use a YAML specification"
+      "The specification file is preprocessed; use a YAML/JSON specification"
     ec_err_invalid_encoded=err_pfx & "Decoding error: " & enc_in & err_inv
     ec_err_invalid_decoded=err_pfx & "Encoding error: " & dec_in & err_inv
     ec_test_error
@@ -107,6 +107,7 @@ template str_or_stdin*(argname: string): string =
 ##
 template short_specfile*:       untyped = 's'
 template short_datatype*:       untyped = 't'
+template short_datatypes*:      untyped = 't'
 template short_decoded*:        untyped = 'd'
 template short_encoded*:        untyped = 'e'
 template short_expected_valid*: untyped = 'v'
@@ -123,17 +124,19 @@ template short_splitted*:       untyped = 'x'
 ## defined here so that they are consistant among the tools
 ##
 template help_specfile*: untyped =
-  "datatypes specification (YAML or preprocessed)"
+  "datatypes specification (YAML/JSON or preprocessed)"
 template help_specfile_or_embedded*: untyped =
-  "datatypes specification (YAML or preprocessed); if not provided, " &
+  "datatypes specification (YAML/JSON or preprocessed); if not provided, " &
   "the input file contains an embedded specification"
 template help_specfile_yaml*: untyped =
-  "datatypes specification (YAML only)"
+  "datatypes specification (YAML/JSON only)"
 template help_datatype_no_default*: untyped = "datatype (if not provided, " &
                                       "the list of datatypes is output)"
 template help_datatype*: untyped = "datatype to use (required unless a " &
                                    "datatype named 'default' is defined " &
                                    "in the specification)"
+template help_datatypes*: untyped = "datatypes to use (default: all); " &
+                                    "comma-separated list, without spaces"
 template help_decoded_json*: untyped = "data to encode (JSON)"
 template help_encoded*: untyped = "encoded data"
 template help_expected_json*: untyped = "expected decoded data (JSON)"
@@ -141,9 +144,10 @@ template help_expected*: untyped = "expected encoded data"
 template help_expected_valid*: untyped = "expected valid? (y/n)"
 template help_outfile*: untyped = "output filename"
 template help_infile*: untyped = "input filename"
-template help_testfile*: untyped = "test data filename (YAML); " &
+template help_testfile*: untyped = "test data filename (YAML/JSON); " &
   "if not provided, the same file as the specification shall contain tests"
-template help_opt_testfile*: untyped = "optional: test data filename (YAML);" &
+template help_opt_testfile*: untyped =
+  "optional: test data filename (YAML/JSON);" &
   "if provided, tests are generated only for datatypes not yet present in it"
 template help_scope*: untyped = "which part of the input file is targeted " &
   "by the datatype definition; default: 'auto' (as specified by the scope " &

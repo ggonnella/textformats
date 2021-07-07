@@ -1,52 +1,62 @@
 # Python API
 
-The subdirectory ``python`` contains the Python API, as a pip package.
+The subdirectory `python` contains the Python API, as a pip package.
 
 ## Building from source code
 
-In order to build the Python API package from the source code, the Python
-library `nimporter` is required, which can be installed using `pip`.  Also, of
-course, `nim` and a C compiler must be installed.
+In order to build the Python API package from the source code,
+besides the `nim` and `C` compiler (e.g. `gcc` or `clang`), the Python
+library `nimporter` is required, which can be installed using `pip`.
 
-The provided `Makefile` can be used. Its default goal is to compile and
+The provided `Makefile` can then be used. Its default goal is to compile and
 install the package. If necessary, provide the path to the python interpreter
-in the variable PYTHON.
+in the variable PYTHON (default: `python3`).
 
 ## Quick tutorial by examples
-Assuming the specification file ``myspec.yaml`` contains:
-``YAML
+Assuming the specification file `myspec.yaml` contains:
+```YAML
 datatypes:
   mydatatype:
     list_of: unsigned_integer
     splitted_by: "--"
-``
+```
 
 The following code example shows how to load the datatype from the specification
 and use it for decoding and encoding data:
 
-``Python
+```Python
 import textformats as tf
 
-# get the datatype definition
+# use a specification from file:
 s = Specification("myspec.yaml")
+
+# alternative:
+# define the specification using a dict:
+mydatatype_def = {"list_of": "unsigned_integer", "splitted_by": "--"}
+s = Specification({"datatypes": {"mydatatype": mydatatype_def}})
+
+# get the datatype definition
 d = s["mydatatype"]
 
 # convert between data (Python objects) and their encoded representation
 decoded = d.decode("1--2--3")
 encoded = d.encode([1, 2, 3])
 
+# alternative:
 # convert to/from JSON strings representing the data and encoded representation
 decoded = d.decode("1--2--3", True)
 encoded = d.encode("[1,2,3]", True)
-``
+```
 
 More examples are provided under `python/examples`.
 
 ## Specifications
 
 The class `Specification` represents a Textformats specification.
-To parse a YAML specification or load a preprocessed specification
+To parse a YAML, JSON specification or load a preprocessed specification
 use the class constructor `Specification(filename)`.
+Alternatively a dict can be passed to the constructor, which contains
+the datatypes definitions: `Specification({"datatypes": {...}})`.
 
 The following properties are defined in the Specification instances:
 `datatype_names` is the list of the names of the datatypes
@@ -55,9 +65,10 @@ the specification instance was constructed; `preprocessed` is a boolean,
 which is `True`, if the specification is preprocessed.
 
 To run the test suite for a specification use the method
-`specification.test(testfile)` (or just `specification.test()` for
-YAML specifications where tests are contained in
-the same file as the specification).
+`specification.test(testfile)`. If the testdata is contained
+in a YAML/JSON specification, `specification.test()` will run the test.
+Alternatively it is possible to pass testdata constructed
+programmatically as a dict: `specification.test({"testdata": {...}})`.
 
 ## Datatype definitions
 
@@ -105,11 +116,11 @@ the optional boolean flag `json` must be set.
 ## Decoding a file
 
 To decode a file, the following iterator is used:
-``Python
+```Python
 datatype_definition.decoded_file(filename,
                                  embedded=False, splitted=False, wrapped=False,
                                  to_json=False)
-``
+```
 
 Thereby the file is decoded into one or multiple values, which are yielded
 by the iterator. By default, the data is yielded as Python instances
@@ -126,15 +137,14 @@ separated from it by a YAML document separator line (`---`).
 
 ### Splitted processing
 
-Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
-`list_of` or `named_values`), which consist of multiple elements (each in one
-or multiple lines).
+Definitions at `file` or `section` scope are compound datatypes
+(`composed_of`, `list_of` or `named_values`), which consist of
+multiple elements (each in one or multiple lines).
 
-If the optional boolean parameter `splitted` of
-`decoded_file` is set to
- `True`, the values yielded by the iterator are not the entire
-data in the file section or whole file, but instead the single elements of
-the compound datatype.
+If the optional boolean parameter `splitted` of `decoded_file` is set to
+`True`, the values yielded by the iterator are not the entire data in the
+file section or whole file, but instead the single elements of the compound
+datatype.
 
 This is more efficient in the case of
 large files, since it is not necessary to represent in memory and process

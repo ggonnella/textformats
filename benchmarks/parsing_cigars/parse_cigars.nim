@@ -6,7 +6,7 @@ from strutils import stripLineEnd
 from json import `$`, parse_json, JsonNode, `==`, JsonParsingError
 #import nimprof
 # this library
-from textformats import parse_specification, decoded_lines
+from textformats import specification_from_file, decoded_lines
 
 type
   ExitCode = enum
@@ -23,7 +23,7 @@ template exit_with(exit_code: untyped, info = ""): untyped =
   return exit_code.int
 
 template get_datatype_definition(datatype: untyped): untyped =
-  let datatypes = parse_specification(specfile)
+  let datatypes = specification_from_file(specfile)
   if datatype notin datatypes:
     exit_with ec_datatype_not_in_specification
     nil

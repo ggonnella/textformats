@@ -1,5 +1,5 @@
 ##
-## Parse a YAML specification and create a Specification object
+## Parse a YAML/JSON specification and create a Specification object
 ## which contains a DatatypeDefinition object for each definition
 ##
 
@@ -33,7 +33,7 @@ proc parse_datatype_name(datatype_name_node: YamlNode): string =
     raise newException(IdentifierError,
              &"The datatype name '{result}' is reserved.\n")
 
-proc include_yaml(spec: Specification, filename: string,
+proc include_yaml(spec: Specification, input: string, strinput: bool,
                   datatypes: Option[HashSet[string]],
                   prefix: string,
                   disable_including_incomplete_specs = false,
@@ -51,9 +51,10 @@ proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
 proc get_datatypes_node(root: YamlNode): Option[YamlNode] =
   result = YamlNode.none
   try:
-    let whole_errmsg = "Expected: mapping; allowed keys: " &
-                       &"'{DatatypesKey}', '{IncludeKey}', '{NamespaceKey}'"
-    root.validate_is_mapping("Invalid content of YAML\n", "\n" & whole_errmsg)
+    let whole_errmsg = "Expected: mapping containing at least one of the " &
+                       &"keys '{DatatypesKey}' or '{IncludeKey}'"
+    root.validate_is_mapping("Invalid content of specification\n",
+                             "\n" & whole_errmsg)
     result = root.get_map_node(DatatypesKey)
     if result.is_some:
       result.unsafe_get.validate_is_mapping(
@@ -62,14 +63,14 @@ proc get_datatypes_node(root: YamlNode): Option[YamlNode] =
     else:
       if root.get_map_node(IncludeKey).is_none:
         raise newException(InvalidSpecError,
-          "Invalid content of YAML mapping\n" & whole_errmsg)
+          "Invalid content of mapping\n" & whole_errmsg)
   except NodeValueError:
     raise newException(InvalidSpecError, get_current_exception_msg())
 
-proc do_include(spec: Specification, path: string, filename: string,
+proc include_yaml_file(spec: Specification, path: string, filename: string,
                 prefix: string, datatypes: Option[HashSet[string]]) =
   try:
-    spec.include_yaml(path / filename, datatypes, prefix)
+    spec.include_yaml(path / filename, false, datatypes, prefix)
   except YamlParserError:
     raise newException(YamlParserError,
             "Error while parsing included " &
@@ -98,7 +99,7 @@ proc include_subspec_selection(spec: Specification, filename_map: YamlNode,
       for dtname_node in dt_seq_node:
         dtname_node.validate_is_string(errmsg)
         include_datatypes.incl(dtname_node.to_string)
-  spec.do_include(path, filename, prefix, include_datatypes.some)
+  spec.include_yaml_file(path, filename, prefix, include_datatypes.some)
 
 proc include_subspec(spec: Specification, root: YamlNode, path: string,
                      prefix: string, datatypes: Option[HashSet[string]]) =
@@ -110,34 +111,35 @@ proc include_subspec(spec: Specification, root: YamlNode, path: string,
       of yScalar:
         include_node.validate_is_string(
               &"Invalid content of '{IncludeKey}' key\n")
-        spec.do_include(path, include_node.to_string, prefix, datatypes)
+        spec.include_yaml_file(path, include_node.to_string, prefix, datatypes)
       of ySequence:
         for filename_node in include_node:
           case filename_node.kind:
           of yScalar:
             filename_node.validate_is_string(
               &"Invalid content of '{IncludeKey}' key\n")
-            spec.do_include(path, filename_node.to_string, prefix, datatypes)
+            spec.include_yaml_file(path, filename_node.to_string,
+                                 prefix, datatypes)
           of yMapping:
             spec.include_subspec_selection(filename_node, path,
                                            prefix, datatypes)
           of ySequence:
             raise newException(SpecIncludeError,
-                    &"Invalid value in '{IncludeKey}' key YAML sequence\n" &
+                    &"Invalid value in '{IncludeKey}' sequence\n" &
                     "Sequence values must be strings (filenames) or maps " &
-                    "of filenames to YAML sequences of strings (datatype names)")
+                    "of filenames to sequences of strings (datatype names)")
           filename_node.validate_is_scalar(
-                           &"Invalid value in '{IncludeKey}' key YAML sequence\n",
+                           &"Invalid value in '{IncludeKey}' sequence\n",
                             "Sequence values must be strings (filenames)")
       of yMapping:
         spec.include_subspec_selection(include_node, path, prefix, datatypes)
     except NodeValueError:
       raise newException(SpecIncludeError, get_current_exception_msg())
 
-proc get_yaml_root(filename: string): YamlNode =
-  get_yamlfile_mapping_root(TextformatsRuntimeError,
-                            InvalidSpecError, filename,
-                            "specification")
+proc get_yaml_root(filename: string, strinput = false): YamlNode =
+  get_yaml_mapping_root(TextformatsRuntimeError,
+                        InvalidSpecError, filename,
+                        strinput, "specification")
 
 proc finalize_definitions(spec: Specification) {.inline.} =
   spec.validate_dependencies
@@ -186,59 +188,71 @@ proc compute_datatypes_prefix(root: YamlNode): string =
               "Namespaces " & IdentifierHelp & "\n")
     return namespace & NamespaceSeparator
 
-proc include_yaml(spec: Specification, filename: string,
-                  datatypes: Option[HashSet[string]],
+proc include_yaml(spec: Specification, input: string,
+                  strinput: bool, datatypes: Option[HashSet[string]],
                   prefix: string,
                   disable_including_incomplete_specs = false,
                   use_namespace = true) =
-  let root = filename.get_yaml_root
+  let root = input.get_yaml_root(strinput)
   try:
-    let fullprefix = block:
-      if use_namespace: prefix & compute_datatypes_prefix(root)
-      else: prefix
-    spec.include_subspec(root, split_path(filename).head, fullprefix, datatypes)
+    let
+      fullprefix = block:
+        if use_namespace: prefix & compute_datatypes_prefix(root)
+        else:             prefix
+      basepath = if strinput: "." else: split_path(input).head
+    spec.include_subspec(root, basepath, fullprefix, datatypes)
     spec.define_datatypes(root, datatypes, fullprefix)
     if disable_including_incomplete_specs:
       spec.finalize_definitions
   except:
-    let e = get_current_exception()
-    e.msg = yamlfile_errmsg(filename, "specification", e.msg)
+    let
+      e = get_current_exception()
+      fn = if strinput: "" else: input
+    e.msg = yamlparse_errmsg("specification", e.msg, fn)
     raise e
 
-proc try_finalizing_definitions(spec: Specification, filename: string)
+proc try_finalizing_definitions(spec: Specification, fn: string)
                                 {.inline.} =
   try:
     spec.finalize_definitions
   except:
     let e = get_current_exception()
-    e.msg = yamlfile_errmsg(filename, "specification", e.msg)
+    e.msg = yamlparse_errmsg("specification", e.msg, fn)
     raise e
 
-proc parse_specification*(filename: string): Specification =
+proc parse_specification_input(input: string, strinput: bool): Specification =
   result = newSpecification()
-  result.include_yaml(filename, HashSet[string].none, "",
+  result.include_yaml(input, strinput, HashSet[string].none, "",
                       use_namespace = false)
-  result.try_finalizing_definitions(filename)
+  result.try_finalizing_definitions(if strinput: "" else: input)
+
+proc parse_specification*(input: string): Specification =
+  ## Parse the provided string as YAML/JSON specification
+  parse_specification_input(input, true)
+
+proc parse_specification_file*(filename: string): Specification =
+  parse_specification_input(filename, false)
 
 proc specification_from_file*(specfile: string): Specification =
   ## Load specification if specfile is a preprocessed specification file
-  ## otherwise parse the file, assuming it is a YAML specification file
+  ## otherwise parse the file, assuming it is a YAML/JSON specification file
   if specfile.is_preprocessed: load_specification(specfile)
-  else: parse_specification(specfile)
+  else: parse_specification_file(specfile)
 
 proc preprocess_specification*(inputfile: string, outputfile: string) =
-  ## Parse YAML specification and output preprocessed specification
-  let spec = parse_specification(inputfile)
+  ## Parse YAML/JSON specification and output preprocessed specification
+  let spec = parse_specification_file(inputfile)
   spec.save_specification(outputfile)
 
-proc list_specification_datatypes*(filename: string): seq[string] =
-  ## List the datatypes in a yaml specification file
+proc list_specification_datatypes*(filename: string, strinput = false):
+                                   seq[string] =
+  ## List the datatypes in a YAML/JSON specification file
   ## omitting the included files.
   ##
   ## Note: the input file is not fully validated.
   result = newSeq[string]()
   let
-    root = filename.get_yaml_root
+    root = filename.get_yaml_root(strinput)
     opt_datatypes_node = root.get_datatypes_node
   if opt_datatypes_node.is_some:
     let datatypes_node = opt_datatypes_node.unsafe_get

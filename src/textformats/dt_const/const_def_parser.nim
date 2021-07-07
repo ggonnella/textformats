@@ -30,7 +30,7 @@ const
   where:
     <str_or_num> is a string, integer or float
     <scalar> is an integer, float, string, bool or null
-    <value> is any valid YAML node
+    <value> is a scalar or compound value
 
   Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
