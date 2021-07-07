@@ -12,40 +12,40 @@ datatypes:
     accepted_values: []
   e_accepted_values_too_short:
     accepted_values: ["1"]
-  e_no_reverse:
+  e_no_canonical:
     accepted_values:
       - 1: true
       - "a": true
       - 1.0
-  e_reverse_unknown_key:
+  e_canonical_unknown_decoded:
     accepted_values:
       - 1: true
       - "a": true
       - 1.0
-    reverse:
-      true: 1
-      false: 0
-  e_reverse_missing_key:
+    canonical:
+      "1": true
+      "0": false
+  e_canonical_missing_decoded:
     accepted_values:
       - 1: true
       - "a": true
       - "b": false
       - 1.0: false
-    reverse:
-      true: 1
-  e_reverse_wrong_value:
+    canonical:
+      "1": true
+  e_canonical_unknown_encoded:
     accepted_values:
       - 1: true
       - "a": true
       - 1.0
-    reverse:
-      true: 1.0
-  e_reverse_unknown_value:
+    canonical:
+      "0": true
+  e_canonical_not_matching:
     accepted_values:
       - 1: true
       - "a": true
       - 1.0
-    reverse:
-      true: 0
+    canonical:
+      "1.0": true
   e_repeated_values:
     accepted_values: [1, "a", 1.0, 1]

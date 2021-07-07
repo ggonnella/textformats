@@ -20,13 +20,13 @@ const
   RegexesMatchDefKey* = "regexes"
   RegexMatchDefKey* = "regex"
   StructDefKey* = "composed_of"
-  TagsDefKey* = "tags"
+  TagsDefKey* = "tagged_values"
   UnionDefKey* = "one_of"
 
   # additional keys for datatype definition
   # common
   NullValueKey* = "empty"
-  EncodedKey* = "reverse"
+  EncodedKey* = "canonical"
   AsStringKey* = "as_string"
   ScopeKey* = "scope"
   UnitSizeKey* = "n_lines"

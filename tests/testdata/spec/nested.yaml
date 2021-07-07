@@ -7,7 +7,7 @@ datatypes:
       - c: {constant: "01"}
       - l: {list_of: {constant: "11"}, sep: "a1"}
       - u: {one_of: [{constant: "21"}, {constant: "31"}]}
-      - t: {tags: {b1: {constant: "41"}, c1: {constant: "51"}},
+      - t: {tagged_values: {b1: {constant: "41"}, c1: {constant: "51"}},
             tagname: "61.", sep: "d1", internal_sep: "e1"}
       - s: {composed_of: [c1: {constant: "61"}, c2: {constant: "71"}], sep: "f1"}
       - d: {named_values: {g1: {constant: "81"}, h1: {constant: "91"}},
@@ -17,17 +17,17 @@ datatypes:
     one_of:
       - {constant: "02"}
       - {list_of: {constant: "12"}, sep: "a2"}
-      - {tags: {b2: {constant: "22"}, c2: {constant: "32"}},
+      - {tagged_values: {b2: {constant: "22"}, c2: {constant: "32"}},
          tagname: "62.", sep: "d2", internal_sep: "e2"}
       - {composed_of: [c1: {constant: "62"}, c2: {constant: "72"}], sep: "f2"}
       - {named_values: {g2: {constant: "82"}, h2: {constant: "92"}},
          sep: "i2", internal_sep: "j2"}
   t:
-    tags:
+    tagged_values:
       Bc: {constant: "03"}
       Bl: {list_of: {constant: "13"}, sep: "a3"}
       Bu: {one_of: [{constant: "23"}, {constant: "33"}]}
-      Bt: {tags: {b3: {constant: "43"}, c3: {constant: "53"}},
+      Bt: {tagged_values: {b3: {constant: "43"}, c3: {constant: "53"}},
             tagname: "63.", sep: "d3", internal_sep: "e3"}
       Bs: {composed_of: [c1: {constant: "63"}, c2: {constant: "73"}], sep: "f3"}
       Bd: {named_values: {g3: {constant: "83"}, h3: {constant: "93"}},
@@ -40,7 +40,7 @@ datatypes:
       Cc: {constant: "04"}
       Cl: {list_of: {constant: "14"}, sep: "a4"}
       Cu: {one_of: [{constant: "24"}, {constant: "34"}]}
-      Ct: {tags: {b4: {constant: "44"}, c4: {constant: "54"}},
+      Ct: {tagged_values: {b4: {constant: "44"}, c4: {constant: "54"}},
            tagname: "64.", sep: "d4", internal_sep: "e4"}
       Cs: {composed_of: [c1: {constant: "64"}, c2: {constant: "74"}], sep: "f4"}
       Cd: {named_values: {g4: {constant: "84"}, h4: {constant: "94"}},
@@ -78,7 +78,7 @@ datatypes:
   u2:
     one_of: [s, l, u, t, d, ll, lu, lt, ld]
   t2:
-    tags:
+    tagged_values:
       Ds: s
       Dl: l
       Du: u

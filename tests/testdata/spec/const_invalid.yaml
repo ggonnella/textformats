@@ -1,5 +1,3 @@
 datatypes:
   cq: {constant: [a, b]}
   cq_map_s: {constant: {[a, b]: c}}
-  cs_map_q: {constant: {a: [b, c]}}
-  cs_map_m: {constant: {a: {b: c}}}

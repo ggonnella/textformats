@@ -6,3 +6,5 @@ datatypes:
   cf_map: {constant: {1.0: a}}
   cs_map: {constant: {a: null}}
   cs_map_n: {constant: {a: null}, empty: b}
+  cs_map_q: {constant: {a: [b, c]}}
+  cs_map_m: {constant: {a: {b: c}}}

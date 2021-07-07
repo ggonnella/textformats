@@ -27,12 +27,14 @@ const
       [optional_keys]
 
     where each <list_elem> is either
-    - a string: regular expression; or
-    - a mapping string => scalar value:
-        regular expression to decoded value to use when matching
+    - a string (regular expression); or
+    - a mapping string => scalar or compound value
+      (regular expression to decoded value to use when matching)
 
-    A mapping must be included under {EncodedKey},
-    where keys are all scalar values used under {DefKey}.
+    A mapping must be included under '{EncodedKey}',
+    where the keys are the strings (matching the regexes)
+    to use as encoded representations and the
+    values are all values used under '{DefKey}'.
 
   Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}

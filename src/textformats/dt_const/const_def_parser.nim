@@ -21,15 +21,14 @@ const
 
   == 2 ==
   <datatype_name>:
-    {DefKey}: {{<str_or_num>: <scalar>}}
+    {DefKey}: {{<str_or_num>: <value>}}
 
   == 3 ==
   <datatype_name>:
-    {DefKey}: {{<str_or_num>: <scalar>, {NullValueKey}: <value>}}
+    {DefKey}: {{<str_or_num>: <value>, {NullValueKey}: <value>}}
 
   where:
     <str_or_num> is a string, integer or float
-    <scalar> is an integer, float, string, bool or null
     <value> is a scalar or compound value
 
   Optional keys for decoding:

@@ -30,8 +30,9 @@ const
     ...
   # if multiple x values map to the same y
   # value, key '{EncodedKey}' must be included
+  # specifying which x to use for encoding:
   {Encoded_Key}:
-    <duplicated_y1>: <corresponding_x>
+    <selected_x>: <duplicated_y>
     ...
   [optional_keys]
 

@@ -1,4 +1,4 @@
 datatypes:
   ok: {constant: "ok"}
-  a: b         
-  b: {tags: {x: a}, tagname: "[a-z]", sep: ",", internal_sep: "."}
+  a: b
+  b: {tagged_values: {x: a}, tagname: "[a-z]", sep: ",", internal_sep: "."}

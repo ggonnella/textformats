@@ -1,13 +1,8 @@
 import json, options, tables, strutils
-import ../support/json_support
 import ../types / [datatype_definition, textformats_error]
 import ../shared/matchelement_encoder
 
 proc enum_encode*(value: JsonNode, dd: DatatypeDefinition): string =
-  if not value.is_scalar:
-    raise newException(EncodingError,
-            "Error: value is not a scalar (string, numeric, bool, none)\n" &
-            value.describe_kind & "\n")
   if dd.encoded.is_some:
     if value in dd.encoded.unsafe_get:
       return dd.encoded.unsafe_get[value]

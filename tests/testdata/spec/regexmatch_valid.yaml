@@ -4,8 +4,8 @@ datatypes:
   r_map:
     regex:
       "\\d\\d": 1
-    reverse:
-      1: "01"
+    canonical:
+      "01": 1
   r_n:
     regex: "\\d\\d"
     empty: 0

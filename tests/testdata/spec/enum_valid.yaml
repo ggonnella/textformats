@@ -14,5 +14,5 @@ datatypes:
       - 1: true
       - "a": true
       - 1.0
-    reverse:
-      true: "1"
+    canonical:
+      "1": true

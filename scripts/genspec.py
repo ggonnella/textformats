@@ -511,10 +511,11 @@ def get_mapping(msg, helpmsg, answers_id):
     v=ask("Enter the desired float value", "float")
   return True, v
 
-def explain_reverse():
+def explain_canonical():
   explain_syntax("When muliple encoded strings have the same decoding, "+\
-        "the datatype definition must contain a key 'reverse', a "+\
-        "map the \"ambiguous\" decoded values to their encoding.")
+        "the datatype definition must contain a key 'canonical', a "+\
+        "map of the encoded values to use for decoding to each of "+\
+        "the \"ambiguous\" decoded values.")
 
 def define_datatype_regexes(data, name):
   say("Enter the regular expressions in the order "+\
@@ -561,7 +562,7 @@ def define_datatype_regexes(data, name):
         "to use for that value.")
     encoding = {}
     for regex, compiled, has_mapping, value in items:
-      if has_mapping and value not in encoding:
+      if has_mapping and value not in encoding.values:
         regexes_str = [i[0] for i in items if i[3] == value]
         compiled_regexes = [i[1] for i in items if i[3] == value]
         question = \
@@ -574,15 +575,15 @@ def define_datatype_regexes(data, name):
               matching = True
               break
           if matching:
-            encoding[value] = encoded
+            encoding[encoded] = value
             break
           else:
             sayerr("The encoded string does not match any regular expression "+\
                 "mapped to that decoded value.")
             sayquoted(f"Regular expressions: {regexes_str}")
             sayquoted(f"Invalid encoded string: '{encoded}'")
-    explain_reverse()
-    def_txt += ", reverse: "+json.dumps(encoding)
+    explain_canonical()
+    def_txt += ", canonical: "+json.dumps(encoding)
   else:
     def_txt = json.dumps([i[0] for i in items])
   opt_txt = get_emptystrvalue(name)
@@ -696,9 +697,9 @@ def define_datatype_accepted_str(data, name):
               f"decoded value is {json.dumps(v)}.")
           sayquoted(f"Enter one of the following: {json.dumps(valid_answers)}")
           encoded = ask(question, "string")
-        encoding[v] = encoded
-      explain_reverse()
-      opt_txt += ", reverse: "+json.dumps(encoding)
+        encoding[encoded] = v
+      explain_canonical()
+      opt_txt += ", canonical: "+json.dumps(encoding)
   else:
     def_txt = json.dumps([i[0] for i in items])
   opt_txt += get_emptystrvalue(name)
@@ -740,8 +741,8 @@ def define_datatype_regex(data, name):
       sayquoted(f"Regular expression: '{k}'")
       sayquoted(f"Specified encoded value: '{encoded}'")
       encoded = ask(question, "string")
-    explain_reverse()
-    opt_txt = ", reverse: {"+json.dumps(v)+":"+json.dumps(encoded)+"}"
+    explain_canonical()
+    opt_txt = ", canonical: {"+json.dumps(encoded)+":"+json.dumps(v)+"}"
     def_txt = "{"+json.dumps(k)+": "+json.dumps(v)+"}"
   else:
     def_txt = json.dumps(k)
@@ -1121,7 +1122,7 @@ def add_predefined_to_def(predef):
     return ", predefined: "+json.dumps(predef)
 
 def define_datatype_tags(data, name):
-  def_txt = "{tags: "
+  def_txt = "{tagged_values: "
   name_regex_raw, name_regex_compiled = get_name_regex()
   typekeys = get_typekeys(name)
   def_txt += get_subdef_map(name, typekeys)

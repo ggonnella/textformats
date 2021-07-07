@@ -7,15 +7,15 @@ datatypes:
     regexes:
     - "\\d\\d": 1
     - "_\\d": 2
-    reverse:
-      1: "01"
-      2: "_1"
+    canonical:
+      "01": 1
+      "_1": 2
   rs_mixed:
     regexes:
     - "\\d\\d": 1
     - "_\\d"
-    reverse:
-      1: "01"
+    canonical:
+      "01": 1
   rs_n:
     regexes:
     - "\\d\\d"

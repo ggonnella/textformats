@@ -4,21 +4,21 @@ datatypes:
     x: 1
   r_seq:
     regex: ["\\d\\d"]
-  r_wo_reverse:
+  r_wo_canonical:
     regex:
       "\\d\\d": 1
-  r_reverse_empty:
+  r_canonical_empty:
     regex:
       "\\d\\d": 1
-    reverse: {}
-  r_reverse_unknown_key:
+    canonical: {}
+  r_canonical_unknown_decoded:
     regex:
       "\\d\\d": 1
-    reverse:
-      1: "01"
-      2: "02"
-  r_reverse_invalid_value:
+    canonical:
+      "01": 1
+      "02": 2
+  r_canonical_invalid_encoded:
     regex:
       "\\d\\d": 1
-    reverse:
-      1: "aa"
+    canonical:
+      "aa": 1

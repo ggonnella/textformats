@@ -18,12 +18,13 @@ const
     [optional_keys]
 
   # map of regular expression (string)
-  # to scalar value (string, numeric, bool, none)
-  # and reverse map of the same scalar value
-  # to a string matching the regular expression
+  # to scalar or compound value
+  # and '{EncodedKey}' map of the encoded value
+  # to use as the standard value for encoding
+  # (it must be a string matching the regular expression)
   <datatype_name>:
     {DefKey}: {{<string>: <scalar>}}
-    {EncodedKey}: {{<scalar>: <string>}}
+    {EncodedKey}: "<string>"
     [optional_keys]
 
   Optional keys for decoding:

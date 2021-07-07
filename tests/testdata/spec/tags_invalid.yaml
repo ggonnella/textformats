@@ -1,54 +1,54 @@
 datatypes:
   t_unknown_key:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: ":"
     x: 0
   t_no_sep:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     internal_sep: ":"
     x: 0
   t_no_isep:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
   t_sep_clash:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: ","
   t_isep_empty:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: ""
   t_isep_contains_sep:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: "a,"
   t_typekey_contains_sep:
-    tags:
+    tagged_values:
       axa: {constant: x}
     tagname: "[a-z]{2}"
     sep: "x"
     internal_sep: ":"
   t_typekey_contains_isep:
-    tags:
+    tagged_values:
       axa: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: "x"
   t_predefined_contains_sep:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "_[a-z]_"
     predefined:
@@ -56,7 +56,7 @@ datatypes:
     sep: "a"
     internal_sep: ":"
   t_predefined_contains_isep:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "_[a-z]_"
     predefined:
@@ -64,19 +64,19 @@ datatypes:
     sep: ","
     internal_sep: "a"
   t_empty:
-    tags: {}
+    tagged_values: {}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: ":"
   t_seq:
-    tags:
+    tagged_values:
     - x: {constant: x}
     - "y": {constant: y}
     tagname: "[a-z]{2}"
     sep: ","
     internal_sep: ":"
   t_predefined_implicit_nameclash:
-    tags:
+    tagged_values:
       x: {constant: x}
       "y": {constant: y}
     tagname: "[a-z]{2}"
@@ -87,7 +87,7 @@ datatypes:
     implicit:
       ab: 1
   t_predefined_unknown_type:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: "[a-z]{2}"
     sep: ","
@@ -95,20 +95,20 @@ datatypes:
     predefined:
       ab: y
   t_empty_tagname_no_predefined:
-    tags:
+    tagged_values:
       x: {constant: x}
     sep: ","
     internal_sep: ":"
     tagname: ""
   t_empty_tagname_empty_predefined:
-    tags:
+    tagged_values:
       x: {constant: x}
     tagname: ""
     sep: ","
     internal_sep: ":"
     predefined: {}
   t_invalid_tagname:
-    tags:
+    tagged_values:
       x: {constant: x}
     sep: ","
     internal_sep: ":"
