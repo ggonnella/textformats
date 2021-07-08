@@ -32,7 +32,7 @@ datatypes:
             - placeholder
             - qual
       - tags:
-          tags:
+          tagged_values:
             i: string
             Z: string
           tagname: "[A-Z][A-Z]"

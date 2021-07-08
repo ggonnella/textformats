@@ -1,7 +1,7 @@
 namespace: gfa
 include: "gfa.B.tags.yaml"
 datatypes:
-  tags:
+  tagged_values:
     tagname: "[A-Za-z][A-Za-z0-9]"
     tags:
       A: {regex: "[!-~]"}
