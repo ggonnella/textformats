@@ -120,7 +120,7 @@ which defines the enum values as preprocessor constants.
 The C code does not require to explicitely include this module, since
 it is exported by the `textformats_c` module.
 
-### Textformats C API module
+### TextFormats C API module
 
 The API functions and types are provided by the `textformats` module.
 Each function has a prefix `tf_`, and otherwise follows the same conventions

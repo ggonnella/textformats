@@ -52,7 +52,7 @@ More examples are provided under `python/examples`.
 
 ## Specifications
 
-The class `Specification` represents a Textformats specification.
+The class `Specification` represents a TextFormats specification.
 To parse a YAML, JSON specification or load a preprocessed specification
 use the class constructor `Specification(filename)`.
 Alternatively a dict can be passed to the constructor, which contains

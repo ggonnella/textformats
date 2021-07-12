@@ -20,7 +20,7 @@ into appropriate scalar values
 - validate compound and scalar values, based on required
 properties
 
-## Structure of a Textformats specification
+## Structure of a TextFormats specification
 
 Specifications are written in YAML or JSON format. They consist of a
 mapping (dictionary), where the definitions of the datatypes are written
@@ -50,7 +50,7 @@ datatypes:
   b: a        # reference, i.e. "b" is an alias of "a"
 ```
 
-## Writing a Textformats specification: practical guide
+## Writing a TextFormats specification: practical guide
 
 Assuming a file format already exists, it is necessary to know (either from
 examples or from a formal specification document) which are the parts of the
@@ -158,7 +158,7 @@ In some cases, although a value shall be decoded as string, and not further
 parsed into smaller elements, its format is quite complex.
 
 In this case it can be useful to create a definition (e.g. for a compound
-datatype, as explained below) and then let Textformats know that the
+datatype, as explained below) and then let TextFormats know that the
 definition shall only be used for validation, but not for parsing,
 using the `as_string: true` option.
 
@@ -915,7 +915,7 @@ is the only one read by the specification parser functions. Thus the file
 is simply used as a normal specification.
 
 However, if the data in the file shall be decoded, using the provided file
-decoding functions or the command line tools, Textformats must know that
+decoding functions or the command line tools, TextFormats must know that
 it should start to decode after the end of the first YAML document.
 Thus, in such cases, an `embedded` boolean parameter/setting is present,
 which must be set, for the decoder to work correctly.
