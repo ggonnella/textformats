@@ -291,8 +291,95 @@ mapping with a string key (regular expression to use) to a JSON-representable
 value to use as decoded value in case of a match of that regular expression.
 
 If mappings are used as elements of the `regexes` list, then the `canonical`
-entry shall be added to the definition. This must contain
+entry shall be added to the definition. Given the mappings
+[{r1: v1}, {r2: v2}...] under `regexes`, for each value v1, v2 ... there must
+be an entry in `canonical` mapping {c1: v1, c2: v2...} where the keys are the
+text representations to be used for encoding. They must be matches of the
+corresponding regular expression (c1 matches k1, c2 matches k2 ...).
 
+If an empty string shall be accepted, the key `empty` and a data value, to be
+used in that case, shall be added to the definition.  The `empty` rule has
+highest priority; thus it is used even if one of the regular expression matches
+an empty string.
+
+Here are examples of `regexes` definitions:
+```YAML
+datatypes:
+  rs1: {regexes: ["\d{2,3}", "A", "x\dx"]}
+  rs2: {regexes: {"[Tt](rue)?": true, "[Ff](alse)?": false},
+                 canonical: {"True": true, "False": false}}
+  rs3: {regexes: {"(no|NO)": 1, "(yes|YES)": 2}, empty: 3,
+                 canonical: {"NO": 1, "YES": 2}}
+```
+
+## Definitions of kind `integer`
+
+Definitions of kind `integer` are used for elements which have a numeric
+integer value. The text representation must be in base 10 (unsigned integer
+supports some other bases). Positive integers are optionally prefixed by "+".
+
+The value of the `integer` key is a mapping; the validity range
+can be specified, using the optional keys `min` and `max` in this mapping.
+No other keys are supported.
+
+The mapping under `integer` may be empty, if no validity range is specified.
+If no other option of the definition mapping besides `integer` is used, the
+definition mapping is `{integer: {}}`, which is equivalent to the predefined
+datatype `integer` (but the latter is skipping range checks, thus may be faster
+in the implementation).
+
+If an empty string shall be accepted, the key `empty` and a data value, to be
+used in that case, shall be added to the definition.
+
+Here are examples of `integer` definitions:
+```YAML
+datatypes:
+ i1: integer # predefined, equivalent to i2
+ i2: {integer: {}}
+ i3: {integer: {}, empty: 0}
+ i4: {integer: {min: -10}}
+ i5: {integer: {max: 100}}
+ i6: {integer: {min: -10, max: 100}}
+```
+
+## Definitions of kind `unsigned_integer`
+
+Definitions of kind `unsigned_integer` are used for elements which have a
+numeric integer value >= 0. The text representation can be in base 10 (default),
+base 2, base 8 or base 16. For the non-10 bases, underscores are ignored and
+a prefix is accepted (but not required);
+base 2: `0b`, `0B`; base 8: `0O`, `0o`; base 16: `0x`, `0X`, `#`. Base 16
+letters (A to F) may have any case.
+
+The value of the `unsigned_integer` key is a mapping; the validity range
+can be specified, using the optional keys `min` and `max` in this mapping.
+By default, `min` is 0 and `max` is the largest _signed_ integer. Note
+that values between `INT64_HIGH` and `UINT64_HIGH` are not fully supported,
+since they are not supported by the underlying JSON library.
+The base is specified using the key `base`.
+
+The mapping under `unsigned_integer` may be empty, if no validity range is
+specified and the base is 10.  If no other option of the definition mapping
+besides `unsigned_integer` is used, the definition mapping is
+`{unsigned_integer: {}}`, which is equivalent to the predefined datatype
+`unsigned_integer` (but the latter is skipping range checks, thus may be faster
+in the implementation).
+
+If an empty string shall be accepted, the key `empty` and a data value, to be
+used in that case, shall be added to the definition.
+
+Here are examples of `unsigned_integer` definitions:
+```YAML
+datatypes:
+ u1: unsigned_integer # predefined, equivalent to u2
+ u2: {unsigned_integer: {}}
+ u3: {unsigned_integer: {base: 2}}
+ u4: {unsigned_integer: {}, empty: 0}
+ u5: {unsigned_integer: {min: 10}}
+ u6: {unsigned_integer: {max: 100}}
+ u7: {unsigned_integer: {min: 10, max: 100}}
+ u7: {unsigned_integer: {min: 10, max: 100, base: 2}}
+```
 
 ### Encoded value formatting and validation
 
