@@ -15,7 +15,7 @@ template enum_is_valid*(item: JsonNode, dd: DatatypeDefinition): bool =
           let found =
             case me.kind:
             of meFloat:  item.is_float  and item.get_float == me.f_value
-            of meInt:    item.is_int    and item.get_int == me.i_value
+            of meInt:    item.is_int    and item.get_biggest_int == me.i_value
             of meString: item.is_string and item.get_str == me.s_value
           if found:
             result = true

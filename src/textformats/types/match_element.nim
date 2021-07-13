@@ -14,7 +14,7 @@ type
   MatchElementObj = object
     case kind*: MatchElementKind
       of meFloat:  f_value*: float
-      of meInt:    i_value*: int
+      of meInt:    i_value*: int64
       of meString: s_value*: string
 
 proc to_string*(self: Matchelement): string =

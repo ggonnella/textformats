@@ -84,7 +84,7 @@ proc json_modified*(json_value: JsonNode): seq[JsonNode] =
   of JNull: discard
   of JBool: result.add(if json_value.get_bool: %*false else: %*true)
   of JInt:
-    let i = json_value.get_int
+    let i = json_value.get_biggest_int
     if i < int.high: result.add(%*(i+1))
     if i > int.low: result.add(%*(i-1))
   of JFloat:

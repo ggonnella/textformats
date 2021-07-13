@@ -12,7 +12,8 @@ template const_is_valid*(item: JsonNode, dd: DatatypeDefinition): bool =
       of meFloat:
         result = item.is_float and item.get_float == dd.constant_element.f_value
       of meInt:
-        result = item.is_int and item.get_int == dd.constant_element.i_value
+        result = item.is_int and
+          item.get_biggest_int == dd.constant_element.i_value
       of meString:
         result = item.is_string and item.get_str == dd.constant_element.s_value
     else:

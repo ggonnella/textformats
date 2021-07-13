@@ -1,7 +1,6 @@
 import tables
 import json
 import ../types / [datatype_definition, testdata]
-import ../support / [openrange]
 import ../shared/num_testdata_generator
 
 proc add_valid_anyfloat(t: var TestData) =

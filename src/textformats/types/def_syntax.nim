@@ -35,6 +35,7 @@ const
   MaxKey* = "max"
   MinExcludedKey* = "min_excluded"
   MaxExcludedKey* = "max_excluded"
+  BaseKey* = "base"
   # list/dict/struct/tags
   SepKey* = "separator"
   SplittedKey* = "splitted_by"

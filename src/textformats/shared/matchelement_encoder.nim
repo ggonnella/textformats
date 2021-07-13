@@ -23,8 +23,8 @@ proc encode_match_elem_wo_decoded*(value: JsonNode, me: MatchElement,
       encoded = $value.get_float
       return true
   of meInt:
-    if value.is_int and value.get_int == me.i_value:
-      encoded = $value.get_int
+    if value.is_int and value.get_biggest_int == me.i_value:
+      encoded = $value.get_biggest_int
       return true
   of meString:
     if value.is_string and value.get_str == me.s_value:

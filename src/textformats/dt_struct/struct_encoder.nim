@@ -1,6 +1,6 @@
 import sequtils, tables, strformat, strutils, sets, json
 import ../types / [datatype_definition, textformats_error]
-import ../support / [json_support, openrange]
+import ../support/json_support
 import ../shared/implicit_encoder
 import ../encoder
 

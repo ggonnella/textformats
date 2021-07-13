@@ -69,7 +69,7 @@ proc parse_n_required(dd: var DatatypeDefinition, opt_n: Option[YamlNode]) =
               "Number of required elements > number of elements\n" &
               &"Number of required elements: {n_required}\n" &
               &"Number of elements: {dd.members.len}")
-    dd.n_required = n_required
+    dd.n_required = n_required.int
 
 proc validate_member_names_uniqueness(dd: DatatypeDefinition) =
   var member_names: HashSet[string]

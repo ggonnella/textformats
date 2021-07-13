@@ -17,13 +17,6 @@ datatypes:
   i_min_map:
     integer:
       min: {"a": 1}
-  i_min_excl_wo_min:
-    integer:
-      min_excluded: true
-  i_min_excl_wrong:
-    integer:
-      min: 0
-      min_excluded: 1
   i_max_string:
     integer:
       max: "1"
@@ -33,13 +26,6 @@ datatypes:
   i_max_map:
     integer:
       max: {"a": 1.0}
-  i_max_excl_wo_max:
-    integer:
-      max_excluded: true
-  i_max_excl_wrong:
-    integer:
-      max: 0.0
-      max_excluded: 1.0
   i_min_lt_max:
     integer:
       min: 2

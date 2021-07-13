@@ -81,11 +81,11 @@ proc unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.null_value.is_some and value == dd.null_value.unsafe_get: return ""
   case dd.kind:
     of ddkRef:                  return value.unsafe_encode(dd.target)
-    of ddkAnyInteger:           return $value.get_int
-    of ddkAnyUInteger:          return $value.get_int
+    of ddkAnyInteger:           return $value.get_biggest_int
+    of ddkAnyUInteger:          return $value.get_biggest_int
     of ddkAnyFloat:             return $value.get_float
-    of ddkIntRange:             return $value.get_int
-    of ddkUIntRange:            return $value.get_int
+    of ddkIntRange:             return $value.get_biggest_int
+    of ddkUIntRange:            return $value.get_biggest_int
     of ddkFloatRange:           return $value.get_float
     of ddkAnyString:            return value.get_str
     of ddkRegexMatch:           return value.regexmatch_unsafe_encode(dd)

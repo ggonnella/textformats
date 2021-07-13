@@ -20,13 +20,6 @@ datatypes:
   u_min_map:
     unsigned_integer:
       min: {"a": 1}
-  u_min_excl_wo_min:
-    unsigned_integer:
-      min_excluded: true
-  u_min_excl_wrong:
-    unsigned_integer:
-      min: 0
-      min_excluded: 1
   u_max_string:
     unsigned_integer:
       max: "1"
@@ -39,13 +32,6 @@ datatypes:
   u_max_map:
     unsigned_integer:
       max: {"a": 1.0}
-  u_max_excl_wo_max:
-    unsigned_integer:
-      max_excluded: true
-  u_max_excl_wrong:
-    unsigned_integer:
-      max: 0.0
-      max_excluded: 1.0
   u_min_lt_max:
     unsigned_integer:
       min: 2

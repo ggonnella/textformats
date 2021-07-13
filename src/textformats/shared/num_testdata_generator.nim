@@ -1,18 +1,19 @@
 import json
 import ../types/testdata
+import ../shared/num_encoder
 import ../testdata_generator
 
 let
-  InvalidEncodedNumeric* = ["a", "[]", "{}"]
-  InvalidDecodedNumeric* = [newJString("A"), newJArray(), newJObject()]
+  InvalidEncodedNumeric* = ["$", "[]", "{}"]
+  InvalidDecodedNumeric* = [newJString("$"), newJArray(), newJObject()]
 
-template check_range_and_add*[T: uint or int or float](
+template check_range_and_add*[T: uint64 or int64 or float](
                      t: var TestData, values: seq[T], min_i: T, max_i: T,
-                     min_incl = true, max_incl = true) =
+                     min_incl = true, max_incl = true, base = 10) =
   for i in values:
-    when T is uint:
+    when T is uint64:
       let
-        k = $(i.int)
+        k = encode_int_with_base(i.int64, base)
         v = %*(i.int)
     else:
       let

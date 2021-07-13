@@ -15,7 +15,7 @@ proc add_invalid_decoded_values(t: var TestData, v: JsonNode) =
   if v.kind != JInt:
     t.d.add_if_unique(newJInt(1))
   else:
-    let i = v.get_int()
+    let i = v.get_biggest_int()
     if i < int.high:
       t.d.add_if_unique(newJInt(i+1))
     if i > int.low:
@@ -62,14 +62,14 @@ proc add_invalid_encoded_float(t: var TestData, f: float) =
   if e notin t.v:
     t.e.add_if_unique(e)
 
-proc add_invalid_encoded_int(t: var TestData, i: int) =
+proc add_invalid_encoded_int(t: var TestData, i: int64) =
   var e: string
-  if i < int.high:
-    e = $(i + 1)
+  if i < int64.high:
+    e = $(i + 1'i64)
   if e notin t.v:
     t.e.add_if_unique(e)
-  if i > int.low:
-    e = $(i - 1)
+  if i > int64.low:
+    e = $(i - 1'i64)
   if e notin t.v:
     t.e.add_if_unique(e)
 
@@ -102,10 +102,10 @@ proc add_constant_values*(t: var TestData, me: MatchElement,
     v = if d.is_some: %*d.unsafe_get else: %*me.i_value
     let k = $me.i_value
     if k notin t.o: discard t.v.has_key_or_put(k, v)
-    if me.i_value >= 0:
+    if me.i_value >= 0'i64:
       let k1 = "+" & k
       if k1 notin t.v: discard t.o.has_key_or_put(k1, v)
-      if me.i_value == 0:
+      if me.i_value == 0'i64:
         if "-0" notin t.v: discard t.o.has_key_or_put("-0", v)
     add_invalid_encoded_int(t, me.i_value)
   of meString:

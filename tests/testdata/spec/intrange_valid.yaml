@@ -4,27 +4,13 @@ datatypes:
   i_min_i:
     integer:
       min: -1
-  i_min_e:
-    integer:
-      min: -1
-      min_excluded: true
   i_max_i:
     integer:
       max: 1
-  i_max_e:
-    integer:
-      max: 1
-      max_excluded: true
   i_min_max_i:
     integer:
       min: -1
       max: 1
-  i_min_max_e:
-    integer:
-      min: -1
-      max: 1
-      min_excluded: true
-      max_excluded: true
   i_n:
     integer:
       min: -1

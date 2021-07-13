@@ -139,10 +139,11 @@ type
       target_name*: string
 
     of ddkIntRange:
-      range_i*: OpenRange[int]
+      range_i*: OpenRange[int64]
 
     of ddkUIntRange:
-      range_u*: OpenRange[uint]
+      range_u*: OpenRange[uint64]
+      base*: int
 
     of ddkFloatRange:
       min_f*, max_f*: float
@@ -330,6 +331,7 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
     result &= &"\n{pfx}  the range is {d.range_i}\n"
   of ddkUIntRange:
     result &= &"\n{pfx}  the range is {d.range_u}\n"
+    result &= &"\n{pfx}  the integer is in base {d.base}\n"
   of ddkFloatRange:
     result &= &"\n{pfx}  the range is: ({d.min_f},{d.max_f})\n"
     if d.max_incl:
@@ -567,6 +569,7 @@ proc tabular_desc*(d: DatatypeDefinition, indent: int): string =
     result &= &"{pfx}- range: {d.range_i}\n"
   of ddkUIntRange:
     result &= &"{pfx}- range: {d.range_u}\n"
+    result &= &"{pfx}- base: {d.base}\n"
   of ddkFloatRange:
     result &= &"{pfx}- range: ({d.min_incl},{d.min_f},{d.max_f},{d.max_incl})\n"
   of ddkConst:

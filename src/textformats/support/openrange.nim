@@ -13,7 +13,7 @@ const
   OpenrangeNegInfStr* = "-Inf"
 
 type
-  MemberT = Natural or int or uint
+  MemberT = Natural or int64 or uint64
   OpenRange*[T: MemberT] = object
     rmin*: Option[T]
     rmax*: Option[T]
@@ -27,7 +27,7 @@ type
 proc lowstr*[T: MemberT](o: OpenRange[T]): string {.inline.} =
   if o.rmin.is_some:
     let val = o.rmin.unsafe_get
-    result = $(val.int)
+    result = $(val.int64)
   else:
     if o.low == 0: result = "0"
     else: result = OpenrangeNegInfStr
@@ -35,7 +35,7 @@ proc lowstr*[T: MemberT](o: OpenRange[T]): string {.inline.} =
 proc highstr*[T: MemberT](o: OpenRange[T]): string {.inline.} =
   if is_some[T](o.rmax):
     let val = o.rmax.unsafe_get
-    result = $(val.int)
+    result = $(val.int64)
   else: result = OpenrangeInfStr
 
 proc `$`*[T: MemberT](o: OpenRange[T]): string =
@@ -59,7 +59,7 @@ proc has_low*[T: MemberT](o: OpenRange[T]): bool =
 proc high*[T](o: OpenRange[T]): T =
   if o.rmax.is_some: o.rmax.unsafe_get
   else:
-    when T is uint: int.high.uint
+    when T is uint64: int64.high.uint64
     else: T.high
 
 proc has_high*[T](o: OpenRange[T]): bool =
@@ -74,8 +74,8 @@ template `>=`[T](i: T, rrmin: Option[T]): bool =
 proc contains*[T](r: OpenRange[T], i: T): bool =
   i >= r.rmin and i <= r.rmax
 
-proc contains*(r: OpenRange[uint], i: int): bool =
-  i.uint >= r.rmin and i.uint <= r.rmax
+proc contains*(r: OpenRange[uint64], i: int64): bool =
+  i.uint64 >= r.rmin and i.uint64 <= r.rmax
 
 proc valid_min*[T](i: T, r: OpenRange[T]): bool=
   (r.rmin.is_none or i >= r.rmin.unsafe_get)

@@ -16,17 +16,15 @@ const
   <datatype_name>:
     {DefKey}:
       {MinKey}: <integer>
-      {MinExcludedKey}: <bool>
       {MaxKey}: <integer>
-      {MaxEXcludedKey}: <bool>
     [optional_keys]
 
   All keys under {DefKey} are optional.
-  The default is:
-  - {MinKey} is the smallest available int
-  - {MinKey} is included (is a valid value)
-  - {MaxKey} is the largest available int
-  - {MaxKey} is included (is a valid value)
+
+  Optional keys for decoded value validation:
+  - {MinKey}: minimum value, default: lowest int value (*)
+  - {MaxKey}: maximum value, default: highest int value (*)
+  (*) of largest available signed int type
 
   Optional keys for decoding:
   - {NullValueKey}: {NullValueHelp}
@@ -35,7 +33,7 @@ const
 
 proc parse_range_i(min_max_optnodes:
                    tuple[min: Option[YamlNode], max: Option[YamlNode]]):
-                   Openrange[int] =
+                   Openrange[int64] =
   try:
     result.rmin = min_max_optnodes.min.to_opt_int
   except NodeValueError:

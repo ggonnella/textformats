@@ -5,6 +5,7 @@ import support/openrange
 
 proc is_valid*(input: string, dd: DatatypeDefinition): bool
 import dt_floatrange/floatrange_encoded_validator
+import dt_uintrange/uintrange_encoded_validator
 import dt_anystring/anystring_encoded_validator
 import dt_const/const_encoded_validator
 import dt_enum/enum_encoded_validator
@@ -25,6 +26,7 @@ proc is_valid*(input: string, dd: DatatypeDefinition): bool =
   if dd.kind == ddkAnyString: return input.anystring_is_valid(dd)
   if dd.regex.ensures_valid:  return input.match(dd.regex.compiled)
   case dd.kind:
+  of ddkUintRange:  return input.uintrange_is_valid(dd)
   of ddkFloatRange: return input.floatrange_is_valid(dd)
   of ddkConst:      return input.const_is_valid(dd)
   of ddkEnum:       return input.enum_is_valid(dd)

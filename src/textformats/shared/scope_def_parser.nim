@@ -23,7 +23,7 @@ proc parse_scope*(node: Option[YamlNode]): DatatypeDefinitionScope =
                        &"Expected: {ScopeValues}\nFound: {value}\n")
 
 proc parse_unitsize*(node: Option[YamlNode]): int =
-  result = node.to_int(default=1, UnitsizeKey)
+  result = node.to_int(default=1, UnitsizeKey).int
   if result < 1:
     raise newException(DefSyntaxError,
                        &"Invalid value for key '{UnitsizeKey}'\n" &

@@ -1,7 +1,6 @@
 from re import escape_re
 import options, strutils
 import ../types/datatype_definition
-import ../support/openrange
 
 proc struct_compute_regex*(dd: DatatypeDefinition)
 import ../regex_generator

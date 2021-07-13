@@ -6,7 +6,7 @@
 ## running the test suite.
 ##
 
-import tables, strutils, sets, terminal
+import tables, strformat, strutils, sets, terminal
 import ../testdata_generator, ../spec_parser, ../testdata_parser
 import ../types/datatype_definition
 import ../../textformats
@@ -60,6 +60,9 @@ proc generate_tests*(specfile = "", testfile = "", datatypes = ""): int =
   var to_generate = initHashSet[string]()
   if len(datatypes) > 0:
     for datatype in datatypes.split(','):
+      if datatype notin specification:
+        exit_with(ec_errsetting,
+          &"Datatype '{datatype}' not found in specification")
       to_generate.incl(datatype)
   else:
     for datatype in list_specification_datatypes(specfile):

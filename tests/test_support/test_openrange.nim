@@ -5,16 +5,18 @@ import textformats/support/openrange
 
 suite "openrange":
   test "to_openrange":
-    check (int.none, int.none).to_openrange ==
-      OpenRange[int](rmin: int.none, rmax: int.none)
-    check (1, 2).to_openrange == OpenRange[int](rmin: 1, rmax: 2)
-    check (1, int.none).to_openrange == OpenRange[int](rmin: 1, rmax: int.none)
-    check (uint.none, uint.none).to_openrange ==
-      OpenRange[uint](rmin: uint.none, rmax: uint.none)
+    check (int64.none, int64.none).to_openrange ==
+      OpenRange[int64](rmin: int64.none, rmax: int64.none)
+    check (1.int64, 2.int64).to_openrange ==
+      OpenRange[int64](rmin: 1.int64, rmax: 2.int64)
+    check (1.int64, int64.none).to_openrange ==
+      OpenRange[int64](rmin: 1.int64, rmax: int64.none)
+    check (uint64.none, uint64.none).to_openrange ==
+      OpenRange[uint64](rmin: uint64.none, rmax: uint64.none)
     #
     # in Nim 1.2.x the following generates
     # wrong C code and does not compile correctly (it uses the methods for
-    # int instead of those for Natural)
+    # int64 instead of those for Natural)
     #
     # check (Natural.none, Natural.none).to_openrange ==
     #   OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)
@@ -22,180 +24,180 @@ suite "openrange":
     # as a consequence in the following tests, OpenRange[Natural] is always
     # created using the constructor
   test "intrange_contains":
-    let i = 0
-    check i in (int.none, int.none)
-    check i in (-1, int.none)
-    check i in (int.none, 1)
-    check i in (-1, 1)
-    check i in (0, 1)
-    check i in (-1, 0)
-    check i notin (-2, -1)
-    check i notin (int.none, -1)
-    check i notin (1, int.none)
+    let i = 0.int64
+    check i in (int64.none, int64.none)
+    check i in (-1.int64, int64.none)
+    check i in (int64.none, 1.int64)
+    check i in (-1.int64, 1.int64)
+    check i in (0.int64, 1.int64)
+    check i in (-1.int64, 0.int64)
+    check i notin (-2.int64, -1.int64)
+    check i notin (int64.none, -1.int64)
+    check i notin (1.int64, int64.none)
   test "intrange_valid_min":
-    let i = 0
-    check i.valid_min((int.none, int.none).to_openrange)
-    check i.valid_min((-1, int.none).to_openrange)
-    check i.valid_min((int.none, 1).to_openrange)
-    check i.valid_min((-1, 1).to_openrange)
-    check i.valid_min((0, 1).to_openrange)
-    check i.valid_min((-1, 0).to_openrange)
-    check i.valid_min((-2, -1).to_openrange)
-    check i.valid_min((int.none, -1).to_openrange)
-    check not i.valid_min((1, int.none).to_openrange)
+    let i = 0.int64
+    check i.valid_min((int64.none, int64.none).to_openrange)
+    check i.valid_min((-1.int64, int64.none).to_openrange)
+    check i.valid_min((int64.none, 1.int64).to_openrange)
+    check i.valid_min((-1.int64, 1.int64).to_openrange)
+    check i.valid_min((0.int64, 1.int64).to_openrange)
+    check i.valid_min((-1.int64, 0.int64).to_openrange)
+    check i.valid_min((-2.int64, -1.int64).to_openrange)
+    check i.valid_min((int64.none, -1.int64).to_openrange)
+    check not i.valid_min((1.int64, int64.none).to_openrange)
   test "intrange_valid_max":
-    let i = 0
-    check i.valid_max((int.none, int.none).to_openrange)
-    check i.valid_max((-1, int.none).to_openrange)
-    check i.valid_max((int.none, 1).to_openrange)
-    check i.valid_max((-1, 1).to_openrange)
-    check i.valid_max((0, 1).to_openrange)
-    check i.valid_max((-1, 0).to_openrange)
-    check not i.valid_max((-2, -1).to_openrange)
-    check not i.valid_max((int.none, -1).to_openrange)
-    check i.valid_max((1, int.none).to_openrange)
+    let i = 0.int64
+    check i.valid_max((int64.none, int64.none).to_openrange)
+    check i.valid_max((-1.int64, int64.none).to_openrange)
+    check i.valid_max((int64.none, 1.int64).to_openrange)
+    check i.valid_max((-1.int64, 1.int64).to_openrange)
+    check i.valid_max((0.int64, 1.int64).to_openrange)
+    check i.valid_max((-1.int64, 0.int64).to_openrange)
+    check not i.valid_max((-2.int64, -1.int64).to_openrange)
+    check not i.valid_max((int64.none, -1.int64).to_openrange)
+    check i.valid_max((1.int64, int64.none).to_openrange)
   test "intrange_safe_inc_min":
     var
-      a = (int.none, int.none).to_openrange
-      b = (int.high-1, int.none).to_openrange
-      c = (int.high, int.high).to_openrange
-    check a.low == int.low
-    check b.low == int.high-1
-    check c.low == int.high
+      a = (int64.none, int64.none).to_openrange
+      b = (int64.high-1, int64.none).to_openrange
+      c = (int64.high, int64.high).to_openrange
+    check a.low == int64.low
+    check b.low == int64.high-1
+    check c.low == int64.high
     a.safe_inc_min
     b.safe_inc_min
     c.safe_inc_min
-    check a.low == int.low
-    check b.low == int.high
-    check c.low == int.high
+    check a.low == int64.low
+    check b.low == int64.high
+    check c.low == int64.high
   test "intrange_safe_dec_max":
     var
-      a = (int.none, int.none).to_openrange
-      b = (int.none, int.low+1).to_openrange
-      c = (int.none, int.low).to_openrange
-    check a.high == int.high
-    check b.high == int.low+1
-    check c.high == int.low
+      a = (int64.none, int64.none).to_openrange
+      b = (int64.none, int64.low+1).to_openrange
+      c = (int64.none, int64.low).to_openrange
+    check a.high == int64.high
+    check b.high == int64.low+1
+    check c.high == int64.low
     a.safe_dec_max
     b.safe_dec_max
     c.safe_dec_max
-    check a.high == int.high
-    check b.high == int.low
-    check c.high == int.low
+    check a.high == int64.high
+    check b.high == int64.low
+    check c.high == int64.low
   test "intrange_limits":
-    check low((int.none, int.none)) == int.low
-    check high((int.none, int.none)) == int.high
+    check low((int64.none, int64.none)) == int64.low
+    check high((int64.none, int64.none)) == int64.high
   test "intrange_lowstr":
-    check (int.none, int.none).to_openrange.lowstr == "-Inf"
-    check (int.none, 0).to_openrange.lowstr == "-Inf"
-    check (0, int.none).to_openrange.lowstr == "0"
+    check (int64.none, int64.none).to_openrange.lowstr == "-Inf"
+    check (int64.none, 0.int64).to_openrange.lowstr == "-Inf"
+    check (0.int64, int64.none).to_openrange.lowstr == "0"
   test "intrange_highstr":
-    check (int.none, int.none).to_openrange.highstr == "Inf"
-    check (int.none, 0).to_openrange.highstr == "0"
-    check (0, int.none).to_openrange.highstr == "Inf"
+    check (int64.none, int64.none).to_openrange.highstr == "Inf"
+    check (int64.none, 0.int64).to_openrange.highstr == "0"
+    check (0.int64, int64.none).to_openrange.highstr == "Inf"
   test "intrange_has_low":
-    check not (int.none, int.none).to_openrange.has_low
-    check not (int.none, 0).to_openrange.has_low
-    check (0, int.none).to_openrange.has_low
+    check not (int64.none, int64.none).to_openrange.has_low
+    check not (int64.none, 0.int64).to_openrange.has_low
+    check (0.int64, int64.none).to_openrange.has_low
   test "intrange_has_high":
-    check not (int.none, int.none).to_openrange.has_high
-    check (int.none, 0).to_openrange.has_high
-    check not (0, int.none).to_openrange.has_high
+    check not (int64.none, int64.none).to_openrange.has_high
+    check (int64.none, 0.int64).to_openrange.has_high
+    check not (0.int64, int64.none).to_openrange.has_high
   test "intrange_dollar":
-    check $(int.none, int.none).to_openrange == "[-Inf, Inf]"
-    check $(int.none, 0).to_openrange == "[-Inf, 0]"
-    check $(0, int.none).to_openrange == "[0, Inf]"
+    check $(int64.none, int64.none).to_openrange == "[-Inf, Inf]"
+    check $(int64.none, 0.int64).to_openrange == "[-Inf, 0]"
+    check $(0.int64, int64.none).to_openrange == "[0, Inf]"
   test "intrange_validate":
-    try: (int.none, int.none).to_openrange.validate except: check false
-    try: (int.none, 0).to_openrange.validate except: check false
-    try: (0, int.none).to_openrange.validate except: check false
-    expect(ValueError): (2, 1).to_openrange.validate
+    try: (int64.none, int64.none).to_openrange.validate except: check false
+    try: (int64.none, 0.int64).to_openrange.validate except: check false
+    try: (0.int64, int64.none).to_openrange.validate except: check false
+    expect(ValueError): (2.int64, 1.int64).to_openrange.validate
   test "uintrange_contains":
-    let u = 0'u
-    check u in (uint.none, uint.none)
-    check u in (0'u, uint.none)
-    check u in (uint.none, 1'u)
-    check u in (0'u, 1'u)
-    check u notin (1'u, 2'u)
-    check u notin (1'u, uint.none)
+    let u = 0.uint64
+    check u in (uint64.none, uint64.none)
+    check u in (0.uint64, uint64.none)
+    check u in (uint64.none, 1.uint64)
+    check u in (0.uint64, 1.uint64)
+    check u notin (1.uint64, 2.uint64)
+    check u notin (1.uint64, uint64.none)
   test "uintrange_valid_min":
-    let u = 0'u
-    let v = 10'u
-    check u.valid_min((uint.none, uint.none).to_openrange)
-    check u.valid_min((0'u, uint.none).to_openrange)
-    check u.valid_min((uint.none, 1'u).to_openrange)
-    check u.valid_min((0'u, 1'u).to_openrange)
-    check not u.valid_min((1'u, 2'u).to_openrange)
-    check not u.valid_min((1'u, uint.none).to_openrange)
-    check v.valid_min((1'u, 2'u).to_openrange)
-    check v.valid_min((1'u, uint.none).to_openrange)
+    let u = 0.uint64
+    let v = 10.uint64
+    check u.valid_min((uint64.none, uint64.none).to_openrange)
+    check u.valid_min((0.uint64, uint64.none).to_openrange)
+    check u.valid_min((uint64.none, 1.uint64).to_openrange)
+    check u.valid_min((0.uint64, 1.uint64).to_openrange)
+    check not u.valid_min((1.uint64, 2.uint64).to_openrange)
+    check not u.valid_min((1.uint64, uint64.none).to_openrange)
+    check v.valid_min((1.uint64, 2.uint64).to_openrange)
+    check v.valid_min((1.uint64, uint64.none).to_openrange)
   test "uintrange_valid_max":
-    let u = 0'u
-    let v = 10'u
-    check u.valid_max((uint.none, uint.none).to_openrange)
-    check u.valid_max((0'u, uint.none).to_openrange)
-    check u.valid_max((uint.none, 1'u).to_openrange)
-    check u.valid_max((0'u, 1'u).to_openrange)
-    check u.valid_max((1'u, 2'u).to_openrange)
-    check u.valid_max((1'u, uint.none).to_openrange)
-    check not v.valid_max((1'u, 2'u).to_openrange)
-    check v.valid_max((1'u, uint.none).to_openrange)
+    let u = 0.uint64
+    let v = 10.uint64
+    check u.valid_max((uint64.none, uint64.none).to_openrange)
+    check u.valid_max((0.uint64, uint64.none).to_openrange)
+    check u.valid_max((uint64.none, 1.uint64).to_openrange)
+    check u.valid_max((0.uint64, 1.uint64).to_openrange)
+    check u.valid_max((1.uint64, 2.uint64).to_openrange)
+    check u.valid_max((1.uint64, uint64.none).to_openrange)
+    check not v.valid_max((1.uint64, 2.uint64).to_openrange)
+    check v.valid_max((1.uint64, uint64.none).to_openrange)
   test "uintrange_safe_inc_min":
     var
-      a = (uint.none, uint.none).to_openrange
-      b = (uint.high-1, uint.none).to_openrange
-      c = (uint.high, uint.high).to_openrange
-    check a.low == 0'u
-    check b.low == uint.high-1
-    check c.low == uint.high
+      a = (uint64.none, uint64.none).to_openrange
+      b = (uint64.high-1, uint64.none).to_openrange
+      c = (uint64.high, uint64.high).to_openrange
+    check a.low == 0.uint64
+    check b.low == uint64.high-1
+    check c.low == uint64.high
     a.safe_inc_min
     b.safe_inc_min
     c.safe_inc_min
-    check a.low == 0'u
-    check b.low == uint.high
-    check c.low == uint.high
+    check a.low == 0.uint64
+    check b.low == uint64.high
+    check c.low == uint64.high
   test "uintrange_safe_dec_max":
     var
-      a = (uint.none, uint.none).to_openrange
-      b = (uint.none, 1'u).to_openrange
-      c = (uint.none, 0'u).to_openrange
-    check a.high == int.high.uint
-    check b.high == 1'u
-    check c.high == 0'u
+      a = (uint64.none, uint64.none).to_openrange
+      b = (uint64.none, 1.uint64).to_openrange
+      c = (uint64.none, 0.uint64).to_openrange
+    check a.high == int64.high.uint64
+    check b.high == 1.uint64
+    check c.high == 0.uint64
     a.safe_dec_max
     b.safe_dec_max
     c.safe_dec_max
-    check a.high == int.high.uint
-    check b.high == 0'u
-    check c.high == 0'u
+    check a.high == int64.high.uint64
+    check b.high == 0.uint64
+    check c.high == 0.uint64
   test "uintrange_limits":
-    check low((uint.none, uint.none)) == 0'u
-    check high((uint.none, uint.none)) == int.high.uint
+    check low((uint64.none, uint64.none)) == 0.uint64
+    check high((uint64.none, uint64.none)) == int64.high.uint64
   test "uintrange_lowstr":
-    check (uint.none, uint.none).to_openrange.lowstr == "0"
-    check (uint.none, 0'u).to_openrange.lowstr == "0"
-    check (1'u, uint.none).to_openrange.lowstr == "1"
+    check (uint64.none, uint64.none).to_openrange.lowstr == "0"
+    check (uint64.none, 0.uint64).to_openrange.lowstr == "0"
+    check (1.uint64, uint64.none).to_openrange.lowstr == "1"
   test "uintrange_highstr":
-    check (uint.none, uint.none).to_openrange.highstr == "Inf"
-    check (uint.none, 1'u).to_openrange.highstr == "1"
-    check (0'u, uint.none).to_openrange.highstr == "Inf"
+    check (uint64.none, uint64.none).to_openrange.highstr == "Inf"
+    check (uint64.none, 1.uint64).to_openrange.highstr == "1"
+    check (0.uint64, uint64.none).to_openrange.highstr == "Inf"
   test "uintrange_has_low":
-    check not (uint.none, uint.none).to_openrange.has_low
-    check not (uint.none, 0'u).to_openrange.has_low
-    check (1'u, uint.none).to_openrange.has_low
+    check not (uint64.none, uint64.none).to_openrange.has_low
+    check not (uint64.none, 0.uint64).to_openrange.has_low
+    check (1.uint64, uint64.none).to_openrange.has_low
   test "uintrange_has_high":
-    check not (uint.none, uint.none).to_openrange.has_high
-    check (uint.none, 1'u).to_openrange.has_high
-    check not (0'u, uint.none).to_openrange.has_high
+    check not (uint64.none, uint64.none).to_openrange.has_high
+    check (uint64.none, 1.uint64).to_openrange.has_high
+    check not (0.uint64, uint64.none).to_openrange.has_high
   test "uintrange_dollar":
-    check $(uint.none, uint.none).to_openrange == "[0, Inf]"
-    check $(uint.none, 0'u).to_openrange == "[0, 0]"
-    check $(0'u, uint.none).to_openrange == "[0, Inf]"
+    check $(uint64.none, uint64.none).to_openrange == "[0, Inf]"
+    check $(uint64.none, 0.uint64).to_openrange == "[0, 0]"
+    check $(0.uint64, uint64.none).to_openrange == "[0, Inf]"
   test "uintrange_validate":
-    try: (uint.none, uint.none).to_openrange.validate except: check false
-    try: (uint.none, 0'u).to_openrange.validate except: check false
-    try: (0'u, uint.none).to_openrange.validate except: check false
-    expect(ValueError): (1'u, 0'u).to_openrange.validate
+    try: (uint64.none, uint64.none).to_openrange.validate except: check false
+    try: (uint64.none, 0.uint64).to_openrange.validate except: check false
+    try: (0.uint64, uint64.none).to_openrange.validate except: check false
+    expect(ValueError): (1.uint64, 0.uint64).to_openrange.validate
   test "naturalrange_contains":
     let u = 0.Natural
     check u in OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)

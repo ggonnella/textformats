@@ -88,12 +88,12 @@ suite "yaml_support":
     check not m.is_string
     check not q.is_string
   test "to_int":
-    check i.to_int == 1
-    check i2.to_int == -1
+    check i.to_int == 1'i64
+    check i2.to_int == -1'i64
     expect(NodeValueError): discard f.to_int
     expect(NodeValueError): discard q.to_int
   test "to_uint":
-    check i.to_uint == 1'u
+    check i.to_uint == 1'u64
     expect(NodeValueError): discard i2.to_uint
   test "to_natural":
     check i.to_natural == 1.Natural
@@ -107,14 +107,14 @@ suite "yaml_support":
   test "to_string":
     check s.to_string == "a"
   test "to_opt_int":
-    check i.some.to_opt_int == 1.some
-    check (YamlNode.none).to_opt_int == int.none
-    check i2.some.to_opt_int == (-1).some
+    check i.some.to_opt_int == 1'i64.some
+    check (YamlNode.none).to_opt_int == int64.none
+    check i2.some.to_opt_int == (-1'i64).some
     expect(NodeValueError): discard f.some.to_opt_int
     expect(NodeValueError): discard q.some.to_opt_int
   test "to_opt_uint":
-    check i.some.to_opt_uint == 1'u.some
-    check YamlNode.none.to_opt_uint == uint.none
+    check i.some.to_opt_uint == 1'u64.some
+    check YamlNode.none.to_opt_uint == uint64.none
     expect(NodeValueError): discard i2.some.to_opt_uint
   test "to_opt_natural":
     check i.some.to_opt_natural == 1.Natural.some
@@ -132,13 +132,13 @@ suite "yaml_support":
     check s.some.to_opt_string == "a".some
     check YamlNode.none.to_opt_string == string.none
   test "to_int_default":
-    check i.some.to_int(0) == 1
+    check i.some.to_int(0) == 1'i64
     check YamlNode.none.to_int(0) == 0
     expect(NodeValueError): discard f.some.to_int(0)
     expect(NodeValueError): discard q.some.to_int(0)
   test "to_uint_default":
-    check i.some.to_uint(0) == 1'u
-    check YamlNode.none.to_uint(0'u) == 0'u
+    check i.some.to_uint(0) == 1'u64
+    check YamlNode.none.to_uint(0'u64) == 0'u
     expect(NodeValueError): discard i2.some.to_uint(0'u)
   test "to_natural_default":
     check i.some.to_natural(0.Natural) == 1.Natural
@@ -156,12 +156,12 @@ suite "yaml_support":
     check s.some.to_string("") == "a"
     check YamlNode.none.to_string("") == ""
   test "to_int_default_name":
-    check i.some.to_int(0, "x") == 1
+    check i.some.to_int(0, "x") == 1'i64
     check YamlNode.none.to_int(0, "x") == 0
     expect(NodeValueError): discard f.some.to_int(0, "x")
     expect(NodeValueError): discard q.some.to_int(0, "x")
   test "to_uint_default_name":
-    check i.some.to_uint(0, "x") == 1'u
+    check i.some.to_uint(0, "x") == 1'u64
     check YamlNode.none.to_uint(0'u, "x") == 0'u
     expect(NodeValueError): discard i2.some.to_uint(0'u, "x")
   test "to_natural_default_name":
@@ -213,21 +213,21 @@ suite "yaml_support":
     try: s.validate_is_string except: check false
     expect(NodeValueError): n.validate_is_string
   test "to_json_node":
-    check i.to_json_node == %*1
+    check i.to_json_node == %*1'i64
     check n.to_json_node == newJNull()
     check b.to_json_node == %*true
     check s.to_json_node == %*"a"
     check f.to_json_node == %*1.0
     check m.to_json_node == %*{"b": "c"}
-    check q.to_json_node == %*[1, 2]
+    check q.to_json_node == %*[1'i64, 2'i64]
   test "to_opt_json_node":
-    check i.some.to_opt_json_node == some(%*1)
+    check i.some.to_opt_json_node == some(%*1'i64)
     check n.some.to_opt_json_node == newJNull().some
     check b.some.to_opt_json_node == some(%*true)
     check s.some.to_opt_json_node == some(%*"a")
     check f.some.to_opt_json_node == some(%*1.0)
     check m.some.to_opt_json_node == some(%*{"b": "c"})
-    check q.some.to_opt_json_node == some(%*[1, 2])
+    check q.some.to_opt_json_node == some(%*[1'i64, 2'i64])
     check YamlNode.none.to_opt_json_node == JsonNode.none
   test "validate_has_key":
     try: m.validate_has_key("b") except: check false

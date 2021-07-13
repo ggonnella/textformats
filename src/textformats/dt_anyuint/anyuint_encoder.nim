@@ -7,4 +7,4 @@ proc anyuint_encode*(value: JsonNode, dd: DatatypeDefinition): string =
     raise newException(EncodingError,
             "Error: value is not a non-negative integer\n" &
             value.describe_kind & "\n")
-  return $value.get_int
+  return $value.get_biggest_int

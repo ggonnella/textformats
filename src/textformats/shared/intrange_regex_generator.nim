@@ -3,7 +3,7 @@ import strutils
 # adapted from coproc answer in
 # https://stackoverflow.com/questions/33512037/a-regular-expression-generator-for-number-ranges
 
-template digit_range[T: int or uint](start: T, stop: T): string =
+template digit_range[T: int64 or uint64](start: T, stop: T): string =
   ## character class for digits or digit ranges
   assert(start < 10 and start >= 0)
   assert(stop < 10 and stop >= 0)
@@ -37,7 +37,7 @@ proc join_regexes(list: seq[string]): string =
       result = "(?:" & result & ")"
     if optional: result &= "?"
 
-template get_digit_range_pfx(str: string, i: int): string =
+template get_digit_range_pfx(str: string, i: int64): string =
   var result = ""
   if str[i].is_digit: result = str[i..i]
   elif str.len > i+1 and str[i..i+1] == r"\d": result = str[i..i+1]
@@ -47,13 +47,13 @@ template get_digit_range_pfx(str: string, i: int): string =
       if str[i+2+j].is_digit and str[i+3+j] == ']': result = str[i..i+3+j]
   result
 
-template min_str_len(list: seq[string]): int =
+template min_str_len(list: seq[string]): int64 =
   var result = list[0].len
   for i in 1..<list.len:
     if list[i].len < result: result = list[i].len
   result
 
-template fixed_digits_lcp(list: seq[string]): int =
+template fixed_digits_lcp(list: seq[string]): int64 =
   var result = 0
   let msl = min_str_len(list)
   block compute_lcp:
@@ -78,14 +78,14 @@ template simplify_by_lcp(list: var seq[string]) =
       list.setlen(1)
       list[0] = joined
 
-proc intrng_regex_parts[T: int or uint](a: T, b: T): seq[string]
+proc intrng_regex_parts[T: int64 or uint64](a: T, b: T): seq[string]
 
-template negintrng_regex_parts(a: int, b: int): seq[string] =
+template negintrng_regex_parts(a: int64, b: int64): seq[string] =
   assert(a < 0)
   assert(a <= b)
   var result = newseq[string]()
-  if a == int.low:
-    result.add($int.low)
+  if a == int64.low:
+    result.add($int64.low)
     result.add(intrng_regex_parts(a+1,b))
   elif b < 0:
     result.add("-" & join_regexes(intrng_regex_parts(-b, -a)))
@@ -93,21 +93,21 @@ template negintrng_regex_parts(a: int, b: int): seq[string] =
     result.add("0")
     if -a > b: # -100, 50
       if b > 0:
-        result.add("-?" & join_regexes(intrng_regex_parts(1, b)))
+        result.add("-?" & join_regexes(intrng_regex_parts(1.int64, b)))
       result.add("-" & join_regexes(intrng_regex_parts(b+1, -a)))
     else: # -50, 100
-      result.add("-?" & join_regexes(intrng_regex_parts(1, -a)))
+      result.add("-?" & join_regexes(intrng_regex_parts(1.int64, -a)))
       if -a < b:
-        result.add(intrng_regex_parts(1-a, b))
+        result.add(intrng_regex_parts(1.int64-a, b))
   result
 
-template zerointrng_regex_parts[T: int or uint](b: T): seq[string] =
+template zerointrng_regex_parts[T: int64 or uint64](b: T): seq[string] =
   var result = @[digit_range(T(0), min(b, 9))]
   if b > 9:
     result &= intrng_regex_parts(T(10), b)
   result
 
-template posintrng_regex_parts[T: int or uint](a, b: T): seq[string] =
+template posintrng_regex_parts[T: int64 or uint64](a, b: T): seq[string] =
   var result: seq[string]
   let
     a_pfx = ($a)[0..^2]
@@ -129,33 +129,33 @@ template posintrng_regex_parts[T: int or uint](a, b: T): seq[string] =
       result.add(join_regexes(subresult) & r"\d")
     if b_lsd != 9:
       let dr =
-        when a is int: digit_range(0, b_lsd)
-        else: digit_range(0.uint, b_lsd)
+        when T is int64: digit_range(0.int64, b_lsd)
+        else: digit_range(0.uint64, b_lsd)
       result.add(b_pfx & dr)
     simplify_by_lcp(result)
   result
 
-# generate list of regular expressions for the positive integers range [a,b]
-proc intrng_regex_parts[T: int or uint](a: T, b: T): seq[string] =
+# generate list of regular expressions for the positive int64egers range [a,b]
+proc intrng_regex_parts[T: int64 or uint64](a: T, b: T): seq[string] =
   if b < a: result = @[]
   elif a == b: result = @[$a]
   elif a < 0:
-    when a is int: result = negintrng_regex_parts(a, b)
+    when a is int64: result = negintrng_regex_parts(a, b)
   elif a == 0: result = zerointrng_regex_parts(b)
   else: result = posintrng_regex_parts(a, b)
 
-proc intrng_regex*(a: int, b: int): string =
+proc intrng_regex*(a: int64, b: int64): string =
   join_regexes(intrng_regex_parts(a, b))
 
-proc uintrng_regex*(a: uint, b: uint): string =
+proc uintrng_regex*(a: uint64, b: uint64): string =
   join_regexes(intrng_regex_parts(a, b))
 
 when is_main_module:
   import regex
   block exhaustive_tests:
-    proc test_range[T: int or uint](a: T, b: T) =
+    proc test_range[T: int64 or uint64](a: T, b: T) =
       let r =
-        when T is int: re(intrng_regex(a, b))
+        when T is int64: re(intrng_regex(a, b))
         else:          re(uintrng_regex(a, b))
       for n in a..b:
         do_assert(($n).match(r))
@@ -165,23 +165,23 @@ when is_main_module:
       for j in i..<n.len:
         test_range(n[i], n[j])
         if n[i] > 0 and n[j] > 0:
-          test_range(n[i].uint, n[j].uint)
-  block extreme_values_int:
+          test_range(n[i].uint64, n[j].uint64)
+  block extreme_values_int64:
     let
-      r1 = intrng_regex(int.low,0).re
-      r2 = intrng_regex(int.low,int.high).re
-      r3 = intrng_regex(0,int.high).re
+      r1 = intrng_regex(int64.low,0).re
+      r2 = intrng_regex(int64.low,int64.high).re
+      r3 = intrng_regex(0,int64.high).re
     for r in @[r1, r2]:
-      do_assert(($int.low).match(r))
-      do_assert(($(int.low+1)).match(r))
+      do_assert(($int64.low).match(r))
+      do_assert(($(int64.low+1)).match(r))
     for r in @[r1, r2, r3]:
       do_assert("0".match(r))
     for r in @[r2, r3]:
-      do_assert(($(int.high-1)).match(r))
-      do_assert(($(int.high)).match(r))
-  block extreme_values_uint:
-    let r = uintrng_regex(0.uint,uint.high).re
+      do_assert(($(int64.high-1)).match(r))
+      do_assert(($(int64.high)).match(r))
+  block extreme_values_uint64:
+    let r = uintrng_regex(0.uint64,uint64.high).re
     do_assert("0".match(r))
-    do_assert(($uint.high).match(r))
-    do_assert(($(uint.high-1)).match(r))
+    do_assert(($uint64.high).match(r))
+    do_assert(($(uint64.high-1)).match(r))
 

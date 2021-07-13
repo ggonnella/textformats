@@ -139,25 +139,25 @@ template validate_is_bool*(n: YamlNode, emsg_pfx="", emsg_sfx="") =
 template validate_is_string*(n: YamlNode, emsg_pfx="", emsg_sfx="") =
   n.validate_tag_or_guesstype(n.is_string(), "string", emsg_pfx, emsg_sfx)
 
-converter to_int*(n: YamlNode): int =
+converter to_int*(n: YamlNode): int64 =
   n.validate_is_int(); n.content.load(result)
 
-converter to_uint*(n: YamlNode): uint =
-  var tmp: int
+converter to_uint*(n: YamlNode): uint64 =
+  var tmp: int64
   n.validate_is_int()
-  if n < 0:
+  n.content.load(tmp)
+  if tmp < 0:
     raise newException(NodeValueError,
             "Invalid value for unsigned integer (< 0)")
-  n.content.load(tmp)
   return tmp.uint
 
 converter to_natural*(n: YamlNode): Natural =
-  var tmp: Natural
+  var tmp: int64
   n.validate_is_int()
-  if n < 0:
+  n.content.load(tmp)
+  if tmp < 0:
     raise newException(NodeValueError,
             "Invalid value for non-negative integer (< 0)")
-  n.content.load(tmp)
   return tmp.Natural
 
 converter to_float*(n: YamlNode): float =
@@ -169,11 +169,11 @@ converter to_bool*(n: YamlNode): bool =
 converter to_string*(n: YamlNode): string =
   n.validate_is_string(); result = n.content #.load(result)
 
-converter to_opt_int*(n: Option[YamlNode]): Option[int] =
-  if n.is_some: n.unsafe_get.to_int.some else: int.none
+converter to_opt_int*(n: Option[YamlNode]): Option[int64] =
+  if n.is_some: n.unsafe_get.to_int.some else: int64.none
 
-converter to_opt_uint*(n: Option[YamlNode]): Option[uint] =
-  if n.is_some: n.unsafe_get.to_uint.some else: uint.none
+converter to_opt_uint*(n: Option[YamlNode]): Option[uint64] =
+  if n.is_some: n.unsafe_get.to_uint.some else: uint64.none
 
 converter to_opt_natural*(n: Option[YamlNode]): Option[Natural] =
   if n.is_some: n.unsafe_get.to_natural.some else: Natural.none
@@ -187,19 +187,19 @@ converter to_opt_bool*(n: Option[YamlNode]): Option[bool] =
 converter to_opt_string*(n: Option[YamlNode]): Option[string] =
   if n.is_some: n.unsafe_get.to_string.some else: string.none
 
-proc to_int*(n: Option[YamlNode], default: int): int =
+proc to_int*(n: Option[YamlNode], default: int64): int64 =
   if n.is_some: n.unsafe_get.to_int else: default
 
-proc to_int*(n: Option[YamlNode], default: int, name: string): int =
+proc to_int*(n: Option[YamlNode], default: int64, name: string): int64 =
   try:
     result = n.to_int(default=default)
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{name}'.\n")
 
-proc to_uint*(n: Option[YamlNode], default: uint): uint =
+proc to_uint*(n: Option[YamlNode], default: uint64): uint64 =
   if n.is_some: n.unsafe_get.to_uint else: default
 
-proc to_uint*(n: Option[YamlNode], default: uint, name: string): uint =
+proc to_uint*(n: Option[YamlNode], default: uint64, name: string): uint64 =
   try:
     result = n.to_uint(default=default)
   except NodeValueError:

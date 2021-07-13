@@ -15,7 +15,7 @@ type
     case kind*: ValidationInfoItemKind
     of viikRegex: r_value: tuple[raw: string, compiled: Regex]
     of viikString: s_value: string
-    of viikInt: i_value: int
+    of viikInt: i_value: int64
     of viikFloat: f_value: float
 
   ValidationInfo* = TableRef[string,
@@ -95,16 +95,13 @@ proc validate_encoded_str(encoded_str: string,
 proc parse_encoded*(n: Option[YamlNode],
                     validation_info: ValidationInfo):
                     Option[TableRef[JsonNode, string]] =
-  const
-    errmsg_whole = &"Invalid value of '{EncodedKey}' node\n"
-    errmsg_elem  = &"Invalid element in '{EncodedKey}' mapping\n"
   if n.is_none:
     if len(validation_info) == 1:
       let decoded_jsonstr = to_seq(validation_info.keys)[0]
       raise newException(DefSyntaxError,
               &"'{EncodedKey}' key required in definition,\n" &
               "since it is unclear which text representation\n" &
-              "to use for encoding the value: {decoded_jsonstr}\n")
+              &"to use for encoding the value: {decoded_jsonstr}\n")
     elif len(validation_info) > 1:
       raise newException(DefSyntaxError,
               &"'{EncodedKey}' mapping required in definition\n" &
@@ -123,6 +120,7 @@ proc parse_encoded*(n: Option[YamlNode],
     elif n.unsafe_get.is_mapping:
       var table = newTable[JsonNode, string]()
       for encoded, decoded in n.unsafe_get:
+        const errmsg_elem = &"Invalid element in '{EncodedKey}' mapping\n"
         encoded.validate_is_scalar(errmsg_elem)
         let
           decoded_json = decoded.to_json_node
@@ -151,7 +149,7 @@ proc parse_encoded*(n: Option[YamlNode],
         raise newException(DefSyntaxError,
                 &"'{EncodedKey}' shall contain a string\n" &
                 "since it is unclear which text representation to use\n" &
-                "for encoding a single decoding value: {decoded_jsonstr}\n")
+                &"for encoding a single decoding value: {decoded_jsonstr}\n")
       elif len(validation_info) > 1:
         raise newException(DefSyntaxError,
                 &"'{EncodedKey}' shall contain a mapping\n" &
