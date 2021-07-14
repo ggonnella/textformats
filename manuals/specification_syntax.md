@@ -121,6 +121,65 @@ value depend on the tagname and the datatype on the typecode
 : a value which may have different formats, described as separate
 definitions
 
+## List of non definition-kind keys
+
+The following tables summarize further keys used under the definition
+mapping.  Details are given in the following sections.
+
+In the next table, the keys used to specify details of the formatting
+of the text representation are given:
+
+| Key | Definition kinds | Value type | Default | Purpose |
+| --- | ---              | ---        | ---     |
+| `prefix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string preceding the set of elements |
+| `suffix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string following the set of elements |
+| `splitted_by` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, never found in them |
+| `separator` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, possibly also found in them |
+| `value_separator` | `named_values` | string | constant string between name and value of each element |
+| `internal_separator` | `tagged_values` | string | constant string in each element between tagname and typecode, and between typecode and value |
+| `canonical` | `regex` | string | undefined | textual representation to be used for encoding |
+| `canonical` | `regexes`, `accepted_values` | mapping | undefined | textual representations to be used for encoding |
+
+The following table lists the keys used to specify validation rules
+for the represented data:
+
+| Key | Definition kinds | Value type | Default | Purpose |
+| --- | ---              | ---        | ---     |
+| `min_length` | `list_of` | unsigned integer | 1 | min number of elements |
+| `max_length` | `list_of` | unsigned integer | infinite | max number of elements |
+| `length` | `list_of` | unsigned integer | undefined | number of elements |
+| `n_required` | `composed_of` | unsigned integer | length of `composed_of` list | first `n_required` elements of the list must always be present |
+| `single` | `named_values` | list of strings | elements which can be present only once |
+| `required` | `named_values` | list of strings | elements which must always be present |
+| `predefined` | `tagged_values` | mapping (tagnames: typecodes) | type of predefined tags |
+
+The next table summarize the keys used for settings which affect the
+the data resulting from parsing the textual representation:
+
+| Key | Definition kinds | Value type | Default | Purpose |
+| --- | ---              | ---        | ---     |
+| `empty`     | all | any | undefined | data value if element is missing in text repr. |
+| `as_string` | all | boolean | false | if set, definition is used only for validation |
+| `wrapped` | `one_of` | boolean | false | augment decoded value with branch names |
+| `branch_names` | `one_of` | list of strings | ref.names/`[n]` | names of the branches to use for `wrapped` |
+| `hide_constants` | `composed_of` | boolean | if set, elements of type `constant` are not used in the decoded value |
+| `implicit` | `composed_of`, `named_values`, `tagged_values` | mapping (keys: values) | constant entries to add to decoded data |
+
+The following keys are used for numeric data types; they are not given direcly
+in the definition mapping, but in the value of the definition-kind key (i.e.
+for example `{integer: {min: ...}}`, not `{integer: ..., min: xxx}`).
+
+| Key | Definition kinds | Value type | Default | Purpose |
+| --- | ---              | ---        | ---     |
+| `min` | `integer` | integer | -infinite | minimum valid data value |
+| `max` | `integer` | integer | infinite | maximum valid data value |
+| `min` | `unsigned_integer` | unsigned integer | 0 | minimum valid data value |
+| `max` | `unsigned_integer` | unsigned integer | infinite | maximum valid data value |
+| `min` | `float` | float | -infinite | data value must be > or >= `min` |
+| `min_excluded` | `float` | boolean | false | value given as `min` is not included in valid data range |
+| `max` | `float` | float | infinite | data value must be < or <= `max` |
+| `max_excluded` | `float` | boolean | false | value given as `max` is not included in valid data range |
+
 ## Predefined datatypes
 
 The following basic datatype definitions are predefined:
@@ -381,51 +440,462 @@ datatypes:
  u7: {unsigned_integer: {min: 10, max: 100, base: 2}}
 ```
 
-### Encoded value formatting and validation
+## Definitions of kind `one_of`
 
-Keys for `composed_of` and `list_of` definitions:
+Definitions of kind `one_of` are used for elements for which multiple
+type of values are possible. That is instead of a single definition,
+for the element, a list of definitions is given, under the `one_of` key.
 
-#### `splitted_by`
-#### `separator`
-#### `prefix`
-#### `suffix`
+The branches of a `one_of` definition must be at least two.  The branch
+definitions can be given directly (definition mapping) or a reference can be
+used, i.e. the name of a pre-defined or user defined definition can be input
+(string). The branch definitions can be of any kind, i.e. scalar, compound of
+even `one_of` definitions.
 
-For `named_values`:
+Here are examples of `one_of` definitions:
+```YAML
+datatypes:
+  o1: {one_of: {integer, float}}
+  o2:
+    one_of:
+      - float: {min: 0.0, max: 1.0}
+      - regex: "[A-Z]{3}"
+```
 
-#### `value_separator`
+The value of the decoded data of the `one_of` element is, by default, the
+decoded value of the first definition for which the textual representation is
+valid (first in the order they are given in the list under `one_of`).  Also, by
+default, when encoding data with a `one_of` datatype, the first of the
+definitions given under `one_of` (in the order they are given) for which the
+data is valid is applied.
 
-For `tagged_values`:
+For example, when using the `o1` datatype, the decoded value of `1` would be
+the integer 1, although the floating point number 1.0 could have the
+same representation: this is the branch`integer` comes before `float`
+in the definitions list under ``one_of``.
 
-#### `internal_separator`
-#### `tagnames`
+### Wrapped ``one_of`` definitions
 
-### Decoded value validation
+In some cases, however, it is useful to know which of the definitions of the
+`one_of` was applied to decode the textual representation.  In this case the
+`wrapped: true` option can be added to the definition mapping. For each of the
+"branches" (definitions listed under `one_of`) a name is assigned. The decoded
+value is then a single-entry mapping, where the key is the name of the first
+branch for which the textual representation is valid and the value is the
+decoded value obtained by applying the branch definition.
 
-#### `min`, `max`, `min_excluded`, `max_excluded`
-#### `length`, `max_length`, `min_length`
+The default names used for `wrapped` are computed as follow. If a branch
+definition is given as a reference, then the name of the target of the reference
+is used (i.e. the string entered). If a branch definition is given as a mapping,
+the name is the ordinal number of the branch, enclosed in square brackets
+(starting from `[1]`). For example, in the definitions given below, the branch
+names would be: `integer` and `string` for `ow1`; `float` and `[2]` for `ow2`.
+In place of the default names, user-defined branch names can be
+entered in the definition as a list of string, under the `branch_names` key,
+such as in the example `ow3`.
 
-For `named_values`:
+Examples of `one_of` definitions using `wrapped` are given here:
+```YAML
+datatypes:
+  ow1: {one_of: {integer, float}, wrapped: true}
+  ow2:
+    one_of:
+      - float
+      - regex: "[A-Z]{3}"
+    wrapped: true
+  ow3:
+    one_of:
+      - float
+      - regex: "[A-Z]{3}"
+    wrapped: true
+    branch_names: [float_score, letters_score]
+```
 
-#### `single`
-#### `required`
+Here are examples of applying the above definitions for decoding a textual
+representation:
 
-For `tagged_values`:
-#### `predefined`
+| Definition | Text repr. | Data value (JSON)           |
+| ---        | ---        | ---                         |
+| ``o1``     | ``1``      | ``1``                       |
+| ``ow1``    | ``1``      | ``{"unsigned_integer": 1}`` |
+| ``o2``     | ``ACZ``    | ``ACZ``                     |
+| ``ow2``    | ``ACZ``    | ``{"[2]": "ACZ"}``          |
+| ``ow3``    | ``ACZ``    | ``{"letters_score": "ACZ"}  |
 
-### Decoded value content
+## Definitions of kind `list_of`
 
-#### `as_string`
-#### Decoding mappings
-#### `canonical`
-#### `empty`
-#### `implicit`
-#### `hide_constants`
-#### `wrapped`
+Definitions of kind `list_of` are used for compound elements which consist of
+ordered sets of instances of sub-elements, for which the type does not depend
+on the ordinal position in the set, i.e. all sets elements have the same
+datatype definition (or any of a list of given datatype definitions, branches
+of a `one_of` definition). The datatype for the list elements is given under
+the `list_of` key, either as a definition mapping, or as a reference to another
+datatype.  Any kind of of element definition can be used (including lists and
+other compound datatypes, although in this case the definition must carefully
+avoid ambuiguitites, e.g.  using different separator strings).
+
+The decoded data value of a `list_of` definition is a sequence (Nim, YAML),
+list (Python), JSON array (JSON, C/C++), except if the `as_string` option is
+set (see section "Validation-only compound definitions"). By default,
+the list must contain at least one element and has no limit in the number of
+elements.  Validation rules can be used to set the valid length of the list,
+either as a constant (key `length`) or minimum (key `min_length`) and/or
+maximum (key `max_length`) number of elements. Empty lists are supported, i.e.
+the `min_length` can be set to the value 0.
+
+If in the textual representation, the elements of the list are separated
+by a constant string, this can be specified in the definition. If the separator
+string is never contained in the elements (not even escaped), it is given
+under the key `splitted_by`; otherwise it is given under the key `separator`.
+By default no separator string is used. For more details about the use
+of separators, see the section "Formatting options for compound definitions"
+below.
+
+Examples of `list_of` definitions are given below:
+```YAML
+datatypes:
+  l1:
+    list_of: unsigned_integer
+    splitted_by: ";"
+  l2:
+    list_of: {regex: "[^_][A-Z_][^_]"}
+    separator: "_"
+  l3:
+    list_of: {regex: [0-9]}
+    length: 3
+```
+
+## Definitions of kind `composed_of`
+
+Definitions of kind `composed_of` are used for compound elements which consist
+of ordered sets of instances of sub-elements, for which the type depends on the
+ordinal position in the set, i.e. each element has a possibly different
+datatype definition.  The name and the datatype of each element is given as a
+list of one-entry mappings (name: datatype) under the `composed_of` key.
+Thereby the datatype is given either as a definition mapping, or as a reference
+to another datatype.  Any kind of of element definition can be used (including
+`composed_of` and other compound datatypes, although in this case the
+definition must carefully avoid ambuiguitites, e.g. using different separator
+strings).
+
+The decoded data value of a `composed_of` definition is a table (Nim), mapping
+(YAML), dict (Python), JSON object (JSON, C/C++), except if the `as_string`
+option is set (see section "Validation-only compound definitions").
+
+By default, the mapping must contain all elements. However it is possible to
+make the last elements optional, by setting `n_required` to the number of
+elements which must at least be present (such as in `cof1` below).  When using
+`n_required` "holes" are not allowed; i.e. if an optional element is present,
+all elements before it must also be present (this is necessary, since element
+name and type are determined by their ordinal position). If a middle element
+can be missing, and the different values be reconignized anyway, definitions of
+the elements allowing for empty sequences can be used (such as in `cof2`
+below). In other cases, e.g. if the separator is missing along with the
+element, multiple `composed_of` definitions (with and without the said middle
+element) can be combined using a `one_of` definition (such as in `cof3` below).
+
+If in the textual representation, the elements of the list are separated by a
+constant string, this can be specified in the definition. If the separator
+string is never contained in the elements (not even escaped), it is given under
+the key `splitted_by`; otherwise it is given under the key `separator`.  By
+default no separator string is used.  If different separators are used for
+different elements, they can be defined as `constant` elements and
+`hide_constants: true` (which hides all constants from the decoded data) can be
+used, such as in `cof2` below.  For more details about the use of separators,
+see the section "Formatting options for compound definitions" below.
+
+```YAML
+datatypes:
+  cof1:
+    composed_of:
+      - x: integer
+      - y: integer
+      - z: integer
+    splitted_by: ","
+    n_required: 2
+  cof2:
+    composed_of:
+      - node1: {float: {min: 0.0, max: 1.0}}
+      - sep1: {constant: "-"}
+      - relation: {accepted_values: [A, B, C], empty: X}
+      - sep2: {constant: "->"}
+      - node2: {unsigned_integer: {min: 0, max: 100}}
+    hide_constants: true
+    prefix: "("
+    suffix: ")"
+  cof3:
+    one_of:
+      - composed_of:
+          - node1: integer
+          - relation: {accepted_values: [A, B, C]}
+          - node2: integer
+        splitted_by: ":"
+        prefix: "["
+        suffix: "]"
+      - composed_of:
+          - node1: integer
+          - node2: integer
+        splitted_by: ":"
+        prefix: "["
+        suffix: "]"
+        implicit: {relation: "X"}
+```
+
+The following table gives examples of using the three definitions above:
+
+| Datatype | Text repr. | Data value (JSON)           |
+| ---      | ---        | ---                         |
+| `cof1`   | `-1,2,4`   | `{"x": -1, "y": 2, "z": 4}` |
+| `cof1`   | `2,4`      | `{"x": 2, "y": 4}`          |
+| `cof2`   | `(0.232-A->23)` | `{"node1": 0.232, "relation": "A", "node2": 23}` |
+| `cof2`   | `(0.232-->23)`  | `{"node1": 0.232, "relation": "X", "node2": 23}` |
+| `cof3`   | `1:B:-3` | `{"node1": 1 , "relation": "B", "node2": -3}` |
+| `cof3`   | `1:-3`   | `{"node1": 1 , "relation": "X", "node2": -3}` |
+
+## Definitions of kind `named_values`
+
+Definitions of kind `named_values` are used for compound elements which of sets
+of instances of sub-elements, each associated to a name (from a set of
+predefined names), for which the type depends on the name. The datatype
+associated with each of the names is given as a mapping (name: datatype) under
+the `named_values` key.  Thereby the datatype is given either as a definition
+mapping, or as a reference to another datatype.  Any kind of of element
+definition can be used (including `named_values` and other compound datatypes,
+although in this case the definition must carefully avoid ambuiguitites, e.g.
+using different separator strings).
+
+The decoded data value of a `named_values` definition is a table (Nim), mapping
+(YAML), dict (Python), JSON object (JSON, C/C++), except if the `as_string`
+option is set (see section "Validation-only compound definitions").
+The mapping contains an entry for each of the names present at least once in
+the textual representation.
+
+By default, all names may be absent from the set. Names of elements which must
+be present at least once can be listed as value of the optional key `required`.
+By default, for each name present in the textual representation, the value of
+the decoded data entry is a list, containing the possibly multiple values
+of the elements with that name. Names of elements which can only be present
+once can be listed as value of the optional key `single`.
+In case a name is listed under `single`, the value of the entry for the name
+(if this is present in the textual representation) is the decoded value
+of the element value, and not a list, as it would be if the name is not
+in `single`.
+
+For `named_values` datatypes, the name and the value are splitted by a
+non-empty string, which must be given in the definition mapping under the key
+`value_separator`.  The value separator must be different from the elements
+separator given under `splitted_by` and the two strings shall not contain each
+other. The value separator cannot be contained in the element names, because it
+is used to split the name from the rest of the text. However, the textual
+representations of the element values can contain the value separator. The
+elements separator cannot be present in both element names and values.
+
+Examples of `named_values` definitions are given here:
+```YAML
+datatypes:
+  nv1:
+   named_values:
+     score: float
+     count: unsigned_integer
+     name: {regex: "[A-Za-z_]+"}
+   splitted_by: "  "
+   value_separator: ":"
+  nv2:
+   named_values:
+     score: float
+     count: unsigned_integer
+     name: {regex: "[A-Za-z_]+"}
+   splitted_by: "  "
+   value_separator: ":"
+   required: [name, score]
+   single: [name]
+```
+
+Example of usage of the definitions above are given in the following table:
+
+| Datatype | Text repr.    | Data value (JSON)           |
+| ---      | ---           | ---                         |
+| `nv1`    | `count:12`   | `{"count": [12]}`          |
+| `nv1`    | `score:1.0 score:2.0 count: 12` | `{"score": [1.0, 2.0], "count": [12]}` |
+| `nv2`    | `name:A score:1.0`   | `{"score": [1.0], "name": "A"}`          |
+| `nv2`    | `name:A score:1.0 count: 12` | `{"name": "A", "score": [1.0], "count": [12]}` |
+
+## Definitions of kind `tagged_values`
+
+Definitions of kind `tagged_values` are used for compound elements which of sets
+of instances of sub-elements, each associated to a tagname and a typecode
+(from a set of
+predefined typecodes), for which the type depends on the typecode. The datatype
+associated with each of the typecodes is given as a mapping (typecode: datatype) under
+the `tagged_values` key.  Thereby the datatype is given either as a definition
+mapping, or as a reference to another datatype.  Any kind of of element
+definition can be used (including `tagged_values` and other compound datatypes,
+although in this case the definition must carefully avoid ambuiguitites, e.g.
+using different separator strings).
+
+The decoded data value of a `tagged_values` definition is a table (Nim), mapping
+(YAML), dict (Python), JSON object (JSON, C/C++), except if the `as_string`
+option is set (see section "Validation-only compound definitions").
+The mapping contains an entry for each of the names present at least once in
+the textual representation.
+
+XXX: single?
+XXX: predefined
+
+For `tagged_values` datatypes, the tagname, typecode and the value are splitted
+by a non-empty string, which must be given in the definition mapping under the
+key `internal_separator`. The internal separator must be different from the
+elements separator given under `splitted_by` and the two strings shall not
+contain each other. The internal separator cannot be contained in the tagnames
+and in the typecodes, because it is used to split them from the rest of the
+text. However, the textual representations of the tag values can contain the
+internal separator. The elements separator cannot be present in tagnames,
+typecodes or values.
+
+## Formatting options for compound definitions
+
+In the textual representation of a compound datatype, the textual
+representations of the elements are either just concatenated to each other, or
+separated by a constant string. Furthermore, they can be preceded and followed
+by constant strings, such as opening and closing brackets.
+
+### Separators for `list_of` and `composed_of` definitions
+
+For `list_of` and `composed_of` definitions, two kind of options can be used to
+specify a separator string, if necessary.  If the separator string is never
+contained in the text representation of the elements (not even in an escaped
+form), the `splitted_by` key is used.  In this case, the parser directly uses
+the separator string in some cases for splitting the textual representation.
+In the case the separator string can be present in the elements, the
+`separator` key must be used instead.
+
+If no separator is present, the elements must be separable by other means, i.e.
+by the formatting of the elements themselves. E.g. `-10-2-332` could be a valid
+representation of a list of negative integers, without the need of a separator,
+since the `-` sign allows to parse the list correctly. Similarly `025` could be
+a valid representation of a list of single-digit numbers, since the length of
+the elements allow to parse them. However, for a list of three unsigned
+integers [10, 2, 332], the representation `102332` would not be viable, since
+there is no way to distinguish it e.g.  from [102, 33, 2]; thus in this case a
+separator is needed.
+
+### Heterogeneous separators in `composed_of` definitions
+
+The separator between two elements of lists must always be the same.  For
+`composed_of` definitions, however, there is the possibility to use different
+separators at different positions, e.g. between the first and second element
+than between the second and the third. For this, the `splitted_by` and
+`separator` options are not used. Instead, the separator are specificy under
+the `composed_of` key, alongside the other elements, as `constant` definitions
+(any name can be given to them). The `hide_constant: true` option is then
+added to the definition mapping; the data value will then not contain the
+constant separator values.
+
+The following is an example, for representing triples of unsigned integers
+separated by `:` between the first two elements and `/` between the second
+and the third:
+```YAML
+datatypes:
+  xyz:
+    composed_of:
+      - x: unsigned_integer
+      - xy_sep: {constant: ":"}
+      - y: unsigned_integer
+      - yz_sep: {constant: "/"}
+      - z: unsigned_integer
+    hide_constants: true
+```
+
+For example the string `1:20/0` would be parsed using the definition `xyz`
+as `{"x": 1, "y": 20, "z": 0}`.
+
+### Separators for `named_values` and `tagged_values` definitions
+
+In the current implementation, `named_values` and `tagged_values` only support
+the `splitted_by` key and the key is required for these kind of definitions.
+I.e. a non-empty string must be present between the elements, which is never
+found in the textual representation of the elements themselves.
+
+Besides the elements separator, the `named_values` and `tagged_values`
+definitions, must include a key for specify the separator used for splitting
+the components of the elements (`value_separator` for `named_values`;
+`internal_separator` for `tagged_values`).  More details are given in the two
+sections describing these kinds of definitions.
+
+### Prefix and suffix
+
+The textual representations of the elements of a compound datatype are
+sometimes preceded and/or followed by constant strings. E.g. often a list of
+elements is enclosed in brackets. It is therefore possible to specify which
+strings to use, under the keys `prefix` and `suffix` of the datatype definition.
+By default, no prefix and suffix are used.
+
+## Validation-only compound definitions
+
+If the option `as_string: true` is added to the definition mapping, the decoded
+data value of the definition is the textual representation of the string.
+I.e. the definition is then used for parsing and validation, but then the
+unparsed string is used as decoded value.
+
+This option can be added to any definition. In particular, it can be used
+instead of complex regular expressions for defining compound elements which
+must be left as strings when decoded.
+
+```YAML
+  ls1:
+    list_of:
+      one_of:
+      - {regex: [0-9]}
+      - composed_of:
+        - x: {regex: "[A-Za-z]+"}
+        - y: {regex: "[A-Za-z]+"}
+        splitted_by: ","
+    min_length: 0
+    max_length: 10
+    splitted_by: ";"
+    as_string: true
+```
+
+For example the above definition `ls1` is equal to a
+`regex` definition, with the regular expression
+`(([0-9]|[A-Za-z]+,[A-Za-z]+)(;([0-9]|[A-Za-z]+,[A-Za-z]+)){0,9})?`.
+
+An example match would be the string `0;1;ab,c;11267;D,efG;12`. Without
+`as_string` it would be parsed to `[0, 1, {"x": "ab", "y": "c"},
+11267, {"x": "D", "y": "efG"}, 12]`. However, using `as_string`, the
+element is validated by the regular expression, but the decoded value
+is the string itself.
+
+## Comparison of compound definitions
+
+The following tables compare the different kinds of compound
+definitions. The first table lists the determinants of the datatype
+and semantic of the elements, as well as the type of decoded data values.
+
+| Kind            | Elem. datatype   | Elem. semantic   | Data value type |
+| ---             | ---              | ---              | ---             |
+| `list_of`       | constant         | constant         | list            |
+| `composed_of`   | ordinal position | ordinal position | mapping         |
+| `named_values`  | name             | name             | mapping         |
+| `tagged_values` | typecode         | tagname          | mapping         |
+
+The second table lists the keys used in the definition mapping for
+formatting and validation.
+
+| Kind            | Formatting                | Validation
+| ---             | ---                       | ---
+| (common)        | `prefix`, `suffix`        |
+| `list_of`       | `separator`/`splitted_by` | `length`, `min_length`, `max_length`
+| `composed_of`   | `separator`/`splitted_by` | `n_required`
+| `named_values`  | `value_separator`         | `single`, `required`
+| `tagged_values` | `internal_separator`      | `predefined`
+
+## References
 
 ## `include`
-
 ## `namespace`
 
-## `scope`
+## File parsing keys
 
+## `scope`
 ## `n_lines`

@@ -372,7 +372,7 @@ datatypes:
     list_of: integer
     splitted_by: ";"
     length: 3
-  list7
+  list7:
     list_of: integer
     splitted_by: ";"
     min_length: 5
