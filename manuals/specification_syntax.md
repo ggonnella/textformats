@@ -51,7 +51,7 @@ definitions" given under the key `datatypes` of the specification mapping. The
 datatype definitions for single elements can be combined together,
 hierarchically, into compound elements.
 
-## Entry "datatypes" under the specification root
+## Datatype definitions under 'datatypes'
 
 The value of the `datatypes` entry under the root of a specification is a
 mapping. Each of the entries of the `datatypes` mapping is a definition
@@ -74,6 +74,76 @@ datatypes:
   datatype_name_1: { ... }          # definition
   datatype_name_2: datatype_name_1  # reference, creates an alias
   ...
+```
+
+## Modularity: 'include' and 'namespace'
+
+Since the same definitions can often be used in different contexts
+(e.g. multiple components of a compound datatype), it is possible to
+use references to definitions (a string, name of the datatype to which
+to refer) in all contexts of the specification, where a definition
+mapping can be used.
+
+The definitions to which to refer can also be stored in a file,
+which is included in the specification. The path to the files
+are given under the specification root, in the entry `include`.
+Included files can themselves include further files: thereby
+circular dependencies are not allowed.
+
+The content of include describes which specifications to include
+and, optionally, which datatypes of those specification to include
+(by default: all).
+
+In case all datatypes of a specification file shall be included, a string is
+used under `include`, the relative path to the specification file to be
+included. In case only some of the datatype are included, a mapping is used,
+where the key is the relative path to the specification file to be included and
+the value is a list of strings, the names of the datatypes of that
+specification to include. If multiple files shall be included, a list is used
+under `include`. Each element of the list is either a string (relative path to
+a specification file) or a mapping (key: path; value: datatypes list).
+
+If the specification with the `include` key is stored in a file,
+the path is relative to that file. If created programmatically or
+read from a pipe, then it is relative to the current working directory.
+
+The datatypes of included files can be used like locally defined
+datatypes: i.e. they can be referred to, in other datatype definitions;
+also, they can be passed to the library functions, when the including
+specification is used.
+
+Including files can redefine any datatype of an included specification.
+Thereby it does not matter if the `include` key comes before or after
+the `datatypes` key in the specification: in all cases, definitions
+of the including file have priority over those of included files.
+Also, it is allowed to include incomplete specifications. These refer,
+in some compound datatype and/or alias, to a datatype which is defined
+in the including specification.
+
+### Namespaces
+
+Since defining a datatype with the same name of an included one
+would redefine it, users would have to carefully avoid unwanted
+redefinitions due to name clashes. This risk is reduced by using
+namespaces.
+
+The `namespace` entry under the specification root may be used,
+with as value a non-empty identifier (starting with a letter
+and consisting of letters, numbers and underscores). The value
+is used as a prefix (followed by `::`) for all datatypes of
+the specification, when it is included in another specification.
+
+E.g.
+```YAML
+# specification foo.yaml
+namespace: "foo"
+datatypes:
+  y: string
+
+# specification bar.yaml
+include: "foo.yaml"
+datatypes:
+  x: "foo::y"
 ```
 
 ## Kinds of definition mapping
@@ -148,9 +218,10 @@ for the represented data:
 | `max_length` | `list_of` | unsigned integer | infinite | max number of elements |
 | `length` | `list_of` | unsigned integer | undefined | number of elements |
 | `n_required` | `composed_of` | unsigned integer | length of `composed_of` list | first `n_required` elements of the list must always be present |
-| `single` | `named_values` | list of strings | elements which can be present only once |
-| `required` | `named_values` | list of strings | elements which must always be present |
-| `predefined` | `tagged_values` | mapping (tagnames: typecodes) | type of predefined tags |
+| `single` | `named_values` | list of strings | empty | elements which can be present only once |
+| `required` | `named_values` | list of strings | empty | elements which must always be present |
+| `predefined` | `tagged_values` | mapping (tagnames: typecodes) | empty | type of predefined tags |
+| `tagnames` | `tagged_values` | string | `[A-Za-z_][0-9A-Za-z_]*` | regular expression for validation of tagnames |
 
 The next table summarize the keys used for settings which affect the
 the data resulting from parsing the textual representation:
@@ -705,19 +776,19 @@ datatypes:
      count: unsigned_integer
      name: {regex: "[A-Za-z]+"}
    splitted_by: "  "
-   internal_separator: "_"
+   internal_separator: "="
    required: [name, score]
    single: [name]
 ```
 
 Example of usage of the definitions above are given in the following table:
 
-| Datatype | Text repr.    | Data value (JSON)           |
-| ---      | ---           | ---                         |
-| `nv1`    | `count:12`   | `{"count": [12]}`          |
-| `nv1`    | `score:1.0 score:2.0 count:12` | `{"score": [1.0, 2.0], "count": [12]}` |
-| `nv2`    | `name_A score_1.0`   | `{"score": [1.0], "name": "A"}`          |
-| `nv2`    | `name_A score_1.0 count_12` | `{"name": "A", "score": [1.0], "count": [12]}` |
+| Datatype | Text repr.                       | Data value (JSON)                              |
+| ---      | ---                              | ---                                            |
+| `nv1`    | `count:12`                       | `{"count": [12]}`                              |
+| `nv1`    | `score:1.0  score:2.0  count:12` | `{"score": [1.0, 2.0], "count": [12]}`         |
+| `nv2`    | `name=A  score=1.0`              | `{"score": [1.0], "name": "A"}`                |
+| `nv2`    | `name=A  score=1.0  count=12`    | `{"name": "A", "score": [1.0], "count": [12]}` |
 
 ## Definitions of kind `tagged_values`
 
@@ -745,6 +816,10 @@ according to the type definition given for the tag typecode.
 Predefined tags are tagnames for which a given type must be used, if they
 are present. They can be specified using the `predefined` key. This contains
 a mapping with entries tagname:typecode for each of the predefined tags.
+The `tagnames` key allows to specify a regular expression for the validation
+of the tagnames. The default value is `[A-Za-z_][0-9A-Za-z_]*`.
+Predefined tagnames do not have to match it. If it is set to an empty
+string, no other tagnames except the predefined ones are allowed.
 
 For `tagged_values` datatypes, the tagname, typecode and the value are splitted
 by a non-empty string. The default value is `:`. A different string can be
@@ -757,6 +832,32 @@ representations of the tag values can contain the internal separator. The
 elements separator cannot be present in tagnames, typecodes or values.
 
 The following are examples of `tagged_values` definitions:
+```YAML
+datatypes:
+  t1:
+   tagged_values:
+     f: float
+     u: unsigned_integer
+     n: {regex: "[A-Za-z]+"}
+   splitted_by: " "
+  t2:
+   tagged_values:
+     s: float
+     u: unsigned_integer
+     n: {regex: "[A-Za-z]+"}
+   splitted_by: " "
+   internal_separator: "="
+   tagnames: ""
+   predefined: {"AB": "s", "CD": "u", "XX": "n"}
+```
+
+Example of usage of the definitions above are given in the following table:
+
+| Datatype | Text repr.               | Data value (JSON)                                                    |
+| ---      | ---                      | ---                                                                  |
+| `t1`    | `count:u:12`              | `{"count":{"type":"u","value":12}}`                                  |
+| `t1`    | `score:f:1.0 count:u:12`  | `{"score":{"type":"f","value":1.0},"count":{"type":"u","value":12}}` |
+| `t2`    | `XX=n=A AB=s=1.0`         | `{"AB":{"type":"s","value":1.0},"XX":{"type":"n","value":"A"}}`      |
 
 ## Formatting options for compound definitions
 
