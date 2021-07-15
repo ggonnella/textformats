@@ -3,87 +3,83 @@ datatypes:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     x: 1
   d_no_splitted_by:
     named_values:
       name: string
-    value_separator: ":"
+    internal_separator: ":"
   d_named_values_scalar:
     named_values: a
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
   d_named_values_seq:
     named_values: [a, b]
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
   d_splitted_by_clash:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ","
-  d_no_value_separator:
+    internal_separator: ","
+  d_internal_separator_empty:
     named_values:
       name: string
     splitted_by: ","
-  d_value_separator_empty:
-    named_values:
-      name: string
-    splitted_by: ","
-    value_separator: ""
+    internal_separator: ""
   d_splitted_by_empty:
     named_values:
       name: string
     splitted_by: ""
-    value_separator: ":"
-  d_value_separator_contains_splitted_by:
+    internal_separator: ":"
+  d_internal_separator_contains_splitted_by:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":,"
+    internal_separator: ":,"
   d_no_values:
     named_values: {}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
   d_unknown_required:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name, a]
   d_invalid_required_str:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: name
   d_invalid_required_map:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: {name: true}
   d_unknown_single:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: [name, a]
   d_invalid_single_str:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: name
   d_invalid_single_map:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: {name: true}
   d_name_contains_splitted_by:
     named_values:
       x: string
       bab: {constant: a}
     splitted_by: "a"
-    value_separator: ":"
+    internal_separator: ":"

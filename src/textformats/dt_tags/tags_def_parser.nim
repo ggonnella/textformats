@@ -18,9 +18,10 @@ const
                     "{tagname: typekey[, tagname: typekey]*}"
   TagnameDefHelp* = "regular expression for validating tagnames " &
                     "(except predefined tags)"
+  DefaultTagsInternalSep = ":"
   TagsInternalSepHelp* =
     "separator between tagname and tagtype and between tagtype and value " &
-                "(string, mandatory)"
+                &"(string, default '{DefaultTagsInternalSep}')"
 
   TagTypeDictKey = "type"
   TagValueDictKey = "value"
@@ -91,7 +92,7 @@ proc validate_predefined_tags(d: DatatypeDefinition) =
                           to_seq(d.tagtypes.keys).join(", "))
 
 proc parse_tags_internal_sep*(node: Option[YamlNode]): string =
-  node.to_string(default="", TagsInternalSepKey)
+  node.to_string(default=DefaultTagsInternalSep, TagsInternalSepKey)
 
 proc validate_names_vs_separators(dd: DatatypeDefinition) =
   let
@@ -139,7 +140,7 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot,
                      [DefKey, TagnameKey, SplittedKey, TagsInternalSepKey,
                      PfxKey, SfxKey, NullValueKey, PredefinedTagsKey,
-                     ImplicitKey, AsStringKey], n_required=4)
+                     ImplicitKey, AsStringKey], n_required=3)
     result = DatatypeDefinition(kind: ddkTags, name: name,
       tagtypes:          defnodes[0].unsafe_get.parse_tagtypes(name),
       sep:               defnodes[2].to_string("", SplittedKey),

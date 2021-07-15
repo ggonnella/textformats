@@ -4,7 +4,6 @@ datatypes:
       x: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
-    internal_separator: ":"
   t_predefined_only:
     tagged_values:
       x: {constant: x}

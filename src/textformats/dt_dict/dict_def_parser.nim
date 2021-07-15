@@ -13,8 +13,9 @@ import ../def_parser
 const
   DefKey = DictDefKey
   DictRequiredHelp = "list of keys which are required to be present"
+  DefaultDictInternalSep = ":"
   DictInternalSepHelp* = "separator between key and value of each element " &
-                         "(string, mandatory)"
+                         "(string, default '{DefaultDictInternalSep}')"
   SingleHelp = "list of keys which are allowed to be present only once"
 
   SyntaxHelp = &"""
@@ -87,7 +88,7 @@ proc parse_keys_list(opt_n: Option[YamlNode], key: string,
       result.add(i.to_string)
 
 proc parse_dict_internal_sep*(node: Option[YamlNode]): string =
-  node.to_string(default="", DictInternalSepKey)
+  node.to_string(default=DefaultDictInternalSep, DictInternalSepKey)
 
 proc validate_implicit(dd: DatatypeDefinition) =
   for implicit_member in dd.implicit:
@@ -112,7 +113,7 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
                      [DefKey, SplittedKey, DictInternalSepKey, NullValueKey,
                      PfxKey, SfxKey, ImplicitKey, DictRequiredKey, SingleKey,
                      AsStringKey, ScopeKey, UnitsizeKey],
-                     3)
+                     2)
     result = DatatypeDefinition(kind: ddkDict, name: name,
       dict_members:           defnodes[0].unsafe_get.parse_dict_members(name),
       sep:                    defnodes[1].to_string("", SplittedKey),

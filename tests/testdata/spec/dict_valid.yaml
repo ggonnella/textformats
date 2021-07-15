@@ -4,14 +4,13 @@ datatypes:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
     required: [name, a]
   d_m2_s1:
     named_values:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name, a]
     single: [name]
   d_m2_s2:
@@ -19,7 +18,7 @@ datatypes:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name, a]
     single: [name, a]
   d_o2:
@@ -27,34 +26,33 @@ datatypes:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
   d_o2_s1:
     named_values:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: [name]
   d_o2_s2:
     named_values:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: [name, a]
   d_m1_o1:
     named_values:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name]
   d_m1_o1_s1:
     named_values:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name]
     single: [name]
   d_m1_o1_s2:
@@ -62,32 +60,32 @@ datatypes:
       name: string
       a: {constant: a}
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name]
     single: [name, a]
   d_m1:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     required: [name]
   d_m1_s1:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: [name]
     required: [name]
   d_o1:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
   d_o1_s1:
     named_values:
       name: string
     splitted_by: ","
-    value_separator: ":"
+    internal_separator: ":"
     single: [name]
   d_fullopt:
     named_values:
@@ -104,7 +102,7 @@ datatypes:
     splitted_by: ","
     prefix: "<<<"
     suffix: ">>>"
-    value_separator: ":"
+    internal_separator: ":"
     empty: {n: null}
     implicit:
       ii: 1

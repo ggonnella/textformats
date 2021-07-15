@@ -48,7 +48,7 @@ const
   # dict/struct/tags
   ImplicitKey* = "implicit"
   # dict
-  DictInternalSepKey* = "value_separator"
+  DictInternalSepKey* = "internal_separator"
   DictRequiredKey* = "required"
   SingleKey* = "single"
   # struct

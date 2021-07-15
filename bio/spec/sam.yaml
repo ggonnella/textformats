@@ -37,7 +37,7 @@ datatypes:
             Z: string
           tagname: "[A-Z][A-Z]"
           splitted_by: "\t"
-          value_separator: ":"
+          internal_separator: ":"
     splitted_by: "\t"
     required: 8
   header:
@@ -70,7 +70,7 @@ datatypes:
                   splitted_by: ":"
             splitted_by: ":"
         splitted_by: "\t"
-        value_separator: ":"
+        internal_separator: ":"
         required: [VN]
       "@SQ":
         named_values:
@@ -101,7 +101,7 @@ datatypes:
           UR: strvalue
         required: [SN, LN]
         splitted_by: "\t"
-        value_separator: ":"
+        internal_separator: ":"
       "@RG":
         named_values:
           ID: strvalue
@@ -133,7 +133,7 @@ datatypes:
           PU: strvalue
           SM: strvalue
         splitted_by: "\t"
-        value_separator: ":"
+        internal_separator: ":"
         required: [ID]
       "@PG":
         named_values:
@@ -144,10 +144,10 @@ datatypes:
           DS: strvalue
           VN: strvalue
         splitted_by: "\t"
-        value_separator: ":"
+        internal_separator: ":"
       "@CO": string
     splitted_by: "\n"
-    value_separator: "\t"
+    internal_separator: "\t"
     single: ["@HD"]
   strvalue: {regex: "[^\\t\\n]+"}
   md5: {regex: "[0-9a-fA-F]{32}"}
