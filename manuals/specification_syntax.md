@@ -135,8 +135,7 @@ of the text representation are given:
 | `suffix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string following the set of elements |
 | `splitted_by` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, never found in them |
 | `separator` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, possibly also found in them |
-| `value_separator` | `named_values` | string | constant string between name and value of each element |
-| `internal_separator` | `tagged_values` | string | constant string in each element between tagname and typecode, and between typecode and value |
+| `internal_separator` | `tagged_values`, `named_values` | string | `:` | constant string between componentes of each element |
 | `canonical` | `regex` | string | undefined | textual representation to be used for encoding |
 | `canonical` | `regexes`, `accepted_values` | mapping | undefined | textual representations to be used for encoding |
 
@@ -682,13 +681,14 @@ of the element value, and not a list, as it would be if the name is not
 in `single`.
 
 For `named_values` datatypes, the name and the value are splitted by a
-non-empty string, which must be given in the definition mapping under the key
-`value_separator`.  The value separator must be different from the elements
-separator given under `splitted_by` and the two strings shall not contain each
-other. The value separator cannot be contained in the element names, because it
-is used to split the name from the rest of the text. However, the textual
-representations of the element values can contain the value separator. The
-elements separator cannot be present in both element names and values.
+non-empty string. The default value is `:`, a different value can be given in
+the definition mapping under the key `internal_separator`.  The internal separator
+must be different from the elements separator given under `splitted_by` and the
+two strings shall not contain each other. The internal separator cannot be
+contained in the element names, because it is used to split the name from the
+rest of the text. However, the textual representations of the element values
+can contain the internal separator. The elements separator cannot be present in
+both element names and values.
 
 Examples of `named_values` definitions are given here:
 ```YAML
@@ -697,16 +697,15 @@ datatypes:
    named_values:
      score: float
      count: unsigned_integer
-     name: {regex: "[A-Za-z_]+"}
+     name: {regex: "[A-Za-z]+"}
    splitted_by: "  "
-   value_separator: ":"
   nv2:
    named_values:
      score: float
      count: unsigned_integer
-     name: {regex: "[A-Za-z_]+"}
+     name: {regex: "[A-Za-z]+"}
    splitted_by: "  "
-   value_separator: ":"
+   internal_separator: "_"
    required: [name, score]
    single: [name]
 ```
@@ -716,41 +715,48 @@ Example of usage of the definitions above are given in the following table:
 | Datatype | Text repr.    | Data value (JSON)           |
 | ---      | ---           | ---                         |
 | `nv1`    | `count:12`   | `{"count": [12]}`          |
-| `nv1`    | `score:1.0 score:2.0 count: 12` | `{"score": [1.0, 2.0], "count": [12]}` |
-| `nv2`    | `name:A score:1.0`   | `{"score": [1.0], "name": "A"}`          |
-| `nv2`    | `name:A score:1.0 count: 12` | `{"name": "A", "score": [1.0], "count": [12]}` |
+| `nv1`    | `score:1.0 score:2.0 count:12` | `{"score": [1.0, 2.0], "count": [12]}` |
+| `nv2`    | `name_A score_1.0`   | `{"score": [1.0], "name": "A"}`          |
+| `nv2`    | `name_A score_1.0 count_12` | `{"name": "A", "score": [1.0], "count": [12]}` |
 
 ## Definitions of kind `tagged_values`
 
-Definitions of kind `tagged_values` are used for compound elements which of sets
-of instances of sub-elements, each associated to a tagname and a typecode
-(from a set of
-predefined typecodes), for which the type depends on the typecode. The datatype
-associated with each of the typecodes is given as a mapping (typecode: datatype) under
-the `tagged_values` key.  Thereby the datatype is given either as a definition
-mapping, or as a reference to another datatype.  Any kind of of element
-definition can be used (including `tagged_values` and other compound datatypes,
-although in this case the definition must carefully avoid ambuiguitites, e.g.
-using different separator strings).
+Definitions of kind `tagged_values` are used for compound elements which of
+sets of instances of sub-elements, each associated to a tagname and a typecode
+(from a set of predefined typecodes), for which the type depends on the
+typecode. The datatype associated with each of the typecodes is given as a
+mapping (typecode: datatype) under the `tagged_values` key.  Thereby the
+datatype is given either as a definition mapping, or as a reference to another
+datatype.  Any kind of of element definition can be used (including
+`tagged_values` and other compound datatypes, although in this case the
+definition must carefully avoid ambuiguitites, e.g.  using different separator
+strings).
 
-The decoded data value of a `tagged_values` definition is a table (Nim), mapping
-(YAML), dict (Python), JSON object (JSON, C/C++), except if the `as_string`
-option is set (see section "Validation-only compound definitions").
-The mapping contains an entry for each of the names present at least once in
-the textual representation.
+The decoded data value of a `tagged_values` definition is a table (Nim),
+mapping (YAML), dict (Python), JSON object (JSON, C/C++), except if the
+`as_string` option is set (see section "Validation-only compound definitions").
+The mapping contains an entry for each of the tagnames present in the textual
+representation. Multiple instances of the same tagname are not allowed (as by
+the current implementation). The value of the entry for a tagname is a mapping
+with two entries, `type` and `value`. The value of `type` is the typecode, as
+string. The value of `value` is the decoded data value of the tag value,
+according to the type definition given for the tag typecode.
 
-XXX: single?
-XXX: predefined
+Predefined tags are tagnames for which a given type must be used, if they
+are present. They can be specified using the `predefined` key. This contains
+a mapping with entries tagname:typecode for each of the predefined tags.
 
 For `tagged_values` datatypes, the tagname, typecode and the value are splitted
-by a non-empty string, which must be given in the definition mapping under the
-key `internal_separator`. The internal separator must be different from the
-elements separator given under `splitted_by` and the two strings shall not
-contain each other. The internal separator cannot be contained in the tagnames
-and in the typecodes, because it is used to split them from the rest of the
-text. However, the textual representations of the tag values can contain the
-internal separator. The elements separator cannot be present in tagnames,
-typecodes or values.
+by a non-empty string. The default value is `:`. A different string can be
+specified in the definition mapping under the key `internal_separator`. The
+internal separator must be different from the elements separator given under
+`splitted_by` and the two strings shall not contain each other. The internal
+separator cannot be contained in the tagnames and in the typecodes, because it
+is used to split them from the rest of the text. However, the textual
+representations of the tag values can contain the internal separator. The
+elements separator cannot be present in tagnames, typecodes or values.
+
+The following are examples of `tagged_values` definitions:
 
 ## Formatting options for compound definitions
 
@@ -818,9 +824,8 @@ found in the textual representation of the elements themselves.
 
 Besides the elements separator, the `named_values` and `tagged_values`
 definitions, must include a key for specify the separator used for splitting
-the components of the elements (`value_separator` for `named_values`;
-`internal_separator` for `tagged_values`).  More details are given in the two
-sections describing these kinds of definitions.
+the components of the elements (`internal_separator`).  More details are given
+in the two sections describing these kinds of definitions.
 
 ### Prefix and suffix
 
@@ -887,8 +892,8 @@ formatting and validation.
 | (common)        | `prefix`, `suffix`        |
 | `list_of`       | `separator`/`splitted_by` | `length`, `min_length`, `max_length`
 | `composed_of`   | `separator`/`splitted_by` | `n_required`
-| `named_values`  | `value_separator`         | `single`, `required`
-| `tagged_values` | `internal_separator`      | `predefined`
+| `named_values`  | `internal_separator`, `splitted_by` | `single`, `required`
+| `tagged_values` | `internal_separator`, `splitted_by` | `predefined`, `tagnames`
 
 ## References
 

@@ -516,13 +516,13 @@ datatypes:
       rank: unsigned_integer
       name: string
     splitted_by: ";"
-    value_separator: ":"
 ```
 The keys and the datatypes of the associated values are given under
 the `named_values` key, as a mapping.
-Note that a `value_separator` string must be specified, separating the key
-from the value. The separator cannot occur in the keys, but it can occur
-in the values.
+
+Note that an `internal_separator` string can be specified, separating the key
+from the value. The default is `:`. The internal separator cannot be empty and
+cannot occur in the keys, but it can occur in the values.
 
 Names are by default allowed to present multiple times in the list. For
 this reason, the elements values are always given in the decoded value as lists.
@@ -535,7 +535,6 @@ datatypes:
       rank: unsigned_integer
       name: string
     splitted_by: ";"
-    value_separator: ":"
     single: [rank, name]
 ```
 
@@ -548,7 +547,7 @@ datatypes:
       rank: unsigned_integer
       name: string
     splitted_by: ";"
-    value_separator: ":"
+    internal_separator: "="
     required: [name]
 ```
 
@@ -576,8 +575,8 @@ datatypes:
     splitted_by: ";"
 ```
 The valid names and their formatting is specified using
-a regular expression. The internal separator key is mandatory and,
-to avoid ambiguity, the specified string cannot be present in tagnames
+a regular expression. The internal separator key has a default value `:`
+and it must be a non-empty string. It cannot be present in tagnames
 and type codes (but can be present in values).
 
 ## Dictionaries from predefined representations
