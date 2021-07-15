@@ -19,6 +19,7 @@ const
   TagnameDefHelp* = "regular expression for validating tagnames " &
                     "(except predefined tags)"
   DefaultTagsInternalSep = ":"
+  DefaultTagnameRegex = "[A-Za-z_][0-9A-Za-z_]*"
   TagsInternalSepHelp* =
     "separator between tagname and tagtype and between tagtype and value " &
                 &"(string, default '{DefaultTagsInternalSep}')"
@@ -107,10 +108,14 @@ proc validate_names_vs_separators(dd: DatatypeDefinition) =
   validate_names_vs_separator(pn, pnlbl, dd.sep, seplbl)
   validate_names_vs_separator(pn, pnlbl, dd.tags_internal_sep, iseplbl)
 
-proc parse_tagname_regex(dd: var DatatypeDefinition, n: YamlNode) =
+proc parse_tagname_regex(dd: var DatatypeDefinition, optn: Option[YamlNode]) =
   let invaliderr = "Invalid value for '" & TagnameKey & "'.\n"
-  n.validate_is_string(invaliderr)
-  dd.tagname_regex_raw = n.to_string
+  if optn.is_none:
+    dd.tagname_regex_raw = DefaultTagnameRegex
+  else:
+    let n = optn.unsafe_get
+    n.validate_is_string(invaliderr)
+    dd.tagname_regex_raw = n.to_string
   if len(dd.tagname_regex_raw) > 0:
     try:
       let avoid_warning_tmp = dd.tagname_regex_raw.re
@@ -138,12 +143,12 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
   try:
     let defnodes = collect_defnodes(defroot,
-                     [DefKey, TagnameKey, SplittedKey, TagsInternalSepKey,
+                     [DefKey, SplittedKey, TagnameKey, TagsInternalSepKey,
                      PfxKey, SfxKey, NullValueKey, PredefinedTagsKey,
-                     ImplicitKey, AsStringKey], n_required=3)
+                     ImplicitKey, AsStringKey], n_required=2)
     result = DatatypeDefinition(kind: ddkTags, name: name,
       tagtypes:          defnodes[0].unsafe_get.parse_tagtypes(name),
-      sep:               defnodes[2].to_string("", SplittedKey),
+      sep:               defnodes[1].to_string("", SplittedKey),
       sep_excl:          true,
       tags_internal_sep: defnodes[3].parse_tags_internal_sep,
       pfx:               defnodes[4].parse_pfx,
@@ -155,7 +160,7 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
       type_key:          TagTypeDictKey,
       value_key:         TagValueDictKey)
     result.validate_predefined_tags
-    result.parse_tagname_regex(defnodes[1].unsafe_get)
+    result.parse_tagname_regex(defnodes[2])
     validate_separators(result.sep, result.tags_internal_sep,
                         TagsInternalSepKey ,"name/type/value")
     result.validate_names_vs_separators

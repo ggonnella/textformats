@@ -16,7 +16,7 @@ suite "test_tags_def_parser":
     check d.kind == ddkTags
     check d.tagtypes.len == 1
     check d.tagtypes["x"].constant_element.s_value == "x"
-    check d.tagname_regex_raw == "[a-z]{2}"
+    check d.tagname_regex_raw == "[A-Za-z_][0-9A-Za-z_]*"
     check d.null_value.is_none
     check d.sep == ","
     check d.tags_internal_sep == ":"

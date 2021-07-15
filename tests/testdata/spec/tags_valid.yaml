@@ -2,7 +2,6 @@ datatypes:
   t_simple:
     tagged_values:
       x: {constant: x}
-    tagname: "[a-z]{2}"
     splitted_by: ","
   t_predefined_only:
     tagged_values:
