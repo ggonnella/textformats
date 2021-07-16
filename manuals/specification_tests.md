@@ -1,27 +1,28 @@
-## Testing a specification
+# Testing a specification
 
-### Testdata YAML syntax
+Specification test data are examples of textual representations and/or
+data values which are valid and invalid according to the
+datatype definitions of a specification.
 
-The test data for a specification, either manually or automatically generated,
-is written in YAML format. It can be written in the same file as the
-specification itself, or in a separate file.
+## Testdata syntax
 
-As for the specification, the YAML document (which must be the first YAML
-document in the file) must contain a mapping. Test data are written
-under the key 'testdata' under the mapping root.
+The test data can be stored in a file, which can be in JSON or YAML 1.2 format,
+or constructed programmatically.
 
-The 'testdata' key contains a mapping, where the names of the datatypes to be
-tested are the keys. Each of the datatype keys contain a mapping, where
-examples of both valid and invalid textual representations and decoded data can
-be given, respectively under the keys 'valid' and 'invalid':
+It must be a mapping, containing, under the root, a `testdata` entry.
+Other entries are ignored: thus the same file can contain a
+specification and the testdata, or they can be in different files.
+
+The 'testdata' value is itself a mapping, where the keys are the names of the
+datatypes to be tested and the values are mappings. These contain examples of
+both valid and invalid textual representations and decoded data can be given,
+respectively, under the keys 'valid' (and `oneway`, see below) and 'invalid':
 ```YAML
 testdata:
   datatype1:
     valid: ...
     invalid: ...
 ```
-
-#### Examples of valid data
 
 Valid data is given as a mapping under 'valid', where the keys are the encoded
 textual form and the values are the decoded data:
@@ -30,8 +31,6 @@ valid: {"encoded1": "decoded1", ...}
 ```
 The tests will both check that the encoded data is decoded as given, and
 the opposite, i.e. that the decoded data is encoded as given.
-
-#### Examples of invalid data
 
 Invalid data is given under the key 'invalid'. Under it, textual
 representations and decoded data are given as lists under, respectively,
@@ -42,8 +41,6 @@ invalid:
   decoded: [3, ...]
 ```
 
-#### Testing invariant string datatypes
-
 As a particular case, if a datatype consists of strings, which are not
 further processed (i.e. encoded and decoded form are the same), valid and/or
 invalid strings can be conveniently just be imput as an array of strings:
@@ -52,22 +49,20 @@ valid: ["string1", "string2", ...]
 invalid: ["string1", "string2", ...]
 ```
 
-#### Testing non-canonical textual representations
+### Non-canonical text representations
 
-In some cases, however, only the decoding shall be tested, because the data
-has a "canonical" textual representation (obtain by encoding), but further
-representations are valid as well, and can be decoded.
-
-Another mapping key ('oneway') is used for handling tests of these non-canonical
-representations. Like under 'valid', the data is given as a mapping with
+The content of `valid` shall be only textual representations which
+are obtained back when encoding the data they represent.
+In some cases, only the decoding shall be tested, because the data
+has a "non-canonical" textual representation.
+In this case a different key is used for listing the examples:
+`oneway`.  Like under 'valid', the data is given as a mapping with
 encoded string representations as keys and the decoded data as values:
 ```YAML
 oneway: {"+2": 2, ...}
 ```
 For data under 'oneway' only the decoding is tested, since this is not
 the result which one would obtain from encoding the same decoded data.
-
-##### Example of testing non-canonical representations
 
 For example a string representing a positive integer, can contain "2" which
 will be decoded to the integer value 2. Reversing the operation, this value
@@ -86,4 +81,50 @@ succeed:
 valid: {"2": 2}
 oneway: {"+2": 2}
 ```
+
+## Running the tests of a specification
+
+The test suite can be run using the `tf_spec` command-line tool (see the CLI
+documentation) or using the API functions:
+
+C
+: `tf_run_specification_testfile` / `tf_run_specification_tests`
+Nim
+: `run_specification_testfile` / `run_specification_tests`
+Python
+: `specification.test()` / `specification.test(testfile)` /
+  `specification.test({"testdata": {...}})`.
+
+Note that different functions or arguments are available, for running tests which
+are stored in a file, or constructed programmatically.
+
+When the test suite is run, all datatypes for which tests are provided are
+tested.  For each valid example, both decoding, encoding and validation of
+decoded and encoded data are tested. For examples under `oneway`, only the
+decoding and validation of encoded data are tested. For examples under
+`invalid: decoded`, it is tested that encoding and validation of decoded data
+fails, as expected. For examples under `invalid: encoded`, it is tested that
+decoding and validation of encoded data fails, as expected.  In case one of the
+expectations is not met, the test suite is interrupted with an error.
+
+## Automatically generated test data
+
+Test data can be written manually, according to the expectations about the kind
+of data defined by a specification. Special cases (e.g. empty strings) shall
+also be considered, when testing.
+
+Besides writing tests manually, it is also possible to use the CLI tool
+`tf_spec` to genererate tests. For this the Python `exrex` library must be
+installed. The CLI documentation provides more information.
+
+The automatically generated tests are, by definition, never failing. Thus it
+does not make much sense to use them directly as a test suite (except for the
+software developer testing the stability of results after code changes).
+Instead, this functionality was implemented in order to automatically generate
+examples of the definitions, which can be manually inspected by the user.  This
+is very helpful, in order to check if a definition applies to text
+representations and data values as intended, or something must be changed.
+
+Furthermore, the user can manually edit or add data, thus using the generated
+examples as a template for a test suite.
 
