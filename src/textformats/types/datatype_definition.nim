@@ -219,6 +219,7 @@ proc dereference*(dd: DatatypeDefinition): DatatypeDefinition =
 
 proc tabular_desc*(d: DatatypeDefinition, indent: int): string
 proc verbose_desc*(d: DatatypeDefinition, indent: int): string
+proc repr_desc*(d: DatatypeDefinition, indent: int): string
 
 proc parse_scope*(scope: string): DatatypeDefinitionScope =
   let valid_definition_types = @["file", "section", "unit", "line"]
@@ -271,6 +272,9 @@ proc unset_wrapped*(d: DatatypeDefinition) =
 
 proc `$`*(dd: DatatypeDefinition): string =
   dd.verbose_desc(0)
+
+proc repr*(dd: DatatypeDefinition): string =
+  dd.repr_desc(0)
 
 proc describe(kind: DatatypeDefinitionKind): string =
   case kind:
@@ -519,6 +523,207 @@ proc verbose_desc*(d: DatatypeDefinition, indent: int): string =
     result &= &"{pfx}  {describe(d.scope)}\n"
     if d.scope == ddsUnit:
       result &= &"{pfx}  each unit consists of {d.unitsize} lines\n"
+
+# TODO: use constants from def_syntax.nim
+proc repr_desc*(d: DatatypeDefinition, indent: int): string =
+  var
+    pfx=" ".repeat(indent)
+    idt = indent
+  if d.is_nil:
+    return "{pfx}null\n"
+  if indent == 0:
+    result &= &"{pfx}{d.name}:"
+    if d.kind == ddkRef:
+      result &= &" {d.target_name}\n"
+      return result
+    else:
+      result &= "\n"
+      idt = 2
+      pfx = "  "
+  case d.kind:
+  of ddkRef:
+    return &"{pfx}{d.target_name}\n"
+  of ddkAnyInteger:
+    return &"{pfx}integer\n"
+  of ddkAnyUInteger:
+    return &"{pfx}unsigned_integer\n"
+  of ddkAnyFloat:
+    return &"{pfx}float\n"
+  of ddkAnyString:
+    return &"{pfx}string\n"
+  of ddkJson:
+    return &"{pfx}json\n"
+  of ddkIntRange:
+    result &= &"{pfx}integer: {{"
+    let
+      l = d.range_i.lowstr
+      h = d.range_i.highstr
+    var l_added = false
+    if l != "-Inf":
+      result &= &"min: {l}"
+      l_added = true
+    if h != "Inf":
+      if l_added:
+        result &= ", "
+      result &= &"max: {h}"
+    result &= "}\n"
+  of ddkUIntRange:
+    result &= &"{pfx}unsigned_integer: {{"
+    let
+      l = d.range_u.lowstr
+      h = d.range_u.highstr
+    var l_added = false
+    if l != "0":
+      result &= &"min: {l}"
+      l_added = true
+    if h != "Inf":
+      if l_added:
+        result &= ", "
+      result &= &"max: {h}"
+    result &= "}\n"
+  of ddkFloatRange:
+    result &= &"{pfx}float: {{"
+    let
+      l = d.range_i.lowstr
+      h = d.range_i.highstr
+    var any_added = false
+    if l != "-Inf":
+      result &= &"min: {l}"
+      any_added = true
+    if h != "Inf":
+      if any_added:
+        result &= ", "
+      result &= &"max: {h}"
+      any_added = true
+    if not d.min_incl:
+      if any_added:
+        result &= ", "
+      result &= "min_excluded: true"
+      any_added = true
+    if not d.max_incl:
+      if any_added:
+        result &= ", "
+      result &= "max_excluded: true"
+    result &= "}\n"
+  of ddkRegexMatch:
+    result &= &"{pfx}regex:"
+    if d.decoded[0].is_some:
+      result &= &"{{{%d.regex.raw}: {d.decoded[0].unsafe_get}}}"
+    else:
+      result &= &"{%d.regex.raw}\n"
+  of ddkRegexesMatch:
+    result &= &"{pfx}regexes: ["
+    for i, element in d.decoded:
+      if i > 0:
+        result &= ", "
+      if element.is_some:
+        result &= &"{%d.regexes_raw[i]}: {element.unsafe_get}"
+      else:
+        result &= &"{%d.regexes_raw[i]}"
+    result &= "]\n"
+  of ddkConst:
+    result &= &"{pfx}constant: "
+    if d.decoded[0].is_some:
+      result &= &"{{{d.constant_element.to_json}: {d.decoded[0].unsafe_get}}}\n"
+    else:
+      result &= &"{d.constant_element.to_json}\n"
+  of ddkEnum:
+    result &= &"{pfx}accepted_values: ["
+    for i, element in d.elements:
+      if i > 0:
+        result &= ", "
+      result &= d.elements[i].to_json
+      if d.decoded[i].is_some:
+        result &= &": {d.decoded[i].unsafe_get}"
+    result &= "]\n"
+  of ddkList:
+    result &= &"{pfx}list_of:"
+    if d.members_def.kind == ddkRef:
+      result &= &" {d.members_def.target_name}\n"
+    else:
+      result &= &"\n{d.members_def.repr_desc(idt+2)}"
+  of ddkStruct:
+    result &= &"{pfx}composed_of:\n"
+    for (k, v) in d.members:
+      result &= &"{pfx}- {k}:"
+      if v.kind == ddkRef:
+        result &= &" {v.target_name}\n"
+      else:
+        result &= &"\n{v.repr_desc(idt+2)}"
+    if d.n_required != len(d.members):
+      result &= &"n_required: {d.n_required}\n"
+  of ddkDict:
+    result &= &"{pfx}named_values:\n"
+    for k, v in d.dict_members:
+      result &= &"\n{k}: "
+      if v.kind == ddkRef:
+        result &= &" {v.target_name}\n"
+      else:
+        result &= &"\n{v.repr_desc(idt+2)}"
+    if len(d.required_keys) > 0:
+      result &= &"{pfx}required: [" &
+                d.required_keys.join(", ") & "]\n"
+    if len(d.single_keys) > 0:
+      result &= &"{pfx}single: [" &
+                d.single_keys.join(", ") & "]\n"
+  of ddkTags:
+    result &= &"{pfx}tagged_values:\n"
+    for k, v in d.tagtypes:
+      result &= &"\n{k}: "
+      if v.kind == ddkRef:
+        result &= &" {v.target_name}\n"
+      else:
+        result &= &"\n{v.repr_desc(idt+2)}"
+    result &= &"{pfx}tagnames: {%d.tagname_regex_raw}\n"
+    if len(d.predefined_tags) > 0:
+      result &= &"{pfx}predefined: {%(d.predefined_tags)}\n"
+  of ddkUnion:
+    result &= &"{pfx}one_of:\n"
+    for i, c in d.choices:
+      result &= &"{pfx}- {c.repr_desc(idt+2)}"
+    if d.wrapped:
+      result &= &"{pfx}wrapped: true\n"
+    result &= &"{pfx}branch_names: {%d.branch_names}\n"
+  if d.encoded.is_some:
+    let etab = d.encoded.unsafe_get
+    result &= &"{pfx}canonical: {{\n"
+    var any_added = false
+    for k, v in etab:
+      if any_added:
+        result &= ", "
+      result &= &"{v}: {k}"
+      any_added = true
+    result &= "}\n"
+  if len(d.implicit) > 0:
+    result &= &"{pfx}implicit: {{"
+    var any_added = false
+    for (k, v) in d.implicit:
+      if any_added:
+        result &= ", "
+      result &= &"{k}: {v}"
+      any_added = true
+    result &= "}\n"
+  if len(d.pfx) > 0:
+    result &= &"{pfx}prefix: {%d.pfx}\n"
+  if len(d.sfx) > 0:
+    result &= &"{pfx}suffix: {%d.sfx}\n"
+  if len(d.sep) > 0:
+    if d.sep_excl:
+      result &= &"{pfx}splitted_by: {%d.sep}\n"
+    else:
+      result &= &"{pfx}separator: {%d.sep}\n"
+  if d.kind == ddkTags:
+    result &= &"{pfx}internal_separator: {%d.tags_internal_sep}\n"
+  elif d.kind == ddkDict:
+    result &= &"{pfx}internal_separator: {%d.dict_internal_sep}\n"
+  if d.as_string:
+    result &= &"{pfx}as_string: true\n"
+  if d.null_value.is_some:
+    result &= &"{pfx}empty: {d.null_value.unsafe_get}\n"
+  if d.scope != ddsUndef:
+    result &= &"{pfx}scope: {d.scope}\n"
+  if d.unitsize > 1:
+    result &= &"{pfx}unitsize: {d.unitsize}\n"
 
 proc tabular_desc*(d: DatatypeDefinition, indent: int): string =
   let pfx=" ".repeat(indent)

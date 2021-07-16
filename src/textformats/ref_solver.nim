@@ -17,14 +17,16 @@ template raise_brokenref(name, tname: untyped) =
           "However, no definition of '"  & tname & "' was found.")
 
 proc qualified_target_name(dd: DatatypeDefinition, name: string): string =
-  if dd.target_name in BaseDatatypes:
-    dd.target_name
-  else:
+  if dd.target_name notin BaseDatatypes:
     let name_parts = name.rsplit(NamespaceSeparator, 1)
-    if len(name_parts) == 1:
-      dd.target_name
-    else:
-      name_parts[0] & NamespaceSeparator & dd.target_name
+    if len(name_parts) == 2:
+      let
+        name_first = name.split(NamespaceSeparator, 1)[0]
+        target_name_parts = dd.target_name.split(NamespaceSeparator, 1)
+        target_name_first = target_name_parts[0]
+      if (len(target_name_parts) == 1) or (name_first != target_name_first):
+        dd.target_name = name_parts[0] & NamespaceSeparator & dd.target_name
+  return dd.target_name
 
 proc resolve_references(dd: DatatypeDefinition, name: string,
                         spec: Specification) =

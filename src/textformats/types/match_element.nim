@@ -17,11 +17,17 @@ type
       of meInt:    i_value*: int64
       of meString: s_value*: string
 
-proc to_string*(self: Matchelement): string =
+proc to_string*(self: MatchElement): string =
   case self.kind:
     of meFloat:  result = $self.f_value
     of meInt:    result = $self.i_value
     of meString: result = self.s_value
+
+proc to_json*(self: MatchElement): string =
+  case self.kind:
+    of meFloat:  result = $(%self.f_value)
+    of meInt:    result = $(%self.i_value)
+    of meString: result = $(%self.s_value)
 
 proc `$`*(self: MatchElement): string =
   case self.kind:

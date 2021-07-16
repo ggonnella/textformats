@@ -21,7 +21,7 @@ proc preprocess*(specfile = "", outfile = ""): int =
   preprocess_specification(specfile, outfile)
   exit_with(ec_success)
 
-proc info*(specfile = "", datatype = ""): int =
+proc info*(specfile = "", datatype = "", kind = "verbose"): int =
   ## if no datatype is specified, list all definitions in a specification
   ## otherwise: show info about a definition
   if datatype == "":
@@ -31,7 +31,12 @@ proc info*(specfile = "", datatype = ""): int =
         echo $datatype_name
   else:
     let definition = get_datatype_definition(specfile, datatype)
-    echo definition.verbose_desc(0)
+    case kind:
+    of "verbose": echo definition.verbose_desc(0)
+    of "repr":    echo definition.repr_desc(0)
+    of "tabular": echo definition.tabular_desc(0)
+    else: exit_with(ec_err_setting,
+                    "--kind must be one of: verbose, repr, tabular")
   exit_with(ec_success)
 
 proc test*(specfile = "", testfile = ""): int =
@@ -46,17 +51,22 @@ proc test*(specfile = "", testfile = ""): int =
     exit_with(ec_testerror, get_current_exception_msg(), false)
   exit_with(ec_success)
 
-# not accepting preprocessed specifications because in the preprocessed
-# there is no information if a datatype is defined in the specification
-# itself or in an included file; thus list_specification_datatypes is only
-# accepting a YAML/JSON specification
+# by default datatypes of included specifications are not considered;
+# if spec is preprocessed (or always if included is true), datatypes of
+# included specifications are also considered, since in preprocessed
+# specifications there is no information if a datatype is defined in the
+# specification itself or in an included file
 #
 # if a testfile is provided, only datatypes not present in the testfile
 # are considered, and the initial "testdata:" is not printed, so that
 # the output can be appended to the input testfile
-proc generate_tests*(specfile = "", testfile = "", datatypes = ""): int =
+proc generate_tests*(specfile = "", testfile = "", datatypes = "",
+                     included = false): int =
   ## auto-generate testdata for a specification file
-  let specification = parse_specification_file(specfile)
+  let
+    specification = get_specification(specfile)
+    use_included = block:
+      included or (specfile == "") or is_preprocessed(specfile)
   var to_generate = initHashSet[string]()
   if len(datatypes) > 0:
     for datatype in datatypes.split(','):
@@ -65,8 +75,13 @@ proc generate_tests*(specfile = "", testfile = "", datatypes = ""): int =
           &"Datatype '{datatype}' not found in specification")
       to_generate.incl(datatype)
   else:
-    for datatype in list_specification_datatypes(specfile):
-      to_generate.incl(datatype)
+    if use_included:
+      for datatype in specification.keys:
+        if datatype notin BaseDatatypes:
+          to_generate.incl(datatype)
+    else:
+      for datatype in list_specification_datatypes(specfile):
+        to_generate.incl(datatype)
   if len(testfile) > 0:
     for datatype in list_testdata_datatypes(testfile):
       to_generate.excl(datatype)

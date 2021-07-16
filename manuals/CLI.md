@@ -80,7 +80,9 @@ for the specification test suite, which can be run using the command
 `tf_spec test`.
 
 By default, examples are provided for each of the datatypes
-in the specification (but not if defined in included specifications).
+in the specification. Datatypes defined in included specifications
+are not considered (except if `--included` is used, or if a preprocessed
+file is used, or the specification is piped into the tool).
 Alternatively, a comma-separated list of datatypes can be provided using
 the option `--datatypes` or `-t` (e.g. `datatype1,datatype2,datatype3`).
 
@@ -103,9 +105,12 @@ The datatype definition is selected in the tools using the
 `--datatype` or `-t` option. If the option is not provided,
 the definition named `default` is used (if it exists).
 
-A verbose decription of a datatype definition can be output
+A description of a datatype definition can be output
 using the tool `tf_spec info` and providing the definition
 name with the option `--datatype` or `-t` (even for `default`).
+The style of the description is by default `verbose`;
+other styles (`tabular` or `repr`) can be selected
+using the option `--kind`.
 
 ## Decoding the string representation of data
 

@@ -85,14 +85,17 @@ all subcommands:
 : specification file to be used (default: standard input);
   YAML, JSON or preprocessed;
   preprocessed specifications can be used except for
-  *preprocess* and *generate\_tests* and cannot be provided
-  as standard input
+  *preprocess* and cannot be provided as standard input
 
 *info* subcommand:
 
 **-t**, **\-\-datatype=**DATATYPE
 : specify a datatype, to show information about a datatype
   (default: display the list of datatypes defined by the specification)
+
+**-k**, **\-\-kind=**(verbose|tabular|repr)
+: select the style of the information to show when the **\-\-datatype**
+option is used (default: verbose)
 
 *preprocess* subcommand:
 
@@ -116,13 +119,20 @@ in the specification file)
 testdata of those datatypes for which tests are not yet available; the output
 in this case is so formatted, that it can be appended to an existing
 testdata YAML or JSON file (default: test data is generated for all datatypes
-of the specification file or provided to the option \-\-datatypes)
+of the specification file -- excluding included files, if the specification
+is a YAML or JSON file -- or provided to the option **\-\-datatypes**)
+
+**-i**, **\-\-included**
+: always generate test data for datatypes defined in included specifications,
+when no **-\-\datatypes** option is used (default: generate test data for all
+datatype if the specification is preprocessed or piped into the tool;
+exclude included files if the specification is a YAML or JSON file)
 
 **-t**, **\-\-datatypes=**DATATYPES
 : specify one or multiple datatype names (comma separated, without spaces),
-  to limit the output to those datatypes
-  (default: test data is generated for all datatypes
-   of the specification file)
+to limit the output to those datatypes (default: test data is generated for
+all datatypes of the specification file, with the possible exception of
+those defined in included specifications, see **\-\-included**)
 
 # EXIT VALUES
 The exit code is 0 on success, anything else on error.
