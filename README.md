@@ -112,7 +112,7 @@ created. The user can also provide other examples of string representations
 and corresponding decoded data. These examples are used for automatically
 test the specification.
 
-## Notes about the implementation
+## Implementation
 
 The library is implemented using the programming language Nim.
 This language was used, since it combines some of the advantages of Python
@@ -121,6 +121,39 @@ with those of compiled languages.
 During compilation, C code is created and then compiled to binary.
 Besides in Nim code itself, the resulting library can be easily employed
 in C/C++ and in Python.
+
+## Documentation
+
+Under the directory `manuals` are the following documents, in Markdown
+format:
+
+`specification_syntax.md`
+: Describes the syntax of TextFormats specifications, which
+are used to describe to the library all components of a format.
+It contains a systematic list of the specification syntax, as
+well as many examples.
+`specification_tests.md`
+: Specification test data are examples used to be sure that the format
+specification reflects the expectations. This document describes
+the syntax of test data and explains how to run tests.
+`Nim_API.md`
+: Describes the API of the TextFormats library in the Nim programming language
+(in which the library is implemented)
+`Python_API.md`
+: Describes the API of the wrapper to the TextFormats library, for using it
+in the Python programming language.
+`C_API.md`
+: Describes the API of the wrapper to the library, for using it in the C and
+C++ programming languages.
+`specification_tests.md`
+`CLI.md`
+: Describes the command line interface of TextFormats: a collection of tools,
+for decoding, encoding, validating data, inspecting and testing specifications
+and more.
+`developer_manual.md`
+: Code organization and conventions, used in the implementation of the
+TextFormats library. This is addressed to the library software developer,
+not to the library user.
 
 ## Running the test suite
 
