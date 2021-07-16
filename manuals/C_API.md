@@ -206,6 +206,8 @@ To check if a specification is preprocessed, the function
 can be used (this does not ensure that the file has valid
 content, it only checks if the initial signature of preprocessed
 specification files is present).
+The suggested file extension for preprocessed specifications
+is `tfs` (*T*ext*F*ormats *S*pecification).
 
 ### Running tests
 

@@ -6,3 +6,4 @@ nim-extensions
 *.egg-info/
 dist/
 prv.*
+*.tfs

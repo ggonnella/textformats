@@ -63,6 +63,8 @@ The following properties are defined in the Specification instances:
 defined in the specification; `filename` is the filename from which
 the specification instance was constructed; `preprocessed` is a boolean,
 which is `True`, if the specification is preprocessed.
+The suggested file extension for preprocessed specifications
+is `tfs` (*T*ext*F*ormats *S*pecification).
 
 To run the test suite for a specification use the method
 `specification.test(testfile)`. If the testdata is contained

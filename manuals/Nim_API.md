@@ -74,6 +74,8 @@ after parsing from the YAML file. Preprocessed files are automatically
 recognized by the `specification_from_file` proc.
 A limitation of preprocessed specification is that they cannot contain
 test data or be embedded in data files.
+The suggested file extension for preprocessed specifications
+is `tfs` (*T*ext*F*ormats *S*pecification).
 
 ### Running tests
 

@@ -38,6 +38,8 @@ It is possible to preprocess a YAML specification using the tool
 `tf_spec preprocess`. The output of the tool (preprocessed
 specification) is by default written to the standard output; in alternative
 a filename can be provided using the option `--outfile`.
+The suggested file extension for preprocessed specifications
+is `tfs` (*T*ext*F*ormats *S*pecification).
 
 Preprocessed specifications can be used in most tools in place
 of the YAML specifications and are automatically
