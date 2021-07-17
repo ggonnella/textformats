@@ -1,3 +1,5 @@
 test_textformats_c
 test_jsonwrap
+*.out
+*.err
 nimcache
