@@ -7,6 +7,10 @@ Textformats C API tests
 
 [OK] no errors
 
+======== test preprocessing specfile
+
+[OK] no errors
+
 ======== test loading specfile with syntax errors
 
 [OK] Error, as expected:
@@ -15,7 +19,11 @@ Textformats C API tests
 
 [OK] Error, as expected:
 
-======== test loading valid specification
+======== test loading valid preproc specification
+
+[OK] no errors
+
+======== test loading valid YAML specification
 
 [OK] no errors
 
@@ -26,6 +34,12 @@ Textformats C API tests
 ======== test is_preprocessed on YAML file
 
 [OK] false as expected
+
+[OK] no errors
+
+======== test is_preprocessed on preproc file
+
+[OK] true as expected
 
 [OK] no errors
 
@@ -49,8 +63,30 @@ Textformats C API tests
 [OK] Datatype: 'header': {"fastaid":"TDPy"} (decoded) validated
 [OK] no errors
 
+======== test run failing specification testfile on preproc spec
+
+[OK] no errors
+[OK] Datatype: 'header': '>also_valid' =(decode)=> {"fastaid":"also_valid"}
+[OK] Datatype: 'header': '>also_valid' (encoded) validated
+[OK] Datatype: 'header': '{"fastaid":"also_valid"}' =(encode)=> '>also_valid'
+[OK] Datatype: 'header': {"fastaid":"also_valid"} (decoded) validated
+[OK] Error, as expected:
+
+======== test run specification testfile on preproc spec
+
+[OK] Datatype: 'header': '>TDPy A' =(decode)=> {"fastaid":"TDPy","desc":"A"}
+[OK] Datatype: 'header': '>TDPy A' (encoded) validated
+[OK] Datatype: 'header': '{"fastaid":"TDPy","desc":"A"}' =(encode)=> '>TDPy A'
+[OK] Datatype: 'header': {"fastaid":"TDPy","desc":"A"} (decoded) validated
+[OK] Datatype: 'header': '>TDPy' =(decode)=> {"fastaid":"TDPy"}
+[OK] Datatype: 'header': '>TDPy' (encoded) validated
+[OK] Datatype: 'header': '{"fastaid":"TDPy"}' =(encode)=> '>TDPy'
+[OK] Datatype: 'header': {"fastaid":"TDPy"} (decoded) validated
+[OK] no errors
+
 ======== test run failing specification tests from string
 
+[OK] no errors
 [OK] Error, as expected:
 
 ======== test run specification tests from string

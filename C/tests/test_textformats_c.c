@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include "testing_macros.h"
 
 #define YAML_SPEC        "testdata/fasta.yaml"
+#define PREPROC_SPEC     "testdata/fasta.tfs"
 #define BAD_YAML_SPEC    "testdata/wrong_yaml_syntax.yaml"
 #define NONEXISTING_SPEC "testdata/xyz.yaml"
 #define TESTFILE         "testdata/good_test.yaml"
@@ -29,61 +31,6 @@
 #define DATA_TYPE_SCOPE_UNIT      "unit_for_tests"
 #define DATA_TYPE_SCOPE_SECTION   "entry"
 #define DATA_TYPE_SCOPE_FILE      "file"
-
-#define NEXT_TEST(STR) \
-  printf("\n======== test " STR "\n\n")
-
-#define EXPECT_FAILURE \
-  if (!tf_haderr) {\
-    printf("[FAILED] No errors, but an error was expected");\
-    exit(1);\
-  } else {\
-    printf("[OK] Error, as expected:\n"); \
-    tf_printerr(); \
-    tf_unseterr(); \
-  }
-
-#define EXPECT_NO_ERROR \
-  if (tf_haderr) {\
-    printf("\n[FAILED] Unexpected error:\n");\
-    tf_printerr();\
-    exit(1); \
-  } else printf("[OK] no errors\n")
-
-#define EXPECT_INT_EQ(VALUE, EXPECTED) \
-  {\
-    const int testint_v = VALUE, testint_e = EXPECTED;\
-    if(testint_v != testint_e) {\
-      printf("[FAILED] Error:\nValue: '%i'\nExpected: '%i'\n", \
-             testint_v, testint_e);\
-      exit(1);\
-    } else printf("[OK] %i as expected\n\n", testint_v);\
-  }
-
-#define EXPECT_STR_EQ(VALUE, EXPECTED) \
-  {\
-    const char *teststr_v = VALUE, *teststr_e = EXPECTED;\
-    if(strcmp(teststr_v, teststr_e) != 0) {\
-      printf("[FAILED] Error:\nValue: '%s'\nExpected: '%s'\n", \
-             teststr_v, teststr_e);\
-      exit(1);\
-    } else printf("[OK] '%s' as expected\n\n", teststr_v);\
-  }
-
-#define EXPECT_JSONSTR_EQ(NODE, EXP) \
-  EXPECT_STR_EQ(jsonnode_to_string(NODE), EXP)
-
-#define EXPECT_TRUE(VALUE) \
-  if (!VALUE) { \
-    printf("[FAILED] Error:\nValue: false\nExpected: true\n");\
-    exit(1);\
-  } else printf("[OK] true as expected\n\n"); \
-
-#define EXPECT_FALSE(VALUE) \
-  if (VALUE) { \
-    printf("[FAILED] Error:\nValue: true\nExpected: false\n");\
-    exit(1);\
-  } else printf("[OK] false as expected\n\n"); \
 
 void test_handling_encoded_strings(DatatypeDefinition *dd)
 {
@@ -193,6 +140,10 @@ Specification* test_specification_api() {
   result = tf_parse_specification(YAML_SPEC_STR);
   EXPECT_NO_ERROR;
   assert(result != NULL);
+  /* preprocess_specification */
+  NEXT_TEST("preprocessing specfile");
+  tf_preprocess_specification(YAML_SPEC, PREPROC_SPEC);
+  EXPECT_NO_ERROR;
   /* specification_from_file */
   NEXT_TEST("loading specfile with syntax errors");
   result = tf_specification_from_file(BAD_YAML_SPEC);
@@ -200,7 +151,12 @@ Specification* test_specification_api() {
   NEXT_TEST("loading non-existing specfile");
   result = tf_specification_from_file(NONEXISTING_SPEC);
   EXPECT_FAILURE;
-  NEXT_TEST("loading valid specification");
+  NEXT_TEST("loading valid preproc specification");
+  result = tf_specification_from_file(PREPROC_SPEC);
+  EXPECT_NO_ERROR;
+  assert(result != NULL);
+  tf_delete_specification(result);
+  NEXT_TEST("loading valid YAML specification");
   result = tf_specification_from_file(YAML_SPEC);
   EXPECT_NO_ERROR;
   assert(result != NULL);
@@ -211,6 +167,9 @@ Specification* test_specification_api() {
   NEXT_TEST("is_preprocessed on YAML file");
   EXPECT_FALSE(tf_is_preprocessed(YAML_SPEC));
   EXPECT_NO_ERROR;
+  NEXT_TEST("is_preprocessed on preproc file");
+  EXPECT_TRUE(tf_is_preprocessed(PREPROC_SPEC));
+  EXPECT_NO_ERROR;
   /* run_specification_testfile */
   NEXT_TEST("run failing specification testfile");
   tf_run_specification_testfile(result, BAD_TESTFILE);
@@ -218,9 +177,19 @@ Specification* test_specification_api() {
   NEXT_TEST("run specification testfile");
   tf_run_specification_testfile(result, TESTFILE);
   EXPECT_NO_ERROR;
+  NEXT_TEST("run failing specification testfile on preproc spec");
+  result = tf_specification_from_file(PREPROC_SPEC);
+  EXPECT_NO_ERROR;
+  tf_run_specification_testfile(result, BAD_TESTFILE);
+  EXPECT_FAILURE;
+  NEXT_TEST("run specification testfile on preproc spec");
+  tf_run_specification_testfile(result, TESTFILE);
+  EXPECT_NO_ERROR;
+  tf_delete_specification(result);
   /* run_specification_tests */
   NEXT_TEST("run failing specification tests from string");
   result = tf_parse_specification(YAML_SPEC_STR);
+  EXPECT_NO_ERROR;
   tf_run_specification_tests(result, BAD_TESTDATA_STR);
   EXPECT_FAILURE;
   NEXT_TEST("run specification tests from string");
