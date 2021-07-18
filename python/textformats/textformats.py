@@ -80,6 +80,11 @@ class Specification:
       self._spec = tf.parse_specification(json.dumps(dict_or_fn))
       self._preprocessed = False
 
+  @classmethod
+  @handle_textformats_errors
+  def preprocess(cls, inputfile, outputfile):
+    tf.preprocess_specification(inputfile, outputfile)
+
   @property
   def default(self):
     return self["default"]

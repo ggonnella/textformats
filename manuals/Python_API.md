@@ -66,6 +66,9 @@ which is `True`, if the specification is preprocessed.
 The suggested file extension for preprocessed specifications
 is `tfs` (*T*ext*F*ormats *S*pecification).
 
+To preprocess a specification, use the class method
+`Specification.preprocess(inputfile, outputfile)`.
+
 To run the test suite for a specification use the method
 `specification.test(testfile)`. If the testdata is contained
 in a YAML/JSON specification, `specification.test()` will run the test.
