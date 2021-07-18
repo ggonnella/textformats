@@ -2,6 +2,7 @@
 import textformats/types/datatype_definition
 export DatatypeDefinition
 export `$`
+export `repr`
 export get_unitsize
 export set_unitsize
 export get_scope

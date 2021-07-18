@@ -61,7 +61,7 @@ the datatypes definitions: `Specification({"datatypes": {...}})`.
 The following properties are defined in the Specification instances:
 `datatype_names` is the list of the names of the datatypes
 defined in the specification; `filename` is the filename from which
-the specification instance was constructed; `preprocessed` is a boolean,
+the specification instance was constructed; `is_preprocessed` is a boolean,
 which is `True`, if the specification is preprocessed.
 The suggested file extension for preprocessed specifications
 is `tfs` (*T*ext*F*ormats *S*pecification).

@@ -1,12 +1,13 @@
 import nimporter
 import json
 import textformats.py_bindings as tf
-from textformats.error import handle_textformats_errors
+from textformats.error import handle_textformats_errors, \
+                              handle_nimpy_exception
 
 class Datatype:
-  def __init__(self, definition, reprstr="Datatype"):
+  def __init__(self, definition, name):
     self._definition = definition
-    self._reprstr = reprstr
+    self._name = name
 
   @handle_textformats_errors
   def decode(self, encoded, to_json=False):
@@ -26,24 +27,29 @@ class Datatype:
   @property
   @handle_textformats_errors
   def unitsize(self):
-    return tf.get_scope(self._definition)
+    return tf.get_unitsize(self._definition)
 
   @unitsize.setter
   @handle_textformats_errors
   def unitsize(self, value):
     tf.set_unitsize(self._definition, value)
 
-  @handle_textformats_errors
   def decoded_file(self, filename, embedded=False, splitted=False,
                    wrapped=False, to_json=False):
     if to_json:
-      for value in tf.decoded_file_as_json(filename, self._definition, embedded,
-                                           splitted, wrapped):
-        yield value
+      try:
+        for value in tf.decoded_file_as_json(filename, self._definition, embedded,
+                                             splitted, wrapped):
+          yield value
+      except tf.NimPyException as e:
+        handle_nimpy_exception(e)
     else:
-      for value in tf.decoded_file(filename, self._definition, embedded,
-                                   splitted, wrapped):
-        yield value
+      try:
+        for value in tf.decoded_file(filename, self._definition, embedded,
+                                     splitted, wrapped):
+          yield value
+      except tf.NimPyException as e:
+        handle_nimpy_exception(e)
 
   @handle_textformats_errors
   def encode(self, item, from_json=False):
@@ -52,7 +58,7 @@ class Datatype:
 
   @handle_textformats_errors
   def is_valid_decoded(self, s, json=False):
-    if json: return tf.is_valid_decoded(s, self._definition)
+    if json: return tf.is_valid_decoded_json(s, self._definition)
     else: return tf.is_valid_decoded(s, self._definition)
 
   @handle_textformats_errors
@@ -60,7 +66,9 @@ class Datatype:
     return tf.is_valid_encoded(i, self._definition)
 
   def __repr__(self):
-    return self._reprstr
+    return "Specification({\"datatypes\": " +\
+           "yaml.safe_load(" + repr(tf.repr(self._definition)) +\
+           ")})[" + repr(self._name) + "]"
 
   @handle_textformats_errors
   def __str__(self):
@@ -92,7 +100,7 @@ class Specification:
   @handle_textformats_errors
   def __getitem__(self, datatype):
     dd = Datatype(tf.get_definition(self._spec, datatype),
-                  f"{repr(self)}[\"{datatype}\"]")
+                  datatype)
     dd.name = datatype
     return dd
 
@@ -114,7 +122,7 @@ class Specification:
     return tf.datatype_names(self._spec)
 
   @property
-  def preprocessed(self):
+  def is_preprocessed(self):
     return self._preprocessed
 
   @property

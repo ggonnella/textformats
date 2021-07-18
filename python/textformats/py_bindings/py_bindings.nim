@@ -20,6 +20,9 @@ proc get_definition*(datatypes: Specification,
 proc describe*(dd: DatatypeDefinition): string {.exportpy.} =
   textformats.`$`(dd)
 
+proc repr*(dd: DatatypeDefinition): string {.exportpy.} =
+  textformats.repr(dd)
+
 proc specification_from_file*(filename: string):
                               Specification {.exportpy.} =
   if not fileExists(filename):
