@@ -33,5 +33,8 @@ def handle_textformats_errors(function):
     except tf.NimPyException as e:
       name = e.__class__.__name__
       msg = str(e)
+      pfx = "Unexpected error encountered: "
+      if msg[:len(pfx)] == pfx:
+        msg = msg[len(pfx):]
       raise globals()[name](msg) from None
   return handle_textformats_error_wrapper
