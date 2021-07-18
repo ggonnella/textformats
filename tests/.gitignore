@@ -1,4 +1,5 @@
 *.out
 test_spec_parser
 test_manual_examples
+test_api
 *.textformats

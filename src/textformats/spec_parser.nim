@@ -236,6 +236,8 @@ proc parse_specification_file*(filename: string): Specification =
 proc specification_from_file*(specfile: string): Specification =
   ## Load specification if specfile is a preprocessed specification file
   ## otherwise parse the file, assuming it is a YAML/JSON specification file
+  if not fileExists(specfile):
+    raise newException(TextFormatsRuntimeError, &"File not found: {specfile}")
   if specfile.is_preprocessed: load_specification(specfile)
   else: parse_specification_file(specfile)
 
