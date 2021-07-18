@@ -1,4 +1,4 @@
-Textformats C API tests
+TextFormats C API tests
 ======== test parsing invalid specification string
 
 [OK] Error, as expected:

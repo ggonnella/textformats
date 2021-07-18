@@ -61,7 +61,7 @@ template fail_if_preprocessed*(specfile) =
   try:
     if unlikely(textformats.is_preprocessed(specfile)):
       exit_with(ec_err_preproc)
-  except textformats.TextformatsRuntimeError:
+  except textformats.TextFormatsRuntimeError:
     let e = get_current_exception()
     exit_with(ec_err_spec_io, e.msg)
 
@@ -72,7 +72,7 @@ template get_specification*(specfile): untyped =
   except textformats.InvalidSpecError:
     let e = get_current_exception()
     exit_with(ec_err_spec_invalid, e.msg)
-  except textformats.TextformatsRuntimeError:
+  except textformats.TextFormatsRuntimeError:
     let e = get_current_exception()
     exit_with(ec_err_spec_io, e.msg)
   datatypes

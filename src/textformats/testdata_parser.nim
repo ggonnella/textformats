@@ -10,7 +10,7 @@ import decoder, encoder, encoded_validator, decoded_validator
 import yaml, yaml / [dom, serialization, hints]
 
 proc get_yaml_root(input: string, strinput: bool): YamlNode =
-  get_yaml_mapping_root(TextformatsRuntimeError, InvalidTestdataError,
+  get_yaml_mapping_root(TextFormatsRuntimeError, InvalidTestdataError,
                         input, strinput, "testdata")
 
 proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =

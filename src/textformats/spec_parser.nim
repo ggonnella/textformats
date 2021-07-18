@@ -137,7 +137,7 @@ proc include_subspec(spec: Specification, root: YamlNode, path: string,
       raise newException(SpecIncludeError, get_current_exception_msg())
 
 proc get_yaml_root(filename: string, strinput = false): YamlNode =
-  get_yaml_mapping_root(TextformatsRuntimeError,
+  get_yaml_mapping_root(TextFormatsRuntimeError,
                         InvalidSpecError, filename,
                         strinput, "specification")
 

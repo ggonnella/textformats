@@ -24,7 +24,7 @@ template open_input_file(filename: string): File =
     try: file = open(filename)
     except IOError:
       let e = getCurrentException()
-      raise newException(TextformatsRuntimeError,
+      raise newException(TextFormatsRuntimeError,
                          "Error while reading input file '" & filename &
                          "'\n" & e.msg)
     file
@@ -184,22 +184,22 @@ iterator decoded_section_elements(reader: var FileLinesReader,
 
 proc validate_section_def(dd: DatatypeDefinition) =
   if dd.kind notin @[ddkStruct, ddkList, ddkDict]:
-    raise newException(TextformatsRuntimeError,
+    raise newException(TextFormatsRuntimeError,
             "Wrong datatype definition for file section\n" &
             "Expected: composed_of, list_of or named_values\n" &
             &"Found: '{dd.kind}'")
   if dd.sep != "\n":
-    raise newException(TextformatsRuntimeError,
+    raise newException(TextFormatsRuntimeError,
             "Wrong separator for file section definition\n" &
             "Expected: newline\n" &
             &"Found: '{dd.sep}'")
   if dd.pfx.len > 0:
-    raise newException(TextformatsRuntimeError,
+    raise newException(TextFormatsRuntimeError,
             "Wrong prefix for file section definition\n" &
             "Expected: empty string\n" &
             &"Found: '{dd.pfx}'")
   if dd.sfx.len > 0:
-    raise newException(TextformatsRuntimeError,
+    raise newException(TextFormatsRuntimeError,
             "Wrong suffix for file section definition\n" &
             "Expected: empty string\n" &
             &"Found: '{dd.sfx}'")

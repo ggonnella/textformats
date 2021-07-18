@@ -35,7 +35,7 @@ each with two members "length" and "code". In JSON its representation would
 be: [{length: 10, code: "M"}, {length: 1, code: "D"}, {length: 20, code: "M"},
 {length: 1, code: "I"}, {length: 40, code: "M"}].
 
-The definition of a CIGAR in Textformats would be:
+The definition of a CIGAR in TextFormats would be:
 ```
 cigar:
   list_of:

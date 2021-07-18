@@ -138,6 +138,6 @@ class Specification:
       else:
         src = f"- content: {self._source}\n"
     preprocstr = "preprocessed" if self._preprocessed else "YAML"
-    return "Textformats Specification table\n" + src +\
+    return "TextFormats Specification table\n" + src +\
       f"- defined/included datatypes:\n" +\
       "\n".join([f"  - {n}"for n in self.datatype_names])

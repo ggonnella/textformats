@@ -23,7 +23,7 @@ proc tf_specification_from_file*(filename: cstring):
                                  SpecificationRef {.exportc, raises: [].} =
   on_failure_seterr_and_return:
     if not fileExists($filename):
-      raise newException(textformats.TextformatsRuntimeError,
+      raise newException(textformats.TextFormatsRuntimeError,
                          "File not found:" & $filename)
     let spec = textformats.specification_from_file($filename)
     result = SpecificationRef(s: spec)
@@ -45,14 +45,14 @@ proc tf_preprocess_specification*(inputfile: cstring, outputfile: cstring)
                               {.exportc, raises: [].} =
   on_failure_seterr:
     if not fileExists($inputfile):
-      raise newException(textformats.TextformatsRuntimeError,
+      raise newException(textformats.TextFormatsRuntimeError,
                          "File not found:" & $inputfile)
     textformats.preprocess_specification($inputfile, $outputfile)
 
 proc tf_is_preprocessed*(filename: cstring): bool {.exportc, raises: [].} =
   on_failure_seterr_and_return:
     if not fileExists($filename):
-      raise newException(textformats.TextformatsRuntimeError,
+      raise newException(textformats.TextFormatsRuntimeError,
                          "File not found:" & $filename)
     return textformats.is_preprocessed($filename)
 

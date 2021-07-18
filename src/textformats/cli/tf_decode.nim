@@ -38,7 +38,7 @@ proc parse_scope_setting*(scope: string, dd: DatatypeDefinition): int =
   else:
     try:
       dd.set_scope(scope)
-    except TextformatsRuntimeError:
+    except TextFormatsRuntimeError:
       exit_with(ec_err_setting,
                 get_current_exception_msg() & "- auto\n")
   return 0

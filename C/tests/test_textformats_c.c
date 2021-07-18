@@ -338,7 +338,7 @@ int main(void)
   Specification *spec;
   DatatypeDefinition* dd;
   NimMain();
-  printf("Textformats C API tests");
+  printf("TextFormats C API tests");
   spec = test_specification_api();
   dd = test_datatype_definition_api(spec);
   test_handling_encoded_strings(dd);

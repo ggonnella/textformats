@@ -8,10 +8,10 @@ Error (InvalidSpecError):
     Filename: 'specification'
     testdata/wrong_yaml_syntax.yaml
 
-Error (TextformatsRuntimeError):
+Error (TextFormatsRuntimeError):
   File not found:testdata/xyz.yaml
 
-Error (TextformatsRuntimeError):
+Error (TextFormatsRuntimeError):
   File not found:testdata/xyz.yaml
 
 Error (UnexpectedEncodedInvalidError):
@@ -59,7 +59,7 @@ Error (UnexpectedEncodedInvalidError):
         Expected value: x
         Found value: y
 
-Error (TextformatsRuntimeError):
+Error (TextFormatsRuntimeError):
   The datatype 'heder' is not defined in the specification.
 
 Error (DecodingError):
@@ -106,7 +106,7 @@ Error (EncodingError):
   Missing key: fastaid
   
 
-Error (TextformatsRuntimeError):
+Error (TextFormatsRuntimeError):
   Error: scope must be one of the following values:
   - file
   - section
@@ -114,11 +114,11 @@ Error (TextformatsRuntimeError):
   - line
   
 
-Error (TextformatsRuntimeError):
+Error (TextFormatsRuntimeError):
   Error: unit size must be >= 1
   
 
-Error (TextformatsRuntimeError):
+Error (TextFormatsRuntimeError):
   Wrong datatype definition for file section
   Expected: composed_of, list_of or named_values
   Found: 'ddkUnion'

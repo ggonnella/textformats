@@ -18,12 +18,12 @@
 typedef enum {
   OpDecode,
   OpToJson
-} TextformatsOperation;
+} TextFormatsOperation;
 
 int parse_args(int argc, char *argv[],
                DatatypeDefinition **def,
                FILE **input_file,
-               TextformatsOperation *op) {
+               TextFormatsOperation *op) {
   Specification *spec;
   if (argc != 5)
   {
@@ -90,7 +90,7 @@ int input_file_to_json(DatatypeDefinition *def, FILE *input_file)
 int main(int argc, char *argv[]) {
   DatatypeDefinition *def;
   FILE *input_file;
-  TextformatsOperation op;
+  TextFormatsOperation op;
   int (*operation)(DatatypeDefinition*, FILE*);
   NimMain();
   tf_quit_on_err = true;

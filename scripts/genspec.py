@@ -267,12 +267,12 @@ def wrappedlines(text, fixedpfxlen):
 def sayquoted(text):
   text=str(text)
   for line in wrappedlines(text, 11):
-    print(HTML(TextformatsPfx+"{}").format(text))
+    print(HTML(TextFormatsPfx+"{}").format(text))
 
 def say(text):
   text = str(text)
   for line in wrappedlines(text, 11):
-    print(HTML(TextformatsPfx+line))
+    print(HTML(TextFormatsPfx+line))
 
 def sayerr(text):
   for line in wrappedlines(text, 7):
@@ -313,13 +313,13 @@ def ask(text, answer_id, helpmsg=""):
       if output[i][1]:
         print(HTML(output[i][0]))
       else:
-        print(HTML(TextformatsPfx+"{}").format(output[i][0]))
+        print(HTML(TextFormatsPfx+"{}").format(output[i][0]))
 
   validator = answer[answer_id]["validator"]
   if output[-1][1]:
     prompttxt = HTML(output[-1][0]+"\n")
   else:
-    prompttxt = HTML(TextformatsPfx+"{}"+"\n").format(output[-1][0])
+    prompttxt = HTML(TextFormatsPfx+"{}"+"\n").format(output[-1][0])
   return decoder(prompt(prompttxt, validator = validator))
 
 def printhelp(helpmsg):
@@ -1335,6 +1335,6 @@ def main():
   define_datatype(data, data["basetype"])
   finalize_specification(data)
 
-TextformatsPfx="<darkslategray>[<i>textformats</i>]</darkslategray> "
+TextFormatsPfx="<darkslategray>[<i>textformats</i>]</darkslategray> "
 answer = setup_answers()
 main()

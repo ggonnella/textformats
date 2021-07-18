@@ -33,7 +33,7 @@ index a788dcd..0cc6a78 100644
 +      filename.writeFile($$table)
    except IOError:
      let e = get_current_exception()
-     raise newException(TextformatsRuntimeError,
+     raise newException(TextFormatsRuntimeError,
                         &"Error while saving specification file '{filename}'\n" &
                         e.msg)
  

@@ -2,14 +2,14 @@
 
 # Note: modules under support are considered "external"
 #       thus throw their own errors, which are
-#       catched by the library and re-raised as TextformatsError
+#       catched by the library and re-raised as TextFormatsError
 
 type
 
-  TextformatsError* = object of CatchableError ##\
+  TextFormatsError* = object of CatchableError ##\
     ## Exception root for all errors thrown by the library
 
-  InvalidSpecError*   = object of TextformatsError ##\
+  InvalidSpecError*   = object of TextFormatsError ##\
     ## Error while parsing the specification
   SpecIncludeError*   = object of InvalidSpecError ##\
     ## Error regarding the content of the specification 'include' key
@@ -22,19 +22,19 @@ type
   BrokenRefError*     = object of InvalidSpecError ##\
     ## Raised when a reference cannot be resolved
 
-  DecodingError* = object of TextformatsError ##\
+  DecodingError* = object of TextFormatsError ##\
     ## Raised if the encoded string is invalid for the datatype
-  EncodingError* = object of TextformatsError ##\
+  EncodingError* = object of TextFormatsError ##\
     ## Raised if the value to encode is invalid for the datatype
 
-  TextformatsRuntimeError* = object of TextformatsError ##\
+  TextFormatsRuntimeError* = object of TextFormatsError ##\
     ## Error during specification parsing, encoding, decoding or validation
     ## which does not depend on the validity of the specification or the
     ## encoded or decoded data (e.g. a file cannot be accessed)
 
-  InvalidTestdataError* = object of TextformatsError ##\
+  InvalidTestdataError* = object of TextFormatsError ##\
     ## Error while parsing test data
-  TestError* = object of TextformatsError ##\
+  TestError* = object of TextFormatsError ##\
     ## Unexpected result of specification test
   UnexpectedValidError* = object of TestError ##\
     ## Value is valid, but should be invalid

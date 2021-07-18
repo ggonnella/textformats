@@ -17,7 +17,7 @@
 ##
 
 import strutils, strformat
-from textformats_error import TextformatsRuntimeError
+from textformats_error import TextFormatsRuntimeError
 
 type
   FileLinesReader* = object
@@ -30,7 +30,7 @@ proc safe_consume*(self: var FileLinesReader) =
   try:
     self.eof = not self.file.read_line(self.line)
   except IOError:
-    raise newException(TextformatsRuntimeError,
+    raise newException(TextFormatsRuntimeError,
               "IO Error while attempting to read line from file\n" &
               &"Line number: {self.lineno}\n" &
               get_current_exception_msg().indent(2))

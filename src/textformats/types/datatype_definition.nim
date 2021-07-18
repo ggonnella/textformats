@@ -229,7 +229,7 @@ proc parse_scope*(scope: string): DatatypeDefinitionScope =
       for t in valid_definition_types:
         msg &= &"- {t}\n"
       msg
-    raise newException(TextformatsRuntimeError, scope_errmsg)
+    raise newException(TextFormatsRuntimeError, scope_errmsg)
   case scope:
   of "file": return ddsFile
   of "section": return ddsSection
@@ -244,7 +244,7 @@ proc get_unitsize*(d: DatatypeDefinition): int =
 
 proc set_unitsize*(d: DatatypeDefinition, unitsize: int) =
   if unitsize < 1:
-    raise newException(TextformatsRuntimeError,
+    raise newException(TextFormatsRuntimeError,
                        "Error: unit size must be >= 1\n")
   else:
     let dd = dereference(d)

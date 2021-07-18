@@ -23,7 +23,7 @@ proc describe*(dd: DatatypeDefinition): string {.exportpy.} =
 proc specification_from_file*(filename: string):
                               Specification {.exportpy.} =
   if not fileExists(filename):
-    raise newException(textformats.TextformatsRuntimeError,
+    raise newException(textformats.TextFormatsRuntimeError,
                        "File not found:" & filename)
   textformats.specification_from_file(filename)
 
@@ -34,13 +34,13 @@ proc parse_specification*(specdata: string):
 proc preprocess_specification*(inputfile: string, outputfile: string)
                               {.exportpy.} =
   if not fileExists(inputfile):
-    raise newException(textformats.TextformatsRuntimeError,
+    raise newException(textformats.TextFormatsRuntimeError,
                        "File not found:" & inputfile)
   textformats.preprocess_specification(inputfile, outputfile)
 
 proc is_preprocessed*(filename: string): bool {.exportpy.} =
   if not fileExists(filename):
-    raise newException(textformats.TextformatsRuntimeError,
+    raise newException(textformats.TextFormatsRuntimeError,
                        "File not found:" & filename)
   textformats.is_preprocessed(filename)
 
