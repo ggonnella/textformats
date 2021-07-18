@@ -5,12 +5,14 @@
 #include <string.h>
 #include "testing_macros.h"
 
-#define YAML_SPEC        "testdata/fasta.yaml"
-#define PREPROC_SPEC     "testdata/fasta.tfs"
-#define BAD_YAML_SPEC    "testdata/wrong_yaml_syntax.yaml"
-#define NONEXISTING_SPEC "testdata/xyz.yaml"
-#define TESTFILE         "testdata/good_test.yaml"
-#define BAD_TESTFILE     "testdata/bad_test.yaml"
+#define TESTDATA         "../../tests/testdata/api/"
+
+#define YAML_SPEC        TESTDATA "fasta.yaml"
+#define PREPROC_SPEC     TESTDATA "fasta.tfs"
+#define BAD_YAML_SPEC    TESTDATA "wrong_yaml_syntax.yaml"
+#define NONEXISTING_SPEC TESTDATA "xyz.yaml"
+#define TESTFILE         TESTDATA "good_test.yaml"
+#define BAD_TESTFILE     TESTDATA "bad_test.yaml"
 
 #define YAML_SPEC_STR      "{datatypes: {x: {constant: \"x\"}}}"
 #define BAD_YAML_SPEC_STR  "{datatypes: {x: [}}"
@@ -25,7 +27,7 @@
 #define DATA_D      "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}"
 #define BAD_DATA_D  "{\"desc\":\"some sequence\"}"
 
-#define DATAFILE                  "testdata/test.fas"
+#define DATAFILE                  TESTDATA "test.fas"
 #define DATA_TYPE_SCOPE_LINE      "line"
 #define BAD_DATA_TYPE_SCOPE_LINE  "line_failing"
 #define DATA_TYPE_SCOPE_UNIT      "unit_for_tests"
@@ -119,7 +121,7 @@ DatatypeDefinition* test_datatype_definition_api(Specification* spec) {
   NEXT_TEST("loading non-existing datatype");
   result = tf_get_definition(spec, NONEXISTING_DATA_TYPE);
   EXPECT_FAILURE;
-  NEXT_TEST("loading valid specification");
+  NEXT_TEST("loading valid datatype definition");
   result = tf_get_definition(spec, DATA_TYPE);
   EXPECT_NO_ERROR;
   assert(result != NULL);

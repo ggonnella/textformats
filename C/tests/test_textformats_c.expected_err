@@ -6,13 +6,13 @@ Error (InvalidSpecError):
 Error (InvalidSpecError):
   Error parsing Unexpected token: ltStreamEnd
     Filename: 'specification'
-    testdata/wrong_yaml_syntax.yaml
+    ../../tests/testdata/api/wrong_yaml_syntax.yaml
 
 Error (TextFormatsRuntimeError):
-  File not found:testdata/xyz.yaml
+  File not found:../../tests/testdata/api/xyz.yaml
 
 Error (TextFormatsRuntimeError):
-  File not found:testdata/xyz.yaml
+  File not found:../../tests/testdata/api/xyz.yaml
 
 Error (UnexpectedEncodedInvalidError):
   [Failed] Datatype: 'header':
@@ -124,7 +124,7 @@ Error (TextFormatsRuntimeError):
   Found: 'ddkUnion'
 
 Error (DecodingError):
-  File: 'testdata/test.fas'
+  File: '../../tests/testdata/api/test.fas'
   Line number: 1
   Error: invalid encoded string according to datatype
   Datatype name: line_failing
@@ -151,7 +151,7 @@ Error (DecodingError):
           Regular expression: ([^>]*|[^>].*)
 
 Error (DecodingError):
-  File: 'testdata/test.fas'
+  File: '../../tests/testdata/api/test.fas'
   Line number: 4
   Error: invalid encoded string according to datatype
   Datatype name: unit_for_tests
