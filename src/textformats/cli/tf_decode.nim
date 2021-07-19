@@ -53,7 +53,7 @@ proc parse_unitsize_setting*(unitsize: int, dd: DatatypeDefinition): int =
   ##
   if unitsize < 1:
     exit_with(ec_err_setting, "The 'unitsize' parameter must be >= 1")
-  elif unitsize == 1:
+  elif unitsize == 1 and dd.get_scope == "unit":
     if dd.get_unitsize > 1: return
     else:
       exit_with(ec_err_setting,
