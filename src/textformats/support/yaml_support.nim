@@ -393,19 +393,18 @@ proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
       stream = newFileStream(stdin)
     else:
       if not fileExists(input):
-        raise newException(io_errtype, yamlparse_errmsg(fn, inputdesc,
-                           "File not found"))
+        raise newException(io_errtype,
+                yamlparse_errmsg(fn, inputdesc, "File not found"))
       stream = newFileStream(input, fmRead)
   except IOError:
-    raise newException(io_errtype, yamlparse_errmsg(fn, inputdesc,
-       get_current_exception_msg()))
+    raise newException(io_errtype,
+            yamlparse_errmsg(fn, inputdesc, get_current_exception_msg()))
   try:
     yaml = load_dom(stream)
     stream.close
   except:
     raise newException(parsing_errtype,
-       yamlparse_errmsg(fn, inputdesc,
-         get_current_exception_msg()))
+       yamlparse_errmsg(fn, inputdesc, get_current_exception_msg()))
   try:
     yaml.root.validate_is_mapping()
   except NodeValueError:
