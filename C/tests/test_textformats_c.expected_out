@@ -121,7 +121,7 @@ datatype names:
 
 [OK] Error, as expected:
 
-======== test loading valid specification
+======== test loading valid datatype definition
 
 [OK] no errors
 
