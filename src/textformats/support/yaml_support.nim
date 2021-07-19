@@ -376,8 +376,8 @@ proc getKeys*(n: YamlNode,
 
 template yamlparse_errmsg*(filename: string, desc: string,
                           errmsg: string): string =
-  let fn = if len(filename) > 0: "Filename: '" & filename & "'\n" else: ""
-  "Error parsing " & desc & "\n" & (fn & errmsg).indent(2)
+  let fn = if len(filename) > 0: "file '" & filename & "'" else: "input"
+  ("Error parsing " & desc & " " & fn & ":\n") & errmsg.indent(2)
 
 proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
                             input: string, strinput: bool,
@@ -393,28 +393,26 @@ proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
       stream = newFileStream(stdin)
     else:
       if not fileExists(input):
-        raise newException(io_errtype, yamlparse_errmsg(inputdesc,
-                           "File not found", fn))
+        raise newException(io_errtype, yamlparse_errmsg(fn, inputdesc,
+                           "File not found"))
       stream = newFileStream(input, fmRead)
   except IOError:
-    raise newException(io_errtype, yamlparse_errmsg(inputdesc,
-       get_current_exception_msg(), fn))
+    raise newException(io_errtype, yamlparse_errmsg(fn, inputdesc,
+       get_current_exception_msg()))
   try:
     yaml = load_dom(stream)
     stream.close
   except:
     raise newException(parsing_errtype,
-       yamlparse_errmsg(inputdesc,
-         get_current_exception_msg(), fn))
+       yamlparse_errmsg(fn, inputdesc,
+         get_current_exception_msg()))
   try:
     yaml.root.validate_is_mapping()
   except NodeValueError:
-    raise newException(parsing_errtype, yamlparse_errmsg(
-      inputdesc,
+    raise newException(parsing_errtype, yamlparse_errmsg(fn, inputdesc,
       "Expected: " &
       "The root node must be a mapping.\n" &
       "Details of the validation error:" &
-      get_current_exception_msg().indent(2),
-      fn))
+      get_current_exception_msg()))
   return yaml.root
 
