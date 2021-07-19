@@ -208,7 +208,7 @@ proc include_yaml(spec: Specification, input: string,
     let
       e = get_current_exception()
       fn = if strinput: "" else: input
-    e.msg = yamlparse_errmsg("specification", e.msg, fn)
+    e.msg = yamlparse_errmsg(fn, "specification", e.msg)
     raise e
 
 proc try_finalizing_definitions(spec: Specification, fn: string)
@@ -217,7 +217,7 @@ proc try_finalizing_definitions(spec: Specification, fn: string)
     spec.finalize_definitions
   except:
     let e = get_current_exception()
-    e.msg = yamlparse_errmsg("specification", e.msg, fn)
+    e.msg = yamlparse_errmsg(fn, "specification", e.msg)
     raise e
 
 proc parse_specification_input(input: string, strinput: bool): Specification =
@@ -236,10 +236,13 @@ proc parse_specification_file*(filename: string): Specification =
 proc specification_from_file*(specfile: string): Specification =
   ## Load specification if specfile is a preprocessed specification file
   ## otherwise parse the file, assuming it is a YAML/JSON specification file
-  if not fileExists(specfile):
+  if specfile == "":
+    let spec = stdin.read_all.strip()
+    return parse_specification(spec)
+  elif not fileExists(specfile):
     raise newException(TextFormatsRuntimeError, &"File not found: {specfile}")
-  if specfile.is_preprocessed: load_specification(specfile)
-  else: parse_specification_file(specfile)
+  if specfile.is_preprocessed: return load_specification(specfile)
+  else: return parse_specification_file(specfile)
 
 proc preprocess_specification*(inputfile: string, outputfile: string) =
   ## Parse YAML/JSON specification and output preprocessed specification
