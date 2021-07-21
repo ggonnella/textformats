@@ -17,6 +17,9 @@ build:
 install:
 	${PYTHON} setup.py install -f
 
+test:
+	pytest
+
 SRCDIST=dist/textformats-${VERSION}.tar.gz
 
 ${SRCDIST}:

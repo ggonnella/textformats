@@ -33,3 +33,16 @@ task climan, "compile the man pages of the CLI tools":
       infile = indir & "/tf_" & cmd & ".1.md"
       outfile = outdir & "/tf_" & cmd & ".1"
     exec("pandoc -s -t man -o " & outfile & " " & infile)
+task clitest, "test CLI tools":
+  exec("tests/cli/test_cli.sh")
+task pymake, "make python API package":
+  exec("cd python && make")
+task pytest, "test python API package":
+  exec("cd python && make test")
+task ctest, "test C API package":
+  exec("cd C/tests && make")
+task alltests, "run unit, Nim/C/Python API and CLI tests":
+  exec("nimble test")
+  exec("nimble clitest")
+  exec("nimble pytest")
+  exec("nimble ctest")
