@@ -309,9 +309,9 @@ for the represented data:
 | `min_length` | `list_of` | unsigned integer | 1 | min number of elements |
 | `max_length` | `list_of` | unsigned integer | infinite | max number of elements |
 | `length` | `list_of` | unsigned integer | undefined | number of elements |
-| `n_required` | `composed_of` | unsigned integer | length of `composed_of` list | first `n_required` elements of the list must always be present |
-| `single` | `named_values` | list of strings | empty | elements which can be present only once |
+| `required` | `composed_of` | unsigned integer | length of `composed_of` list | first `required` elements of the list must always be present |
 | `required` | `named_values` | list of strings | empty | elements which must always be present |
+| `single` | `named_values` | list of strings | empty | elements which can be present only once |
 | `predefined` | `tagged_values` | mapping (tagnames: typecodes) | empty | type of predefined tags |
 | `tagnames` | `tagged_values` | string | `[A-Za-z_][0-9A-Za-z_]*` | regular expression for validation of tagnames |
 
@@ -745,9 +745,9 @@ The decoded data value of a `composed_of` definition is a table (Nim), mapping
 option is set (see section "Validation-only compound definitions").
 
 By default, the mapping must contain all elements. However it is possible to
-make the last elements optional, by setting `n_required` to the number of
+make the last elements optional, by setting `required` to the number of
 elements which must at least be present (such as in `cof1` below).  When using
-`n_required` "holes" are not allowed; i.e. if an optional element is present,
+`required` "holes" are not allowed; i.e. if an optional element is present,
 all elements before it must also be present (this is necessary, since element
 name and type are determined by their ordinal position). If a middle element
 can be missing, and the different values be reconignized anyway, definitions of
@@ -774,7 +774,7 @@ datatypes:
       - y: integer
       - z: integer
     splitted_by: ","
-    n_required: 2
+    required: 2
   cof2:
     composed_of:
       - node1: {float: {min: 0.0, max: 1.0}}
@@ -1084,7 +1084,7 @@ formatting and validation.
 | ---             | ---                       | ---
 | (common)        | `prefix`, `suffix`        |
 | `list_of`       | `separator`/`splitted_by` | `length`, `min_length`, `max_length`
-| `composed_of`   | `separator`/`splitted_by` | `n_required`
+| `composed_of`   | `separator`/`splitted_by` | `required`
 | `named_values`  | `internal_separator`, `splitted_by` | `single`, `required`
 | `tagged_values` | `internal_separator`, `splitted_by` | `predefined`, `tagnames`
 
@@ -1157,7 +1157,7 @@ datatypes:
           list_of: unit
       - sep2: {constant: "+++"}
       - section3: section
-    n_required: 2
+    required: 2
     splitted_by: "\n"
     scope: file
 ```
@@ -1708,7 +1708,7 @@ datatypes:
 (2) In the second case, the first elements of the sequence may be mandatory,
 while the following can be present or not (and are mandatory only
 if elements after them in the order are present). In this case, the
-`n_required` key is used:
+`required` key is used:
 ```YAML
 datatypes:
   dict4:            # e.g. 1 <-> [1, "C"]
@@ -1716,7 +1716,7 @@ datatypes:
       - first: {accepted_values: [1,2], empty: 0}
       - second: {accepted_values: [A,B], empty: C}
     splitted_by: ";"
-    n_required: 1
+    required: 1
 ```
 
 (3) In the third case, some internal element can be missing, together with its
