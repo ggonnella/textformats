@@ -15,7 +15,7 @@ const
   EnumDefKey* = "accepted_values"
   ListDefKey* = "list_of"
   FloatRangeDefKey* = "float"
-  IntrangeDefKey* = "integer"
+  IntRangeDefKey* = "integer"
   UintRangeDefKey* = "unsigned_integer"
   RegexesMatchDefKey* = "regexes"
   RegexMatchDefKey* = "regex"

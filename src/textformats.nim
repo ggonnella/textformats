@@ -1,8 +1,6 @@
 # datatype definition
 import textformats/types/datatype_definition
 export DatatypeDefinition
-export `$`
-export `repr`
 export get_unitsize
 export set_unitsize
 export get_scope
@@ -10,6 +8,11 @@ export set_scope
 export get_wrapped
 export set_wrapped
 export unset_wrapped
+
+# introspection
+import textformats/introspection
+export `$`
+export `repr`
 
 # specification
 import textformats/types/specification

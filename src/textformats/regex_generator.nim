@@ -9,6 +9,7 @@ import strformat
 import regex
 # this library
 import types / [datatype_definition, specification]
+import introspection
 import support/error_support
 import support/openrange
 import shared/formatting_regex_generator

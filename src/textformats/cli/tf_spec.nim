@@ -7,8 +7,8 @@
 ##
 
 import tables, strformat, strutils, sets, terminal
-import ../testdata_generator, ../spec_parser, ../testdata_parser
-import ../types/datatype_definition
+import ../testdata_generator, ../spec_parser,
+       ../testdata_parser, ../introspection
 import ../../textformats
 import cli_helpers
 
