@@ -13,9 +13,10 @@ proc dict_is_valid*(item: JsonNode, dd: DatatypeDefinition): bool =
   if not item.is_object: return false
   var item_keys = to_seq(item.get_fields.keys).toHashSet
   for name, def in dd.dict_members:
-    if name notin item_keys and name in dd.required_keys:
-      return false
-    if name in dd.single_keys:
+    if name notin item_keys:
+      if name in dd.required_keys:
+        return false
+    elif name in dd.single_keys:
       if not item[name].is_valid(def):
         return false
     else:
