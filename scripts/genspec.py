@@ -8,9 +8,30 @@ import os.path
 import os
 import textwrap
 
+def setup_keys():
+  keys = {}
+  scriptpath = os.path.dirname(os.path.realpath(__file__))
+  fname = scriptpath+"/../src/textformats/types/def_syntax.nim"
+  with open(fname) as f:
+    state = "before"
+    for line in f:
+      if line.strip() == "const":
+        state = "inside"
+      elif state == "inside":
+        if len(line.strip()) > 0 and line[:2] != "  ":
+          state = "after"
+        else:
+          elems = line.split("=")
+          constname = elems[0].strip()
+          if constname[-1:] == "*":
+            definition = elems[1].strip()
+            if definition[0] == "\"" and definition[-1:] == "\"":
+              keys[constname[:-1]] = definition[1:-1]
+  return keys
+
 def setup_answers():
   answer = {}
-  # Y/N
+  # Y/N, default Y
   answer["yn"] = {}
   answer["yn"]["desc"]="y or n"
   answer["yn"]["errmsg"]=\
@@ -22,6 +43,18 @@ def setup_answers():
     lambda text: text in yes or text in no
   answer["yn"]["decode"] =\
     lambda text: True if text in yes else False
+  # Y/N, default N
+  answer["yn_defN"] = {}
+  answer["yn_defN"]["desc"]="y or n"
+  answer["yn_defN"]["errmsg"]=\
+      "Please answer the question entering 'y' or 'n'. "+\
+      "(or just enter for 'n')"
+  yes_defN=["y", "Y", "yes", "Yes", "YES"]
+  no_defN=["n", "N", "no", "No", "NO", ""]
+  answer["yn_defN"]["valid"] =\
+    lambda text: text in yes_defN or text in no_defN
+  answer["yn_defN"]["decode"] =\
+    lambda text: True if text in yes_defN else False
   # name
   answer["name"] = {}
   answer["name"]["desc"]=\
@@ -70,24 +103,48 @@ def setup_answers():
     result["errmsg"] = f"Please enter a number between 0 and {len(choices)-1}"
     result["decode"] = lambda text: result["default"] if len(text)==0 else int(text)
     return result
+  # scope
+  answer['scope'] = generate_choices_answer(0,
+     ("file",
+      "The datatype describes the entire file"),
+     ("section",
+      "The datatype describes a file part with a given structure"),
+     ("unit",
+      "The datatype describes a file part with a fixed number of lines"),
+     ("line",
+      "The datatype describes each line of a file"),
+     ("undefined",
+      "Do not define the scope of the datatype"))
   # dtkinds
   answer["dtkinds"] = generate_choices_answer(7,
-     ("Single element.                 ",
-       "No internal structure."),
-     ("Equivalent sub-elements         ",
-       "Same format(s) for each element"),
-     ("Sub-elements in a fixed order.  ",
-       "Each sub-element has a pre-defined name and format"),
-     ("Typed sub-elements in any order.",
-       "Sub-elements include a name and a type key"),
-     ("Named sub-elements in any order.",
-       "Sub-elements include a name (which defines the format)"),
-     ("Different formats are allowed.  ",
-       "Alternative formats for the element are specified"),
-     ("Format already defined.         ",
-       "Specified previously or imported from another spec."),
-     ("Help                            ",
-      "Display a longer help text."))
+     ("single element.                 ",
+       "no internal structure."),
+     ("list of equivalent components   ",
+       "same format(s) for each element"),
+     ("named tuple / structure.        ",
+       "each component has predefined name and format"),
+     ("list of key/values.             ",
+       "each component is has a key defining its format"),
+     ("list of tags.                   ",
+       "each component is tagged by a name and typecode"),
+     ("one of multiple formats.        ",
+       "alternative definitions for the element are specified"),
+     ("already defined.                ",
+       "specified previously or imported from another spec."),
+     ("help                            ",
+      "display a longer help text."))
+  # dtkindslim
+  answer["dtkindslim"] = generate_choices_answer(1,
+     ("list of equivalent components   ",
+       "same format(s) for each element"),
+     ("named tuple / structure.        ",
+       "each component has predefined name and format"),
+     ("list of key/values.             ",
+       "each component is has a key defining its format"),
+     ("already defined.                ",
+       "specified previously or imported from another spec."),
+     ("help                            ",
+      "display a longer help text."))
   # valuetype
   answer["valuetype"] = generate_choices_answer(0,
       ("String.           ", "String not validated/parsed as number."),
@@ -98,11 +155,12 @@ def setup_answers():
   answer["numtype"] = generate_choices_answer(0,
       ("Signed integer (any).        ",
                              "Integer (if >0: '+' prefix optional)"),
-      ("Signed integer (in range).   ", ""),
-      ("Unsigned integer (any).      ", "Zero or positive, no '+' prefix."),
-      ("Unsigned integer (in range). ", ""),
-      ("Float (any).                 ", "Any floating point value."),
-      ("Float (in range).            ", ""))
+      ("Signed integer (in range).    ", ""),
+      ("Unsigned integer (any).       ", "Zero or positive, no '+' prefix."),
+      ("Unsigned integer (in range).  ", ""),
+      ("Base 2, 8 or 16 integer.      ", "Unsigned; range can be limited."),
+      ("Float (any).                  ", "Any floating point value."),
+      ("Float (in range).             ", ""))
   # single
   answer["single"] = generate_choices_answer(0,
       ("Not empty.      ", "Valid if a non-empty string."),
@@ -114,39 +172,43 @@ def setup_answers():
       ("Json.           ", "Parsed as single-line JSON."))
   # mapstr
   answer["mapstr"] = generate_choices_answer(0,
-      ("== encoded ", "Use the same string as the encoded value."),
-      ("=> string  ", "Use a different string."),
-      ("=> null    ", "Use 'null'."),
-      ("=> true    ", "Use 'True'."),
-      ("=> false   ", "Use 'False'."),
-      ("=> integer ", "Use an integer."),
-      ("=> float   ", "Use a float."))
+      ("== encoded   ", "Use the same string as the encoded value."),
+      ("=> string    ", "Use a different string."),
+      ("=> null      ", "Use 'null'."),
+      ("=> true      ", "Use 'True'."),
+      ("=> false     ", "Use 'False'."),
+      ("=> integer   ", "Use an integer."),
+      ("=> float     ", "Use a float."),
+      ("=> dict/list ", "Use a dict or list."))
   # mapregex
   answer["mapregex"] = generate_choices_answer(0,
-      ("== match   ", "Use the same string as the encoded value."),
-      ("=> string  ", "Use a different string."),
-      ("=> null    ", "Use 'null'."),
-      ("=> true    ", "Use 'True'."),
-      ("=> false   ", "Use 'False'."),
-      ("=> integer ", "Use an integer."),
-      ("=> float   ", "Use a float."))
+      ("== match     ", "Use the same string as the encoded value."),
+      ("=> string    ", "Use a different string."),
+      ("=> null      ", "Use 'null'."),
+      ("=> true      ", "Use 'True'."),
+      ("=> false     ", "Use 'False'."),
+      ("=> integer   ", "Use an integer."),
+      ("=> float     ", "Use a float."),
+      ("=> dict/list ", "Use a dict or list."))
   # mapemptystr
   answer["mapemptystr"] = generate_choices_answer(0,
-      ("As defined. ", "No special handling of empty strings."),
-      ("=> String   ", "Decode empty strings as a given string."),
-      ("=> Null     ", "Decode empty strings as Null."),
-      ("=> True     ", "Decode empty strings as True."),
-      ("=> False    ", "Decode empty strings as False."),
-      ("=> Integer  ", "Decode empty strings as a given integer."),
-      ("=> Float    ", "Decode empty strings as a given float."))
+      ("As defined.  ", "No special handling of empty strings."),
+      ("=> String    ", "Decode empty strings as a given string."),
+      ("=> Null      ", "Decode empty strings as Null."),
+      ("=> True      ", "Decode empty strings as True."),
+      ("=> False     ", "Decode empty strings as False."),
+      ("=> Integer   ", "Decode empty strings as a given integer."),
+      ("=> Float     ", "Decode empty strings as a given float."),
+      ("=> Dict/List ", "Decode empty strings as a dict or list."))
   # implicit
   answer["implicit"] = generate_choices_answer(0,
-      ("Null   ", "A Null value."),
-      ("True   ", "A boolean True value."),
-      ("False  ", "A boolean False value."),
-      ("String ", "A given string value."),
-      ("Integer", "A given integer value."),
-      ("Float  ", "A given float value."))
+      ("Null      ", "A Null value."),
+      ("True      ", "A boolean True value."),
+      ("False     ", "A boolean False value."),
+      ("String    ", "A given string value."),
+      ("Integer   ", "A given integer value."),
+      ("Float     ", "A given float value."),
+      ("Dict/List ", "A dict or list value."))
   # seppfxsfx
   answer["seppfxsfx"] = generate_choices_answer(0,
       ("E0 D E1 D E2... (D not in E)    ",
@@ -186,10 +248,21 @@ def setup_answers():
     except ValueError:
       return False
   answer["uint"] = {}
-  answer["uint"]["desc"]= "non-negative, unsigned, integer value)"
+  answer["uint"]["desc"]= "non-negative, unsigned, integer value"
   answer["uint"]["errmsg"]="Please enter an unsigned integer value"
   answer["uint"]["decode"]=lambda t: int(t)
   answer["uint"]["valid"]=is_uint
+  # min2
+  def is_min2(s):
+    try:
+      return int(s) >= 2
+    except ValueError:
+      return False
+  answer["min2"] = {}
+  answer["min2"]["desc"]= "integer value >= 2"
+  answer["min2"]["errmsg"]="Please enter an integer value >= 2"
+  answer["min2"]["decode"]=lambda t: int(t)
+  answer["min2"]["valid"]=is_min2
   # optuint
   answer["optuint"] = answer["uint"].copy()
   answer["optuint"]["decode"]=lambda t: None if len(t.strip()) == 0 else int(t)
@@ -206,6 +279,18 @@ def setup_answers():
   answer["float"]["errmsg"]="Please enter a floating point value"
   answer["float"]["decode"]=lambda t: float(t)
   answer["float"]["valid"]=is_float
+  # json
+  def is_json(s):
+    try:
+      json.loads(s)
+      return True
+    except json.decoder.JSONDecodeError:
+      return False
+  answer["json"] = {}
+  answer["json"]["desc"] = "value in JSON format"
+  answer["json"]["errmsg"]="Please enter valid JSON"
+  answer["json"]["decode"]=lambda t: json.loads(t)
+  answer["json"]["valid"]=is_json
   # optfloat
   answer["optfloat"] = answer["float"].copy()
   answer["optfloat"]["decode"]=lambda t: None if len(t.strip()) == 0 else float(t)
@@ -390,18 +475,41 @@ def get_emptystrvalue(name):
       "mapemptystr")
   if has_mapping:
     explain_syntax("The value for empty strings is specified "+\
-        "using the key 'empty'")
-    opt_txt += ", empty: "+json.dumps(v)
+        f"using the key '{key['NullValueKey']}'")
+    opt_txt += f", {key['NullValueKey']}: "+json.dumps(v)
   return opt_txt
 
+def add_scope(data):
+  opt_txt = ""
+  if data["scope"]:
+    opt_txt += f", {key['ScopeKey']}: "+json.dumps(data['scope'])
+    if data['scope'] == "unit":
+      opt_txt += f", {key['UnitSizeKey']}: {data['unitsize']}"
+    data["scope"] = None
+  return opt_txt
+
+def get_wrapped(data, kindnames):
+  sayoptional()
+  opt_txt = ""
+  if ask("Shall the decoded value keep track of which of the "+\
+      f"{len(kindnames)} sub-definitions has been used?",
+      "yn_defN", "If yes, the decoded value is wrapped in a single-entry "+\
+      "mapping {branchname:value}, where value is the unwrapped value and "+\
+      "branchname is the name of the format among the possible ones, "+\
+      f"i.e. one of: {kindnames}"):
+    opt_txt += f", {key['WrappedKey']}: true"
+    opt_txt += f", {key['BranchNamesKey']}: "+json.dumps(kindnames)
+
 def define_datatype_oneof(data, name):
-  kindnames = get_names(data, name+"_", "kind", "kinds", name)
-  kindnames = [name + "_" + r for r in kindnames]
+  kindnames_bare = get_names(data, name+"_", "kind", "kinds", name)
+  kindnames = [name + "_" + r for r in kindnames_bare]
   opt_txt = get_emptystrvalue(name)
+  opt_txt += add_scope(data)
+  opt_txt += get_wrapped(data, kindnames_bare)
   explain_syntax("A datatype with different kinds/formats is "+\
-        "specified using the key 'one_of' and a list, whose "+\
+        f"specified using the key '{key['UnionDefKey']}' and a list, whose "+\
         "elements are datatype names or datatype definitions.")
-  if register_definition(data, name, "{one_of: ["+\
+  if register_definition(data, name, f"{{{key['UnionDefKey']}: ["+\
       ", ".join(kindnames)+"]"+opt_txt+"}"):
     for kindname in kindnames:
       define_datatype(data, kindname)
@@ -410,19 +518,19 @@ def define_datatype_oneof(data, name):
     return False
 
 def numlbl2answerid(lbl):
-  if lbl == "integer": return "optint"
-  elif lbl == "unsigned_integer": return "optuint"
-  elif lbl == "float": return "optfloat"
+  if lbl == key['IntRangeDefKey']: return "optint"
+  elif lbl == key['UIntRangeDefKey']: return "optuint"
+  elif lbl == key['FloatRangeDefKey']: return "optfloat"
 
-def define_datatype_numerical_range(data, name, lbl):
+def define_datatype_numerical_range(data, name, lbl, non10base=False):
   answerid = numlbl2answerid(lbl)
-  may_exclude = lbl == "float"
+  may_exclude = lbl == key['FloatRangeDefKey']
   minvalue = \
     ask("Enter the minimum value (or just enter for unlimited)", answerid)
   exclmin = ""
   if minvalue is not None and may_exclude:
     if not ask("May the value be equal to the minimum value?", "yn"):
-      exclmin = ", min_excluded: true"
+      exclmin = f", {key['MinExcludedKey']}: true"
   maxvalue = \
     ask("Enter the maximum value (or just enter for unlimited)", answerid)
   if minvalue is not None:
@@ -433,24 +541,28 @@ def define_datatype_numerical_range(data, name, lbl):
   exclmax = ""
   if maxvalue is not None and may_exclude:
     if not ask("May the value be equal to the maximum value?", "yn"):
-      exclmax = ", max_excluded: true"
+      exclmax = f", {key['MaxExcluded']}: true"
   def_txt = "{"+lbl+": {"
   if minvalue is not None:
     if maxvalue is None:
-      def_txt += "min: "+str(minvalue)+exclmin
+      def_txt += f"{key['MinKey']}: "+str(minvalue)+exclmin
     else:
-      def_txt += "min: "+str(minvalue)+exclmin+", "+\
-                "max: "+str(maxvalue)+exclmax
+      def_txt += f"{key['MinKey']}: "+str(minvalue)+exclmin+", "+\
+                f"{key['MaxKey']}: "+str(maxvalue)+exclmax
   elif maxvalue is not None:
-    def_txt += "max: "+str(maxvalue)+exclmax
+    def_txt += f"{key['MaxKey']}: "+str(maxvalue)+exclmax
   def_txt += get_emptystrvalue(name)
+  def_txt += add_scope(data)
   def_txt += "}}"
   explain_syntax("A datatype consisting in a numeric value in a range is "+\
-      "specified using the key 'integer', 'unsigned_integer' or 'float' and "+\
-      "a map with the optional elements 'min', 'max' defining the limits.")
+      f"specified using the key '{key['IntRangeDefKey']}',"+\
+      f"'{key['UIntRangeDefKey']}' or '{key['FloatRangeDefKey']}' and a mapping "+\
+      f"with the optional elements '{key['MinKey']}', '{key['MaxKey']}' "+\
+      "defining the limits.")
   if may_exclude:
-    explain_syntax("For floats only, the optional bool keys 'min_excluded' "+\
-      "and 'max_excluded' can be used to specify that the minimum/maximum "+\
+    explain_syntax("For floats only, the optional bool keys "+\
+      f"'{key['MinExcludedKey']}' and '{key['MaxExcludedKey']}' can be "+\
+      "used to specify that the minimum/maximum "+\
       "values are not included in the range (default is False, i.e. they "+\
       "are included).")
   return register_definition(data, name, def_txt)
@@ -460,27 +572,30 @@ def define_datatype_numerical_any(data, name, lbl):
 
 def define_datatype_any_int(data, name):
   explain_syntax("For an integer element, without range limits "+\
-      "just use the string 'integer' as the definition")
-  return define_datatype_numerical_any(data, name, "integer")
+      f"just use the string '{key['IntRangeDefKey']}' as the definition")
+  return define_datatype_numerical_any(data, name, key['IntRangeDefKey'])
 
 def define_datatype_any_uint(data, name):
   explain_syntax("For an unsigned integer element, without range limits "+\
-      "just use the string 'unsigned_integer' as the definition")
-  return define_datatype_numerical_any(data, name, "unsigned_integer")
+      f"just use the string '{key['UIntRangeDefKey']}' as the definition")
+  return define_datatype_numerical_any(data, name, key['UIntRangeDefKey'])
 
 def define_datatype_any_float(data, name):
   explain_syntax("For a float element, without range limits "+\
-      "just use the string 'float' as the definition")
-  return define_datatype_numerical_any(data, name, "float")
+      f"just use the string '{key['FloatRangeDefKey']}' as the definition")
+  return define_datatype_numerical_any(data, name, key['FloatRangeDefKey'])
 
 def define_datatype_range_int(data, name):
-  return define_datatype_numerical_range(data, name, "integer")
+  return define_datatype_numerical_range(data, name, key['IntRangeDefKey'])
 
 def define_datatype_range_uint(data, name):
-  return define_datatype_numerical_range(data, name, "unsigned_integer")
+  return define_datatype_numerical_range(data, name, key['UIntRangeDefKey'])
+
+def define_datatype_range_uint_base(data, name):
+  return define_datatype_numerical_range(data, name, key['UIntRangeDefKey'], True)
 
 def define_datatype_range_float(data, name):
-  return define_datatype_numerical_range(data, name, "float")
+  return define_datatype_numerical_range(data, name, key['FloatRangeDefKey'])
 
 def define_datatype_num(data, name):
   question = f"Select the type and range of numeric value for '{name}'"
@@ -488,6 +603,7 @@ def define_datatype_num(data, name):
     define_datatype_range_int,
     define_datatype_any_uint,
     define_datatype_range_uint,
+    define_datatype_range_uint_base,
     define_datatype_any_float,
     define_datatype_range_float][
        ask(question, "numtype")](data, name)
@@ -509,6 +625,8 @@ def get_mapping(msg, helpmsg, answers_id):
     v=ask("Enter the desired integer value", "int")
   elif mapped == 6: # float
     v=ask("Enter the desired float value", "float")
+  elif mapped == 7: # json
+    v=ask("Enter the desired value in JSON format", "json")
   return True, v
 
 def explain_canonical():
@@ -583,12 +701,13 @@ def define_datatype_regexes(data, name):
             sayquoted(f"Regular expressions: {regexes_str}")
             sayquoted(f"Invalid encoded string: '{encoded}'")
     explain_canonical()
-    def_txt += ", canonical: "+json.dumps(encoding)
+    def_txt += f", {key['EncodedKey']}: "+json.dumps(encoding)
   else:
     def_txt = json.dumps([i[0] for i in items])
   opt_txt = get_emptystrvalue(name)
+  opt_txt += add_scope(data)
   return register_definition(data, name, \
-      "{regexes: "+def_txt+opt_txt+"}")
+      f"{{{key['RegexesMatchDefKey']}: "+def_txt+opt_txt+"}")
 
 def define_datatype_const_num(data, name, lbl):
   if lbl == "integer": answerid = "optint"
@@ -596,7 +715,9 @@ def define_datatype_const_num(data, name, lbl):
   elif lbl == "float": answerid = "optfloat"
   value = ask(f"Enter the only possible value of '{name}'", answerid)
   opt_txt = get_emptystrvalue(name)
-  return register_definition(data, name, "{constant: "+str(value)+opt_txt+"}")
+  opt_txt += add_scope(data)
+  return register_definition(data, name, f"{{{key['ConstDefKey']}: "+\
+      str(value)+opt_txt+"}")
 
 def define_datatype_const_str(data, name):
   k = ask(f"Enter the valid string representation of '{name}':", "string")
@@ -605,18 +726,19 @@ def define_datatype_const_str(data, name):
       "By default, it is the string itself but "+\
       "a different value can be specified.", "mapstr")
   opt_txt = get_emptystrvalue(name)
+  opt_txt += add_scope(data)
   deftxt = json.dumps(k)
   if has_mapping: deftxt = "{"+deftxt+": "+json.dumps(v)+"}"
-  return register_definition(data, name, "{constant: "+deftxt+opt_txt+"}")
+  return register_definition(data, name, f"{{{key['ConstDefKey']}: "+deftxt+opt_txt+"}")
 
 def define_datatype_const_int(data, name):
-  return define_datatype_const_num(data, name, "integer")
+  return define_datatype_const_num(data, name, key['IntRangeDefKey'])
 
 def define_datatype_const_uint(data, name):
-  return define_datatype_const_num(data, name, "unsigned_integer")
+  return define_datatype_const_num(data, name, key['UIntRangeDefKey'])
 
 def define_datatype_const_float(data, name):
-  return define_datatype_const_num(data, name, "float")
+  return define_datatype_const_num(data, name, key['FloatRangeDefKey'])
 
 def define_datatype_const(data, name):
   return [define_datatype_const_str,
@@ -631,17 +753,19 @@ def define_datatype_accepted_num(data, name, lbl):
       f"possible {lbl} value for '{name}'",
       f"possible {lbl} values for '{name}'", answerid, 2)
   opt_txt = get_emptystrvalue(name)
+  opt_txt += add_scope(data)
   return register_definition(data, name,
-      "{accepted_values: ["+", ".join([str(v) for v in values])+"]"+opt_txt+"}")
+      f"{{{key['EnumDefKey']}: ["+", ".join([str(v) for v in values])+\
+          "]"+opt_txt+"}")
 
 def define_datatype_accepted_int(data, name):
-  return define_datatype_accepted_num(data, name, "integer")
+  return define_datatype_accepted_num(data, name, key['IntRangeDefKey'])
 
 def define_datatype_accepted_uint(data, name):
-  return define_datatype_accepted_num(data, name, "unsigned_integer")
+  return define_datatype_accepted_num(data, name, key['UIntRangeDefKey'])
 
 def define_datatype_accepted_float(data, name):
-  return define_datatype_accepted_num(data, name, "float")
+  return define_datatype_accepted_num(data, name, key['FloatRangeDefKey'])
 
 def define_datatype_accepted_str(data, name):
   any_has_mapping = False
@@ -699,12 +823,13 @@ def define_datatype_accepted_str(data, name):
           encoded = ask(question, "string")
         encoding[encoded] = v
       explain_canonical()
-      opt_txt += ", canonical: "+json.dumps(encoding)
+      opt_txt += f", {key['EncodedKey']}: "+json.dumps(encoding)
   else:
     def_txt = json.dumps([i[0] for i in items])
   opt_txt += get_emptystrvalue(name)
+  opt_txt += add_scope(data)
   return register_definition(data, name, \
-      "{accepted_values: "+def_txt+opt_txt+"}")
+      f"{{{key['EnumDefKey']}: "+def_txt+opt_txt+"}")
 
 def define_datatype_accepted(data, name):
   return [define_datatype_accepted_str,
@@ -742,12 +867,13 @@ def define_datatype_regex(data, name):
       sayquoted(f"Specified encoded value: '{encoded}'")
       encoded = ask(question, "string")
     explain_canonical()
-    opt_txt = ", canonical: {"+json.dumps(encoded)+":"+json.dumps(v)+"}"
+    opt_txt = f", {key['EncodedKey']}: {{"+json.dumps(encoded)+":"+json.dumps(v)+"}"
     def_txt = "{"+json.dumps(k)+": "+json.dumps(v)+"}"
   else:
     def_txt = json.dumps(k)
   opt_txt += get_emptystrvalue(name)
-  return register_definition(data, name, "{regex: "+def_txt+opt_txt+"}")
+  opt_txt += add_scope(data)
+  return register_definition(data, name, f"{{{key['RegexMatchDefKey']}: "+def_txt+opt_txt+"}")
 
 def define_datatype_json(data, name):
   return register_definition(data, name, "json")
@@ -784,47 +910,52 @@ def get_min_repeats():
         "What is the minimum number of instances of the element?", "uint")
   return min_repeats
 
-def get_seppfxsfx(name):
+def get_seppfxsfx(data, name):
   opt_txt = ""
-  question = "What is the formatting of the set of sub-elements?"
-  choice = ask(question, "seppfxsfx")
-  while choice == 6:
-    print()
-    printhelp("<b>DELIMITER</b>")
-    print()
-    printhelp("Sub-elements can often be recognized as they are divided "+\
-        "from each other by a delimiter (e.g. comma, tags, colon). ")+\
-    printhelp("The delimiter is often exclusive (i.e. never found in "+\
-        "the elements themselves). Choose [0] or [3] in this case.")
-    printhelp("In cases the delimiter is not exclusive choose [1] or [4]. "+\
-        "In case there is no delimiter choose [2] or [5]. "+\
-        "In such cases, textformats tries to parse the element by using the "+
-        "regular expression for the sub-elements. Depending on the "+
-        "sub-elements definition, this can fail (use tests to check).")
-    print()
-    printhelp("<b>PREFIX / SUFFIX</b>")
-    print()
-    printhelp(
-        "In some cases, the set of sub-elements in compound elements "+
-        "prefixed and/or suffixed by a constant string (e.g. brackets)."+
-        "Choose [3]/[4]/[5] in this case.")
-    print()
+  if data["scope"] in ["file", "section"]:
+    opt_txt += f", {key['SepKey']}: \"\\n\""
+  else:
+    question = "What is the formatting of the set of sub-elements?"
     choice = ask(question, "seppfxsfx")
-  if choice != 2 and choice != 5:
-    enter_question="Enter the delimiter string"
-    result = ask(enter_question, "qstring")
-    opt_txt += f", sep: \"{result}\""
-    if choice == 1 or choice == 4:
-      opt_txt += ", split_by_sep: false"
-  if choice >= 3:
-    enter_question="Enter the prefix string (just enter if none)"
-    result = ask(enter_question, "optqstring")
-    if result is not None:
-      opt_txt += f", pfx: \"{result}\""
-    enter_question="Enter the suffix string (just enter if none)"
-    result = ask(enter_question, "optqstring")
-    if result is not None:
-      opt_txt += f", sfx: \"{result}\""
+    while choice == 6:
+      print()
+      printhelp("<b>DELIMITER</b>")
+      print()
+      printhelp("Components of a set are often separated "+\
+          "from each other by a delimiter (e.g. comma, tags, colon). ")+\
+      printhelp("The delimiter may be exclusive (i.e. never found in the "+\
+          "elements themselves, not even escaped ). "+\
+          "Choose [0] or [3] in this case.")
+      printhelp("In cases the delimiter is not exclusive choose [1] or [4]. "+\
+          "In case there is no delimiter choose [2] or [5]. "+\
+          "In such cases, textformats tries to parse the element by using the "+
+          "regular expression for the sub-elements. Depending on the "+
+          "sub-elements definition, this can fail (use tests to check).")
+      print()
+      printhelp("<b>PREFIX / SUFFIX</b>")
+      print()
+      printhelp(
+          "In some cases, the set of sub-elements in compound elements "+
+          "prefixed and/or suffixed by a constant string (e.g. brackets)."+
+          "Choose [3]/[4]/[5] in this case.")
+      print()
+      choice = ask(question, "seppfxsfx")
+    if choice != 2 and choice != 5:
+      enter_question="Enter the delimiter string"
+      result = ask(enter_question, "qstring")
+      if choice == 1 or choice == 4:
+        opt_txt += f", {key['SplittedKey']}: \"{result}\""
+      else:
+        opt_txt += f", {key['SepKey']}: \"{result}\""
+    if choice >= 3:
+      enter_question="Enter the prefix string (just enter if none)"
+      result = ask(enter_question, "optqstring")
+      if result is not None:
+        opt_txt += f", {key['PfxKey']}: \"{result}\""
+      enter_question="Enter the suffix string (just enter if none)"
+      result = ask(enter_question, "optqstring")
+      if result is not None:
+        opt_txt += f", {key['SfxKey']}: \"{result}\""
   return opt_txt
 
 def get_struct_n_required(n_elements):
@@ -838,7 +969,7 @@ def get_struct_n_required(n_elements):
     if n_required is None:
       return ""
     elif n_required <= n_elements:
-      return f", required: {n_required}"
+      return f", {key['NRequiredKey']}: {n_required}"
     else:
       sayerr("Too many required elements")
       say(f"Enter a number between 0 and {n_elements}")
@@ -848,41 +979,43 @@ def get_implicit(name, elements):
   while True:
     if len(implicit) == 0:
       sayoptional()
-      key = ask("To include further constant elements "+\
+      ikey = ask("To include further constant elements "+\
         f"in the decoded value of all '{name}'. "+\
         "To do so, enter the name of a key for a constant element. "+\
         "Otherwise just press enter.", "optname")
     else:
       say("Keys of constant elements entered until now: "+\
           json.dumps(list(implicit.keys())))
-      key = ask("If you want to include further constant elements "+\
+      ikey = ask("If you want to include further constant elements "+\
         "enter the key name for the next constant element. "+\
         "Otherwise just press enter.", "optname")
-    if key is None:
+    if ikey is None:
       break
-    elif key in elements or key in implicit:
-      sayerr(f"The key name {key} is already used. "+\
+    elif ikey in elements or ikey in implicit:
+      sayerr(f"The key name {ikey} is already used. "+\
           "Choose a different one.")
       say("Keys of the variable elements: "+\
           json.dumps(elements))
     else:
       mapped = ask("Which kind of constant value to you want "+
-          f"to assign to '{key}'", "implicit")
+          f"to assign to '{ikey}'", "implicit")
       if mapped == 0: # null
         v=None
       elif mapped == 1: # true
-          v=True
+        v=True
       elif mapped == 2: # false
-          v=False
+        v=False
       elif mapped == 3: # string
         v=ask("Enter the string value", "anystring")
       elif mapped == 4: # integer
         v=ask("Enter the integer value", "int")
       elif mapped == 5: # float
         v=ask("Enter the float value", "float")
-      implicit[key] = v
+      elif mapped == 6: # json
+        v=ask("Enter the value as JSON", "json")
+      implicit[ikey] = v
   if len(implicit) > 0:
-    return ", implicit: " + json.dumps(implicit)
+    return f", {key['ImplicitKey']}: " + json.dumps(implicit)
   else:
     return ""
 
@@ -938,13 +1071,14 @@ def define_subdefs(data, name, elemnames, elbl):
     define_datatype(data, elemdt)
 
 def define_datatype_struct(data, name):
-  def_txt = "{composed_of: "
+  def_txt = f"{{{key['StructDefKey']}: "
   elemnames = get_elemnames(name, 2)
   def_txt += get_subdef_list(name, elemnames)
   def_txt += get_struct_n_required(len(elemnames))
   def_txt += get_implicit(name, elemnames)
-  def_txt += get_seppfxsfx(name)
+  def_txt += get_seppfxsfx(data, name)
   def_txt += get_emptystrvalue(name)
+  def_txt += add_scope(data)
   def_txt += "}"
   if register_definition(data, name, def_txt):
     define_subdefs(data, name, elemnames, "elements")
@@ -1008,49 +1142,54 @@ def get_single(name, elemnames):
 def add_required_to_def(required):
   result = ""
   if len(required) > 0:
-    result += ", required: [" + ", ".join(required) + "]"
+    result += f", {key['DictRequiredKey']}: [" + ", ".join(required) + "]"
   return result
 
 def add_single_to_def(single):
   result = ""
   if len(single) > 0:
-    result += ", single: [" + ", ".join(single) + "]"
+    result += f", {key['SingleKey']}: [" + ", ".join(single) + "]"
   return result
 
-def get_dict_tags_formatting(isep_explain, noisep_explain):
-  say("The sub-elements are separated from each other by a delimiter.")
-  say("The delimiter string is exclusive (not contained in the elements).")
-  sep = ask("Enter the delimiter string:", "qstring")
-  result = f", sep: \"{sep}\""
+def get_dict_tags_formatting(data, isep_explain, noisep_explain):
+  if data["scope"] in ["unit", "section"]:
+    result = f", {key['SplittedKey']}: \"\\n\""
+  else:
+    say("The sub-elements are separated from each other by a delimiter.")
+    say("The delimiter string is exclusive (not contained in the elements).")
+    sep = ask("Enter the delimiter string:", "qstring")
+    result = f", {key['SplittedKey']}: \"{sep}\""
   say(f"In each sub-element, {isep_explain} are separated by a delimiter.")
   say(f"The delimiter string cannot be contained in {noisep_explain}.")
   say("(However, it can be contained in values).")
   isep = ask("Enter the delimiter string:", "qstring")
-  result += f", internal_sep: \"{isep}\""
-  sayoptional()
-  say("Is there a fixed prefix string before the first sub-element?")
-  pfx = ask("Enter the prefix string (or just enter if none)",
-      "optqstring")
-  if pfx is not None:
-    result += f", pfx: \"{pfx}\""
-  say("Is there a fixed suffix string after the last sub-element?")
-  sfx = ask("Enter the suffix string (or just enter if none)",
-      "optqstring")
-  if sfx is not None:
-    result += f", sfx: \"{sfx}\""
+  result += f", {key['DictInternalSepKey']}: \"{isep}\""
+  if data["scope"] not in ["unit", "section"]:
+    sayoptional()
+    say("Is there a fixed prefix string before the first sub-element?")
+    pfx = ask("Enter the prefix string (or just enter if none)",
+        "optqstring")
+    if pfx is not None:
+      result += f", {key['PfxKey']}: \"{pfx}\""
+    say("Is there a fixed suffix string after the last sub-element?")
+    sfx = ask("Enter the suffix string (or just enter if none)",
+        "optqstring")
+    if sfx is not None:
+      result += f", {key['SfxKey']}: \"{sfx}\""
   return result
 
 def define_datatype_dict(data, name):
-  def_txt = "{named_values: "
+  def_txt = f"{{{key['DictDefKey']}: "
   elemnames = get_elemnames(name, 1)
   def_txt += get_subdef_map(name, elemnames)
   required = get_required(name, elemnames)
   def_txt += add_required_to_def(required)
   single = get_single(name, elemnames)
   def_txt += add_single_to_def(single)
-  def_txt += get_dict_tags_formatting("name and value", "sub-element names")
+  def_txt += get_dict_tags_formatting(data, "name and value", "sub-element names")
   def_txt += get_implicit(name, elemnames)
   def_txt += get_emptystrvalue(name)
+  def_txt += add_scope(data)
   def_txt += "}"
   if register_definition(data, name, def_txt):
     define_subdefs(data, name, elemnames, "elements")
@@ -1082,7 +1221,7 @@ def get_name_regex():
   return regex, compiled
 
 def add_name_regex_to_def(regex):
-  return ", tagname: " + json.dumps(regex)
+  return f", {key['TagnameKey']}: " + json.dumps(regex)
 
 def get_predefined(name, typekeys, mandatory):
   if mandatory:
@@ -1119,20 +1258,21 @@ def add_predefined_to_def(predef):
   if len(predef) == 0:
     return ""
   else:
-    return ", predefined: "+json.dumps(predef)
+    return f", {key['PredefinedTagsKey']}: "+json.dumps(predef)
 
 def define_datatype_tags(data, name):
-  def_txt = "{tagged_values: "
+  def_txt = f"{{{key['TagsDefKey']}: "
   name_regex_raw, name_regex_compiled = get_name_regex()
   typekeys = get_typekeys(name)
   def_txt += get_subdef_map(name, typekeys)
   def_txt += add_name_regex_to_def(name_regex_raw)
-  def_txt += get_dict_tags_formatting("name, type key and value",
+  def_txt += get_dict_tags_formatting(data, "name, type key and value",
                                       "sub-element names and type keys")
   predef = get_predefined(name, typekeys, len(name_regex_raw) == 0)
   def_txt += add_predefined_to_def(predef)
   def_txt += get_implicit(name, list(predef.keys()))
   def_txt += get_emptystrvalue(name)
+  def_txt += add_scope(data)
   def_txt += "}"
   if register_definition(data, name, def_txt):
     define_subdefs(data, name, typekeys, "type keys")
@@ -1154,9 +1294,9 @@ def get_list_lenrange():
     sayerr(f"Enter a number larger than or equal {minlen}")
     maxlen = ask(maxlen_question, "optuint")
   if minlen is not None:
-    opt_txt += f", minlength: {minlen}"
+    opt_txt += f", {key['LenrangeMinKey']}: {minlen}"
   if maxlen is not None:
-    opt_txt += f", maxlength: {maxlen}"
+    opt_txt += f", {key['LenrangeMaxKey']}: {maxlen}"
   return opt_txt
 
 def define_datatype_list(data, name):
@@ -1165,9 +1305,10 @@ def define_datatype_list(data, name):
   say("The datatype for the sub-elements will be defined later.")
   say(f"It will be called: '{itemname}'.")
   opt_txt += get_list_lenrange()
-  opt_txt += get_seppfxsfx(name)
+  opt_txt += get_seppfxsfx(data, name)
   opt_txt += get_emptystrvalue(name)
-  if register_definition(data, name, "{list_of: "+itemname+opt_txt+"}"):
+  opt_txt += add_scope(data)
+  if register_definition(data, name, f"{{{key['ListDefKey']}: "+itemname+opt_txt+"}"):
     say(f"Define the datatype of the sub-elements of {name}.")
     say(f"Name of sub-elements datatype: '{itemname}'.")
     print()
@@ -1234,17 +1375,17 @@ def define_datatype_dtkinds_help(data, name):
             "a fixed order. Each sub-element has a name and format, which "
             "depends on its position in the element. ")
   printhelp(format_answer("[3]")+
+            "\nThe element is a list of key/values; i.e. "
+            "sub-elements, given in any order, prefixed "
+            "by a name, which defines the required format. "
+            "All names are pre-defined. "
+            "Sub-elements can be mandatory or optional.")
+  printhelp(format_answer("[4]")+
             "\nThe element is a list of tags; i.e. "
             "sub-elements, given in any order, prefixed by "
             "a name and a tag type key. "
             "The names can be pre-defined or validated by a regex. "
             "The format depends on the tag key.")
-  printhelp(format_answer("[4]")+
-            "\nThe element is a named dictionary/tuple; i.e. "
-            "sub-elements, given in any order, prefixed "
-            "by a name, which defines the required format. "
-            "All names are pre-defined. "
-            "Sub-elements can be mandatory or optional.")
   printhelp(format_answer("[5]")+
             "\nDifferent sub-formats (with their own syntax) can "
             "be used for the element.")
@@ -1256,24 +1397,60 @@ def define_datatype_dtkinds_help(data, name):
   print("")
   return False
 
+def define_datatype_dtkindslim_help(data, name):
+  printhelp(format_answer("[0]")+
+            "\nThe element is a list/array/sequence of sub-elements. "
+            "Each sub-element is equivalent, i.e. it has no name "
+            "and the format does not depend on its position.")
+  printhelp(format_answer("[1]")+
+            "\nThe element is a structure/dict/tuple/object of sub-elements in "
+            "a fixed order. Each sub-element has a name and format, which "
+            "depends on its position in the element. ")
+  printhelp(format_answer("[2]")+
+            "\nThe element is a list of key/values; i.e. "
+            "sub-elements, given in any order, prefixed "
+            "by a name, which defines the required format. "
+            "All names are pre-defined. "
+            "Sub-elements can be mandatory or optional.")
+  printhelp(format_answer("[3]")+
+            "\nDifferent sub-formats (with their own syntax) can "
+            "be used for the element.")
+  printhelp(format_answer("[4]")+
+            "\nRe-use a datatype already defined: "
+            "(1) A datatype previously defined during "
+            "this interactive session or (2) a datatype defined in an external "
+            "specification.")
+  print("")
+  return False
+
 def define_datatype(data, name):
   question = f"Describe the internal structure of '{name}' values:"
-  while True:
-    if [define_datatype_single,
-     define_datatype_list,
-     define_datatype_struct,
-     define_datatype_tags,
-     define_datatype_dict,
-     define_datatype_oneof,
-     define_datatype_ref,
-     define_datatype_dtkinds_help][
-         ask(question, "dtkinds")](data, name):
-       break
+  if data["scope"] in ["file", "section"]:
+    while True:
+      if [define_datatype_list,
+       define_datatype_struct,
+       define_datatype_dict,
+       define_datatype_ref,
+       define_datatype_dtkindslim_help][
+           ask(question, "dtkindslim")](data, name):
+         break
+  else:
+    while True:
+      if [define_datatype_single,
+       define_datatype_list,
+       define_datatype_struct,
+       define_datatype_dict,
+       define_datatype_tags,
+       define_datatype_oneof,
+       define_datatype_ref,
+       define_datatype_dtkinds_help][
+           ask(question, "dtkinds")](data, name):
+         break
 
 def format_included(included):
   included_txt = ""
   if len(included) > 0:
-    included_txt = "included:"
+    included_txt = f"{key['IncludeKey']}:"
     if len(included) == 1:
       included_txt += " " + included[0]
     else:
@@ -1296,6 +1473,8 @@ def introduction():
           "basetype": "line",
           "file": None,
           "filename": None,
+          "scope": None,
+          "unitsize": 0,
           "missing_definitions": []}
   say("<maroon>Welcome</maroon> "
       "to the interactive <i>textformats</i> specification wizard.")
@@ -1319,15 +1498,26 @@ def introduction():
   data["file"].write("# generated by genspec\n")
   data["file"].write("datatypes:\n")
   sayoptional()
+  ns = ask("Please select a namespace for the specification "+\
+         f"(default: '{specname}').\n", "optname", "Namespaces are used "+\
+         f"as datatype prefix (followed by {key['NamespaceSeparator']}) "+\
+         "when the specification is imported in another specification.")
+  if ns == None:
+    ns = specname
+  data["file"].write(f"namespace: {ns}\n")
+  sayoptional()
+  data["scope"] = ["file", "section", "unit", "line", None][ask(\
+    "Please select the scope of the main datatype definition", "scope")]
+  if data['scope'] == 'unit':
+    data['unitsize'] = ask("Enter the number of lines of a unit", "min2")
+  basetype = data['scope'] if data['scope'] else "main"
+  sayoptional()
   data["basetype"] = ask(
     "Please enter the name of the main datatype to define "+
-    f"or press enter for the default ('{specname}_line')",
-    "optname",
-    "The suggested name is a good choice when "+\
-    "specifying a file format. It does not imply that there is only one "+\
-    "kind of lines (different kinds can be later defined).")
+    f"or press enter for the default ('{basetype}')",
+    "optname")
   if data["basetype"] == None:
-    data["basetype"] = f"{specname}_line"
+    data["basetype"] = basetype
   return data
 
 def main():
@@ -1336,5 +1526,6 @@ def main():
   finalize_specification(data)
 
 TextFormatsPfx="<darkslategray>[<i>textformats</i>]</darkslategray> "
+key = setup_keys()
 answer = setup_answers()
 main()
