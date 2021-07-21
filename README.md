@@ -155,14 +155,37 @@ and more.
 TextFormats library. This is addressed to the library software developer,
 not to the library user.
 
+## Generating a specification
+
+An interactive script `genspec.py` is provided under `scripts`.  It can be used
+to generate a TextFormats specification in YAML file.
+
+The script has some limitations: it is not always guaranteed that the generated
+specification is correct (e.g.  the user can create circular or invalid
+references).
+
+Thus the resulting output file should be tested, e.g. generating examples
+from each of the defined datatypes using `cli/tf_spec generate_tests -s
+<OUTFILE>`. This command would fail if the specification is invalid.
+Furthermore, the results can be inspected to check that the examples reflect
+the expectations.
+
 ## Running the test suite
 
-To run the unit test suite of the library in your system, use the
+To run the unit test suite of the library, use the
 ``nimble test`` command.
+To run the CLI tools tests, first build it using ``nimble build`` or
+``nimble install``, then use the ``nimble clitest`` command.
+To run the C API tests, use ``nimble ctest``.
+To run the Python API tests, first build the package using
+``nimble pymake``, then use ``nimble pytest``.
 
 ## Known limitations
 
-Unsigned integers cannot be larger than the largest signed integer [^2]
+- Only formats which are regular languages can be defined -- with at most some
+  exceptions (JSON elements can be included, since they are parsed by the json
+  library).
+- Unsigned integers cannot be larger than the largest signed integer [^2]
 
 [^2]: reason: JsonNode objects from the json nim standard library are
 used to represent decoded values both for Nim code and for passing the values
