@@ -1,7 +1,7 @@
 # Command line interface
 
 The subdirectory `cli` contains the command line tools: `tf_decode`,
-`tf_encode`, `tf_validate`, `tf_spec` and `tf_test`.
+`tf_encode`, `tf_validate` and `tf_spec`.
 They are build using the command `nimble build`.
 
 The list of subcommands of each tool is output by `<toolname> --help`.
@@ -92,14 +92,6 @@ Furthermore, if an existing testfile is provided using the option `--testfile`
 or `-f`, only datatypes not yet present in the testfile are
 used. This can be used for complementing a test file after
 new definitions are added to a specification.
-
-### Running single tests from the command line
-
-The tool `tf_test` can be used for running single tests
-from the command line. Generally this is not required for the
-user, thus `tf_test` can be considered a developer tool.
-See the manual page of `tf_test` for more information
-about its interface.
 
 ## Datatype definitions
 

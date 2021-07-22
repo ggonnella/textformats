@@ -1,38 +1,17 @@
 #!/usr/bin/env python3
 """
-Run all tests for a specification using textformats-cli
+Run specification tests using TextFormats CLI tf_test tool
+
+Note:
+  this is much slower than using tf_spec and
+  should only be used for debugging
 
 Usage:
-  spec_tests_clibased.py [options] <spec> <tests>
+  tf_test_spec.py [options] <spec> <tests>
 
 Arguments:
   <spec>:  the yaml file containing the specification
   <tests>: the yaml file containing the tests
-
-Testdata syntax:
-
-testdata:
-  <datatype>:
-    ... # testdata, see below
-
-# (1) no transformations, decode(string) == string
-
-valid: ["string1", "string2", ...]
-invalid: ["string1", "string2", ...]
-
-# (2) bijective transformations, encode(decode(string)) == string
-valid: {"encoded1": "decoded1", ...}
-invalid:
-  encoded: ["encoded3", ...]
-  decoded: ["decoded3", ...]
-
-# (3) general case
-
-valid: {"encoded1": "decoded1", ...} # decoding/encoding tested
-oneway: {"encoded2": "decoded1", ...} # only decoding tested
-invalid:
-  encoded: ["encoded3", ...]
-  decoded: ["decoded3", ...]
 
 Options:
   -p, --preprocess  preprocess the specification
@@ -49,7 +28,7 @@ import docopt
 from functools import partial
 
 testdir = os.path.dirname(os.path.realpath(__file__))
-textformats = sh.Command(testdir + "/../cli/tf_test")
+textformats = sh.Command(testdir + "/../../cli/tf_test")
 preprocess = partial(textformats, "preprocess", _fg=True)
 test_decode = partial(textformats, "decoding", _fg=True)
 test_encode = partial(textformats, "encoding", _fg=True)

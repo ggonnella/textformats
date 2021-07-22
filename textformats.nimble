@@ -9,7 +9,6 @@ binDir        = "cli"
 namedBin      = {"textformats/cli/tf_decode": "tf_decode",
                  "textformats/cli/tf_encode": "tf_encode",
                  "textformats/cli/tf_validate": "tf_validate",
-                 "textformats/cli/tf_test": "tf_test",
                  "textformats/cli/tf_spec": "tf_spec"}.to_table
 installExt    = @["nim"] # required for hybrid packages
 
@@ -28,7 +27,7 @@ task climan, "compile the man pages of the CLI tools":
     indir = "src/textformats/cli"
     outdir = "cli/man"
   mkDir(outdir)
-  for cmd in @["decode", "encode", "validate", "test", "spec"]:
+  for cmd in @["decode", "encode", "validate", "spec"]:
     let
       infile = indir & "/tf_" & cmd & ".1.md"
       outfile = outdir & "/tf_" & cmd & ".1"

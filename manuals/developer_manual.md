@@ -162,3 +162,13 @@ Nevertheless the flag is not officially deprecated (yet) and it is
 even referred to in the official documentation of the Nim Backend Integration.
 (https://nim-lang.github.io/Nim/backends.html).
 Until then, it will be thus be used for the C API.
+
+# Running single tests from the command line
+
+An additional CLI tool can be compiled manually (`src/textformats/cli/tf_test`).
+The tool can be used for running single tests from the command line.  See the
+manual page of `tf_test` for more information about its interface.
+
+The `tf_spec test` is emulated using `tests/cli/tf_spec_test.py`, which calls
+`tf_test` for each available test in the specification.
+
