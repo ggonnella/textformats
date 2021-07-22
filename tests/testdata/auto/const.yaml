@@ -21,18 +21,6 @@ testdata:
     invalid:
       encoded: ["2","0",""]
       decoded: [null,true,2,0,"A",[],{},1.0,""]
-  ci_map:
-    valid: {"1":"a"}
-    oneway: {"+1":"a"}
-    invalid:
-      encoded: ["2","0",""]
-      decoded: [null,true,1,1.0,[],{},""]
-  cf_map:
-    valid: {"1.0":"a"}
-    oneway: {"+1.0":"a","1":"a"}
-    invalid:
-      encoded: ["2.0","0.0",""]
-      decoded: [null,true,1,1.0,[],{},""]
   cs:
     valid: ["a"]
     invalid:

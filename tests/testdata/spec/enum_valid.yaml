@@ -6,12 +6,12 @@ datatypes:
     empty: 0
   e_map:
     accepted_values:
-      - 1: true
+      - "1": true
       - "a"
-      - 1.0: null
+      - "1.0": null
   e_map_rev:
     accepted_values:
-      - 1: true
+      - "1": true
       - "a": true
       - 1.0
     canonical:

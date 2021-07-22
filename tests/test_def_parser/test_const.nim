@@ -35,26 +35,6 @@ suite "test_const_def_parser":
     check cs.decoded.len == 1
     check cs.decoded[0].is_none
     check cs.null_value.is_none
-  test "new_const_dd_ci_map":
-    let cim = new_const_datatype_definition(v["ci_map"], "ci_map")
-    check cim.kind == ddkConst
-    check cim.constant_element.kind == meInt
-    check cim.constant_element.i_value == 1
-    check cim.decoded.len == 1
-    check cim.decoded[0].is_some
-    check cim.decoded[0].unsafe_get.kind == JString
-    check cim.decoded[0].unsafe_get.get_str == "a"
-    check cim.null_value.is_none
-  test "new_const_dd_cf_map":
-    let cif = new_const_datatype_definition(v["cf_map"], "cf_map")
-    check cif.kind == ddkConst
-    check cif.constant_element.kind == meFloat
-    check cif.constant_element.f_value == 1.0
-    check cif.decoded.len == 1
-    check cif.decoded[0].is_some
-    check cif.decoded[0].unsafe_get.kind == JString
-    check cif.decoded[0].unsafe_get.get_str == "a"
-    check cif.null_value.is_none
   test "new_const_dd_cs_map":
     let cis = new_const_datatype_definition(v["cs_map"], "cs_map")
     check cis.kind == ddkConst

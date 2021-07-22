@@ -2,8 +2,6 @@ datatypes:
   ci: {constant: 1}
   cf: {constant: 1.0}
   cs: {constant: a}
-  ci_map: {constant: {1: a}}
-  cf_map: {constant: {1.0: a}}
   cs_map: {constant: {a: null}}
   cs_map_n: {constant: {a: null}, empty: b}
   cs_map_q: {constant: {a: [b, c]}}
