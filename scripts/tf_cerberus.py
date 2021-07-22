@@ -3,7 +3,7 @@
 Validate TextFormats YAML/JSON specifications and testdata using Cerberus
 
 Usage:
-  verify_spec.py [options] <infile>
+  tf_cerberus.py [options] <infile>
 
 Arguments:
   <infile>: the yaml file containing the specification and/or testdata

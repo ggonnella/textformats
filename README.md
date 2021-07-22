@@ -155,13 +155,25 @@ and more.
 TextFormats library. This is addressed to the library software developer,
 not to the library user.
 
+## Validating a specification
+
+Using `tf_spec info -s <SPECFILE>` the list of datatypes of a (valid)
+specification are output. An error will be output if the specification
+is invalid.
+
+A further tool to validate the syntax of a YAML or JSON specification, which can
+be sometimes useful to find specification errors, is `tf_cerberus.py`,
+based on the Python library `cerberus` (which is required in order to use this
+tool). The script has some limitations: it is not always guaranteed that a
+validated specification is indeed valid (e.g. circular or invalid references
+are not found).
+
 ## Generating a specification
 
-An interactive script `genspec.py` is provided under `scripts`.  It can be used
-to generate a TextFormats specification in YAML file.
-
+An interactive script `tf_genspec.py` is provided under `scripts`.  It can be
+used to generate a TextFormats specification in YAML file.
 The script has some limitations: it is not always guaranteed that the generated
-specification is correct (e.g.  the user can create circular or invalid
+specification is correct (e.g. the user can create circular or invalid
 references).
 
 Thus the resulting output file should be tested, e.g. generating examples
