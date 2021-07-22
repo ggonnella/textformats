@@ -3,23 +3,23 @@ datatypes:
   internal_location: {one_of: [singlebase, range, approximate, betweenbases,
                                join, complement]}
   singlebase: {unsigned_integer: {min: 1}}
-  range: {composed_of: [{range_begin: {one_of: singlebase, lessthanpos},
-                         range_end: {one_of: singlebase, morethanpos}],
+  range: {composed_of: [range_begin: {one_of: [singlebase, lessthanpos]},
+                        range_end: {one_of: [singlebase, morethanpos]}],
           splitted_by: ".."}
-  lessthanpos: {composed_of: [{sym: {constant: "<"}}, pos: singlebase}]}
-  morethanpos: {composed_of: [{pos: singlebase, sym: {constant: ">"}]}
-  approximate: {composed_of: [{pos1: singlebase, pos2: singlebase}],
+  lessthanpos: {composed_of: [sym: {constant: "<"}, pos: singlebase]}
+  morethanpos: {composed_of: [pos: singlebase, sym: {constant: ">"}]}
+  approximate: {composed_of: [pos1: singlebase, pos2: singlebase],
                 splitted_by: "."}
-  betweenbases: {composed_of: [{pos1: singlebase, pos2: singlebase}],
+  betweenbases: {composed_of: [pos1: singlebase, pos2: singlebase],
                  splitted_by: "^"}
-  rangecomplement: {composed_of: [{range: range}],
+  rangecomplement: {composed_of: [range: range],
                     prefix: "complement(", suffix: ")"}
   join: {list_of: {one_of: [range, rangecomplement]},
                    prefix: "join(", suffix: ")", splitted_by: ","}
-  joincomplement: {composed_of: [{joined: join}],
+  joincomplement: {composed_of: [joined: join],
                    prefix: "complement(", suffix: ")"}
   complement: {one_of: [rangecomplement, joincomplement]}
-  external: {composed_of: [{external_ref: versioned_accession,
-                            location: internal_location}],
+  external: {composed_of: [external_ref: versioned_accession,
+                           location: internal_location],
              splitted_by: ":"}
-  versioned_accession: {composed_of: [accession, version]}
+  versioned_accession: {composed_of: [accession: accession, version: version]}

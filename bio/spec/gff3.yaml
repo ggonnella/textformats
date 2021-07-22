@@ -6,13 +6,11 @@
 #
 namespace: gff3
 include: [uri.yaml, fasta.yaml]
-defaults:
-  file: file
-  line: line
 datatypes:
   #
   # (1) Main definition for parsing GFF lines
   #
+  default: file
   file:
     composed_of:
       - version: version_directive
@@ -28,6 +26,7 @@ datatypes:
           separator: "\n"
     separator: "\n"
     required: 2
+    scope: file
   content_line:
     one_of:
       - internal_directive
@@ -67,7 +66,7 @@ datatypes:
       - genome_build_directive
       - forward_references_solved_directive
     wrapped: true
-    branch_names: auto
+    branch_names: default
   sequence_region_directive:
     composed_of:
       - seqid: id

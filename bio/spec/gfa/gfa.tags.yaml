@@ -1,15 +1,15 @@
-namespace: gfa
-include: "gfa.B.tags.yaml"
+# namespace: gfa
+# include: "gfa.B.tags.yaml"
 datatypes:
-  tagged_values:
-    tagname: "[A-Za-z][A-Za-z0-9]"
-    tags:
-      A: {regex: "[!-~]"}
-      B: tagB::array
-      H: {list_of: {regex: "[0-9a-fA-F]{2}"}}
+  tags:
+    #    tagname: "[A-Za-z][A-Za-z0-9]"
+    tagged_values:
+      #  A: {regex: "[!-~]"}
+      #B: tagB::array
+      #H: {list_of: {regex: "[0-9a-fA-F]{2}"}}
       J: json
-      Z: {regex: "[ -~]*"}
-      i: integer
-      f: float
-    splitted_by: "\t"
-    internal_separator: ":"
+      #Z: {regex: "[ -~]*"}
+      #i: integer
+      #f: float
+  # splitted_by: "\t"
+  # internal_separator: ":"

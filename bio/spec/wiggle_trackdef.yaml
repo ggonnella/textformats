@@ -29,120 +29,119 @@ datatypes:
 
   wiggle_trackdef_line_item_type:
     composed_of: [key: {constant: type}, value: {constant: wiggle_0}]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_trackdef_line_item_name:
     composed_of: [key: {constant: name}, value: double_quoted_string]
-    separator: =
+    separator: "="
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: description}, value: double_quoted_string]
-    separator: =
+    separator: "="
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: visibility},
-                  value: accepted_values: [full, dense, hide]]
-    splitted_by: =
+                  value: {accepted_values: [full, dense, hide]}]
+    splitted_by: "="
 
   uint8: {unsigned_integer: {min: 0, max: 255}}
 
   wiggle_colordef:
     composed_of: [red: uint8, green: uint8, blue: uint8]
-    splitted_by: ,
+    splitted_by: ','
 
   wiggle_trackdef_line_item_color:
     composed_of: [key: {constant: color}, value: wiggle_colordef]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_trackdef_line_item_altColor:
     composed_of: [key: {constant: altColor}, value: wiggle_colordef]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_trackdef_line_item_priority:
     composed_of: [key: {constant: priority}, value: unsigned_integer]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_bool: {accepted_values: ["on": true, "off": false]}
 
   wiggle_trackdef_line_item_autoScale:
     composed_of: [key: {constant: autoScale}, value: wiggle_bool]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_trackdef_line_item_alwaysZero:
     composed_of: [key: {constant: alwaysZero}, value: wiggle_bool]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_trackdef_line_item_gridDefault:
     composed_of: [key: {constant: gridDefault}, value: wiggle_bool]
-    splitted_by: =
+    splitted_by: "="
 
   wiggle_trackdef_line_item_maxHeightPixels:
     composed_of:
-      key: {constant: maxHeightPixels}
-      value:
-        composed_of:
-          max: unsigned_integer
-          default: unsigned_integer
-          min: unsigned_integer
-          splitted_by: :
-    splitted_by: =
+      - key: {constant: maxHeightPixels}
+      - value:
+          composed_of:
+            - max: unsigned_integer
+            - default: unsigned_integer
+            - min: unsigned_integer
+          splitted_by: ':'
+    splitted_by: "="
 
   wiggle_trackdef_line_item_graphType:
     composed_of:
-      key: {constant: graphType}
-      value: {accepted_values: ["bar", "points"]}
-    splitted_by: =
+      - key: {constant: graphType}
+      - value: {accepted_values: ["bar", "points"]}
+    splitted_by: "="
 
   wiggle_trackdef_line_item_viewLimits:
     composed_of:
-      key: {constant: viewLimits}
-      value:
-        composed_of:
-          lower: float
-          upper: float
-        splitted_by: :
-    splitted_by: =
+      - key: {constant: viewLimits}
+      - value:
+          composed_of:
+            - lower: float
+            - upper: float
+          splitted_by: ":"
+    splitted_by: "="
 
   wiggle_trackdef_line_item_yLineMark:
     composed_of:
-      key: {constant: yLineMark}
-      value: float
-    splitted_by: =
+      - key: {constant: yLineMark}
+      - value: float
+    splitted_by: "="
 
   wiggle_trackdef_line_item_yLineOnOff:
     composed_of:
-      key: {constant: yLineOnOff}
-      value: wiggle_bool
-    splitted_by: =
+      - key: {constant: yLineOnOff}
+      - value: wiggle_bool
+    splitted_by: "="
 
   wiggle_trackdef_line_item_windowingFunction:
     composed_of:
-      key: {constant: windowingFunction}
-      value: {accepted_values: ["mean+whiskers", "maximum", "mean", "minimum"]}
-    splitted_by: =
+      - key: {constant: windowingFunction}
+      - value: {accepted_values: ["mean+whiskers", "maximum", "mean", "minimum"]}
+    splitted_by: "="
 
   wiggle_trackdef_line_item_smoothingWindow:
     composed_of:
-      key: {constant: smoothingWindow}
-      value:
-        one_of:
-          - {constant: {off: null}}
-          - {unsigned_integer: {min: 2, max: 16}}
-    splitted_by: =
+      - key: {constant: smoothingWindow}
+      - value:
+          one_of:
+            - {constant: {"off": null}}
+            - {unsigned_integer: {min: 2, max: 16}}
+    splitted_by: "="
 
   wiggle_trackdef_line_item_transformFunc:
     composed_of:
-      key: {constant: transformFunc}
-      value: {accepted_values: ["NONE", "LOG"]}
-    splitted_by: =
+      - key: {constant: transformFunc}
+      - value: {accepted_values: ["NONE", "LOG"]}
+    splitted_by: "="
 
   wiggle_trackdef_line_item_viewLimitsMax:
     composed_of:
-      key: {constant: viewLimitsMax}
-      value:
-        composed_of:
-          lower: float
-          upper: float
-        splitted_by: :
-    splitted_by: =
+      - key: {constant: viewLimitsMax}
+      - value:
+          {composed_of: [lower: float,
+                         upper: float],
+           splitted_by: ":"}
+    splitted_by: "="
 
