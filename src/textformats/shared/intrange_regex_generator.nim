@@ -150,7 +150,40 @@ proc intrng_regex*(a: int64, b: int64): string =
 proc uintrng_regex*(a: uint64, b: uint64): string =
   join_regexes(intrng_regex_parts(a, b))
 
+proc uint_gt_regex*(a: uint64): string =
+  var parts = newseq[string]()
+  let
+    n_digits = len($a)
+    upto = uint64(parse_int("9".repeat(n_digits)))
+  parts = intrng_regex_parts(a, upto)
+  parts.add("[1-9][0-9]{" & $n_digits & ",}")
+  return join_regexes(parts)
+
+proc uint_lt_regex*(a: uint64): string =
+  return uintrng_regex(0, a)
+
+proc int_gt_regex*(a: int64): string =
+  if a == 0:
+    return r"(?:[+-]?0|\+?[1-9][0-9]*)"
+  elif a > 0:
+    return r"\+?" & uint_gt_regex(a.uint64)
+  else:
+    var parts = intrng_regex_parts(0.int64, -a)
+    parts.add(r"\+?[1-9][0-9]*")
+    return join_regexes(parts)
+
+proc int_lt_regex*(a: int64): string =
+  if a == 0:
+    return r"(?:[+-]?0|-[1-9][0-9]*)"
+  elif a < 0:
+    return r"-" & uint_gt_regex(a.uint64)
+  else:
+    var parts = intrng_regex_parts(0.int64, a)
+    parts.add(r"-[1-9][0-9]*")
+    return join_regexes(parts)
+
 when is_main_module:
+  echo(intrng_regex(21.int64,29.int64))
   import regex
   block exhaustive_tests:
     proc test_range[T: int64 or uint64](a: T, b: T) =
@@ -163,7 +196,7 @@ when is_main_module:
              -10,-1,0,1,10,35,99,100,101,134,999,1000]
     for i in 0..<n.len:
       for j in i..<n.len:
-        test_range(n[i], n[j])
+        test_range(n[i].int64, n[j].int64)
         if n[i] > 0 and n[j] > 0:
           test_range(n[i].uint64, n[j].uint64)
   block extreme_values_int64:
