@@ -41,7 +41,7 @@ cigar:
   list_of:
     composed_of:
     - length: {unsigned_integer: {min: 1}}
-    - code: {accepted_values: [M, D, I, P] }
+    - code: {values: [M, D, I, P] }
 ```
 
 Once the definition is provided, the library provides the following functions:
@@ -67,7 +67,7 @@ Furthermore, definitions can refer to each other, which allows splitting
 a complex definition into smaller parts, and reuse them in different contexts.
 For example, the previous definition could have been written as:
 ```
-cigar_code: {accepted_values: [M, D, I, P]}
+cigar_code: {values: [M, D, I, P]}
 pos_integer: {unsigned_integer: {min: 1}}
 cigar_op: {composed_of: [length: pos_integer, code: cigar_code]}
 cigar: {list_of: cigar_op}

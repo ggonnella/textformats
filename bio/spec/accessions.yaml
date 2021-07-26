@@ -34,12 +34,12 @@ datatypes:
   read_archive:
     composed_of:
       - archive:
-          accepted_values:
+          values:
           - DR: DRA
           - ER: ERA
           - SR: SRA
       - object_type:
-          accepted_values:
+          values:
           - A: Submission
           - P: Study
           - R: Run
@@ -51,7 +51,7 @@ datatypes:
   bioproject:
     composed_of:
       - institution:
-          accepted_values:
+          values:
           - PRJD: "DDBJ"
           - PRJE: "ENA/EBI"
           - PRJN: "NCBI"
@@ -60,7 +60,7 @@ datatypes:
   biosample:
     composed_of:
       - institution:
-          accepted_values:
+          values:
           - SAMD: "DDBJ"
           - SAME: "ENA/EBI"
           - SAMN: "NCBI"
@@ -83,7 +83,7 @@ datatypes:
           - regex: "ENS[A-Z]{3}"
           - regex: "MGP_[a-zA-Z0-9]+_"
       - ftype_prefix:
-          accepted_values:
+          values:
           - E: exon
           - FM: protein_family
           - G: gene

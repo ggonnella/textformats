@@ -47,20 +47,20 @@ datatypes:
           VN: string
           #  regex: "\\d+\\.\\d+"
           SO:
-            accepted_values:
+            values:
               - unknown
               - unsorted
               - queryname
               - coordinate
           GO:
-            accepted_values:
+            values:
               - none
               - query
               - reference
           SS:
             composed_of:
               - sort_order:
-                  accepted_values:
+                  values:
                     - coordinate
                     - queryname
                     - unsorted
@@ -95,7 +95,7 @@ datatypes:
           M5: md5
           SP: strvalue
           TP:
-            accepted_values:
+            values:
               - linear
               - circular
           UR: strvalue
@@ -118,7 +118,7 @@ datatypes:
           PG: strvalue
           PI: strvalue
           PL:
-            accepted_values:
+            values:
               - CAPILLARY
               - DNBSEQ
               - HELICOS

@@ -12,7 +12,7 @@ const
   # def keys, one and only one must be present
   ConstDefKey* = "constant"
   DictDefKey* = "named_values"
-  EnumDefKey* = "accepted_values"
+  EnumDefKey* = "values"
   ListDefKey* = "list_of"
   FloatRangeDefKey* = "float"
   IntRangeDefKey* = "integer"

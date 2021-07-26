@@ -255,7 +255,7 @@ sections):
 
 `constant`
 : only one possible value exists
-`accepted_values`
+`values`
 : value is one of a set of possible values
 `regex`
 : a match of the provided regular expression
@@ -299,7 +299,7 @@ of the text representation are given:
 | `separator` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, possibly also found in them |
 | `internal_separator` | `tagged_values`, `named_values` | string | `:` | constant string between componentes of each element |
 | `canonical` | `regex` | string | undefined | textual representation to be used for encoding |
-| `canonical` | `regexes`, `accepted_values` | mapping | undefined | textual representations to be used for encoding |
+| `canonical` | `regexes`, `values` | mapping | undefined | textual representations to be used for encoding |
 
 The following table lists the keys used to specify validation rules
 for the represented data:
@@ -418,12 +418,12 @@ the string returned by the `$` operator in Nim, applied to the decoded value
 
 ## Definitions of kind "accepted values"
 
-Definitions with kind-of-definition key `accepted_values` are used to
+Definitions with kind-of-definition key `values` are used to
 define a datatype, by which a finite (typically small) number
 of textual representations are used to express a finite (typically small)
 number of data values.
 
-The content of the `accepted_values` key is a list of the possible values.
+The content of the `values` key is a list of the possible values.
 Each element of the list follows the same conventions as described above
 for `constant`, i.e. it can be:
 
@@ -449,17 +449,17 @@ to "B". But "B" would be encoded as "1", which in turn is decoded to "A".
 ```YAML
 datatypes:
   avoid_this:
-    accepted_values:
+    values:
       - "1": "A"
       - 1: "B"
 ```
 
-Here are examples of `accepted_values` definitions:
+Here are examples of `values` definitions:
 ```YAML
 datatypes:
-  av1: {accepted_values: ["a", "b", "c"]}
-  av2: {accepted_values: ["a", "1": "b"], empty: "c"}
-  av3: {accepted_values: [1, 2, 3]}
+  av1: {values: ["a", "b", "c"]}
+  av2: {values: ["a", "1": "b"], empty: "c"}
+  av3: {values: [1, 2, 3]}
 ```
 
 ## Definitions of kind `regex`
@@ -779,7 +779,7 @@ datatypes:
     composed_of:
       - node1: {float: {min: 0.0, max: 1.0}}
       - sep1: {constant: "-"}
-      - relation: {accepted_values: [A, B, C], empty: X}
+      - relation: {values: [A, B, C], empty: X}
       - sep2: {constant: "->"}
       - node2: {unsigned_integer: {min: 0, max: 100}}
     hide_constants: true
@@ -789,7 +789,7 @@ datatypes:
     one_of:
       - composed_of:
           - node1: integer
-          - relation: {accepted_values: [A, B, C]}
+          - relation: {values: [A, B, C]}
           - node2: integer
         splitted_by: ":"
         prefix: "["
@@ -1254,7 +1254,7 @@ datatypes:
   attributes_table:
     named_values:
       y: float
-      k: {accepted_values: {"T": true, "F": false}}
+      k: {values: {"T": true, "F": false}}
     required: [k]
     single: [k]
 ```
@@ -1269,11 +1269,11 @@ If a component of a format can contain any string,
 the predefined `string` datatype can be used for it.
 
 If only one or one of a list of possible values are allowed, then,
-respectively, a `constant` or `accepted_values` definition can be used:
+respectively, a `constant` or `values` definition can be used:
 ```YAML
 datatypes:
   string1: {constant: "XYZ"}
-  string2: {accepted_values: ["ABC", "DEF"]}
+  string2: {values: ["ABC", "DEF"]}
 ```
 
 If a string must match a given regular expression, a definition of kind
@@ -1340,7 +1340,7 @@ Examples:
 ```YAML
 datatypes:
   string7:
-    accepted_values:
+    values:
       - "USA": "United States of America"
       - "UK": "United Kingdom"
 ```
@@ -1351,7 +1351,7 @@ element is absent from the encoded representation. For this the
 ```
 datatypes:
   string8:
-    accepted_values:
+    values:
       - "USA": "United States of America"
       - "UK": "United Kingdom"
     empty: "Worldwide"
@@ -1392,11 +1392,11 @@ The predefined `integer`, `unsigned_integer` and `float` datatypes
 are used for numerical values where every valid value shall be accepted.
 
 If only a single value or a value in a given set of values shall be accepted
-a `constant` or, respectively, `accepted_values` definition is used:
+a `constant` or, respectively, `values` definition is used:
 ```YAML
 datatypes:
   num1: {constant: 3}
-  num2: {accepted_values: [1,2,3]}
+  num2: {values: [1,2,3]}
 ```
 
 If only values in a given range are accepted, `min` and/or `max` can
@@ -1420,7 +1420,7 @@ can be simply enumerated:
 ```YAML
 datatypes:
   num7:
-    accepted_values:
+    values:
       - "I": 1
       - "II": 2
       - "III": 3
@@ -1433,13 +1433,13 @@ boolean values and/or undefined values.
 
 In these cases, one or multiple string valid representations exist
 for each of the decoded values. These can be provided using
-an `accepted_values` definition and a mapping. If multiple encodings
+an `values` definition and a mapping. If multiple encodings
 are possible, `canonical` representations must be choosen
 (always if regexes are used):
 ```YAML
 datatypes:
   boolean1:
-    accepted_values: ["T": true, "F": false, "NA": null]
+    values: ["T": true, "F": false, "NA": null]
   boolean2:
     regexes:
       - "[Tt](rue)?": true
@@ -1612,7 +1612,7 @@ possible to decode given strings to predefined lists. E.g.
 ```YAML
 datatypes:
   list9:
-    accepted_values:
+    values:
       "1a": ["a"]
       "2a": ["a", "a"]
       "3a": ["a", "a", "a"]
@@ -1624,7 +1624,7 @@ the `canonical` key must define which one shall be used for encoding:
 ```YAML
 datatypes:
   list10:
-    accepted_values:
+    values:
       "a": ["a"]
       "1a": ["a"]
       "2a": ["a", "a"]
@@ -1700,8 +1700,8 @@ case `empty` keys are used in the elements definitions:
 datatypes:
   dict3:            # e.g. ;B <-> [0, "B"]
     composed_of:
-      - first: {accepted_values: [1,2], empty: 0}
-      - second: {accepted_values: [A,B], empty: C}
+      - first: {values: [1,2], empty: 0}
+      - second: {values: [A,B], empty: C}
     splitted_by: ";"
 ```
 
@@ -1713,8 +1713,8 @@ if elements after them in the order are present). In this case, the
 datatypes:
   dict4:            # e.g. 1 <-> [1, "C"]
     composed_of:
-      - first: {accepted_values: [1,2], empty: 0}
-      - second: {accepted_values: [A,B], empty: C}
+      - first: {values: [1,2], empty: 0}
+      - second: {values: [A,B], empty: C}
     splitted_by: ";"
     required: 1
 ```
@@ -1734,7 +1734,7 @@ datatypes:        # 1,A,2 <-> {a: 1, x: "A", b: 2}
     one_of:
       - composed_of:
           - a: unsigned_integer
-          - x: {accepted_values: [A, B]}
+          - x: {values: [A, B]}
           - b: unsigned_integer
         splitted_by: ","
       - composed_of:
@@ -1828,7 +1828,7 @@ possible to decode given strings to predefined dictionaries. E.g.
 ```YAML
 datatypes:
   dict10:
-    accepted_values:
+    values:
       "ax": {"a": "x", "b": "y"}
       "ay": {"a", "y", "b": "y"}
       "bx": {"a": "x", "b": "x"}
@@ -1839,7 +1839,7 @@ In case a data value has multiple textual representations, the
 canonical one must be specified, which is then used for encoding:
 ```YAML
   dict11:
-    accepted_values:
+    values:
       "1": {"a": "x", "b": "y"}
       "2": {"a", "x", "b": "y"}
     canonical: {"1": {"a": "x", "b": "y"}}
@@ -1870,13 +1870,13 @@ can be e.g. used to specify a format in which a middle element of a
       - composed_of:
           - name: string
           - expressed:
-              accepted_values: {"+": true, "-": false}
+              values: {"+": true, "-": false}
         split_by: ","
         implicit {"copies": 1}
       - composed_of:
           - name: string
           - copies: unsigned_integer
           - expressed:
-              accepted_values: {"+": true, "-": false}
+              values: {"+": true, "-": false}
         split_by: ","
 ```

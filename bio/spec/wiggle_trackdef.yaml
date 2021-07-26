@@ -41,7 +41,7 @@ datatypes:
 
   wiggle_trackdef_line_item_description:
     composed_of: [key: {constant: visibility},
-                  value: {accepted_values: [full, dense, hide]}]
+                  value: {values: [full, dense, hide]}]
     splitted_by: "="
 
   uint8: {unsigned_integer: {min: 0, max: 255}}
@@ -62,7 +62,7 @@ datatypes:
     composed_of: [key: {constant: priority}, value: unsigned_integer]
     splitted_by: "="
 
-  wiggle_bool: {accepted_values: ["on": true, "off": false]}
+  wiggle_bool: {values: ["on": true, "off": false]}
 
   wiggle_trackdef_line_item_autoScale:
     composed_of: [key: {constant: autoScale}, value: wiggle_bool]
@@ -90,7 +90,7 @@ datatypes:
   wiggle_trackdef_line_item_graphType:
     composed_of:
       - key: {constant: graphType}
-      - value: {accepted_values: ["bar", "points"]}
+      - value: {values: ["bar", "points"]}
     splitted_by: "="
 
   wiggle_trackdef_line_item_viewLimits:
@@ -118,7 +118,7 @@ datatypes:
   wiggle_trackdef_line_item_windowingFunction:
     composed_of:
       - key: {constant: windowingFunction}
-      - value: {accepted_values: ["mean+whiskers", "maximum", "mean", "minimum"]}
+      - value: {values: ["mean+whiskers", "maximum", "mean", "minimum"]}
     splitted_by: "="
 
   wiggle_trackdef_line_item_smoothingWindow:
@@ -133,7 +133,7 @@ datatypes:
   wiggle_trackdef_line_item_transformFunc:
     composed_of:
       - key: {constant: transformFunc}
-      - value: {accepted_values: ["NONE", "LOG"]}
+      - value: {values: ["NONE", "LOG"]}
     splitted_by: "="
 
   wiggle_trackdef_line_item_viewLimitsMax:

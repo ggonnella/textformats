@@ -1,24 +1,24 @@
 datatypes:
   e_unknown_key:
-    accepted_values: ["1", "2"]
+    values: ["1", "2"]
     x: string
-  e_accepted_values_map:
-    accepted_values:
+  e_values_map:
+    values:
       1: true
       "a": false
-  e_accepted_values_scalar:
-    accepted_values: a, b
-  e_accepted_values_empty:
-    accepted_values: []
-  e_accepted_values_too_short:
-    accepted_values: ["1"]
+  e_values_scalar:
+    values: a, b
+  e_values_empty:
+    values: []
+  e_values_too_short:
+    values: ["1"]
   e_no_canonical:
-    accepted_values:
+    values:
       - 1: true
       - "a": true
       - 1.0
   e_canonical_unknown_decoded:
-    accepted_values:
+    values:
       - 1: true
       - "a": true
       - 1.0
@@ -26,7 +26,7 @@ datatypes:
       "1": true
       "0": false
   e_canonical_missing_decoded:
-    accepted_values:
+    values:
       - 1: true
       - "a": true
       - "b": false
@@ -34,18 +34,18 @@ datatypes:
     canonical:
       "1": true
   e_canonical_unknown_encoded:
-    accepted_values:
+    values:
       - 1: true
       - "a": true
       - 1.0
     canonical:
       "0": true
   e_canonical_not_matching:
-    accepted_values:
+    values:
       - 1: true
       - "a": true
       - 1.0
     canonical:
       "1.0": true
   e_repeated_values:
-    accepted_values: [1, "a", 1.0, 1]
+    values: [1, "a", 1.0, 1]

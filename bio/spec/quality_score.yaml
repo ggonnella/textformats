@@ -1,6 +1,6 @@
 datatypes:
   quality_score_code:
-    accepted_values:
+    values:
       - '!': 0
       - '"': 1
       - '#': 2

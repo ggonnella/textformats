@@ -23,8 +23,8 @@ datatypes:
     composed_of:
     - id: {regex: "[A-Z]{2}[0-9]{5}"}
     - age: {unsigned_integer: {min: 0}}
-    - treatment: {accepted_values: ["control", "treatment"]}
-    - outcome: {accepted_values: ["discharge", "death"]}
+    - treatment: {values: ["control", "treatment"]}
+    - outcome: {values: ["discharge", "death"]}
     - description: string
     required: 4
     sep: "\t"

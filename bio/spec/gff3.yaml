@@ -77,9 +77,9 @@ datatypes:
   ontology_directive:
     composed_of:
       - pragma:
-          accepted_values: ["attribute-ontology",
-                            "source-ontology",
-                            "feature-ontology"]
+          values: ["attribute-ontology",
+                   "source-ontology",
+                   "feature-ontology"]
       - uri: uri
     prefix: "##"
     splitted_by: " "
@@ -113,7 +113,7 @@ datatypes:
   column_end: {unsigned_integer: {min: 1}}
   column_score: {one_of: [undefined, float]}
   column_strand: {one_of: [undefined,
-                              {accepted_values: ["+", "-", "?"]}]}
+                              {values: ["+", "-", "?"]}]}
   column_phase: {one_of: [undefined,
                              {unsigned_integer: {min: 0, max: 2}}]}
   column_attributes:
@@ -134,13 +134,13 @@ datatypes:
   #
   single_id_attribute:
     composed_of:
-    - tag: {accepted_values: ["ID", "Name"]}
+    - tag: {values: ["ID", "Name"]}
     - value: id
     splitted_by: "="
   #
   id_list_attribute:
     composed_of:
-    - tag: {accepted_values: ["Parent", "Alias"]}
+    - tag: {values: ["Parent", "Alias"]}
     - value: {list_of: id, splitted_by: ","}
     splitted_by: "="
   #
@@ -155,7 +155,7 @@ datatypes:
         - target_id: target_id
         - start: {unsigned_integer: {min: 1}}
         - end: {unsigned_integer: {min: 1}}
-        - strand: {accepted_values: ["+", "-"]}
+        - strand: {values: ["+", "-"]}
         required: 3
         splitted_by: " "
     splitted_by: "="
@@ -169,7 +169,7 @@ datatypes:
     - value:
         list_of:
           composed_of:
-          - operation: {accepted_values: ["M", "I", "D", "F", "R"]}
+          - operation: {values: ["M", "I", "D", "F", "R"]}
           - length: {unsigned_integer: {min: 1}}
         splitted_by: " "
     splitted_by: "="

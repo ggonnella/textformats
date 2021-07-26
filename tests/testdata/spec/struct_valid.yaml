@@ -76,7 +76,7 @@ datatypes:
     - f: float
     - b:
         list_of:
-          accepted_values:
+          values:
             - "true": true
             - "false": false
         minlength: 2

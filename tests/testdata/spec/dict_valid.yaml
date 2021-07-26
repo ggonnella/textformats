@@ -94,7 +94,7 @@ datatypes:
       i: integer
       f: float
       b:
-        accepted_values:
+        values:
         - "true": true
         - "false": false
     required: [name, a]
