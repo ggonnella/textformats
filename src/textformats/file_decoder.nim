@@ -355,23 +355,24 @@ proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
   ## This proc is provided to more easily support programming languages for
   ## which iterators are not available (C).
   ##
-  if dd.scope == ddsUnit or dd.scope == ddsLine:
-    for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
+  let ddef = dd.dereference
+  if ddef.scope == ddsUnit or ddef.scope == ddsLine:
+    for decoded in decoded_lines_or_units(filename, ddef, embedded, wrapped,
                                           dd.unitsize):
       process_decoded(decoded, process_decoded_data)
   elif splitted:
-    if dd.scope == ddsFile:
-      decode_whole_file_lines(filename, dd, process_decoded,
+    if ddef.scope == ddsFile:
+      decode_whole_file_lines(filename, ddef, process_decoded,
                               process_decoded_data, embedded)
     else:
-      decode_section_lines(filename, dd, process_decoded,
+      decode_section_lines(filename, ddef, process_decoded,
                            process_decoded_data, embedded)
   else:
-    if dd.scope == ddsFile:
-      process_decoded(decoded_whole_file(filename, dd, embedded),
+    if ddef.scope == ddsFile:
+      process_decoded(decoded_whole_file(filename, ddef, embedded),
                       process_decoded_data)
     else:
-      for decoded in decoded_sections(filename, dd, embedded):
+      for decoded in decoded_sections(filename, ddef, embedded):
         process_decoded(decoded, process_decoded_data)
 
 iterator decoded_file*(filename: string, dd: DatatypeDefinition,
@@ -380,21 +381,22 @@ iterator decoded_file*(filename: string, dd: DatatypeDefinition,
   ##
   ## Decode a file applying the specified definition
   ##
-  if dd.scope == ddsUnit or dd.scope == ddsLine:
-    for decoded in decoded_lines_or_units(filename, dd, embedded, wrapped,
+  let ddef = dd.dereference
+  if ddef.scope == ddsUnit or ddef.scope == ddsLine:
+    for decoded in decoded_lines_or_units(filename, ddef, embedded, wrapped,
                                           dd.unitsize):
       yield decoded
   elif splitted:
-    if dd.scope == ddsFile:
-      for decoded in decoded_whole_file_elements(filename, dd, embedded):
+    if ddef.scope == ddsFile:
+      for decoded in decoded_whole_file_elements(filename, ddef, embedded):
         yield decoded
     else:
-      for decoded in decoded_section_elements(filename, dd, embedded):
+      for decoded in decoded_section_elements(filename, ddef, embedded):
         yield decoded
   else:
-    if dd.scope == ddsFile:
-      yield decoded_whole_file(filename, dd, embedded)
+    if ddef.scope == ddsFile:
+      yield decoded_whole_file(filename, ddef, embedded)
     else:
-      for decoded in decoded_sections(filename, dd, embedded):
+      for decoded in decoded_sections(filename, ddef, embedded):
         yield decoded
 
