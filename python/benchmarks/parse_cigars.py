@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 """
-Parse all cigars in file using a Python-based simple parser
+Parse a file with one cigar string per line, without using TextParser
 
 Usage:
-  parse_cigars_python.py [-s] <filename> <method>
-
-Options:
-  -s, --show  print the cigars (default: parse, but do not show the result)
+  parse_cigars.py <filename> <method>
 
 Arguments:
   <filename>  the file containing the cigars, one per line
-  <method>    either "python" or "textformats"
+  <method>    either "chairwise" or "findall"
 """
 
 from docopt import docopt
@@ -18,7 +15,7 @@ import re
 
 oplenset = set(["M", "I", "D"])
 
-def parse_cigar(cigarstr):
+def parse_cigarstr_chairwise(cigarstr):
   oplen = []
   cigar = []
   for c in cigarstr:
@@ -36,7 +33,7 @@ def parse_cigar(cigarstr):
     raise RuntimeError("Wrong number of cigar operations")
   return cigar
 
-def parse_cigar_findall(cigarstr):
+def parse_cigarstr_findall(cigarstr):
   cigar = []
   expected_start = 0
   for m in re.finditer(r'(?P<length>\d+)(?P<code>[MID])', cigarstr):
@@ -52,26 +49,15 @@ def parse_cigar_findall(cigarstr):
   return cigar
 
 def main(args):
-  if "textformats" in args["<method>"]:
-    specfname = "../../bio/benchmarks/cigars/cigar.datatypes.yaml"
-    import textformats as st
-    spec = st.Specification(specfname)
-    cigardef = spec["cigar"]
-  show = args["--show"]
   with open(args["<filename>"]) as f:
     for line in f:
-      if args["<method>"] == "textformats":
-        cigar = cigardef.to_json(line.rstrip())
-      elif args["<method>"] == "textformats-decode":
-        cigar = cigardef.decode(line.rstrip())
-      elif args["<method>"] == "charwise":
-        cigar = parse_cigar(line.rstrip())
-      elif args["<method>"] == "python":
-        cigar = parse_cigar_findall(line.rstrip())
+      if args["<method>"] == "charwise":
+        cigar = parse_cigarstr_chairwise(line.rstrip())
+      elif args["<method>"] == "findall":
+        cigar = parse_cigarstr_findall(line.rstrip())
       else:
         raise RuntimeError("Method is not available")
-      if show:
-        print(cigar)
+      print(cigar)
 
 if __name__ == "__main__":
   args = docopt(__doc__, version="0.1")

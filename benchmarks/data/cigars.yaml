@@ -1,0 +1,4 @@
+datatypes:
+  cigar_op: {composed_of: [length: {unsigned_integer: {min: 1}},
+                           code: {values: [M,I,D]}]}
+  cigar_str: {list_of: cigar_op, minlength: 0, scope: line}

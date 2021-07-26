@@ -96,7 +96,7 @@ proc tf_describe*(dd: DatatypeDefinitionRef): cstring {.exportc, raises: [].} =
 # Handling encoded strings
 
 proc tf_decode*(input: cstring, dd: DatatypeDefinitionRef):
-             JsonNodeRef {.exportc, raises: [], raises: [].} =
+             JsonNodeRef {.exportc, raises: [].} =
   on_failure_seterr_and_return:
     return JsonNodeRef(value: textformats.decode($input, dd.value))
 
@@ -176,7 +176,7 @@ proc deref_decoded_processor(n: json.JsonNode, data: pointer) =
   # The C code does not see the JsonNode instance, but a JsonNodeRef
   # instance instead (defined in jsonwrap); this processor function is used
   # internally as an adapter to the correct processing function type
-  # (which accessed the JsonNode instead of the JsonNodeRef).
+  # (which accesses the JsonNode instead of the JsonNodeRef).
   let dvp = cast[DecodedValueProcessor](data)
   dvp.refnode.value = n
   dvp.processor(dvp.refnode, dvp.data)
@@ -196,4 +196,17 @@ proc tf_decode_file*(filename: cstring, embedded: bool,
                                             splitted_processing,
                                             dd.tf_get_wrapped):
         deref_decoded_processor(decoded, cast[pointer](dvp))
+
+proc tf_decode_file_to_json*(filename: cstring, embedded: bool,
+                             dd: DatatypeDefinitionRef,
+                             decoded_processor:
+                               proc (n: cstring, data: pointer) {.cdecl.},
+                             decoded_processor_data: pointer,
+                             splitted_processing: bool)
+                             {.exportc, raises: [].} =
+  on_failure_seterr:
+    for decoded in textformats.decoded_file($filename, dd.value, embedded,
+                                            splitted_processing,
+                                            dd.tf_get_wrapped):
+      decoded_processor(($decoded).cstring, decoded_processor_data)
 
