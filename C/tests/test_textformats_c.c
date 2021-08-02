@@ -264,6 +264,7 @@ void test_handling_encoded_files(Specification *spec)
 {
   DatatypeDefinition *dd_line, *dd_line_failing,
                      *dd_unit, *dd_section, *dd_file;
+  int level;
   NEXT_TEST("loading line datatype");
   dd_line = tf_get_definition(spec, DATA_TYPE_SCOPE_LINE);
   EXPECT_NO_ERROR;
@@ -283,51 +284,46 @@ void test_handling_encoded_files(Specification *spec)
                                       dd_unit, dd_section, dd_file);
   NEXT_TEST("decoding file values, scope undefined, failing");
   tf_decode_file(DATAFILE, false, dd_line,
-                 decoded_processor, NULL, false);
+                 decoded_processor, NULL, 0);
   EXPECT_FAILURE;
   NEXT_TEST("decoding file values, scope line, failing");
   tf_decode_file(DATAFILE, false, dd_line_failing,
-                 decoded_processor, NULL, false);
+                 decoded_processor, NULL, 0);
   EXPECT_FAILURE;
   NEXT_TEST("decoding file values, scope line");
   tf_set_scope(dd_line, "line");
   tf_decode_file(DATAFILE, false, dd_line,
-                 decoded_processor, NULL, false);
+                 decoded_processor, NULL, 0);
   EXPECT_NO_ERROR;
   NEXT_TEST("decoding file values, scope line, wrapped");
   tf_set_wrapped(dd_line);
   tf_decode_file(DATAFILE, false, dd_line,
-                 decoded_processor, NULL, false);
+                 decoded_processor, NULL, 0);
   EXPECT_NO_ERROR;
   NEXT_TEST("decoding file values, scope unit, failing");
   tf_decode_file(DATAFILE, false, dd_unit,
-                 decoded_processor, NULL, false);
+                 decoded_processor, NULL, 0);
   EXPECT_FAILURE;
   NEXT_TEST("decoding file values, scope unit");
   tf_set_unitsize(dd_unit, 4);
   tf_decode_file(DATAFILE, false, dd_unit,
-                 decoded_processor, NULL, false);
+                 decoded_processor, NULL, 0);
   EXPECT_NO_ERROR;
-  NEXT_TEST("decoding file values, scope section");
-  tf_decode_file(DATAFILE, false, dd_section,
-                 decoded_processor, NULL, false);
-  EXPECT_NO_ERROR;
-  NEXT_TEST("decoding file values, scope section, elemwise");
-  tf_decode_file(DATAFILE, false, dd_section,
-                 decoded_processor, NULL, true);
-  EXPECT_NO_ERROR;
-  NEXT_TEST("decoding file values, scope file");
-  tf_decode_file(DATAFILE, false, dd_file,
-                 decoded_processor, NULL, false);
-  EXPECT_NO_ERROR;
-  NEXT_TEST("decoding file values, scope file, elemwise");
-  tf_decode_file(DATAFILE, false, dd_file,
-                 decoded_processor, NULL, true);
-  EXPECT_NO_ERROR;
-  NEXT_TEST("decoding file values, scope file, embedded");
-  tf_decode_file(YAML_SPEC, true, dd_file,
-                 decoded_processor, NULL, false);
-  EXPECT_NO_ERROR;
+  for (level = 0; level <= 2; level++)
+  {
+    NEXT_TEST("decoding file values, scope section, level %i", level);
+    tf_decode_file(DATAFILE, false, dd_section,
+                   decoded_processor, NULL, level);
+    EXPECT_NO_ERROR;
+    NEXT_TEST("decoding file values, scope file, level %i", level);
+    tf_decode_file(DATAFILE, false, dd_file,
+                   decoded_processor, NULL, level);
+    EXPECT_NO_ERROR;
+    NEXT_TEST("decoding file values, scope file, embedded, level %i", level);
+    tf_decode_file(YAML_SPEC, true, dd_file,
+                   decoded_processor, NULL, level);
+    EXPECT_NO_ERROR;
+  }
   tf_delete_definition(dd_line);
   tf_delete_definition(dd_line_failing);
   tf_delete_definition(dd_unit);

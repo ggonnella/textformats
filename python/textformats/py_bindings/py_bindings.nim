@@ -84,18 +84,76 @@ proc is_valid_decoded_json*(
        json_str: string, dd: DatatypeDefinition): bool {.exportpy.} =
   textformats.is_valid(parse_json(json_str), dd)
 
+type WrappedDecodedProcessorData = ref object
+  processor: proc(n: JsonNode, data: PyObject)
+  data: PyObject
+
+proc wrapped_decoded_processor(n: JsonNode, data: pointer) =
+  let
+    wdata = cast[WrappedDecodedProcessorData](data)
+    pydata = cast[PyObject](wdata.data)
+  wdata.processor(n, pydata)
+
+proc to_dpl(decoded_processor_level: int):
+  textformats.DecodedProcessorLevel =
+    case decoded_processor_level:
+    of 0, 1, 2: textformats.DecodedProcessorLevel(decoded_processor_level)
+    else:
+      raise newException(textformats.TextFormatsRuntimeError,
+              "Invalid decoded processor level\n" &
+              "Expected: 0, 1 or 2\nFound: " & $decoded_processor_level)
+
+proc decode_file*(filename: string, dd: DatatypeDefinition,
+                    skip_embedded_spec: bool,
+                     decoded_processor:
+                        proc(n: JsonNode, d: PyObject),
+                     decoded_processor_data: PyObject,
+                     decoded_processor_level: int) {.exportpy.} =
+  let
+    wdata = WrappedDecodedProcessorData(processor: decoded_processor,
+                                        data: decoded_processor_data)
+  textformats.decode_file(filename, dd, skip_embedded_spec,
+                          wrapped_decoded_processor,
+                          cast[pointer](wdata),
+                          to_dpl(decoded_processor_level))
+
+type WrappedDecodedToJsonProcessorData = ref object
+  processor: proc(s: string, data: PyObject)
+  data: PyObject
+
+proc wrapped_decoded_to_json_processor(n: JsonNode, data: pointer) =
+  let
+    wdata = cast[WrappedDecodedToJsonProcessorData](data)
+    pydata = cast[PyObject](wdata.data)
+  wdata.processor($n, pydata)
+
+proc tf_decode_file_to_json*(filename: string, skip_embedded_spec: bool,
+                             dd: DatatypeDefinition,
+                             decoded_processor:
+                               proc (s: string, data: PyObject),
+                             decoded_processor_data: PyObject,
+                             decoded_processor_level: int) {.exportpy.} =
+  let
+    wdata = WrappedDecodedToJsonProcessorData(processor: decoded_processor,
+                                              data: decoded_processor_data)
+  textformats.decode_file(filename, dd, skip_embedded_spec,
+                          wrapped_decoded_to_json_processor,
+                          cast[pointer](wdata),
+                          to_dpl(decoded_processor_level))
+
 iterator decoded_file*(filename: string, dd: DatatypeDefinition,
-                  embedded: bool = false, splitted: bool = false,
-                  wrapped: bool = false): JsonNode {.exportpy.} =
-  for decoded in textformats.decoded_file(filename, dd, embedded,
-                                          splitted, wrapped):
+                  skip_embedded_spec: bool = false, as_elements: bool = false):
+                    JsonNode {.exportpy.} =
+  for decoded in textformats.decoded_file(filename, dd, skip_embedded_spec,
+                                          as_elements):
     yield decoded
 
-iterator decoded_file_as_json*(filename: string, dd: DatatypeDefinition,
-                  embedded: bool = false, splitted: bool = false,
-                  wrapped: bool = false): string {.exportpy.} =
-  for decoded in textformats.decoded_file(filename, dd, embedded,
-                                          splitted, wrapped):
+iterator decoded_file_to_json*(filename: string, dd: DatatypeDefinition,
+                  skip_embedded_spec: bool = false,
+                  yield_elements: bool = false):
+                    string {.exportpy.} =
+  for decoded in textformats.decoded_file(filename, dd, skip_embedded_spec,
+                                          yield_elements):
     yield $decoded
 
 proc get_unitsize(dd: DatatypeDefinition): int {.exportpy.} =
@@ -109,3 +167,12 @@ proc set_unitsize(dd: DatatypeDefinition, unitsize: int) {.exportpy.} =
 
 proc set_scope(dd: DatatypeDefinition, scope: string) {.exportpy.} =
   textformats.set_scope(dd, scope)
+
+proc get_wrapped(dd: DatatypeDefinition): bool {.exportpy.} =
+  textformats.get_wrapped(dd)
+
+proc set_wrapped(dd: DatatypeDefinition) {.exportpy.} =
+  textformats.set_wrapped(dd)
+
+proc unset_wrapped(dd: DatatypeDefinition) {.exportpy.} =
+  textformats.unset_wrapped(dd)

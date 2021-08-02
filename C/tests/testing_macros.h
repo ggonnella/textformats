@@ -1,5 +1,5 @@
-#define NEXT_TEST(STR) \
-  printf("\n======== test " STR "\n\n")
+#define NEXT_TEST(STR, ...) \
+  printf("\n======== test " STR "\n\n", ##__VA_ARGS__)
 
 #define EXPECT_FAILURE \
   if (!tf_haderr) {\

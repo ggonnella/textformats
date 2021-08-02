@@ -67,14 +67,14 @@ proc decode_datafile*(specfile = "", datatype = "default", infile = "",
                       unitsize = 1): int =
   ## decode a file, given a datatype definition
   let
-    embedded = (specfile == "")
+    skip_embedded_spec = (specfile == "")
     specsrc = block:
-      if embedded:
+      if skip_embedded_spec:
         if infile == "":
           exit_with(ec_err_setting,
                     "Please provide at least either the name of the " &
                     "specification file or of the input data file\n" &
-                    "Specifications cannot be embedded in the " &
+                    "Specifications cannot be skip_embedded_spec in the " &
                     "standard input")
         fail_if_preprocessed(infile)
         infile
@@ -86,9 +86,12 @@ proc decode_datafile*(specfile = "", datatype = "default", infile = "",
   if (ec != 0): return ec
   ec = parse_unitsize_setting(unitsize, definition)
   if (ec != 0): return ec
+  let level = if splitted: DplWhole else: DplLine
   try:
-    decode_file(infile, definition, embedded, splitted=splitted,
-                wrapped=wrapped)
+    if wrapped:
+      definition.set_wrapped()
+    decode_file(infile, definition, skip_embedded_spec,
+                  decoded_processor_level = level)
   except textformats.DecodingError:
     exit_with(ec_err_invalid_encoded, getCurrentExceptionMsg())
 

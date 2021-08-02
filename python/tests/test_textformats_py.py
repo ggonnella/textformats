@@ -160,7 +160,7 @@ def test_encoded_file_decoding_settings(testdata):
   dd_unit.unitsize = 2
   assert dd_unit.unitsize == 2
 
-def test_handling_encoded_files(testdata):
+def test_handling_encoded_files_w_iterator(testdata):
   s = tf.Specification(testdata(YAML_SPEC))
   dd_line = s[DATA_TYPE_SCOPE_LINE]
   dd_line_failing = s[BAD_DATA_TYPE_SCOPE_LINE]
@@ -178,7 +178,8 @@ def test_handling_encoded_files(testdata):
     for decoded in dd_line.decoded_file(testdata(DATAFILE)):
       print(decoded)
   with assert_nothing_raised():
-    for decoded in dd_line.decoded_file(testdata(DATAFILE), wrapped=True):
+    dd_line.wrapped=True
+    for decoded in dd_line.decoded_file(testdata(DATAFILE)):
       print(decoded)
   with pytest.raises(tf.DecodingError):
     for decoded in dd_unit.decoded_file(testdata(DATAFILE)):
@@ -191,15 +192,87 @@ def test_handling_encoded_files(testdata):
     for decoded in dd_section.decoded_file(testdata(DATAFILE)):
       print(decoded)
   with assert_nothing_raised():
-    for decoded in dd_section.decoded_file(testdata(DATAFILE), splitted=True):
+    for decoded in dd_section.decoded_file(testdata(DATAFILE), as_elements=True):
       print(decoded)
   with assert_nothing_raised():
     for decoded in dd_file.decoded_file(testdata(DATAFILE)):
       print(decoded)
   with assert_nothing_raised():
-    for decoded in dd_file.decoded_file(testdata(DATAFILE), splitted=True):
+    for decoded in dd_file.decoded_file(testdata(DATAFILE), as_elements=True):
       print(decoded)
   with assert_nothing_raised():
-    for decoded in dd_file.decoded_file(testdata(YAML_SPEC), embedded=True):
+    for decoded in dd_file.decoded_file(testdata(YAML_SPEC),
+                     skip_embedded_spec=True):
       print(decoded)
+
+def print_and_count_decoded(decoded, data):
+  data["counter"] += 1
+  print(decoded)
+
+def test_handling_encoded_files_w_processor(testdata):
+  s = tf.Specification(testdata(YAML_SPEC))
+  dd_line = s[DATA_TYPE_SCOPE_LINE]
+  dd_line_failing = s[BAD_DATA_TYPE_SCOPE_LINE]
+  dd_unit = s[DATA_TYPE_SCOPE_UNIT]
+  dd_section = s[DATA_TYPE_SCOPE_SECTION]
+  dd_file = s[DATA_TYPE_SCOPE_FILE]
+  data = {"counter": 0}
+  with pytest.raises(tf.TextFormatsRuntimeError):
+    dd_line.decode_file(testdata(DATAFILE),
+        decoded_processor=print_and_count_decoded,
+        decoded_processor_data=data)
+  assert data["counter"] == 0
+  with pytest.raises(tf.DecodingError):
+    dd_line_failing.decode_file(testdata(DATAFILE),
+        decoded_processor=print_and_count_decoded,
+        decoded_processor_data=data)
+  assert data["counter"] == 0
+  with assert_nothing_raised():
+    dd_line.scope = "line"
+    dd_line.decode_file(testdata(DATAFILE),
+        decoded_processor=print_and_count_decoded,
+        decoded_processor_data=data)
+  assert data["counter"] == 8
+  data["counter"] = 0
+  with assert_nothing_raised():
+    dd_line.wrapped=True
+    dd_line.decode_file(testdata(DATAFILE),
+        decoded_processor=print_and_count_decoded,
+        decoded_processor_data=data)
+  assert data["counter"] == 8
+  data["counter"] = 0
+  with pytest.raises(tf.DecodingError):
+    dd_unit.decode_file(testdata(DATAFILE),
+        decoded_processor=print_and_count_decoded,
+        decoded_processor_data=data)
+  data["counter"] = 0
+  with assert_nothing_raised():
+    dd_unit.unitsize = 4
+    dd_unit.decode_file(testdata(DATAFILE),
+        decoded_processor=print_and_count_decoded,
+        decoded_processor_data=data)
+  assert data["counter"] == 2
+  for level in [0, 1, 2]:
+    data["counter"] = 0
+    with assert_nothing_raised():
+      dd_section.decode_file(testdata(DATAFILE),
+          decoded_processor=print_and_count_decoded,
+          decoded_processor_data=data,
+          decoded_processor_level=level)
+    assert data["counter"] == [2, 4, 8][level]
+    data["counter"] = 0
+    with assert_nothing_raised():
+      dd_file.decode_file(testdata(DATAFILE),
+          decoded_processor=print_and_count_decoded,
+          decoded_processor_data=data,
+          decoded_processor_level=level)
+    assert data["counter"] == [1, 2, 8][level]
+    data["counter"] = 0
+    with assert_nothing_raised():
+      dd_file.decode_file(testdata(YAML_SPEC),
+                       skip_embedded_spec=True,
+          decoded_processor=print_and_count_decoded,
+          decoded_processor_data=data,
+          decoded_processor_level=level)
+    assert data["counter"] == [1, 2, 5][level]
 

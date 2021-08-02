@@ -173,7 +173,7 @@ the datatype named `default` is used).
 The output of the command is the JSON representation of each of the
 decoded values obtained from the file.
 
-### Embedded specification
+### Embedded specifications
 
 Data and the specification may be contained in the same file. The data
 file may contain an embedded YAML specification, preceding the data and

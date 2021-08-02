@@ -138,12 +138,12 @@ Datatype: 'header': tuple of elements (of possibly different types)
   - [1] element 'fastaid', defined as:
         'header.fastaid': string value matching a regular expression
 
-          the regular expression is: '\w*'
+      the regular expression is: '\w*'
 
   - [2] element 'desc', defined as:
         'header.desc': string value matching a regular expression
 
-          the regular expression is: '.*'
+      the regular expression is: '.*'
 
 - formatting:
     before the first element is the prefix '>'
@@ -357,13 +357,23 @@ Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"},"sequen
 Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["\nGCAGTCATGCTAGCTAGC\nCGGATCGTAGCTAGCTAG\nCGTGAGCATGCATGC"]}'
 [OK] no errors
 
-======== test decoding file values, scope section
+======== test decoding file values, scope section, level 0
 
 Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]}'
 Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}'
 [OK] no errors
 
-======== test decoding file values, scope section, elemwise
+======== test decoding file values, scope file, level 0
+
+Next decoded value found: '[{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]},{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}]'
+[OK] no errors
+
+======== test decoding file values, scope file, embedded, level 0
+
+Next decoded value found: '[{"header":{"fastaid":"0"},"sequence":["CAGTGCTAGCTG","ATCGCT"]},{"header":{"fastaid":"1"},"sequence":["GCTAGTCGTGC"]}]'
+[OK] no errors
+
+======== test decoding file values, scope section, level 1
 
 Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"}}'
 Next decoded value found: '{"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]}'
@@ -371,20 +381,49 @@ Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"}}'
 Next decoded value found: '{"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}'
 [OK] no errors
 
-======== test decoding file values, scope file
-
-Next decoded value found: '[{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]},{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}]'
-[OK] no errors
-
-======== test decoding file values, scope file, elemwise
+======== test decoding file values, scope file, level 1
 
 Next decoded value found: '{"[1]":{"header":{"fastaid":"seq1","desc":"shorter"},"sequence":["CAGTCGATCGAA","TGCTGCAGCATG","CATGCTGATGC"]}}'
 Next decoded value found: '{"[2]":{"header":{"fastaid":"seq2","desc":"longer"},"sequence":["GCAGTCATGCTAGCTAGC","CGGATCGTAGCTAGCTAG","CGTGAGCATGCATGC"]}}'
 [OK] no errors
 
-======== test decoding file values, scope file, embedded
+======== test decoding file values, scope file, embedded, level 1
 
-Next decoded value found: '[{"header":{"fastaid":"0"},"sequence":["CAGTGCTAGCTG","ATCGCT"]},{"header":{"fastaid":"1"},"sequence":["GCTAGTCGTGC"]}]'
+Next decoded value found: '{"[1]":{"header":{"fastaid":"0"},"sequence":["CAGTGCTAGCTG","ATCGCT"]}}'
+Next decoded value found: '{"[2]":{"header":{"fastaid":"1"},"sequence":["GCTAGTCGTGC"]}}'
+[OK] no errors
+
+======== test decoding file values, scope section, level 2
+
+Next decoded value found: '{"header":{"fastaid":"seq1","desc":"shorter"}}'
+Next decoded value found: '{"sequence[1]":"CAGTCGATCGAA"}'
+Next decoded value found: '{"sequence[2]":"TGCTGCAGCATG"}'
+Next decoded value found: '{"sequence[3]":"CATGCTGATGC"}'
+Next decoded value found: '{"header":{"fastaid":"seq2","desc":"longer"}}'
+Next decoded value found: '{"sequence[1]":"GCAGTCATGCTAGCTAGC"}'
+Next decoded value found: '{"sequence[2]":"CGGATCGTAGCTAGCTAG"}'
+Next decoded value found: '{"sequence[3]":"CGTGAGCATGCATGC"}'
+[OK] no errors
+
+======== test decoding file values, scope file, level 2
+
+Next decoded value found: '{"[1].header":{"fastaid":"seq1","desc":"shorter"}}'
+Next decoded value found: '{"[1].sequence[1]":"CAGTCGATCGAA"}'
+Next decoded value found: '{"[1].sequence[2]":"TGCTGCAGCATG"}'
+Next decoded value found: '{"[1].sequence[3]":"CATGCTGATGC"}'
+Next decoded value found: '{"[2].header":{"fastaid":"seq2","desc":"longer"}}'
+Next decoded value found: '{"[2].sequence[1]":"GCAGTCATGCTAGCTAGC"}'
+Next decoded value found: '{"[2].sequence[2]":"CGGATCGTAGCTAGCTAG"}'
+Next decoded value found: '{"[2].sequence[3]":"CGTGAGCATGCATGC"}'
+[OK] no errors
+
+======== test decoding file values, scope file, embedded, level 2
+
+Next decoded value found: '{"[1].header":{"fastaid":"0"}}'
+Next decoded value found: '{"[1].sequence[1]":"CAGTGCTAGCTG"}'
+Next decoded value found: '{"[1].sequence[2]":"ATCGCT"}'
+Next decoded value found: '{"[2].header":{"fastaid":"1"}}'
+Next decoded value found: '{"[2].sequence[1]":"GCTAGTCGTGC"}'
 [OK] no errors
 
 ==================================================================================================

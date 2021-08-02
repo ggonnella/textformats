@@ -1,12 +1,10 @@
 Error (InvalidSpecError):
-  Error parsing Unexpected token (expected ']')
-    Filename: 'specification'
-    
+  Error parsing specification input:
+    Unexpected token (expected ']')
 
 Error (InvalidSpecError):
-  Error parsing Unexpected token: ltStreamEnd
-    Filename: 'specification'
-    ../../tests/testdata/api/wrong_yaml_syntax.yaml
+  Error parsing specification file '../../tests/testdata/api/wrong_yaml_syntax.yaml':
+    Unexpected token: ltStreamEnd
 
 Error (TextFormatsRuntimeError):
   File not found:../../tests/testdata/api/xyz.yaml

@@ -48,30 +48,27 @@ proc dps_yaml_transition(line: string): dataParsingState {.inline.} =
   if line == "---": dpsData else: dpsYaml
 
 iterator decoded_lines_or_units(filename: string, dd: DatatypeDefinition,
-                       embedded = false, wrapped = false,
-                       unitsize = 1): JsonNode =
-  assert unitsize >= 1
+                                embedded = false): JsonNode =
   let file = open_input_file(filename)
-  var ddef = dereference(dd)
-  if wrapped and dd.kind == ddkUnion:
-    ddef.wrapped = true
   var
+    ddef = dereference(dd)
     line_no = 0
     state = dps_init(embedded)
-    linesgroup = newseq[string](unitsize)
+    linesgroup = newseq[string](ddef.unitsize)
     n_in_group = 0
     shall_decode = true
+  assert ddef.unitsize >= 1
   for line in lines(file):
     line_no += 1
     case state:
     of dpsData:
-      if unitsize > 1:
+      if ddef.unitsize > 1:
         linesgroup[n_in_group] = line
         n_in_group += 1
-        shall_decode = (n_in_group == unitsize)
+        shall_decode = (n_in_group == ddef.unitsize)
       if shall_decode:
         try:
-          if unitsize > 1:
+          if ddef.unitsize > 1:
             yield linesgroup.join("\n").decode(ddef)
             n_in_group = 0
           else:
@@ -90,7 +87,7 @@ iterator decoded_lines_or_units(filename: string, dd: DatatypeDefinition,
                        &"File: '{filename}'\n" &
                        "Final group of lines does not contain enough lines\n" &
                        &"Found n. of lines: {n_in_group}\n" &
-                       &"Required n. of lines: {unitsize}")
+                       &"Required n. of lines: {ddef.unitsize}")
 
 #
 #
@@ -344,59 +341,95 @@ iterator decoded_whole_file_elements(filename: string, dd: DatatypeDefinition,
 proc show_decoded(decoded: JsonNode, data: pointer) =
   echo $decoded
 
-proc decode_file*(filename: string, dd: DatatypeDefinition, embedded = false,
-                  process_decoded:
+## Level to which the process_decoded function shall be applied
+type DecodedProcessorLevel* = enum
+  DplWhole =   0 ## whole section or file
+  DplElement = 1 ## each element of the outermost compound definition
+  DplLine =    2 ## each element of the lowermost compound definition
+                 ## separated by newlines
+
+proc decode_file*(filename: string, dd: DatatypeDefinition,
+                  skip_embedded_spec = false,
+                  decoded_processor:
                     proc(decoded: JsonNode, data: pointer) = show_decoded,
-                  process_decoded_data: pointer = nil, splitted = false,
-                  wrapped = false) =
+                  decoded_processor_data: pointer = nil,
+                  decoded_processor_level = DplWhole) =
   ##
-  ## Decode a file applying the specified definition
+  ## Decode a file applying a datatype definition and process the decoded data.
   ##
-  ## This proc is provided to more easily support programming languages for
-  ## which iterators are not available (C).
+  ## What is passed to the processing function depends on the scope of the
+  ## datatype definition and on the decoded_processor_level option:
+  ## - scope line/unit: decoded line/unit
+  ## - scope file/section, depends on decoded_processor_level:
+  ##   - DplWhole: decoded data from whole file/section
+  ##   - DplElement: decoded data from each element of the file/section
+  ##                 compound definition
+  ##   - DplLine: decoded line for each line (lines may be
+  ##              hierarchically grouped into multiple levels of
+  ##              compound definitions)
   ##
   let ddef = dd.dereference
   if ddef.scope == ddsUnit or ddef.scope == ddsLine:
-    for decoded in decoded_lines_or_units(filename, ddef, embedded, wrapped,
-                                          dd.unitsize):
-      process_decoded(decoded, process_decoded_data)
-  elif splitted:
+    for decoded in decoded_lines_or_units(filename, ddef, skip_embedded_spec):
+      decoded_processor(decoded, decoded_processor_data)
+  elif decoded_processor_level == DplWhole:
     if ddef.scope == ddsFile:
-      decode_whole_file_lines(filename, ddef, process_decoded,
-                              process_decoded_data, embedded)
+      decoded_processor(decoded_whole_file(filename, ddef, skip_embedded_spec),
+                        decoded_processor_data)
     else:
-      decode_section_lines(filename, ddef, process_decoded,
-                           process_decoded_data, embedded)
+      for decoded in decoded_sections(filename, ddef, skip_embedded_spec):
+        decoded_processor(decoded, decoded_processor_data)
+  elif decoded_processor_level == DplElement:
+    if ddef.scope == ddsFile:
+      for decoded in decoded_whole_file_elements(
+                       filename, ddef, skip_embedded_spec):
+        decoded_processor(decoded, decoded_processor_data)
+    else:
+      for decoded in decoded_section_elements(
+                       filename, ddef, skip_embedded_spec):
+        decoded_processor(decoded, decoded_processor_data)
   else:
     if ddef.scope == ddsFile:
-      process_decoded(decoded_whole_file(filename, ddef, embedded),
-                      process_decoded_data)
+      decode_whole_file_lines(filename, ddef, decoded_processor,
+                              decoded_processor_data, skip_embedded_spec)
     else:
-      for decoded in decoded_sections(filename, ddef, embedded):
-        process_decoded(decoded, process_decoded_data)
+      decode_section_lines(filename, ddef, decoded_processor,
+                           decoded_processor_data, skip_embedded_spec)
 
 iterator decoded_file*(filename: string, dd: DatatypeDefinition,
-                       embedded = false, splitted = false,
-                       wrapped = false): JsonNode =
+                       skip_embedded_spec = false, yield_elements = false):
+                         JsonNode =
   ##
-  ## Decode a file applying the specified definition
+  ## Decode a file applying the specified definition and yield the decoded data.
   ##
+  ## What is yielded at each iteration depends on the scope of the datatype
+  ## definition, and by the yield_elements flag:
+  ## - scope line/unit: decoded line/unit
+  ## - scope file/section:
+  ##   - by default: decoded data from whole file/section
+  ##   - if "yield_elements" is set:
+  ##     decoded data from each element of the file/section compound
+  ##     definition
+  ##   note: differently from the "decode_file" proc, there is no way to yield
+  ##   the decoded single lines for scope file/section, because iterators
+  ##   cannot be applied recursively, in the current Nim implementation.
   let ddef = dd.dereference
   if ddef.scope == ddsUnit or ddef.scope == ddsLine:
-    for decoded in decoded_lines_or_units(filename, ddef, embedded, wrapped,
-                                          dd.unitsize):
+    for decoded in decoded_lines_or_units(filename, ddef, skip_embedded_spec):
       yield decoded
-  elif splitted:
+  elif yield_elements:
     if ddef.scope == ddsFile:
-      for decoded in decoded_whole_file_elements(filename, ddef, embedded):
+      for decoded in decoded_whole_file_elements(
+                       filename, ddef, skip_embedded_spec):
         yield decoded
     else:
-      for decoded in decoded_section_elements(filename, ddef, embedded):
+      for decoded in decoded_section_elements(
+                       filename, ddef, skip_embedded_spec):
         yield decoded
   else:
     if ddef.scope == ddsFile:
-      yield decoded_whole_file(filename, ddef, embedded)
+      yield decoded_whole_file(filename, ddef, skip_embedded_spec)
     else:
-      for decoded in decoded_sections(filename, ddef, embedded):
+      for decoded in decoded_sections(filename, ddef, skip_embedded_spec):
         yield decoded
 

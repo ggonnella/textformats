@@ -167,46 +167,72 @@ proc tf_get_scope(dd: DatatypeDefinitionRef): cstring {.exportc, raises: [].} =
   on_failure_seterr_and_return:
     return (textformats.get_scope(dd.value)).cstring
 
-type DecodedValueProcessor = ref object
+#
+# decoded_processor_level for scope section/file:
+# 0: whole section/file at once
+# 1: each element of outermost definition
+# 2: single lines
+#
+
+type WrappedDecodedProcessorData = ref object
   processor: proc(n: JsonNodeRef, data: pointer) {.cdecl.}
   data: pointer
   refnode: JsonNodeRef
 
-proc deref_decoded_processor(n: json.JsonNode, data: pointer) =
+proc wrapped_decoded_processor(n: json.JsonNode, data: pointer) =
   # The C code does not see the JsonNode instance, but a JsonNodeRef
   # instance instead (defined in jsonwrap); this processor function is used
   # internally as an adapter to the correct processing function type
   # (which accesses the JsonNode instead of the JsonNodeRef).
-  let dvp = cast[DecodedValueProcessor](data)
-  dvp.refnode.value = n
-  dvp.processor(dvp.refnode, dvp.data)
+  let wdata = cast[WrappedDecodedProcessorData](data)
+  wdata.refnode.value = n
+  wdata.processor(wdata.refnode, wdata.data)
 
-proc tf_decode_file*(filename: cstring, embedded: bool,
+proc to_dpl(decoded_processor_level: int):
+  textformats.DecodedProcessorLevel =
+    case decoded_processor_level:
+    of 0, 1, 2: textformats.DecodedProcessorLevel(decoded_processor_level)
+    else:
+      raise newException(textformats.TextFormatsRuntimeError,
+              "Invalid decoded processor level\n" &
+              "Expected: 0, 1 or 2\nFound: " & $decoded_processor_level)
+
+proc tf_decode_file*(filename: cstring, skip_embedded_spec: bool,
                      dd: DatatypeDefinitionRef,
                      decoded_processor:
                        proc (n: JsonNodeRef, data: pointer) {.cdecl.},
                      decoded_processor_data: pointer,
-                     splitted_processing: bool) {.exportc, raises: [].} =
+                     decoded_processor_level: int) {.exportc, raises: [].} =
   let
-    dvp = DecodedValueProcessor(processor: decoded_processor,
-                                data: decoded_processor_data,
-                                refnode: new JsonNodeRef)
+    wdata = WrappedDecodedProcessorData(processor: decoded_processor,
+                                        data: decoded_processor_data,
+                                        refnode: new JsonNodeRef)
   on_failure_seterr:
-    for decoded in textformats.decoded_file($filename, dd.value, embedded,
-                                            splitted_processing,
-                                            dd.tf_get_wrapped):
-        deref_decoded_processor(decoded, cast[pointer](dvp))
+    textformats.decode_file($filename, dd.value, skip_embedded_spec,
+                            wrapped_decoded_processor, cast[pointer](wdata),
+                            to_dpl(decoded_processor_level))
 
-proc tf_decode_file_to_json*(filename: cstring, embedded: bool,
+type WrappedDecodedToJsonProcessorData = ref object
+  processor: proc(s: cstring, data: pointer) {.cdecl.}
+  data: pointer
+
+proc wrapped_decoded_to_json_processor(n: json.JsonNode, data: pointer) =
+  let wdata = cast[WrappedDecodedToJsonProcessorData](data)
+  wdata.processor(($n).cstring, wdata.data)
+
+proc tf_decode_file_to_json*(filename: cstring, skip_embedded_spec: bool,
                              dd: DatatypeDefinitionRef,
                              decoded_processor:
-                               proc (n: cstring, data: pointer) {.cdecl.},
+                               proc (s: cstring, data: pointer) {.cdecl.},
                              decoded_processor_data: pointer,
-                             splitted_processing: bool)
+                             decoded_processor_level: int)
                              {.exportc, raises: [].} =
+  let
+    wdata = WrappedDecodedToJsonProcessorData(processor: decoded_processor,
+                                              data: decoded_processor_data)
   on_failure_seterr:
-    for decoded in textformats.decoded_file($filename, dd.value, embedded,
-                                            splitted_processing,
-                                            dd.tf_get_wrapped):
-      decoded_processor(($decoded).cstring, decoded_processor_data)
+    textformats.decode_file($filename, dd.value, skip_embedded_spec,
+                            wrapped_decoded_to_json_processor,
+                            cast[pointer](wdata),
+                            to_dpl(decoded_processor_level))
 

@@ -145,7 +145,7 @@ suite "test_api":
     dd_unit.set_unitsize(2)
     check dd_unit.get_unitsize() == 2
 
-  test "handling_encoded_files":
+  test "handling_encoded_files_w_iterator":
     let
       s = specification_from_file(testdata & YAML_SPEC)
       dd_line = s.get_definition(DATA_TYPE_SCOPE_LINE)
@@ -162,7 +162,8 @@ suite "test_api":
     dd_line.set_scope("line")
     for decoded in (testdata & DATAFILE).decoded_file(dd_line):
       echo(decoded)
-    for decoded in (testdata & DATAFILE).decoded_file(dd_line, wrapped=true):
+    dd_line.set_wrapped()
+    for decoded in (testdata & DATAFILE).decoded_file(dd_line):
       echo(decoded)
     expect(DecodingError):
       for decoded in (testdata & DATAFILE).decoded_file(dd_unit):
@@ -172,11 +173,53 @@ suite "test_api":
       echo(decoded)
     for decoded in (testdata & DATAFILE).decoded_file(dd_section):
       echo(decoded)
-    for decoded in (testdata & DATAFILE).decoded_file(dd_section, splitted=true):
+    for decoded in (testdata & DATAFILE).decoded_file(dd_section,
+                                           yield_elements=true):
       echo(decoded)
     for decoded in (testdata & DATAFILE).decoded_file(dd_file):
       echo(decoded)
-    for decoded in (testdata & DATAFILE).decoded_file(dd_file, splitted=true):
+    for decoded in (testdata & DATAFILE).decoded_file(dd_file,
+                                           yield_elements=true):
       echo(decoded)
-    for decoded in (testdata & YAML_SPEC).decoded_file(dd_file, embedded=true):
+    for decoded in (testdata & YAML_SPEC).decoded_file(dd_file,
+                                            skip_embedded_spec=true):
       echo(decoded)
+
+  proc process_decoded(n: JsonNode, data: pointer) =
+    echo($n)
+
+  test "handling_encoded_files_w_processor_function":
+    let
+      s = specification_from_file(testdata & YAML_SPEC)
+      dd_line = s.get_definition(DATA_TYPE_SCOPE_LINE)
+      dd_line_failing = s.get_definition(BAD_DATA_TYPE_SCOPE_LINE)
+      dd_unit = s.get_definition(DATA_TYPE_SCOPE_UNIT)
+      dd_section = s.get_definition(DATA_TYPE_SCOPE_SECTION)
+      dd_file = s.get_definition(DATA_TYPE_SCOPE_FILE)
+    expect(TextFormatsRuntimeError):
+      (testdata & DATAFILE).decode_file(dd_line,
+         decoded_processor=process_decoded)
+    expect(DecodingError):
+      (testdata & DATAFILE).decode_file(dd_line_failing,
+         decoded_processor=process_decoded)
+    dd_line.set_scope("line")
+    (testdata & DATAFILE).decode_file(dd_line,
+      decoded_processor=process_decoded)
+    dd_line.set_wrapped()
+    (testdata & DATAFILE).decode_file(dd_line,
+      decoded_processor=process_decoded)
+    expect(DecodingError):
+      (testdata & DATAFILE).decode_file(dd_unit)
+    dd_unit.set_unitsize(4)
+    (testdata & DATAFILE).decode_file(dd_unit,
+      decoded_processor=process_decoded)
+    for l in @[DplWhole, DplElement, DplLine]:
+      (testdata & DATAFILE).decode_file(dd_section,
+        decoded_processor_level=l,
+        decoded_processor=process_decoded)
+      (testdata & DATAFILE).decode_file(dd_file,
+        decoded_processor_level=l,
+        decoded_processor=process_decoded)
+      (testdata & YAML_SPEC).decode_file(dd_file, skip_embedded_spec=true,
+        decoded_processor_level=l,
+        decoded_processor=process_decoded)

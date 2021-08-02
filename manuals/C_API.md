@@ -270,10 +270,11 @@ a `JsonNode` or a string representing the data as JSON.
 
 To decode a file, the following function is used:
 ```C
-void tf_decode_file(char *filename, bool embedded, DatatypeDefinition* dd,
+void tf_decode_file(char *filename, bool skip_embedded_spec,
+                    DatatypeDefinition* dd,
                     void decoded_processor(JsonNode *n, void *data),
                     void *decoded_processor_data,
-                    bool splitted_processing)
+                    int decoded_processor_level)
 ```
 
 Thereby the file is decoded into one or multiple values, which are passed
@@ -291,25 +292,38 @@ void decoded_processor(JsonNode *int_node, void *data) {
 
 ### Embedded specifications
 
-The `bool` parameter `embedded` of `tf_decode_file` is set to `true`,
+The `bool` parameter `skip_embedded_spec` of `tf_decode_file` is set to `true`,
 if the data and the specification are contained in the same file. A data
 file may contain an embedded YAML specification, preceding the data and
-separated from it by a YAML document separator line (`---`).
+separated from it by a YAML document separator line (`---`). In this case
+the file decoding function must know that it shall skip the specification
+portion of the file while decoding (thus the parameter must be set).
 
-### Splitted processing
+### Level of application of the decoded processing function
 
 Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
 `list_of` or `named_values`), which consist of multiple elements (each in one
 or multiple lines).
 
-If the `bool` parameter `splitted_processing` of `tf_decode_file` is
-set to  `true`, the values passed to the `decoded_processor` are not the entire
-data in the file section or whole file, but instead the single elements of
-the compound datatype.
+The default is to work with the entire file or section at once (`whole` level).
+However, in some cases, when a file is large, it is more appropriate to keep
+only single elements of the data into memory at once. In particular, these can
+be the single elements of the compound datatype (`element` level) or, in cases
+these are themselves compound values consisting of multiple lines, down to the
+decoded value of single lines (`line` level). Note that working at line level
+is not equivalent to having a definition with `line` scope, since the
+definition of the structure of the file or file section is still used here for
+the decoding and validation.
 
-This is more efficient in the case of
-large files, since it is not necessary to represent in memory and process
-the entire file or file section at once.
+The parameter `decoded_processor_level` of `tf_decode_file` is used to
+control what part of the decoded value is passed to the `decoded_processor`
+function: 0, for `whole`, 1 for `element`, 2 for `line`.
+Further parameters are the processing function
+(`decoded_processor`), which is applied to each decoded value (at the selected
+level), and a void pointer `decoded_processing_data`, which is passed to the
+processing function, in order to provide to it access to any further necessary
+data.
+For scope `line` and `unit` the `decoded_processor_level` parameter is ignored.
 
 ### Scope of the definition
 

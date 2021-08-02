@@ -34,6 +34,7 @@ export decode
 import textformats/file_decoder
 export decoded_file
 export decode_file
+export DecodedProcessorLevel
 
 # encoding
 import textformats/encoder

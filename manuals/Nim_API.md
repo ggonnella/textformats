@@ -140,19 +140,33 @@ to determine if data could be validly represented using the definition.
 To decode a file, the following iterator is used:
 ```Nim
 decoded_file(filename: string, dd: DatatypeDefinition,
-             embedded = false, splitted = false,
-             wrapped = false): JsonNode
+             skip_embedded_spec = false, yield_elements = false): JsonNode
 ```
 
 Thereby the file is decoded into one or multiple values, which are yielded
 by the iterator as JsonNode instances.
 
-### Embedded specitications
+In alternative, the following proc can be used:
+```Nim
+decode_file(filename: string, dd: DatatypeDefinition,
+            skip_embedded_spec = false,
+            decoded_processor: proc (node: JsonNode, data: pointer),
+            decoded_processor_data: pointer,
+            decoded_processor_level: DecodedProcessorLevel): JsonNode
+```
 
-The optional boolean parameter `embedded` of `decoded_file` must be set
-if the data and the specification are contained in the same file. A data
+The proc version, in comparison with the iterator, allows in some cases for
+working with smaller pieces of the decoded value at once (see below under
+"Level of decoded processing/yielding").
+
+### Embedded specifications
+
+The optional boolean parameter `skip_embedded_spec` of `decoded_file` must be
+set if the data and the specification are contained in the same file. A data
 file may contain an embedded YAML specification, preceding the data and
-separated from it by a YAML document separator line (`---`).
+separated from it by a YAML document separator line (`---`). In this case
+the file decoding function must know that it shall skip the specification
+portion of the file while decoding (thus the parameter must be set).
 
 ### Scope of the definition
 
@@ -171,26 +185,41 @@ either in the datatype definition, or using the proc
 `set_unitsize(dd: DatatypeDefinition, n_lines: int)` where `n_lines`
 is larger than 1.
 
-### Splitted processing
+### Level of decoded processing/yielding
 
 Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
 `list_of` or `named_values`), which consist of multiple elements (each in one
 or multiple lines).
 
-If the optional boolean parameter `splitted` of `decoded_file` is set to
-`True`, the values yielded by the iterator are not the entire data in the file
-section or whole file, but instead the single elements of the compound
-datatype.
+The default is to work with the entire file or section at once (`whole` level).
+However, in some cases, when a file is large, it is more appropriate to keep
+only single elements of the data into memory at once. In particular, these can
+be the single elements of the compound datatype (`element` level) or, in cases
+these are themselves compound values consisting of multiple lines, down to the
+decoded value of single lines (`line` level). Note that working at line level
+is not equivalent to having a definition with `line` scope, since the
+definition of the structure of the file or file section is still used here for
+the decoding and validation.
 
-This is more efficient in the case of
-large files, since it is not necessary to represent in memory and process
-the entire file or file section at once.
+Unfortunately, because of technical limitations (recursive iterators are not
+allowed), the `decoded_file` iterator can only work at `whole` or `element`
+level. The default is the `whole` level, while the `element` level is selected
+by setting the boolean parameter `yield_elements`.
+
+In contrast, all three levels can be selected, if the proc `decode_file` is
+used, setting the parameter `decoded_processor_level` to `DplWhole` (default),
+`DplElement` or `DplLine`. Further parameters are the processing function
+(`decoded_processor`), which is applied to each decoded value (at the selected
+level), and a pointer `decoded_processing_data`, which is passed to the
+processing function, in order to provide to it access to any further necessary
+data.
+For scope `line` and `unit` the `decoded_processor_level` parameter is ignored.
 
 ### Reporting the branch of "one of" used by decoding
 
 When a `one_of` definition is used for decoding, it is possible to set the
 decoded value to contain information about which branch was used for the
 decoding. This can be set either setting the key `wrapped` in the
-datatype definition, or by setting the optional boolean flag
-`wrapped` of the `decoded_file` iterator.
+datatype definition, or by setting it in the DatatypeDefinition object
+using the `set_wrapped(datatype_definition)` proc.
 
