@@ -3,9 +3,16 @@
 #include <getopt.h>
 #include <string.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "htslib/sam.h"
 #include "htslib/hts_endian.h"
 #include "htslib/kstring.h"
+
+#define HELPMSG \
+"Usage: %s <sam>\n"\
+"\n"\
+"Arguments:\n"\
+"  <sam>        SAM file\n"\
 
 #define XMALLOC(PTR, BUFSZ) \
   PTR = malloc(BUFSZ); \
@@ -29,18 +36,6 @@
     exit(EXIT_FAILURE); \
   }
 
-int init_rg_counts(sam_hdr_t *hdr, size_t **rg_counts, size_t *n_rg) {
-  *n_rg = sam_hdr_count_lines(hdr, "RG");
-  XCALLOC(*rg_counts, *n_rg, sizeof(**rg_counts));
-  return EXIT_SUCCESS;
-}
-
-int init_sq_counts(sam_hdr_t *hdr, size_t **sq_counts, size_t *n_sq) {
-  *n_sq = sam_hdr_count_lines(hdr, "SQ");
-  XCALLOC(*sq_counts, *n_sq, sizeof(**sq_counts));
-  return EXIT_SUCCESS;
-}
-
 typedef struct tag_count_t {
   char tagname0, tagname1;
   size_t count;
@@ -51,43 +46,61 @@ typedef struct flag_count_t {
   size_t count;
 } flag_count_t;
 
-void count_flag(uint16_t flag, flag_count_t **flag_counts, size_t *n_flags) {
-  size_t i;
-  bool flag_found = false;
-  for (i = 0; i < *n_flags; i++) {
-    if ((*flag_counts)[i].flag == flag)
-    {
-      flag_found = true;
-      (*flag_counts)[i].count += 1;
-    }
+typedef struct counts_t {
+  size_t n_tags, n_flags, n_rg, n_sq,
+         alloc_tags, alloc_flags;
+  tag_count_t *tag_counts;
+  flag_count_t *flag_counts;
+  size_t *rg_counts;
+  size_t *sq_counts;
+} counts_t;
+
+#define INIT_COUNTS {0, 0, 0, 0, 0, 0, \
+                     NULL, NULL, NULL, NULL}
+
+#define ALLOC_INC 128
+
+#define NEW_COUNT(N, ALLOC, PTR, V) \
+    N += 1;\
+    if (N > ALLOC) {\
+      ALLOC += ALLOC_INC;\
+      XREALLOC(PTR, sizeof(*(PTR)) * ALLOC);\
+    }\
+    PTR[N-1].count = V;\
+
+#define LSEARCH(N, CMP, COUNTS, FOUND)\
+  bool FOUND = false; \
+  {\
+    size_t i;\
+    for (i = 0; i < (N); i++) { \
+      if (CMP) {\
+        (COUNTS)[i].count += 1;\
+        found = true;\
+        break;\
+      }\
+    }\
   }
-  if (!flag_found)
-  {
-    *n_flags += 1;
-    XREALLOC((*flag_counts), sizeof(**flag_counts) * (*n_flags));
-    (*flag_counts)[(*n_flags)-1].flag = flag;
-    (*flag_counts)[(*n_flags)-1].count = 1;
+
+void count_flag(counts_t *counts, uint16_t flag) {
+  LSEARCH(counts->n_flags,
+          counts->flag_counts[i].flag == flag,
+          counts->flag_counts, found);
+  if (!found) {
+    NEW_COUNT(counts->n_flags, counts->alloc_flags, counts->flag_counts, 1);
+    counts->flag_counts[counts->n_flags-1].flag = flag;
   }
 }
 
-void count_tag(uint8_t *s, tag_count_t **tag_counts, size_t *n_tags) {
-  size_t i;
-  bool tag_found = false;
-  for (i = 0; i < *n_tags; i++) {
-    if ((*tag_counts)[i].tagname0 == *s
-        && (*tag_counts)[i].tagname1 == *(s+1))
-    {
-      tag_found = true;
-      (*tag_counts)[i].count += 1;
-    }
-  }
-  if (!tag_found)
+void count_tag(counts_t *counts, uint8_t *start) {
+  LSEARCH(counts->n_tags,
+    counts->tag_counts[i].tagname0 == *start &&
+      counts->tag_counts[i].tagname1 == *(start+1),
+    counts->tag_counts, found);
+  if (!found)
   {
-    *n_tags += 1;
-    XREALLOC((*tag_counts), sizeof(**tag_counts) * (*n_tags));
-    (*tag_counts)[(*n_tags)-1].tagname0 = *s;
-    (*tag_counts)[(*n_tags)-1].tagname1 = *(s+1);
-    (*tag_counts)[(*n_tags)-1].count = 1;
+    NEW_COUNT(counts->n_tags, counts->alloc_tags, counts->tag_counts, 1);
+    counts->tag_counts[counts->n_tags-1].tagname0 = *start;
+    counts->tag_counts[counts->n_tags-1].tagname1 = *(start+1);
   }
 }
 
@@ -125,45 +138,77 @@ bool skip_tag_content(uint8_t **s, uint8_t *end) {
   return false;
 }
 
-bool process_rg_tag(sam_hdr_t *hdr, uint8_t *s,
-                    uint8_t *end, size_t *rg_counts) {
-  int idx;
-  size_t klen;
-  char *key;
-  uint8_t *kstart = s+3, *kend = kstart;
-  if (*(s+2) != 'Z')
-  {
-    fprintf(stderr, "Error: RG tag code is not 'Z' but '%c'\n", (*(s+2)));
+char* zeroterminated_rg_dup(uint8_t *start, uint8_t *end) {
+  char *rg;
+  size_t rg_len;
+  uint8_t *rg_start = start+3, *rg_end = rg_start;
+  while (rg_end < end && *rg_end)
+    rg_end++;
+  rg_len = rg_end - rg_start;
+  XMALLOC(rg, rg_len + 1);
+  strncpy(rg, (char*)rg_start, rg_len);
+  rg[rg_len] = '\0';
+  return rg;
+}
+
+bool count_rg(sam_hdr_t *hdr, uint8_t *start, uint8_t *end, size_t *rg_counts) {
+  int rg_idx;
+  char *rg = zeroterminated_rg_dup(start, end);
+  if (*(start+2) != 'Z') {
+    fprintf(stderr, "Error: RG tag code is not 'Z' but '%c'\n", (*(start+2)));
     return true;
   }
-  while (kend < end && *kend) kend++;
-  klen = kend-kstart;
-  XMALLOC(key, klen+1);
-  strncpy(key, (char*)kstart, klen);
-  key[klen] = '\0';
-  if ((idx = sam_hdr_line_index(hdr, "RG", key)) < 0)
-  {
-    fprintf(stderr, "Error: RG tag for unknown RG '%s'\n", key);
+  if ((rg_idx = sam_hdr_line_index(hdr, "RG", rg)) < 0) {
+    fprintf(stderr, "Error: Unknown RG found in alignment (%s)\n", rg);
     return true;
   }
-  free(key);
-  rg_counts[idx]++;
+  rg_counts[rg_idx]++;
+  free(rg);
   return false;
 }
 
-bool process_tags(sam_hdr_t *hdr, bam1_t *aln, tag_count_t **tag_counts,
-                  size_t *n_tags, size_t *rg_counts) {
-  uint8_t *s, *end;
-  s = bam_get_aux(aln);
-  end = aln->data + aln->l_data;
-  while (s < end) {
-    count_tag(s, tag_counts, n_tags);
-    if (*s == 'R' && *(s+1) == 'G')
-      if (process_rg_tag(hdr, s, end, rg_counts))
+bool count_tags(counts_t *counts, sam_hdr_t *hdr, bam1_t *aln) {
+  uint8_t *start = bam_get_aux(aln),
+          *end = aln->data + aln->l_data;
+  while (start < end) {
+    count_tag(counts, start);
+    if (*start == 'R' && *(start+1) == 'G')
+      if (count_rg(hdr, start, end, counts->rg_counts))
         return true;
-    if (skip_tag_content(&s, end)) return true;
+    if (skip_tag_content(&start, end))
+      return true;
   }
   return false;
+}
+
+void count_sq(counts_t *counts, size_t seqnum) {
+  assert(seqnum < counts->n_sq);
+  counts->sq_counts[seqnum]++;
+}
+
+bool process_sam_file(htsFile *in, sam_hdr_t *hdr, counts_t *counts) {
+	bam1_t *aln = NULL;
+  bool had_err = false;
+	int sam_read1_ret;
+  counts->n_rg = sam_hdr_count_lines(hdr, "RG");
+  XCALLOC(counts->rg_counts, counts->n_rg, sizeof(*(counts->rg_counts)));
+  counts->n_sq = sam_hdr_count_lines(hdr, "SQ");
+  XCALLOC(counts->sq_counts, counts->n_sq, sizeof(*(counts->sq_counts)));
+  if ((aln = bam_init1()) == NULL) {
+	  fprintf(stderr, "Error: Out of memory allocating BAM struct.\n");
+    had_err = true;
+  }
+  while (!had_err && ((sam_read1_ret = sam_read1(in, hdr, aln)) >= 0)) {
+    count_flag(counts, aln->core.flag);
+    count_sq(counts, aln->core.tid);
+    had_err = count_tags(counts, hdr, aln);
+  }
+  if (!had_err && (sam_read1_ret < -1)) {
+    fprintf(stderr, "Error parsing input file.\n");
+    had_err = true;
+  }
+	bam_destroy1(aln);
+	return had_err;
 }
 
 void print_tag_counts(tag_count_t *tag_counts, size_t n_tags) {
@@ -171,8 +216,8 @@ void print_tag_counts(tag_count_t *tag_counts, size_t n_tags) {
   printf("tag counts:\n");
   for (i = 0; i < n_tags; i++) {
     printf("  %c%c: %lu\n", tag_counts[i].tagname0,
-                           tag_counts[i].tagname1,
-                           tag_counts[i].count);
+                            tag_counts[i].tagname1,
+                            tag_counts[i].count);
   }
 }
 
@@ -193,8 +238,7 @@ void print_rg_counts(sam_hdr_t *hdr, size_t *rg_counts, size_t n_rg) {
     sam_hdr_find_tag_pos(hdr, "RG", i, "SM", &sm);
     printf("  %s (SM:%s): %lu\n",
           sam_hdr_line_name(hdr, "RG", i),
-          ks_str(&sm),
-          rg_counts[i]);
+          ks_str(&sm), rg_counts[i]);
   }
   ks_free(&sm);
 }
@@ -209,76 +253,56 @@ void print_sq_counts(sam_hdr_t *hdr, size_t *sq_counts, size_t n_sq) {
   }
 }
 
-int process_sam_file(htsFile *in, htsFile *out) {
-		sam_hdr_t *hdr = NULL;
-		bam1_t *aln = NULL;
-    bool had_err = false;
-		int sam_read1_ret;
-    size_t n_tags = 0, n_flags = 0,
-           *rg_counts = NULL, n_rg = 0,
-           *sq_counts = NULL, n_sq = 0;
-    tag_count_t *tag_counts = NULL;
-    flag_count_t *flag_counts = NULL;
-		if ((hdr = sam_hdr_read(in)) == NULL) {
-			fprintf(stderr, "Error: couldn't read SAM file header\n");
-      had_err = true;
-		}
-    if (!had_err)
-      init_rg_counts(hdr, &rg_counts, &n_rg);
-    if (!had_err)
-      init_sq_counts(hdr, &sq_counts, &n_sq);
-    if (!had_err && ((aln = bam_init1()) == NULL)) {
-		 fprintf(stderr, "Error: Out of memory allocating BAM struct.\n");
-      had_err = true;
-    }
-    while (!had_err && ((sam_read1_ret = sam_read1(in, hdr, aln)) >= 0)) {
-      sq_counts[aln->core.tid] += 1;
-      count_flag(aln->core.flag, &flag_counts, &n_flags);
-      had_err = process_tags(hdr, aln, &tag_counts, &n_tags, rg_counts);
-    }
-    if (!had_err && (sam_read1_ret < -1)) {
-      fprintf(stderr, "Error parsing input file.\n");
-      had_err = true;
-    }
-    print_sq_counts(hdr, sq_counts, n_sq);
-    free(sq_counts);
-    print_rg_counts(hdr, rg_counts, n_rg);
-    free(rg_counts);
-    print_tag_counts(tag_counts, n_tags);
-    free(tag_counts);
-    print_flag_counts(flag_counts, n_flags);
-    free(flag_counts);
-		bam_destroy1(aln);
-    sam_hdr_destroy(hdr);
-		return had_err ? EXIT_FAILURE : EXIT_SUCCESS;
+void print_counts(counts_t *counts, sam_hdr_t *hdr) {
+  print_sq_counts(hdr, counts->sq_counts, counts->n_sq);
+  print_rg_counts(hdr, counts->rg_counts, counts->n_rg);
+  print_tag_counts(counts->tag_counts, counts->n_tags);
+  print_flag_counts(counts->flag_counts, counts->n_flags);
+}
+
+void free_counts(counts_t *counts) {
+  size_t i;
+  free(counts->sq_counts);
+  free(counts->rg_counts);
+  free(counts->tag_counts);
+  free(counts->flag_counts);
+}
+
+bool parse_args(int argc, char *argv[], htsFile **input_file) {
+	if (argc != 2) {
+    printf(HELPMSG, argv[0]);
+    return true;
+	}
+  (*input_file) = hts_open(argv[1], "r");
+  if (*input_file == NULL) {
+		fprintf(stderr, "Error opening '%s'\n", argv[1]);
+    return true;
+	}
+  return false;
 }
 
 int main(int argc, char **argv) {
-	htsFile *in, *out;
-
-	if (argc < 2) {
-		fprintf(stderr, "Usage: %s <in.sam>\n", argv[0]);
+	htsFile *input_file;
+	sam_hdr_t *hdr = NULL;
+  counts_t counts = INIT_COUNTS;
+  if (parse_args(argc, argv, &input_file))
+    return EXIT_FAILURE;
+  hdr = sam_hdr_read(input_file);
+  if (hdr == NULL) {
+    fprintf(stderr, "Error: couldn't read SAM file header\n");
+		return EXIT_FAILURE;
+  }
+	if (process_sam_file(input_file, hdr, &counts)) {
+		fprintf(stderr, "Error processing file '%s'\n", argv[1]);
 		return EXIT_FAILURE;
 	}
-	if ((in = hts_open(argv[1], "r")) == NULL) {
-		fprintf(stderr, "Error opening '%s'\n", argv[1]);
-		return EXIT_FAILURE;
-	}
-	if ((out = hts_open("-", "w")) == NULL) {
-		fprintf(stderr, "Error opening '%s'\n", argv[2]);
-		return EXIT_FAILURE;
-	}
-	if (process_sam_file(in, out) != 0) {
-		fprintf(stderr, "Error extracting alignment from '%s'\n", argv[1]);
-		return EXIT_FAILURE;
-	}
-	if (hts_close(out) < 0) {
-		fprintf(stderr, "Error closing output.\n");
-		return EXIT_FAILURE;
-	}
-	if (hts_close(in) < 0) {
+	if (hts_close(input_file) < 0) {
 		fprintf(stderr, "Error closing input.\n");
 		return EXIT_FAILURE;
 	}
+  print_counts(&counts, hdr);
+  free_counts(&counts);
+  sam_hdr_destroy(hdr);
+  fflush(stdout);
 	return EXIT_SUCCESS;
 }
