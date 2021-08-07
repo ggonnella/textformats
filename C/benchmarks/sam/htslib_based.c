@@ -223,7 +223,7 @@ void print_tag_counts(tag_count_t *tag_counts, size_t n_tags) {
 
 void print_flag_counts(flag_count_t *flag_counts, size_t n_flags) {
   size_t i;
-  printf("alignment by flag value:\n");
+  printf("alignments by flag value:\n");
   for (i = 0; i < n_flags; i++) {
     printf("  %u: %lu\n", flag_counts[i].flag,
                           flag_counts[i].count);

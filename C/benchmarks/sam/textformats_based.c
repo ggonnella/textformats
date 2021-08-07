@@ -189,7 +189,7 @@ void print_counts(counts_t *counts) {
   PRINT_STR_ATTR_COUNTS(counts->n_rg, counts->rg_counts, "SM");
   printf("tag counts:\n");
   PRINT_STR_COUNTS(counts->n_tags, counts->tag_counts);
-  printf("alignment by flag value:\n");
+  printf("alignments by flag value:\n");
   PRINT_FLAG_COUNTS(counts->n_flags, counts->flag_counts);
 }
 
