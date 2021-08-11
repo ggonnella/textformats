@@ -50,7 +50,7 @@ int main(void)
   if (tf_is_valid_decoded_json(decoded_header_json, fas_header))
     printf("%s is_valid\n", decoded_header_json);
   else assert(false);
-  tf_decode_file("../../bio/data/test.fas", false, fas_entry,
+  tf_decode_file("../../tests/testdata/bio/test.fas", false, fas_entry,
                  decoded_processor, NULL, false);
   tf_delete_definition(fas_entry);
   tf_delete_definition(fas_header);
