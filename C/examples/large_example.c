@@ -18,15 +18,15 @@ int main(void)
   char *decoded_header_json =
     "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}";
   printf("Encoded: %s\n", header);
-  fas_spec = tf_specification_from_file("../../bio/spec/fasta.yaml");
-  if (!tf_is_preprocessed("../../bio/spec/fasta.yaml"))
+  fas_spec = tf_specification_from_file("../../bio/fasta.yaml");
+  if (!tf_is_preprocessed("../../bio/fasta.yaml"))
     printf("Spec fasta.yaml is not preprocessed");
   else assert(false);
-  tf_preprocess_specification("../../bio/spec/fasta.yaml", "fasta.tfs");
+  tf_preprocess_specification("../../bio/fasta.yaml", "fasta.tfs");
   if (tf_is_preprocessed("fasta.tfs"))
     printf("Spec fasta.tfs is preprocessed");
   else assert(false);
-  tf_run_specification_testfile(fas_spec, "../../bio/spec/fasta.yaml");
+  tf_run_specification_testfile(fas_spec, "../../bio/fasta.yaml");
   fas_entry = tf_default_definition(fas_spec);
   fas_header = tf_get_definition(fas_spec, "header");
   printf("%s\n", tf_describe(fas_header));

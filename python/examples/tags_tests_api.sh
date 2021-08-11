@@ -2,7 +2,7 @@
 
 testsdir=$(dirname $0)
 
-datadir=$testsdir/../../bio/spec
+datadir=$testsdir/../../bio
 spec=$datadir/tags.spec.yaml
 tests=$datadir/tests/tags.yaml
 

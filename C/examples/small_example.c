@@ -13,7 +13,7 @@ int main(void)
 
   /* (2) parse specification and get datatype definition  */
   Specification *spec = tf_specification_from_file(
-      "../../bio/benchmarks/cigars/cigar.datatypes.yaml");
+      "../../benchmarks/data/cigars/cigars.yaml");
   DatatypeDefinition *datatype = tf_get_definition(spec, "cigar");
 
   /* (3) decode to a "node", convert to_string() */
