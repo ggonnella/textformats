@@ -1,0 +1,206 @@
+#
+# NCBI Identifiers
+#
+# https://ncbi.github.io/cxx-toolkit/pages/ch_demo#ch_demo.id1_fetch.html_ref_fasta
+#
+namespace: NCBI
+datatypes:
+  fasta_sequence_id:
+    one_of: [lcl, bbs, bbm, gim, gb, emb, pir, sp, pat, pgp, ref,
+             gnl, gi, dbj, prf, pdb, tpg, tpe, tpd, tr, gpp, nat]
+  lcl:
+    composed_of:
+      - type: {constant: {"lcl": "local"}}
+      - accession: ident
+    splitted_by: '|'
+  bbs:
+    composed_of:
+      - type: {constant: {"bbs": "GenInfo backbone seqid"}}
+      - accession: num_ident
+    splitted_by: '|'
+  bbm:
+    composed_of:
+      - type: {constant: {"bbm": "GenInfo backbone moltype"}}
+      - accession: num_ident
+    splitted_by: '|'
+  gim:
+    composed_of:
+      - type: {constant: {"gim": "GenInfo import ID"}}
+      - accession: num_ident
+    splitted_by: '|'
+  gb:
+    composed_of:
+      - type: {constant: {"gb": "GenBank"}}
+      - accession: ident
+      - locus: opt_ident
+    splitted_by: '|'
+    required: 2
+  emb:
+    composed_of:
+      - type: {constant: {"emb": "EMBL"}}
+      - accession: ident
+      - locus: opt_ident
+    splitted_by: '|'
+    required: 2
+  pir:
+    # - either accession or name can be empty, but not both
+    # - if name is empty, the second | is optional
+    one_of:
+      - composed_of:
+         - type: {constant: {'pir': "pir"}}
+         - accession: ident
+         - name: opt_ident
+        splitted_by: '|'
+        required: 2
+      - composed_of:
+         - type: {constant: {'pir': "pir"}}
+         - accession: opt_ident
+         - name: ident
+        splitted_by: '|'
+  sp:
+    composed_of:
+      - type: {constant: {'sp': "SWISS-PROT"}}
+      - accession: ident
+      - name: ident
+    splitted_by: '|'
+    required: 2
+  pat:
+    composed_of:
+      - type: {constant: {'pat': 'patent'}}
+      - country: ident
+      - patent: ident
+      - sequence: num_ident
+    splitted_by: '|'
+  pgp:
+    composed_of:
+      - type: {constant: {'pgp': 'pre-grant patent'}}
+      - country: ident
+      - application_number: num_ident
+      - seq_number: num_ident
+    splitted_by: '|'
+  ref:
+    composed_of:
+      - type: {constant: {'ref': 'RefSeq'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  gnl:
+    composed_of:
+      - type: {constant: {'gnl': 'general database reference'}}
+      - database: ident
+      - accession: ident
+    splitted_by: '|'
+  gi:
+    composed_of:
+      - type: {constant: {'gi': 'GenInfo integrated database'}}
+      - accession: num_ident
+    splitted_by: '|'
+  dbj:
+    composed_of:
+      - type: {constant: {'dbj': 'DDBJ'}}
+      - accession: ident
+      - locus: opt_ident
+    splitted_by: '|'
+    required: 2
+  prf:
+    composed_of:
+      - type: {constant: {'prf': 'PRF'}}
+      - accession: opt_ident
+      - name: ident
+    splitted_by: '|'
+    required: 2
+  pdb:
+    composed_of:
+      - type: {constant: {'pdb': 'PDB'}}
+      - entry: ident
+      - chain: ident
+    splitted_by: '|'
+    required: 2
+  tpg:
+    composed_of:
+      - type: {constant: {'tpg': 'third-party GenBank'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  tpe:
+    composed_of:
+      - type: {constant: {'tpe': 'third-party EMBL'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  tpd:
+    composed_of:
+      - type: {constant: {'tpd': 'third-party DDBJ'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  tr:
+    composed_of:
+      - type: {constant: {'tr': 'TrEMBL'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  gpp:
+    composed_of:
+      - type: {constant: {'gpp': 'genome pipeline'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  nat:
+    composed_of:
+      - type: {constant: {'nat': 'named annotation track'}}
+      - accession: ident
+      - name: opt_ident
+    splitted_by: '|'
+    required: 2
+  ident: {regex: '[A-Za-z0-9_.]+'}
+  num_ident: {regex: '[0-9]+'}
+  opt_ident: {regex: '[A-Za-z0-9_.]+', empty: null}
+examples:
+  lcl: ["lcl|123","lcl|hmm271"]
+  bbs: ['bbs|123']
+  bbm: ['bbm|123']
+  gim: ['gim|123']
+  gb: ['gb|M73307|AGMA13GT']
+  emb: ['emb|CAM43271.1|']
+  pir: ['pir||G36364']
+  sp: ['sp|P01013|OVAX_CHICK']
+  pat: ['pat|US|RE33188|1']
+  pgp: ['pgp|EP|0238993|7']
+  ref: ['ref|NM_010450.1']
+  gnl: ['gnl|taxon|9606', 'gnl|PID|e1632']
+  gi: ['gi|21434723']
+  dbj: ['dbj|BAC85684.1']
+  prf: ['prf||0806162C']
+  pdb: ['pdb|1I4L|D']
+  tpg: ['tpg|BK003456|']
+  tpe: ['tpe|BN000123|']
+  tpd: ['tpd|FAA00017|']
+  tr: ['tr|Q90RT2|Q90RT2_9HIV1']
+  gpp: ['gpp|GPC_123456789|']
+  nat: ['nat|AT_123456789.1|']
+validate_examples: |
+  #
+  # Execute this as follows:
+  #
+  # import yaml
+  # fn = path/to/ncbi_id.yaml
+  # with open(fn) as f:
+  #   exec(yaml.safe_load(f)["validate_examples"])
+  #
+  import textformats
+  with open(fn) as f:
+    examples = yaml.safe_load(f)["examples"]
+  specification = textformats.Specification(fn)
+  for datatype_name, examples_for_datatype in examples.items():
+    datatype = specification[datatype_name]
+    for example in examples_for_datatype:
+      assert(datatype.is_valid_encoded(example))
+  print("[OK] all examples are valid")
+
