@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+inputdir="../../benchmarks/data/cigars/"
+inputfn="10k_cigars_len100"
+input="$inputdir/$inputfn"
+if [ ! -e $input ]; then
+  cd $inputdir
+  make $inputfn
+  cd -
+fi
 for bm in \
   split_and_namecapt_nregex \
   split_and_namecapt_nre    \
@@ -21,8 +29,6 @@ for bm in \
   validate_regex             \
   validate_re                \
   validate_python_re; do
-  cdir="../../benchmarks/data/cigars/"
-  input="$cdir/10k_cigars_len100"
   echo run ${bm} ...
   time ./${bm} -i $input
   echo "-------"
