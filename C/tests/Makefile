@@ -16,7 +16,7 @@ nimcache/jsonwrap.h: ../jsonwrap.nim
 
 test_%: nimcache/%.h test_%.c
 	gcc -o $@ -O3 -Inimcache -I${NIMLIB} \
-		nimcache/*.o $@.c
+		nimcache/*.o $@.c -lm
 
 run_%_test: test_%
 	@./test_${*} 2> test_${*}.err > test_${*}.out

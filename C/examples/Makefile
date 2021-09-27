@@ -10,7 +10,7 @@ nimcache/textformats_c.h: ../textformats_c.nim
 
 %_example: nimcache/textformats_c.h %_example.c
 	gcc -o $@ -O3 -Inimcache -I${NIMLIB} \
-		nimcache/*.o $@.c
+		nimcache/*.o $@.c -lm
 
 run: small_example large_example
 	./large_example
