@@ -1,7 +1,12 @@
 default: compare
 
 PRJDIR=../..
-INPUT=${PRJDIR}/benchmarks/data/cigars/100k_cigars_len100
+INPUTDIR=${PRJDIR}/benchmarks/data/cigars
+INPUTFN=100k_cigars_len100
+INPUT=${INPUTDIR}/${INPUTFN}
+
+${INPUT}:
+	cd ${INPUTDIR} && make ${INPUTFN}
 
 textformats_based: textformats_based.nim
 	nim c $<
