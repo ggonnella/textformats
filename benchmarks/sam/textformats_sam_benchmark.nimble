@@ -9,8 +9,17 @@ requires "hts", "textformats"
 import strformat
 
 const
-  HTSLIBDIR = &"/usr/local/anaconda3/pkgs/htslib-1.13-hc38c3fb_0"
-  DEFLATEDIR = "/usr/local/anaconda3/pkgs/libdeflate-1.7-h35c211d_5"
+  # the following were used on Linux
+  CONDADIRLINUX = "/home/gonnella/tools/miniconda/3"
+  HTSLIBDIRLINUX = &"{CONDADIRLINUX}/pkgs/htslib-1.13-h9093b5e_0"
+  DEFLATEDIRLINUX = &"{CONDADIRLINUX}/pkgs/libdeflate-1.7-h7f98852_5"
+  # the following were used on MacOS
+  CONDADIRMAC = "/usr/local/anaconda3"
+  HTSLIBDIRMAC = &"{CONDADIRMAC}/pkgs/htslib-1.13-hc38c3fb_0"
+  DEFLATEDIRMAC = &"{CONDADIRMAC}/pkgs/libdeflate-1.7-h35c211d_5"
+  # =====> input here the directories <======
+  HTSLIBDIR = HTSLIBDIRLINUX
+  DEFLATEDIR = DEFLATEDIRLINUX
 
 const
   PRJDIR = "../.."

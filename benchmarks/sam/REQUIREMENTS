@@ -1,0 +1,11 @@
+
+The htslib and libdeflate libraries must be installed.
+The software was written using htslib 1.13 and libdeflate 1.7
+
+The nimble file assumes that they are installed using conda,
+but this is not a requirement.
+
+To run the benchmark, install the libraries and input
+the directory of conda or the directories of the packages
+in the nimble file.
+
