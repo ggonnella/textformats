@@ -11,7 +11,7 @@ nimcache/textformats_c.h: ${PRJDIR}/C/textformats_c.nim
 
 textformats_based: nimcache/textformats_c.h textformats_based.c
 	gcc -DNDEBUG -o $@ -O3 -Inimcache -I${NIMLIB} \
-		nimcache/*.o textformats_based.c
+		nimcache/*.o textformats_based.c -lm
 
 ad_hoc: ad_hoc.c
 	gcc -DNDEBUG -o $@ -O3 $<

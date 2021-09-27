@@ -23,15 +23,20 @@ void process_decoded(JsonNode* decoded, void* data) {
             i_stats = OPSTATS_INIT,
             d_stats = OPSTATS_INIT;
   for (i=0; i < j_array_len(decoded); i++) {
-    JsonNode *elem = j_array_get(decoded, i);
-    char opcode = j_string_get(j_object_get(elem, "code"))[0];
-    int len = j_int_get(j_object_get(elem, "length"));
+    JsonNode *elem = j_array_get(decoded, i),
+             *opcode_elem = j_object_get(elem, "code"),
+             *len_elem = j_object_get(elem, "length");
+    char opcode = j_string_get(opcode_elem)[0];
+    int len = j_int_get(len_elem);
     switch (opcode) {
       case 'M': PROCESS_OP(m_stats, len); break;
       case 'I': PROCESS_OP(i_stats, len); break;
       case 'D': PROCESS_OP(d_stats, len); break;
       default: assert(false);
     }
+    delete_jsonnode(elem);
+    delete_jsonnode(opcode_elem);
+    delete_jsonnode(len_elem);
   }
   PRINT_ALL_OPSTATS(m_stats, i_stats, d_stats);
 }
