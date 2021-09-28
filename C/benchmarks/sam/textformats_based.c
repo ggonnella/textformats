@@ -143,20 +143,39 @@ void process_decoded(JsonNode* decoded, void* data) {
   key = j_object_get_key(decoded, 0);
   value = j_object_get(decoded, key);
   if (strcmp(key, "header.@SQ") == 0) {
+    JsonNode *sn_node, *sn_node_0;
     NEW_COUNT(counts->n_sq, counts->alloc_sq, counts->sq_counts, 0);
-    STRNODE_DUPSTR(counts->sq_counts[counts->n_sq-1].str,
-                      j_array_get(j_object_get(value, "SN"), 0));
+    sn_node = j_object_get(value, "SN");
+    sn_node_0 = j_array_get(sn_node, 0);
+    STRNODE_DUPSTR(counts->sq_counts[counts->n_sq-1].str, sn_node_0);
+    delete_jsonnode(sn_node);
+    delete_jsonnode(sn_node_0);
   } else if (strcmp(key, "header.@RG") == 0) {
+    JsonNode *id_node, *id_node_0, *sm_node, *sm_node_0;
     NEW_COUNT(counts->n_rg, counts->alloc_rg, counts->rg_counts, 0);
-    STRNODE_DUPSTR(counts->rg_counts[counts->n_rg-1].str,
-                      j_array_get(j_object_get(value, "ID"), 0));
-    STRNODE_DUPSTR(counts->rg_counts[counts->n_rg-1].attr,
-                      j_array_get(j_object_get(value, "SM"), 0));
+    id_node = j_object_get(value, "ID");
+    id_node_0 = j_array_get(id_node, 0);
+    STRNODE_DUPSTR(counts->rg_counts[counts->n_rg-1].str, id_node_0);
+    delete_jsonnode(id_node);
+    delete_jsonnode(id_node_0);
+    sm_node = j_object_get(value, "SM");
+    sm_node_0 = j_array_get(sm_node, 0);
+    STRNODE_DUPSTR(counts->rg_counts[counts->n_rg-1].attr, sm_node_0);
+    delete_jsonnode(sm_node);
+    delete_jsonnode(sm_node_0);
   } else if (strncmp(key, "alignments", 10) == 0) {
-    count_flag(counts, j_int_get(j_object_get(value, "flag")));
-    count_sq(counts->sq_counts, counts->n_sq, j_object_get(value, "rname"));
-    count_tags(counts, j_object_get(value, "tags"));
+    JsonNode *flag_node, *rname_node, *tags_node;
+    flag_node = j_object_get(value, "flag");
+    count_flag(counts, j_int_get(flag_node));
+    delete_jsonnode(flag_node);
+    rname_node = j_object_get(value, "rname");
+    count_sq(counts->sq_counts, counts->n_sq, rname_node);
+    delete_jsonnode(rname_node);
+    tags_node = j_object_get(value, "tags");
+    count_tags(counts, tags_node);
+    delete_jsonnode(tags_node);
   }
+  delete_jsonnode(value);
 }
 
 #define PRINT_STR_COUNTS(N, STRCOUNTS) { \
