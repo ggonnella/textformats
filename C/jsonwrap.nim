@@ -139,6 +139,10 @@ proc copy_jsonnode*(n: JsonNodeRef): JsonNodeRef {.exportc, raises: [].} =
 
 proc delete_jsonnode*(n: JsonNodeRef) {.exportc, raises: [].} =
   let node = n.value
+  GC_unref(node)
+
+proc deep_delete_jsonnode*(n: JsonNodeRef) {.exportc, raises: [].} =
+  let node = n.value
   case node.kind:
     of json.JObject:
       for k, v in json.pairs(node):
