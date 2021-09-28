@@ -1,8 +1,24 @@
 NIMVERSION=1.4.8
 NIMLIB:=${HOME}/.choosenim/toolchains/nim-${NIMVERSION}/lib
+
 HTSLIBVERSION=1.13
-HTSLIBDIR=/usr/local/anaconda3/pkgs/htslib-${HTSLIBVERSION}-hc38c3fb_0
-DEFLATEDIR=/usr/local/anaconda3/pkgs/libdeflate-1.7-h35c211d_5
+DEFLATEVERSION=1.7
+
+CONDADIR_MAC=/usr/local/anaconda3
+HTSLIBHASH_MAC=hc38c3fb_0
+DEFLATEHASH_MAC=h35c211d_5
+
+CONDADIR_LINUX=/home/gonnella/tools/miniconda/3
+HTSLIBHASH_LINUX=h9093b5e_0
+DEFLATEHASH_LINUX=h7f98852_5
+
+CONDADIR=${CONDADIR_LINUX}
+HTSLIBHASH=${HTSLIBHASH_LINUX}
+DEFLATEHASH=${DEFLATEHASH_LINUX}
+
+# =====> Paths to the HTS and Deflate libraries <=====
+HTSLIBDIR=${CONDADIR}/pkgs/htslib-${HTSLIBVERSION}-${HTSLIBHASH}
+DEFLATEDIR=${CONDADIR}/pkgs/libdeflate-${DEFLATEVERSION}-${DEFLATEHASH}
 
 default: compare
 
@@ -15,11 +31,11 @@ nimcache/textformats_c.h: ${PRJDIR}/C/textformats_c.nim
 
 textformats_based: nimcache/textformats_c.h textformats_based.c
 	gcc -DNDEBUG -o $@ -O3 -Inimcache -I${NIMLIB} \
-		nimcache/*.o textformats_based.c
+		nimcache/*.o textformats_based.c -lm
 
 htslib_based: htslib_based.c
 	gcc -DNDEBUG -o $@ -O3 -I${HTSLIBDIR}/include \
-		-L${HTSLIBDIR}/lib -l hts.${HTSLIBVERSION} htslib_based.c
+		-L${HTSLIBDIR}/lib -lhts htslib_based.c -lm
 
 INPUT=${PRJDIR}/benchmarks/data/sam/100000.lines.sam
 
