@@ -241,6 +241,8 @@ bool parse_args(int argc, char *argv[], DatatypeDefinition **def,
   return false;
 }
 
+#define TF_DECODED_PROCESSOR_LEVEL_LINE 2
+
 int main(int argc, char *argv[]) {
   DatatypeDefinition *def;
   char *input_file;
@@ -249,7 +251,8 @@ int main(int argc, char *argv[]) {
   tf_quit_on_err = true;
   if (parse_args(argc, argv, &def, &input_file))
     return EXIT_FAILURE;
-  tf_decode_file(input_file, false, def, process_decoded, &counts, 2);
+  tf_decode_file(input_file, false, def, process_decoded, &counts,
+                 TF_DECODED_PROCESSOR_LEVEL_LINE);
   print_counts(&counts);
   free_counts(&counts);
   return EXIT_SUCCESS;

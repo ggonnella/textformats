@@ -25,11 +25,14 @@ def process_decoded(decoded, c):
         if tagname == "RG":
           c.count_rg(tag["type"], tag["value"])
 
+DECODED_PROCESSOR_LEVEL_LINE = 2
+
 if __name__ == "__main__":
   arguments = docopt(__doc__, version="1.0.0")
   input_file = arguments["<sam>"]
   spec = Specification(arguments["<spec>"])
   ddef = spec[arguments["<datatype>"]]
   c = Counts()
-  ddef.decode_file(input_file, False, process_decoded, c, 2, False)
+  ddef.decode_file(input_file, False, process_decoded, c,
+      DECODED_PROCESSOR_LEVEL_LINE, False)
   c.print()
