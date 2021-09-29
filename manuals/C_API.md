@@ -1,24 +1,8 @@
 # C API
 
-The subdirectory `C` contains a `textformats_c.nim` file.  which contains simple
-wrappers for the API functions of TextFormats, which allow to pass C strings as
-arguments, and export the functions to C using the {.exportc.} Nim pragma. The
-wrapper is compiled using `nim c` with the flags `--noMain --noLinking
---header:textformats_c.h --nimcache:$NIMCACHE`, where $NIMCACHE is the location
-where the compiled files will be stored.
-
-The API is then included into the C file (`#include "textformats_c.h"`) and
-linked using the following compiler flags before the name of the C file to
-compile: `-I$NIMCACHE -I$NIMLIB $NIMCACHE/*.o` where NIMLIB is the location of
-the NIM library[^1].
-
-In the C code, the Nim library must be initialized calling the function
-NimMain().
-
-[^1] If you use choosenim for managing Nim versions, the location of the
-library will be in the choosenim directory (default: ~/.choosenim) under
-toolchains/nim-$VERSION/lib where $VERSION is the version of Nim you are
-using (e.g. 1.4.8).
+The TextFormats library can be used in a `C/C++` program (including the Nim
+library). A `C` API is provided for this purpose, and is contained in the
+`C` subdirectory, in the `textformats_c.nim` file.
 
 ## Quick tutorial by examples
 
@@ -97,6 +81,30 @@ the `mydatatype` datatype, to an array of int:
      printf("Element %i = %i\n", i, elems[i]);
   free(elems);
 ```
+
+## Compiling a program based on the C API
+
+The Makefile provided in the `C/examples`, `C/tests` and `C/benchmarks`
+directories contain examples on how to compile a C program based on TextFormats.
+Note that the NIMLIB variable (path to the NIM library directory) must be set
+by the user[^1].
+
+The TextFormats wrapper for C is written in Nim and compiled using `nim c` with
+the flags `--noMain --noLinking --header:textformats_c.h --nimcache:$NIMCACHE`,
+where $NIMCACHE is the location where the compiled files will be stored.
+
+The API is then included into the C file (`#include "textformats_c.h"`) and
+linked using the following compiler flags before the name of the C file to
+compile: `-I$NIMCACHE -I$NIMLIB $NIMCACHE/*.o` where NIMLIB is the location of
+the NIM library[^1].
+
+In the C code, the Nim library must be initialized calling the function
+NimMain().
+
+[^1] If you use choosenim for managing Nim versions, the location of the
+library will be in the choosenim directory (default: ~/.choosenim) under
+toolchains/nim-$VERSION/lib where $VERSION is the version of Nim you are
+using (e.g. 1.4.8).
 
 ## Error state
 
