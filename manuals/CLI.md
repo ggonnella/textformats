@@ -1,30 +1,52 @@
 # Command line interface
 
-The subdirectory `cli` contains the command line tools: `tf_decode`,
-`tf_encode`, `tf_validate` and `tf_spec`.
-They are build using the command `nimble build`.
+TextFormats can be accessed using a set of command line tools. These are build
+using the command `nimble build` from the main directory of the TextFormats
+source code and are then contained in the `cli` subdirectory.
 
-The list of subcommands of each tool is output by `<toolname> --help`.
+## Tools
+
+There are four command line tools:
+- `tf_spec`: handling of TextFormats specification files
+- `tf_decode`: extracting data from a file or a string in a given format
+described by a TextFormats specification into JSON
+- `tf_encode`: convert a string containing JSON data to a given format
+described by a TextFormats specification
+- `tf_validate`: check if a given string representation, or decoded data
+(passed as JSON) is compatible to a format described by a TextFormats
+specification.
+
+## Help
+
+Each tool has subcommand: their list is output by `<toolname> --help`.
 The mandatory and optional arguments of each subcommand are output by
 `<toolname> <SUBCOMMAND> --help`.
 
-Furthermore, manual pages for the Posix tool `man` are available under
-`cli/man`. They are generated using `nimble climan`.
+## Man pages
 
-The tools can be used to encode, decode and validate strings or data files
-from the command line, as well as tests and a number of additional
-operations on specification files, as illustrated below.
+Besides this documentation, manual pages (for the Posix tool `man`) are also
+available. They are generated using the command `nimble climan` from the main
+directory of the TextFormats source code and are then contained in the
+`cli/man` subdirectory.
+
+## CLI Tests
+
+A test suite for the CLI tools is available in the directory `tests/cli`
+and is executed using the command `nimble clitest` from the main directory
+of the TextFormats source code. Its source code (`test_cli.sh`)
+shows example usages of most encoding, decoding and validation
+operations possible with the command line interface.
 
 ## Specifications
 
-The specification filename is selected in the tools using the `--specfile`
-or `-s` option.
+For most applications, a TextFormats specification is necessary. This can
+be selected in the tools interface using the `--specfile`/`-s` option.
+The specification can be JSON/YAML or preprocessed.
+For `tf_spec` only, the specification can be passed as standard input
+(but only if not preprocessed).
 
 The tool `tf_spec` is used for performing operations
-on specification files. For this tool, the specification can be
-passed as standard input, instead of specifying a filename
-using `--specfile`. However, preprocessed
-specifications (see below) cannot be provided from the standard input.
+on specification files.
 
 ### List of datatype names
 
