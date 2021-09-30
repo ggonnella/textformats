@@ -39,7 +39,7 @@ A `DatatypeDefinition` contains the definition, including references
 to other nested definitions, the regular expression needed for
 parsing, rules for validation and data conversion/transformation.
 
-Exceptions are defined in `src/textformats/types/textformats_error`
+Exceptions are defined in `src/textformats/types/textformats_error.nim`
 and are descandants of `TextFormatsError`.
 
 ## Working with the specification
@@ -152,7 +152,7 @@ decode_file(filename: string, dd: DatatypeDefinition,
             skip_embedded_spec = false,
             decoded_processor: proc (node: JsonNode, data: pointer),
             decoded_processor_data: pointer,
-            decoded_processor_level: DecodedProcessorLevel): JsonNode
+            decoded_processor_level: DecodedProcessorLevel)
 ```
 
 The proc version, in comparison with the iterator, allows in some cases for
