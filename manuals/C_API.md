@@ -184,7 +184,7 @@ jsonnode_delete(list_of_value);
 jsonnode_delete(splitted_by_value);
 ```
 
-The function `void delete_specification(Specification *spec)` is used after
+The function `void tf_delete_specification(Specification *spec)` is used after
 the last access to the specification, to inform the Nim garbage collector
 that no reference to it is needed anymore.
 
@@ -207,7 +207,7 @@ while (dname != NULL) {
 
 ### Preprocessing
 
-It is possible to preprocess a YAML specification using the function
+It is possible to preprocess a YAML/JSON specification using the function
 `void tf_preprocess_specification(char *inputfile, char *outputfile)`.
 To check if a specification is preprocessed, the function
 `bool tf_is_preprocessed(char *filename)`
@@ -243,7 +243,7 @@ using `char* tf_describe(DatatypeDefinition* dd)`.
 ## Decoding the string representation of data
 
 The functions `JsonNode* tf_decode(char *encoded, DatatypeDefinition* dd)`
-and `char* decode_to_json(char *encoded, DatatypeDefinition* dd)` are used to
+and `char* tf_decode_to_json(char *encoded, DatatypeDefinition* dd)` are used to
 decode a string which follows the given datatype definition to, respectively,
 a `JsonNode` (from which the binary data can be obtained, using the
 provided wrapper to the Nim `json` library, see below) or a string,
@@ -252,7 +252,7 @@ representing the data as JSON.
 ### Encoding data to their string representation
 
 The functions `char* tf_encode(JsonNode *node, DatatypeDefinition *dd)`
-and `char* encode_json(char *json, DatatypeDefinition *dd)` are used
+and `char* tf_encode_json(char *json, DatatypeDefinition *dd)` are used
 to encode data using the given datatype definition, from, respectively, a
 `JsonNode` (created using the provided wrapper to the Nim `json`
 library, see below) or a string,
