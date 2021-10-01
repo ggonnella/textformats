@@ -127,11 +127,14 @@ in C/C++ and in Python.
 Under the directory `manuals` are the following documents, in Markdown
 format:
 
-`specification_syntax.md`
+`specifications.md`
 : Describes the syntax of TextFormats specifications, which
 are used to describe to the library all components of a format.
 It contains a systematic list of the specification syntax, as
 well as many examples.
+`spec_howto_by_valuekind.md`
+: Howto document, which explains how to define text representations
+for different kind of values: strings, numeric, boolean, list, dictionaries, etc
 `specification_tests.md`
 : Specification test data are examples used to be sure that the format
 specification reflects the expectations. This document describes
@@ -145,7 +148,6 @@ in the Python programming language.
 `C_API.md`
 : Describes the API of the wrapper to the library, for using it in the C and
 C++ programming languages.
-`specification_tests.md`
 `CLI.md`
 : Describes the command line interface of TextFormats: a collection of tools,
 for decoding, encoding, validating data, inspecting and testing specifications
@@ -154,6 +156,12 @@ and more.
 : Code organization and conventions, used in the implementation of the
 TextFormats library. This is addressed to the library software developer,
 not to the library user.
+
+### Cheatsheets
+
+Under the directory `cheatsheets` are cheatsheets, im Markdown format,
+containing tables, summarizing the specification syntax and test syntax,
+and the usage of the Nim, Python and C API as well as the CLI tools.
 
 ## Validating a specification
 
