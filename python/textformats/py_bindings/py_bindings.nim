@@ -8,7 +8,7 @@
 ## are converted to/from PyObject.
 ##
 import nimpy, os
-from json import JsonNode, `$`, parse_json
+from json import JsonNode, `$`, parse_json, pretty
 from textformats import Specification, DatatypeDefinition
 from textformats import nil
 
@@ -63,7 +63,7 @@ proc decode*(input: string, dd: DatatypeDefinition): JsonNode {.exportpy.} =
 
 proc decode_to_json*(input: string, dd: DatatypeDefinition):
                     string {.exportpy.} =
-  $textformats.decode(input, dd)
+  pretty(textformats.decode(input, dd))
 
 proc encode*(obj: PyObject, dd: DatatypeDefinition): string {.exportpy.} =
   textformats.encode(obj.to_json, dd)
