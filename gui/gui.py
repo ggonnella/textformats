@@ -3,13 +3,42 @@
 # TextFormats GUI
 #
 from tkinter import *
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 import os.path
 from textformats import Specification
 import tempfile
+import traceback
+
+def show_error_popup(title, message):
+    popup = Tk()
+
+    def leavemini():
+        popup.destroy()
+
+    popup.wm_title(title)
+    popup.wm_attributes('-topmost', True)
+
+    label = Text(popup, width=60, height=35, wrap="none")
+    label.insert(END, message)
+    label.config(state="disabled")
+    label.config(spacing1=5)
+    ys = ttk.Scrollbar(popup, orient = 'vertical', command = label.yview)
+    xs = ttk.Scrollbar(popup, orient = 'horizontal', command = label.xview)
+    label['yscrollcommand'] = ys.set
+    label['xscrollcommand'] = xs.set
+    label.grid(column = 0, row = 0, sticky = 'nwes')
+    xs.grid(column = 0, row = 1, sticky = 'we', pady=10)
+    ys.grid(column = 1, row = 0, sticky = 'ns')
+    close_button = Button(popup, text="Close", command=leavemini)
+    close_button.grid(column=0, row=2)
+
+def show_error(self, exc, val, tb):
+    show_error_popup(f'Exception ({exc.__name__})', str(val))
+
+Tk.report_callback_exception = show_error
 
 root = Tk()
-root.title("TextFormats decoder")
+root.title("TextFormats GUI")
 lf1 = ttk.Labelframe(root, padding="3 3 12 12", text="Encoded")
 lf1.grid(column=0, row=0, sticky=(N, W, E, S))
 lf2 = ttk.Labelframe(root, padding="3 3 12 12", text="Specification")
@@ -75,28 +104,31 @@ def save_spec():
     output_file.write(text)
   lf2.config(text=f"Specification = {os.path.basename(filepath)}")
 
-
 def run_decode():
-  specfile = tempfile.NamedTemporaryFile()
   spectext = t2.get(1.0, END)
+  if not spectext.strip():
+    return
+  specfile = tempfile.NamedTemporaryFile()
   specfile.write(spectext.encode("UTF8"))
   specfile.flush()
   spec = Specification(specfile.name)
   specfile.close()
-  ddef = spec["default"]
+  ddef = spec[dtvar.get()]
   encoded = t1.get(1.0, END).rstrip()
   decoded = ddef.decode(encoded, True)
   t3.delete(1.0, END)
   t3.insert(END, decoded)
 
 def run_encode():
-  specfile = tempfile.NamedTemporaryFile()
   spectext = t2.get(1.0, END)
+  if not spectext.strip():
+    return
+  specfile = tempfile.NamedTemporaryFile()
   specfile.write(spectext.encode("UTF8"))
   specfile.flush()
   spec = Specification(specfile.name)
   specfile.close()
-  ddef = spec["default"]
+  ddef = spec[dtvar.get()]
   decoded = t3.get(1.0, END).rstrip()
   encoded = ddef.encode(decoded, True)
   t1.delete(1.0, END)
@@ -113,7 +145,7 @@ ys1 = ttk.Scrollbar(lf1, orient = 'vertical', command = t1.yview)
 xs1 = ttk.Scrollbar(lf1, orient = 'horizontal', command = t1.xview)
 t1['yscrollcommand'] = ys1.set
 t1['xscrollcommand'] = xs1.set
-t1.insert('end', "111lorem ipsum...\n...\n...")
+t1.insert('end', "")
 t1.grid(column = 0, row = 1, sticky = 'nwes')
 xs1.grid(column = 0, row = 2, sticky = 'we')
 ys1.grid(column = 1, row = 1, sticky = 'ns')
@@ -129,14 +161,24 @@ ys2 = ttk.Scrollbar(lf2, orient = 'vertical', command = t2.yview)
 xs2 = ttk.Scrollbar(lf2, orient = 'horizontal', command = t2.xview)
 t2['yscrollcommand'] = ys2.set
 t2['xscrollcommand'] = xs2.set
-t2.insert('end', "222lorem ipsum...\n...\n...")
+t2.insert('end', "")
 t2.grid(column = 0, row = 1, sticky = 'nwes')
 xs2.grid(column = 0, row = 2, sticky = 'we', pady=10)
 ys2.grid(column = 1, row = 1, sticky = 'ns')
-b_d = ttk.Button(lf2, text="---.Decode.-->", command=run_decode)
-b_e = ttk.Button(lf2, text="<--.Encode.---", command=run_encode)
-b_d.grid(column=0, row=3, pady=10)
-b_e.grid(column=0, row=4)
+bde2 = ttk.Frame(lf2)
+bde2.grid(column=0, row=3, pady=10)
+b_d = ttk.Button(bde2, text="---.Decode.-->", command=run_decode)
+b_e = ttk.Button(bde2, text="<--.Encode.---", command=run_encode)
+b_e.grid(column=0, row=0)
+b_d.grid(column=1, row=0, padx=10)
+dtframe = ttk.Frame(lf2)
+dtframe.grid(column=0, row=4, pady=10)
+dtvar = StringVar()
+dtvar.set("default")
+dtlabel=ttk.Label(dtframe, text="Datatype:")
+dtlabel.grid(column=0, row=0, padx=10)
+dt=ttk.Entry(dtframe, textvariable=dtvar)
+dt.grid(column=1, row=0)
 
 bls3 = ttk.Frame(lf3)
 bls3.grid(column=0, row=0, pady=10)
@@ -149,7 +191,7 @@ ys3 = ttk.Scrollbar(lf3, orient = 'vertical', command = t3.yview)
 xs3 = ttk.Scrollbar(lf3, orient = 'horizontal', command = t3.xview)
 t3['yscrollcommand'] = ys3.set
 t3['xscrollcommand'] = xs3.set
-t3.insert('end', "333lorem ipsum...\n...\n...")
+t3.insert('end', "")
 t3.grid(column = 0, row = 1, sticky = 'nwes')
 xs3.grid(column = 0, row = 2, sticky = 'we')
 ys3.grid(column = 1, row = 1, sticky = 'ns')
