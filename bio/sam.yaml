@@ -4,8 +4,7 @@ datatypes:
   flag: {unsigned_integer: {max: 65535}}
   mapq: {unsigned_integer: {max: 255}}
   placeholder: {constant: {"*": null}}
-  cigar_op: {composed_of: [length: unsigned_integer,
-                           code: {regex: "[MDIPNX=]"}]}
+  cigar_op: {composed_of: [length: unsigned_integer, code: {regex: "[MDIPNX=]"}]}
   cigar: {list_of: cigar_op, minlength: 1}
   sequence: {regex: "[A-Za-z=.]+"}
   qual: {regex: "[!-~]+"}
@@ -23,18 +22,10 @@ datatypes:
             - rname
       - pnext: unsigned_integer
       - tlen: integer
-      - sequence:
-          one_of:
-            - placeholder
-            - sequence
-      - qual:
-          one_of:
-            - placeholder
-            - qual
+      - sequence: {one_of: [placeholder, sequence]}
+      - qual: {one_of: [placeholder, qual]}
       - tags:
-          tagged_values:
-            i: string
-            Z: string
+          tagged_values: {i: string, Z: string}
           tagname: "[A-Z][A-Z]"
           splitted_by: "\t"
           internal_separator: ":"
@@ -45,29 +36,12 @@ datatypes:
       "@HD":
         named_values:
           VN: string
-          #  regex: "\\d+\\.\\d+"
-          SO:
-            values:
-              - unknown
-              - unsorted
-              - queryname
-              - coordinate
-          GO:
-            values:
-              - none
-              - query
-              - reference
+          SO: {values: [unknown, unsorted, queryname, coordinate]}
+          GO: {values: [none, query, reference]}
           SS:
             composed_of:
-              - sort_order:
-                  values:
-                    - coordinate
-                    - queryname
-                    - unsorted
-              - sub_sort:
-                  list_of:
-                    regex: "[A-Za-z0-9_-]+"
-                  splitted_by: ":"
+              - sort_order: {values: [coordinate, queryname, unsorted]}
+              - sub_sort: {list_of: {regex: "[A-Za-z0-9_-]+"}, splitted_by: ":"}
             splitted_by: ":"
         splitted_by: "\t"
         internal_separator: ":"
@@ -136,13 +110,8 @@ datatypes:
         internal_separator: ":"
         required: [ID]
       "@PG":
-        named_values:
-          ID: strvalue
-          PN: strvalue
-          CL: strvalue
-          PP: strvalue
-          DS: strvalue
-          VN: strvalue
+        named_values: {ID: strvalue, PN: strvalue, CL: strvalue,
+                       PP: strvalue, DS: strvalue, VN: strvalue}
         splitted_by: "\t"
         internal_separator: ":"
       "@CO": string
