@@ -191,12 +191,12 @@ Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
 `list_of` or `named_values`), which consist of multiple elements (each in one
 or multiple lines).
 
-The default is to work with the entire file or section at once (`whole` level).
+The default is to work with the entire file or section at once (`DplWhole` level).
 However, in some cases, when a file is large, it is more appropriate to keep
 only single elements of the data into memory at once. In particular, these can
-be the single elements of the compound datatype (`element` level) or, in cases
+be the single elements of the compound datatype (`DplElement` level) or, in cases
 these are themselves compound values consisting of multiple lines, down to the
-decoded value of single lines (`line` level). Note that working at line level
+decoded value of single lines (`DplLine` level). Note that working at line level
 is not equivalent to having a definition with `line` scope, since the
 definition of the structure of the file or file section is still used here for
 the decoding and validation.
