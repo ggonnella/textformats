@@ -34,10 +34,11 @@ Datatype: 'x': constant value
 DATA_TYPE =             "header"
 NONEXISTING_DATA_TYPE = "heder"
 
-DATA_E =     ">ABCD some sequence"
-BAD_DATA_E =  "ABCD some sequence"
-DATA_D =      "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}"
-BAD_DATA_D =  "{\"desc\":\"some sequence\"}"
+DATA_E =        ">ABCD some sequence"
+BAD_DATA_E =    "ABCD some sequence"
+DATA_D =        "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}"
+DATA_D_PRETTY = "{\n  \"fastaid\": \"ABCD\",\n  \"desc\": \"some sequence\"\n}"
+BAD_DATA_D =    "{\"desc\":\"some sequence\"}"
 
 DATAFILE =                 "test.fas"
 DATA_TYPE_SCOPE_LINE =     "line"
@@ -113,7 +114,7 @@ def test_handling_encoded_strings(testdata):
   assert d.decode(DATA_E) == json.loads(DATA_D)
   with pytest.raises(tf.DecodingError):
     d.decode(BAD_DATA_E, to_json=True)
-  assert d.decode(DATA_E, to_json=True) == DATA_D
+  assert d.decode(DATA_E, to_json=True) == DATA_D_PRETTY
   assert not d.is_valid_encoded(BAD_DATA_E)
   assert d.is_valid_encoded(DATA_E)
 
