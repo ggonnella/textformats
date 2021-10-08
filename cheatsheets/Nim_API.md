@@ -15,8 +15,8 @@ Parse/load specification    | `specification_from_file(filename)`
 Parse specification string  | `parse_specification(string)`
 List datatype names         | `datatype_names(spec): seq[string]`
                             |
-Preprocess specification    | `preprocess_specification(infn, outfn)`
-Check if preprocessed       | `is_preprocessed(filename)`
+Compile specification       | `compile_specification(infn, outfn)`
+Check if compiled           | `is_compiled(filename)`
 Run tests in file           | `run_specification_testfile(spec, testfn)`
 Run tests in string         | `run_specification_tests(spec, string)`
 

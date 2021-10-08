@@ -20,8 +20,8 @@ List datatype names         | `dnames = tf_datatype_names(spec);`
                             | `dname = strtok(dnames, " ");`
                             | `while (dname != NULL) {`
                             | `...; dname = strtok(NULL, " ")}`
-Preprocess specification    | `tf_preprocess_specification(infn, outfn)`
-Check if preprocessed       | `tf_is_preprocessed(filename)`
+Compile specification       | `tf_compile_specification(infn, outfn)`
+Check if compiled           | `tf_is_compiled(filename)`
 Run tests in file           | `tf_run_specification_testfile(spec, testfn)`
 Run tests in string         | `tf_run_specification_tests(spec, string)`
 

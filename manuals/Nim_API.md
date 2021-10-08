@@ -45,7 +45,7 @@ and are descandants of `TextFormatsError`.
 ## Working with the specification
 
 The proc `specification_from_file(filename: string): Specification`
-is used to obtain a specification from a YAML, JSON or preprocessed
+is used to obtain a specification from a YAML, JSON or compiled
 specification file.
 
 The proc `parse_specification(specdata: string): Specification`
@@ -65,17 +65,17 @@ let
 The proc `datatype_names(spec: Specification): seq[string]` returns the list
 of names of datatypes defined in the specification `spec`.
 
-### Preprocessing
+### Compilation
 
-Specifications can be preprocessed using the proc
-`preprocess_specification(yamlfilename: string, outputfilename: string)`.
-Preprocessed specifications are marshalled specification objects,
-after parsing from the YAML file. Preprocessed files are automatically
-recognized by the `specification_from_file` proc.
-A limitation of preprocessed specification is that they cannot contain
-test data or be embedded in data files.
-The suggested file extension for preprocessed specifications
-is `tfs` (*T*ext*F*ormats *S*pecification).
+Specifications can be compiled using the proc
+`compile_specification(yamlfilename: string, outputfilename: string)`.
+Compiled specifications are marshalled specification objects, after parsing
+from the YAML/JSON file, validating, solving references, constructing and
+compiling the regular expressions. Compiled files are automatically recognized
+by the `specification_from_file` proc.  A limitation of compiled specification
+is that they cannot contain test data or be embedded in data files.  The
+suggested file extension for compiled specifications is `tfs`
+(*T*ext*F*ormats *S*pecification).
 
 ### Running tests
 

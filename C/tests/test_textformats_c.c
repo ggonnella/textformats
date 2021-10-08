@@ -8,7 +8,7 @@
 #define TESTDATA         "../../tests/testdata/api/"
 
 #define YAML_SPEC        TESTDATA "fasta.yaml"
-#define PREPROC_SPEC     TESTDATA "fasta.tfs"
+#define COMPILED_SPEC    TESTDATA "fasta.tfs"
 #define BAD_YAML_SPEC    TESTDATA "wrong_yaml_syntax.yaml"
 #define NONEXISTING_SPEC TESTDATA "xyz.yaml"
 #define TESTFILE         TESTDATA "good_test.yaml"
@@ -142,9 +142,9 @@ Specification* test_specification_api() {
   result = tf_parse_specification(YAML_SPEC_STR);
   EXPECT_NO_ERROR;
   assert(result != NULL);
-  /* preprocess_specification */
-  NEXT_TEST("preprocessing specfile");
-  tf_preprocess_specification(YAML_SPEC, PREPROC_SPEC);
+  /* compile_specification */
+  NEXT_TEST("compiling specfile");
+  tf_compile_specification(YAML_SPEC, COMPILED_SPEC);
   EXPECT_NO_ERROR;
   /* specification_from_file */
   NEXT_TEST("loading specfile with syntax errors");
@@ -153,8 +153,8 @@ Specification* test_specification_api() {
   NEXT_TEST("loading non-existing specfile");
   result = tf_specification_from_file(NONEXISTING_SPEC);
   EXPECT_FAILURE;
-  NEXT_TEST("loading valid preproc specification");
-  result = tf_specification_from_file(PREPROC_SPEC);
+  NEXT_TEST("loading valid compiled specification");
+  result = tf_specification_from_file(COMPILED_SPEC);
   EXPECT_NO_ERROR;
   assert(result != NULL);
   tf_delete_specification(result);
@@ -162,15 +162,15 @@ Specification* test_specification_api() {
   result = tf_specification_from_file(YAML_SPEC);
   EXPECT_NO_ERROR;
   assert(result != NULL);
-  /* is_preprocessed */
-  NEXT_TEST("is_preprocessed on non-existing file");
-  tf_is_preprocessed(NONEXISTING_SPEC);
+  /* is_compiled */
+  NEXT_TEST("is_compiled on non-existing file");
+  tf_is_compiled(NONEXISTING_SPEC);
   EXPECT_FAILURE;
-  NEXT_TEST("is_preprocessed on YAML file");
-  EXPECT_FALSE(tf_is_preprocessed(YAML_SPEC));
+  NEXT_TEST("is_compiled on YAML file");
+  EXPECT_FALSE(tf_is_compiled(YAML_SPEC));
   EXPECT_NO_ERROR;
-  NEXT_TEST("is_preprocessed on preproc file");
-  EXPECT_TRUE(tf_is_preprocessed(PREPROC_SPEC));
+  NEXT_TEST("is_compiled on compiled file");
+  EXPECT_TRUE(tf_is_compiled(COMPILED_SPEC));
   EXPECT_NO_ERROR;
   /* run_specification_testfile */
   NEXT_TEST("run failing specification testfile");
@@ -179,12 +179,12 @@ Specification* test_specification_api() {
   NEXT_TEST("run specification testfile");
   tf_run_specification_testfile(result, TESTFILE);
   EXPECT_NO_ERROR;
-  NEXT_TEST("run failing specification testfile on preproc spec");
-  result = tf_specification_from_file(PREPROC_SPEC);
+  NEXT_TEST("run failing specification testfile on compiled spec");
+  result = tf_specification_from_file(COMPILED_SPEC);
   EXPECT_NO_ERROR;
   tf_run_specification_testfile(result, BAD_TESTFILE);
   EXPECT_FAILURE;
-  NEXT_TEST("run specification testfile on preproc spec");
+  NEXT_TEST("run specification testfile on compiled spec");
   tf_run_specification_testfile(result, TESTFILE);
   EXPECT_NO_ERROR;
   tf_delete_specification(result);

@@ -3,7 +3,7 @@ import textformats as tf
 import json
 
 YAML_SPEC =        "fasta.yaml"
-PREPROC_SPEC =     "fasta.tfs"
+COMPILED_SPEC =    "fasta.tfs"
 BAD_YAML_SPEC =    "wrong_yaml_syntax.yaml"
 NONEXISTING_SPEC = "xyz.yaml"
 TESTFILE =         "good_test.yaml"
@@ -66,13 +66,13 @@ def test_specification_construction_api(testdata):
   with assert_nothing_raised():
     tf.Specification(testdata(YAML_SPEC));
 
-def test_specification_preprocessing_api(testdata):
+def test_specification_compilation_api(testdata):
   with assert_nothing_raised():
-    tf.Specification.preprocess(testdata(YAML_SPEC), testdata(PREPROC_SPEC))
+    tf.Specification.compile(testdata(YAML_SPEC), testdata(COMPILED_SPEC))
 
 def test_specification_tests_api(testdata):
   for s in [tf.Specification(testdata(YAML_SPEC)),
-            tf.Specification(testdata(PREPROC_SPEC))]:
+            tf.Specification(testdata(COMPILED_SPEC))]:
     with pytest.raises(tf.UnexpectedEncodedInvalidError):
       s.test(testdata(BAD_TESTFILE))
     with assert_nothing_raised():
@@ -85,13 +85,13 @@ def test_specification_tests_api(testdata):
 
 def test_specification_properties(testdata):
   s = tf.Specification(testdata(YAML_SPEC))
-  assert(not s.is_preprocessed)
+  assert(not s.is_compiled)
   assert set(s.datatype_names) == EXP_DATATYPES
   assert s.filename == testdata(YAML_SPEC)
-  sp = tf.Specification(testdata(PREPROC_SPEC))
-  assert(sp.is_preprocessed)
+  sp = tf.Specification(testdata(COMPILED_SPEC))
+  assert(sp.is_compiled)
   assert set(sp.datatype_names) == EXP_DATATYPES
-  assert sp.filename == testdata(PREPROC_SPEC)
+  assert sp.filename == testdata(COMPILED_SPEC)
 
 def test_datatype_definition_api(testdata):
   s = tf.Specification(testdata(YAML_SPEC))

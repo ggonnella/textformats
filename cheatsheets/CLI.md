@@ -27,7 +27,7 @@ repository
 | -------------------------- | ------------------------------- |
 `<TOOL> --help`              | list subcommands
 `<TOOL> <SUBCOMMAND> --help` | list arguments/options of subcommand
-`--specfile`/`-s`            | specification file (YAML/JSON or preprocessed)
+`--specfile`/`-s`            | specification file (YAML/JSON or compiled)
 `--datatype`/`-t`            | datatype to use (default: `default`)
 
 # Encoding, decoding and validating data
@@ -58,7 +58,7 @@ Decode file in text format  | `tf_decode file -i <INFILE> -s <SPECFILE> -t <DATA
 `tf_encode json`   | JSON data to encode to text format
 `tf_validate decoded` | JSON data to validate
 `tf_validate encoded` | data in text format to validate
-`tf_spec` | specification (not preprocessed)
+`tf_spec` | specification (not compiled)
 
 # Operations on specifications
 
@@ -68,8 +68,8 @@ List datatypes                     | `tf_spec info`
 Info on a datatype (verbose)       | `tf_spec info -t <DT>`
 Info on a datatype (tabular)       | `tf_spec info -t <DT> -k tabular`
 Show datatype definition           | `tf_spec info -t <DT> -k repr`
-Preprocess (to std output)         | `tf_spec preprocess`
-Preprocess (to file)               | `tf_spec preprocess --outfile <FN.tfs>`
+Compile (to std output)            | `tf_spec compile`
+Compile (to file)                  | `tf_spec compile --outfile <FN.tfs>`
 Run specification tests (embedded) | `tf_spec test`
 Run specification testfile         | `tf_spec test -t <TESTFILE>`
 Generate examples / testdata (1)       | `tf_spec generate_tests`
@@ -78,6 +78,6 @@ Generate examples / testdata (1)       | `tf_spec generate_tests`
 " only datatype not yet in testfile | `tf_spec generate_tests -f <TESTFILE>`
 
 (1) Python library `exrex` must be installed, binary `exrex` must be in PATH
-(2) default behaviour for preprocessed specifications and specifications
+(2) default behaviour for compiled specifications and specifications
     passed as standard input
 

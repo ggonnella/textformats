@@ -2,7 +2,7 @@
 ## Tools for working with specification files
 ##
 ## They allow listing datatypes, showing information about a datatype,
-## preprocessing a specification, generating testdata and
+## compiling a specification, generating testdata and
 ## running the test suite.
 ##
 
@@ -12,13 +12,13 @@ import ../testdata_generator, ../spec_parser,
 import ../../textformats
 import cli_helpers
 
-proc preprocess*(specfile = "", outfile = ""): int =
-  ## preprocess a specification file
+proc compile*(specfile = "", outfile = ""): int =
+  ## compile a specification file
   if isatty(stdin) and specfile == "":
     exit_with(ec_err_setting,
               "You must provide an input specification file as a " &
               "filename or standard input")
-  preprocess_specification(specfile, outfile)
+  compile_specification(specfile, outfile)
   exit_with(ec_success)
 
 proc info*(specfile = "", datatype = "", kind = "verbose"): int =
@@ -52,8 +52,8 @@ proc test*(specfile = "", testfile = ""): int =
   exit_with(ec_success)
 
 # by default datatypes of included specifications are not considered;
-# if spec is preprocessed (or always if included is true), datatypes of
-# included specifications are also considered, since in preprocessed
+# if spec is compiled (or always if included is true), datatypes of
+# included specifications are also considered, since in compiled
 # specifications there is no information if a datatype is defined in the
 # specification itself or in an included file
 #
@@ -66,7 +66,7 @@ proc generate_tests*(specfile = "", testfile = "", datatypes = "",
   let
     specification = get_specification(specfile)
     use_included = block:
-      included or (specfile == "") or is_preprocessed(specfile)
+      included or (specfile == "") or is_compiled(specfile)
   var to_generate = initHashSet[string]()
   if len(datatypes) > 0:
     for datatype in datatypes.split(','):
@@ -106,7 +106,7 @@ when isMainModule:
                   help = {"specfile": help_specfile_yaml,
                           "testfile": help_opt_testfile,
                           "datatypes": help_datatypes}],
-                 [preprocess,
+                 [compile,
                   short = {"specfile": short_specfile,
                            "outfile": short_outfile},
                   help = {"specfile": help_specfile_yaml,

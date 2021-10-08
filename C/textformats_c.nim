@@ -41,20 +41,20 @@ proc tf_delete_specification*(datatypes: SpecificationRef)
   assert_no_failure:
     GC_unref(datatypes.s)
 
-proc tf_preprocess_specification*(inputfile: cstring, outputfile: cstring)
+proc tf_compile_specification*(inputfile: cstring, outputfile: cstring)
                               {.exportc, raises: [].} =
   on_failure_seterr:
     if not fileExists($inputfile):
       raise newException(textformats.TextFormatsRuntimeError,
                          "File not found:" & $inputfile)
-    textformats.preprocess_specification($inputfile, $outputfile)
+    textformats.compile_specification($inputfile, $outputfile)
 
-proc tf_is_preprocessed*(filename: cstring): bool {.exportc, raises: [].} =
+proc tf_is_compiled*(filename: cstring): bool {.exportc, raises: [].} =
   on_failure_seterr_and_return:
     if not fileExists($filename):
       raise newException(textformats.TextFormatsRuntimeError,
                          "File not found:" & $filename)
-    return textformats.is_preprocessed($filename)
+    return textformats.is_compiled($filename)
 
 proc tf_run_specification_testfile(spec: SpecificationRef, testfile: cstring)
                           {.exportc, raises: [].} =

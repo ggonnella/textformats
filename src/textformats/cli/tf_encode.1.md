@@ -29,7 +29,7 @@ the specification to be used (-t).
 
 ## Options
 **-s**, **\-\-specfile=**FILENAME
-: specification file to use, YAML, JSON or preprocessed (REQUIRED)
+: specification file to use, YAML, JSON or compiled (REQUIRED)
 
 **-t**, **\-\-datatype=**DATATYPE
 : which datatype to use, among those defined by the specification

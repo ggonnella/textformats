@@ -31,7 +31,7 @@ described by the datatype definition, or decoded (as string in JSON format).
 
 ## Common options
 **-s**, **\-\-specfile=**FILENAME
-: specification file to use, YAML, JSON or preprocessed (REQUIRED)
+: specification file to use, YAML, JSON or compiled (REQUIRED)
 
 **-t**, **\-\-datatype=**DATATYPE
 : which datatype to use among those defined by the specification

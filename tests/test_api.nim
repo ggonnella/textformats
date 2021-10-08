@@ -11,7 +11,7 @@ import textformats
 const
   testdata = currentSourcePath.parentDir() & "/testdata/api/"
   YAML_SPEC =        "fasta.yaml"
-  PREPROC_SPEC =     "fasta.tfs"
+  COMPILED_SPEC =    "fasta.tfs"
   BAD_YAML_SPEC =    "wrong_yaml_syntax.yaml"
   NONEXISTING_SPEC = "xyz.yaml"
   TESTFILE =         "good_test.yaml"
@@ -65,14 +65,14 @@ suite "test_api":
       discard specification_from_file(testdata & NONEXISTING_SPEC)
     discard specification_from_file(testdata & YAML_SPEC)
 
-  test "specification_preprocessing_API":
-    check not is_preprocessed(testdata & YAML_SPEC)
-    preprocess_specification(testdata & YAML_SPEC, testdata & PREPROC_SPEC)
-    check is_preprocessed(testdata & PREPROC_SPEC)
+  test "specification_compiling_API":
+    check not is_compiled(testdata & YAML_SPEC)
+    compile_specification(testdata & YAML_SPEC, testdata & COMPILED_SPEC)
+    check is_compiled(testdata & COMPILED_SPEC)
 
   test "specification_tests_API":
     for s in @[specification_from_file(testdata & YAML_SPEC),
-               specification_from_file(testdata & PREPROC_SPEC)]:
+               specification_from_file(testdata & COMPILED_SPEC)]:
       expect(UnexpectedEncodedInvalidError):
         s.run_specification_testfile(testdata & BAD_TESTFILE)
       s.run_specification_testfile(testdata & TESTFILE)
@@ -162,6 +162,7 @@ suite "test_api":
     dd_line.set_scope("line")
     for decoded in (testdata & DATAFILE).decoded_file(dd_line):
       echo(decoded)
+    #[
     dd_line.set_wrapped()
     for decoded in (testdata & DATAFILE).decoded_file(dd_line):
       echo(decoded)
@@ -184,6 +185,7 @@ suite "test_api":
     for decoded in (testdata & YAML_SPEC).decoded_file(dd_file,
                                             skip_embedded_spec=true):
       echo(decoded)
+    ]#
 
   proc process_decoded(n: JsonNode, data: pointer) =
     echo($n)

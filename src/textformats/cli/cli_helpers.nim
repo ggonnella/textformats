@@ -42,8 +42,8 @@ type
     ec_err_spec_invalid=err_pfx & "The specification is invalid"
     ec_err_spec_io=err_pfx &
       "The specification file does not exist or cannot be read"
-    ec_err_preproc=err_pfx &
-      "The specification file is preprocessed; use a YAML/JSON specification"
+    ec_err_compiled=err_pfx &
+      "The specification is compiled; use a YAML/JSON specification instead"
     ec_err_invalid_encoded=err_pfx & "Decoding error: " & enc_in & err_inv
     ec_err_invalid_decoded=err_pfx & "Encoding error: " & dec_in & err_inv
     ec_test_error
@@ -57,10 +57,10 @@ template exit_with*(exit_code: untyped, info = "", errcodemsg = true): untyped =
     stderr.write_line ($info).indent(i)
   return exit_code.int
 
-template fail_if_preprocessed*(specfile) =
+template fail_if_compiled*(specfile) =
   try:
-    if unlikely(textformats.is_preprocessed(specfile)):
-      exit_with(ec_err_preproc)
+    if unlikely(textformats.is_compiled(specfile)):
+      exit_with(ec_err_compiled)
   except textformats.TextFormatsRuntimeError:
     let e = get_current_exception()
     exit_with(ec_err_spec_io, e.msg)
@@ -124,9 +124,9 @@ template short_splitted*:       untyped = 'x'
 ## defined here so that they are consistant among the tools
 ##
 template help_specfile*: untyped =
-  "datatypes specification (YAML/JSON or preprocessed)"
+  "datatypes specification (YAML/JSON or compiled)"
 template help_specfile_or_embedded*: untyped =
-  "datatypes specification (YAML/JSON or preprocessed); if not provided, " &
+  "datatypes specification (YAML/JSON or compiled); if not provided, " &
   "the input file contains an embedded specification"
 template help_specfile_yaml*: untyped =
   "datatypes specification (YAML/JSON only)"

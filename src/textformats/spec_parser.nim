@@ -234,18 +234,18 @@ proc parse_specification_file*(filename: string): Specification =
   parse_specification_input(filename, false)
 
 proc specification_from_file*(specfile: string): Specification =
-  ## Load specification if specfile is a preprocessed specification file
+  ## Load specification if specfile is a compiled specification file
   ## otherwise parse the file, assuming it is a YAML/JSON specification file
   if specfile == "":
     let spec = stdin.read_all.strip()
     return parse_specification(spec)
   elif not fileExists(specfile):
     raise newException(TextFormatsRuntimeError, &"File not found: {specfile}")
-  if specfile.is_preprocessed: return load_specification(specfile)
+  if specfile.is_compiled: return load_specification(specfile)
   else: return parse_specification_file(specfile)
 
-proc preprocess_specification*(inputfile: string, outputfile: string) =
-  ## Parse YAML/JSON specification and output preprocessed specification
+proc compile_specification*(inputfile: string, outputfile: string) =
+  ## Compile a YAML/JSON specification
   let spec = parse_specification_file(inputfile)
   spec.save_specification(outputfile)
 

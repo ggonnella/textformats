@@ -34,18 +34,18 @@ proc parse_specification*(specdata: string):
                           Specification {.exportpy.} =
   textformats.parse_specification(specdata)
 
-proc preprocess_specification*(inputfile: string, outputfile: string)
+proc compile_specification*(inputfile: string, outputfile: string)
                               {.exportpy.} =
   if not fileExists(inputfile):
     raise newException(textformats.TextFormatsRuntimeError,
                        "File not found:" & inputfile)
-  textformats.preprocess_specification(inputfile, outputfile)
+  textformats.compile_specification(inputfile, outputfile)
 
-proc is_preprocessed*(filename: string): bool {.exportpy.} =
+proc is_compiled*(filename: string): bool {.exportpy.} =
   if not fileExists(filename):
     raise newException(textformats.TextFormatsRuntimeError,
                        "File not found:" & filename)
-  textformats.is_preprocessed(filename)
+  textformats.is_compiled(filename)
 
 proc run_specification_testfile(spec: Specification, testfile: string)
                                 {.exportpy.} =

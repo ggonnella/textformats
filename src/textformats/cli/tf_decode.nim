@@ -76,7 +76,7 @@ proc decode_datafile*(specfile = "", datatype = "default", infile = "",
                     "specification file or of the input data file\n" &
                     "Specifications cannot be skip_embedded_spec in the " &
                     "standard input")
-        fail_if_preprocessed(infile)
+        fail_if_compiled(infile)
         infile
       else:
         specfile

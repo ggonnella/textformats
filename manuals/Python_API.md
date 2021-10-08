@@ -53,7 +53,7 @@ More examples are provided under `python/examples`.
 ## Specifications
 
 The class `Specification` represents a TextFormats specification.
-To parse a YAML, JSON specification or load a preprocessed specification
+To parse a YAML, JSON specification or load a compiled specification
 use the class constructor `Specification(filename)`.
 Alternatively a dict can be passed to the constructor, which contains
 the datatypes definitions: `Specification({"datatypes": {...}})`.
@@ -61,13 +61,13 @@ the datatypes definitions: `Specification({"datatypes": {...}})`.
 The following properties are defined in the Specification instances:
 `datatype_names` is the list of the names of the datatypes
 defined in the specification; `filename` is the filename from which
-the specification instance was constructed; `is_preprocessed` is a boolean,
-which is `True`, if the specification is preprocessed.
-The suggested file extension for preprocessed specifications
+the specification instance was constructed; `is_compiled` is a boolean,
+which is `True`, if the specification is compiled.
+The suggested file extension for compiled specifications
 is `tfs` (*T*ext*F*ormats *S*pecification).
 
-To preprocess a specification, use the class method
-`Specification.preprocess(inputfile, outputfile)`.
+To compile a specification, use the class method
+`Specification.compile(inputfile, outputfile)`.
 
 To run the test suite for a specification use the method
 `specification.test(testfile)`. If the testdata is contained

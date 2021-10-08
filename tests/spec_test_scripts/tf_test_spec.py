@@ -14,7 +14,7 @@ Arguments:
   <tests>: the yaml file containing the tests
 
 Options:
-  -p, --preprocess  preprocess the specification
+  -p, --precompile  compile the specification
   -q, --quiet       suppress stderr output
   -h, --help        show this help message
   --version         show version number
@@ -29,7 +29,7 @@ from functools import partial
 
 testdir = os.path.dirname(os.path.realpath(__file__))
 textformats = sh.Command(testdir + "/../../cli/tf_test")
-preprocess = partial(textformats, "preprocess", _fg=True)
+precompile = partial(textformats, "compile", _fg=True)
 test_decode = partial(textformats, "decoding", _fg=True)
 test_encode = partial(textformats, "encoding", _fg=True)
 test_validate_decoded = partial(textformats, "decoded_validation", _fg=True)
@@ -90,12 +90,12 @@ def test_all_secondary(specfile, datatype, tests):
 
 def main(arguments):
   specfile = arguments["<spec>"]
-  preprocessed=arguments["--preprocess"]
+  precompile=arguments["--precompile"]
   mainkey="testdata"
-  if preprocessed:
-    preprocessed_specfile=os.path.splitext(specfile)[0]+".textformats"
-    preprocess(s=specfile, o=preprocessed_specfile)
-    specfile=preprocessed_specfile
+  if precompile:
+    precompiled_specfile=os.path.splitext(specfile)[0]+".tfs"
+    precompile(s=specfile, o=precompiled_specfile)
+    specfile=precompiled_specfile
   with open(arguments["<tests>"]) as f:
     for doc in yaml.safe_load_all(f):
       data = doc

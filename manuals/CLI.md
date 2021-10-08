@@ -41,9 +41,9 @@ operations possible with the command line interface.
 
 For most applications, a TextFormats specification is necessary. This can
 be selected in the tools interface using the `--specfile`/`-s` option.
-The specification can be JSON/YAML or preprocessed.
+The specification can be JSON/YAML or compiled.
 For `tf_spec` only, the specification can be passed as standard input
-(but only if not preprocessed).
+(but only if not compiled).
 
 The tool `tf_spec` is used for performing operations
 on specification files.
@@ -54,20 +54,20 @@ To output the names of the datatypes defined by a specification,
 the `tf_spec info` command is used, without setting the
 `--datatype`/`-t` option.
 
-### Preprocessing
+### Compilation
 
-It is possible to preprocess a YAML specification using the tool
-`tf_spec preprocess`. The output of the tool (preprocessed
+It is possible to compile a YAML specification using the tool
+`tf_spec compile`. The output of the tool (compiled
 specification) is by default written to the standard output; in alternative
 a filename can be provided using the option `--outfile`.
-The suggested file extension for preprocessed specifications
+The suggested file extension for compiled specifications
 is `tfs` (*T*ext*F*ormats *S*pecification).
 
-Preprocessed specifications can be used in most tools in place
+Compiled specifications can be used in most tools in place
 of the YAML specifications and are automatically
 recognized.
 
-A limitation of preprocessed specification is that they cannot
+A limitation of compiled specifications is that they cannot
 contain test data or be embedded in data files.
 Furthermore, they cannot be provided as standard input to the
 `tf_spec` tool.
@@ -82,7 +82,7 @@ the option `--specfile` or `-s`.
 The path to the file containing the tests is provided through
 the option `--testfile` or `-t`. Test data can also be contained
 in the specification, in which case this option is not
-necessary. Preprocessed specifications do not contains
+necessary. Compiled specifications do not contain
 the test data, so the option is always required in that case.
 
 ### Generating data according to the definitions
@@ -105,7 +105,7 @@ for the specification test suite, which can be run using the command
 
 By default, examples are provided for each of the datatypes
 in the specification. Datatypes defined in included specifications
-are not considered (except if `--included` is used, or if a preprocessed
+are not considered (except if `--included` is used, or if a compiled
 file is used, or the specification is piped into the tool).
 Alternatively, a comma-separated list of datatypes can be provided using
 the option `--datatypes` or `-t` (e.g. `datatype1,datatype2,datatype3`).

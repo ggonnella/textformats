@@ -15,8 +15,8 @@ Construct specification programmatically | `Specification({"datatypes": {...}})`
 List datatype names         | `spec.datatype_names(spec)`
 Filename of spec object     | `spec.filename`
                             |
-Preprocess specification    | `Specification.preprocess(infn, outfn)`
-Check if preprocessed       | `spec.is_preprocessed`
+Compile specification       | `Specification.compile(infn, outfn)`
+Check if compiled           | `spec.is_compiled`
                             |
 Run tests in file           | `spec.test(testfn)`
 Run tests constructed programmatically | `spec.test({"testdata": {...}})`

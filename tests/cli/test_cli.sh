@@ -12,7 +12,7 @@ TESTDATA="$SCRIPTPATH/../testdata/api/"
 CLI="$SCRIPTPATH/../../cli/"
 
 YAML_SPEC="$TESTDATA/fasta.yaml"
-PREPROC_SPEC="$TESTDATA/fasta.tfs"
+COMPILED_SPEC="$TESTDATA/fasta.tfs"
 BAD_YAML_SPEC="$TESTDATA/wrong_yaml_syntax.yaml"
 NONEXISTING_SPEC="$TESTDATA/xyz.yaml"
 TESTFILE="$TESTDATA/good_test.yaml"
@@ -122,9 +122,9 @@ function test_specification_loading {
     "${CLI}tf_spec info -s $YAML_SPEC"
 }
 
-function test_specification_preprocessing {
-  check_ok $LINENO "preprocess specification" \
-    "${CLI}tf_spec preprocess -s $YAML_SPEC -o $PREPROC_SPEC"
+function test_specification_compilation {
+  check_ok $LINENO "compile specification" \
+    "${CLI}tf_spec compile -s $YAML_SPEC -o $COMPILED_SPEC"
 }
 
 function test_specification_tests {
@@ -132,10 +132,10 @@ function test_specification_tests {
     "${CLI}tf_spec test -s $YAML_SPEC -f $TESTFILE"
   check_fails $LINENO "run YAML specification failing tests" \
     "${CLI}tf_spec test -s $YAML_SPEC -f $BAD_TESTFILE"
-  check_ok $LINENO "run preproc specification succeeding tests" \
-    "${CLI}tf_spec test -s $PREPROC_SPEC -f $TESTFILE"
-  check_fails $LINENO "run preproc specification failing tests" \
-    "${CLI}tf_spec test -s $PREPROC_SPEC -f $BAD_TESTFILE"
+  check_ok $LINENO "run compiled specification succeeding tests" \
+    "${CLI}tf_spec test -s $COMPILED_SPEC -f $TESTFILE"
+  check_fails $LINENO "run compiled specification failing tests" \
+    "${CLI}tf_spec test -s $COMPILED_SPEC -f $BAD_TESTFILE"
   tmpfile=$(mktemp)
   echo $BAD_TESTDATA_INLINE > $tmpfile
   check_fails $LINENO "run failing tests from string" \
@@ -218,7 +218,7 @@ function test_file_decoding {
 }
 
 test_specification_loading
-test_specification_preprocessing
+test_specification_compilation
 test_specification_tests
 test_specification_list_datatypes
 test_datatype_definition_loading

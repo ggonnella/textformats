@@ -12,12 +12,12 @@ decoded_header_json = "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}";
 
 print(f"Encoded: {header}")
 spec = Specification(f"{specdir}/fasta.yaml")
-assert(not spec.is_preprocessed)
-print("Spec fasta.yaml is not preprocessed")
-spec.preprocess(f"{specdir}/fasta.yaml", "fasta.tfs")
+assert(not spec.is_compiled)
+print("Spec fasta.yaml is not compiled")
+spec.compile(f"{specdir}/fasta.yaml", "fasta.tfs")
 spec = Specification("fasta.tfs")
-assert(spec.is_preprocessed)
-print("Spec fasta.tfs is preprocessed")
+assert(spec.is_compiled)
+print("Spec fasta.tfs is compiled")
 spec.test(f"{specdir}/fasta.yaml")
 
 fas_entry = spec["default"]

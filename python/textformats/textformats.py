@@ -111,17 +111,17 @@ class Specification:
       self._source = dict_or_fn
       self._source_is_file = True
       self._spec = tf.specification_from_file(self._source)
-      self._preprocessed = tf.is_preprocessed(self._source)
+      self._compiled = tf.is_compiled(self._source)
     else:
       self._source = json.dumps(dict_or_fn)
       self._source_is_file = False
       self._spec = tf.parse_specification(json.dumps(dict_or_fn))
-      self._preprocessed = False
+      self._compiled = False
 
   @classmethod
   @handle_textformats_errors
-  def preprocess(cls, inputfile, outputfile):
-    tf.preprocess_specification(inputfile, outputfile)
+  def compile(cls, inputfile, outputfile):
+    tf.compile_specification(inputfile, outputfile)
 
   @property
   def default(self):
@@ -152,8 +152,8 @@ class Specification:
     return tf.datatype_names(self._spec)
 
   @property
-  def is_preprocessed(self):
-    return self._preprocessed
+  def is_compiled(self):
+    return self._compiled
 
   @property
   def filename(self):
@@ -171,16 +171,15 @@ class Specification:
 
   def __str__(self):
     if self._source_is_file:
-      if self._preprocessed:
-        src = f"- filename (preprocessed): {self._source}\n"
+      if self._compiled:
+        src = f"- filename (compiled): {self._source}\n"
       else:
-        src = f"- filename (YAML): {self._source}\n"
+        src = f"- filename (YAML/JSON): {self._source}\n"
     else:
       if len(self._source) > self.MAX_VERBOSE_REPR:
         src = f"- content: ... ({len(self._source)} chars long)\n"
       else:
         src = f"- content: {self._source}\n"
-    preprocstr = "preprocessed" if self._preprocessed else "YAML"
     return "TextFormats Specification table\n" + src +\
       f"- defined/included datatypes:\n" +\
       "\n".join([f"  - {n}"for n in self.datatype_names])

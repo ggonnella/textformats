@@ -155,7 +155,7 @@ if (tf_haderr) {
 ## Specifications
 
 The function `Specification* tf_specification_from_file(char *filename)` is
-used to parse a YAML specification or load a preprocessed specification and
+used to parse a YAML specification or load a compiled specification and
 get a pointer to the specification, which can be passed to other functions.
 
 Alternatively a specification can be constructed using a JSON or YAML string
@@ -205,16 +205,16 @@ while (dname != NULL) {
 }
 ```
 
-### Preprocessing
+### Compilation
 
-It is possible to preprocess a YAML/JSON specification using the function
-`void tf_preprocess_specification(char *inputfile, char *outputfile)`.
-To check if a specification is preprocessed, the function
-`bool tf_is_preprocessed(char *filename)`
+It is possible to compile a YAML/JSON specification using the function
+`void tf_compile_specification(char *inputfile, char *outputfile)`.
+To check if a specification is compiled, the function
+`bool tf_is_compiled(char *filename)`
 can be used (this does not ensure that the file has valid
-content, it only checks if the initial signature of preprocessed
+content, it only checks if the initial signature of compiled
 specification files is present).
-The suggested file extension for preprocessed specifications
+The suggested file extension for compiled specifications
 is `tfs` (*T*ext*F*ormats *S*pecification).
 
 ### Running tests

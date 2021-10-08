@@ -19,13 +19,13 @@ import textformats/types/specification
 export Specification
 export BaseDatatypes
 export get_definition
-export is_preprocessed
+export is_compiled
 export datatype_names
 
 import textformats/spec_parser
 export specification_from_file
 export parse_specification
-export preprocess_specification
+export compile_specification
 
 # decoding
 import textformats/decoder

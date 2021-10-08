@@ -19,12 +19,12 @@ int main(void)
     "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}";
   printf("Encoded: %s\n", header);
   fas_spec = tf_specification_from_file("../../bio/fasta.yaml");
-  if (!tf_is_preprocessed("../../bio/fasta.yaml"))
-    printf("Spec fasta.yaml is not preprocessed");
+  if (!tf_is_compiled("../../bio/fasta.yaml"))
+    printf("Spec fasta.yaml is not compiled");
   else assert(false);
-  tf_preprocess_specification("../../bio/fasta.yaml", "fasta.tfs");
-  if (tf_is_preprocessed("fasta.tfs"))
-    printf("Spec fasta.tfs is preprocessed");
+  tf_compile_specification("../../bio/fasta.yaml", "fasta.tfs");
+  if (tf_is_compiled("fasta.tfs"))
+    printf("Spec fasta.tfs is compiled");
   else assert(false);
   tf_run_specification_testfile(fas_spec, "../../bio/fasta.yaml");
   fas_entry = tf_default_definition(fas_spec);

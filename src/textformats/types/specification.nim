@@ -36,7 +36,7 @@ proc save_specification*(table: Specification, filename: string) =
                        e.msg)
 
 proc load_specification*(filename: string): Specification =
-  let errmsg_pfx = "Error loading preprocessed specification\n" &
+  let errmsg_pfx = "Error loading compiled specification\n" &
                    &"  Filename: '{filename}'\n"
   try:
     let filecontent =
@@ -54,8 +54,8 @@ proc load_specification*(filename: string): Specification =
       else: get_current_exception().msg
     raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
   except JsonParsingError:
-    let errmsg = "  Parsing error: is it really a preprocessed specification?" &
-              "\n  Please try repeating the preprocessing step."
+    let errmsg = "  Parsing error: is it really a compiled specification?" &
+              "\n  Please try repeating the compilation."
     raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
 
 const BaseDatatypes* = [
@@ -77,7 +77,7 @@ proc newSpecification*(): Specification =
   result = newTable[string, DatatypeDefinition]()
   result.create_base_datatypes
 
-proc is_preprocessed*(specfile: string): bool =
+proc is_compiled*(specfile: string): bool =
   if specfile == "":
     return false
   let errmsg_pfx = "Error loading specification\n" &

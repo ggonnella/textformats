@@ -39,7 +39,7 @@ index a788dcd..0cc6a78 100644
  
 -proc load_specification*(filename: string): Specification =
 +proc load_specification*(filename: string, msgpack = true): Specification =
-   let errmsg_pfx = "Error loading preprocessed specification\n" &
+   let errmsg_pfx = "Error loading compiled specification\n" &
                     &"  Filename: '{filename}'\n"
    try:
 -    let filecontent = filename.readFile()

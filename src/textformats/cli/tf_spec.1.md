@@ -9,15 +9,14 @@ tf\_spec - tools for working with specification files
 # SYNOPSIS
 
 **tf\_spec** info -s SPECFILE [-t DATATYPE]\
-**tf\_spec** preprocess -s SPECFILE -o OUTFILE\
+**tf\_spec** compile -s SPECFILE -o OUTFILE\
 **tf\_spec** generate\_tests -s SPECFILE [-f TESTFILE]\
 **tf\_spec** test -s SPECFILE [-f TESTFILE]\
 
 # DESCRIPTION
 
 The command offers several tools for working with specification
-files, which are YAML files, JSON files,
-or preprocessed specifications
+files, which are YAML files, JSON files, or compiled specifications
 (which can be created with the command itself).
 
 ## Introspection
@@ -26,19 +25,19 @@ The command allows to list the datatypes contained in the file
 (subcommand *list*) and to show the definition of one of those datatypes
 (subcommand *show*).
 
-## Preprocessing
+## Compilation
 
-A preprocessed version of the specification can be created
-using the *preprocess* subcommand.
+A compiled version of the specification can be created
+using the *compile* subcommand.
 They can be used by most CLI commands instead of the YAML or JSON file.
 
-Preprocessed specifications can be faster to load in some cases, compared
+Compilation specifications can be faster to load in some cases, compared
 to the YAML or JSON specifications (which requires parsing and validation of the
-content and generation of the regular expressions).
+content, generation and compilation of the regular expressions).
 
-Only the datatype specifications are contained in the preprocessed
+Only the datatype specifications are contained in the compiled
 file, not the testdata and embedded data.
-Preprocessed specifications cannot be provided from the standard input.
+Compiled specifications cannot be provided from the standard input.
 
 ## Tests
 
@@ -71,8 +70,8 @@ encoding and validations for each of the provided test examples.
 **generate\_tests**
 : auto-generate testdata for a specification file
 
-**preprocess**
-: preprocess a specification file
+**compile**
+: compile a specification file
 
 **test**
 : test a specification using a testdata file
@@ -83,9 +82,8 @@ all subcommands:
 
 **-s**, **\-\-specfile=**FILENAME
 : specification file to be used (default: standard input);
-  YAML, JSON or preprocessed;
-  preprocessed specifications can be used except for
-  *preprocess* and cannot be provided as standard input
+  YAML, JSON or compiled; compiled specifications can be used except for
+  *compile* and cannot be provided as standard input
 
 *info* subcommand:
 
@@ -97,10 +95,10 @@ all subcommands:
 : select the style of the information to show when the **\-\-datatype**
 option is used (default: verbose)
 
-*preprocess* subcommand:
+*compile* subcommand:
 
 **-o**, **\-\-outfile=**FILENAME
-: output filename for the preprocessed specification
+: output filename for the compiled specification
   (default: standard output)
 
 ## Further options
@@ -125,7 +123,7 @@ is a YAML or JSON file -- or provided to the option **\-\-datatypes**)
 **-i**, **\-\-included**
 : always generate test data for datatypes defined in included specifications,
 when no **-\-\datatypes** option is used (default: generate test data for all
-datatype if the specification is preprocessed or piped into the tool;
+datatype if the specification is compiled or piped into the tool;
 exclude included files if the specification is a YAML or JSON file)
 
 **-t**, **\-\-datatypes=**DATATYPES
