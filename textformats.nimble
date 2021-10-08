@@ -33,7 +33,7 @@ task climan, "compile the man pages of the CLI tools":
       outfile = outdir & "/tf_" & cmd & ".1"
     exec("pandoc -s -t man -o " & outfile & " " & infile)
 task clitest, "test CLI tools":
-  exec("tests/cli/test_cli.sh")
+  exec("cli/tests/test_cli.sh")
 task pymake, "make python API package":
   exec("cd python && make")
 task pytest, "test python API package":
