@@ -12,3 +12,6 @@ textformats_based htslib_based:
 
 run: ${INPUT} textformats_based htslib_based
 	nimble compare
+
+cleanup:
+	rm -f htslib_based textformats_based
