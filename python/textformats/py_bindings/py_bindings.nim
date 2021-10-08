@@ -127,8 +127,9 @@ proc wrapped_decoded_to_json_processor(n: JsonNode, data: pointer) =
     pydata = cast[PyObject](wdata.data)
   wdata.processor($n, pydata)
 
-proc tf_decode_file_to_json*(filename: string, skip_embedded_spec: bool,
+proc decode_file_to_json*(filename: string,
                              dd: DatatypeDefinition,
+                             skip_embedded_spec: bool,
                              decoded_processor:
                                proc (s: string, data: PyObject),
                              decoded_processor_data: PyObject,
