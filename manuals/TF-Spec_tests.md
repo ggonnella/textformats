@@ -1,6 +1,6 @@
 # Testing a specification
 
-Specification test data are examples of textual representations and/or
+Specification test data are examples of string representations and/or
 data values which are valid and invalid according to the
 datatype definitions of a specification.
 
@@ -15,7 +15,7 @@ specification and the testdata, or they can be in different files.
 
 The 'testdata' value is itself a mapping, where the keys are the names of the
 datatypes to be tested and the values are mappings. These contain examples of
-both valid and invalid textual representations and decoded data can be given,
+both valid and invalid string representations and decoded data can be given,
 respectively, under the keys 'valid' (and `oneway`, see below) and 'invalid':
 ```YAML
 testdata:
@@ -25,14 +25,14 @@ testdata:
 ```
 
 Valid data is given as a mapping under 'valid', where the keys are the encoded
-textual form and the values are the decoded data:
+string representations and the values are the decoded data:
 ```
 valid: {"encoded1": "decoded1", ...}
 ```
 The tests will both check that the encoded data is decoded as given, and
 the opposite, i.e. that the decoded data is encoded as given.
 
-Invalid data is given under the key 'invalid'. Under it, textual
+Invalid data is given under the key 'invalid'. Under it, string
 representations and decoded data are given as lists under, respectively,
 the subkeys 'encoded' and 'decoded':
 ```YAML
@@ -51,10 +51,10 @@ invalid: ["string1", "string2", ...]
 
 ### Non-canonical text representations
 
-The content of `valid` shall be only textual representations which
+The content of `valid` shall be only string representations which
 are obtained back when encoding the data they represent.
 In some cases, only the decoding shall be tested, because the data
-has a "non-canonical" textual representation.
+has a "non-canonical" string representation.
 In this case a different key is used for listing the examples:
 `oneway`.  Like under 'valid', the data is given as a mapping with
 encoded string representations as keys and the decoded data as values:

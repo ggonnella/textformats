@@ -1,8 +1,8 @@
 ##
-## Decode a textual representation to the corresponding data,
+## Decode a string representation to the corresponding data,
 ## according to a given datatype from a specification
 ##
-## The input is the textual representation, either as a string
+## The input is the string representation, either as the string itself
 ## or as a file in a given format
 ##
 ## The output is the decoded data, represented as JSON.

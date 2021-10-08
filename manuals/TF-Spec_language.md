@@ -1,9 +1,9 @@
 # TF-Spec: TextFormats specifications syntax
 
-The goal of the TextFormats library is to parse a textual representation
+The goal of the TextFormats library is to parse a string representation
 of data and translate it into data (decoding) and vice versa (encoding).
 In order for the library to know how to access the data, the user
-must describe the format of the textual representation and the rules used for
+must describe the format of the string representation and the rules used for
 validating, decoding and encoding the data. This is done by writing a
 specification.
 
@@ -25,7 +25,7 @@ specification.
 
 The following sections are defined:
 `datatypes`
-: Definitions of the textual representations and parsing rules for the format
+: Definitions of the string representations and parsing rules for the format
 (whole data and/or its components)
 `include`
 : Specification files to be included in the current specification
@@ -49,7 +49,7 @@ unordered sets, ordered sets, and/or sets where each element is associated to a
 string key (the same kind of data, which can be represented as JSON).
 
 The TextFormats specification explains how to translate back and forth between
-the data and their textual representation in that format.  The single
+the data and their string representation in that format.  The single
 components of the format (scalar or compound) are described in "datatype
 definitions" given under the key `datatypes` of the specification mapping. The
 datatype definitions for single elements can be combined together,
@@ -60,7 +60,7 @@ hierarchically, into compound elements.
 The value of the `datatypes` entry under the root of a specification is a
 mapping. Each of the entries of the `datatypes` mapping is a definition
 of a 'datatype', i.e. a description and set of rules on how to parse a
-textual representation of data.
+string representation of data.
 
 For each of the entries under `datatypes`, the key is the "datatype name",
 an identifier, which must be unique in the specification. The datatype
@@ -320,7 +320,7 @@ the string returned by the `$` operator in Nim, applied to the decoded value
 
 Definitions with kind-of-definition key `values` are used to
 define a datatype, by which a finite (typically small) number
-of textual representations are used to express a finite (typically small)
+of string representations are used to express a finite (typically small)
 number of data values.
 
 The content of the `values` key is a list of the possible values.
@@ -339,10 +339,10 @@ definition mapping, with the key `empty` and a data value, to be used in that
 case.
 
 In case a mapping is used for an element, it shall contain a single entry, with
-a non-empty string key (textual representation) and any value, to be used as
-data value for that textual representation.
+a non-empty string key (string representation) and any value, to be used as
+data value for that string representation.
 
-Different definitions matching the same textual representation shall be avoided.
+Different definitions matching the same string representation shall be avoided.
 So e.g. in the following, the string "1"
 would be decoded to "A", the string "+1" would be still accepted and decoded
 to "B". But "B" would be encoded as "1", which in turn is decoded to "A".
@@ -388,7 +388,7 @@ element shall be accepted (empty string), an entry is added to the definition
 mapping, with the key `empty` and a data value, to be used in that case.
 The `empty` rule has highest priority; thus it is used even if the regular
 expression matches an empty string. For example in the example `r4` below,
-if the element is absent in the textual representation, the decoded data
+if the element is absent in the string representation, the decoded data
 value will be the undefined value and not an empty string.
 
 Here are examples of `regex` definitions:
@@ -559,7 +559,7 @@ datatypes:
 ```
 
 The value of the decoded data of the `one_of` element is, by default, the
-decoded value of the first definition for which the textual representation is
+decoded value of the first definition for which the string representation is
 valid (first in the order they are given in the list under `one_of`).  Also, by
 default, when encoding data with a `one_of` datatype, the first of the
 definitions given under `one_of` (in the order they are given) for which the
@@ -573,11 +573,11 @@ in the definitions list under ``one_of``.
 ### Wrapped ``one_of`` definitions
 
 In some cases, however, it is useful to know which of the definitions of the
-`one_of` was applied to decode the textual representation.  In this case the
+`one_of` was applied to decode the string representation.  In this case the
 `wrapped: true` option can be added to the definition mapping. For each of the
 "branches" (definitions listed under `one_of`) a name is assigned. The decoded
 value is then a single-entry mapping, where the key is the name of the first
-branch for which the textual representation is valid and the value is the
+branch for which the string representation is valid and the value is the
 decoded value obtained by applying the branch definition.
 
 The default names used for `wrapped` are computed as follow. If a branch
@@ -607,7 +607,7 @@ datatypes:
     branch_names: [float_score, letters_score]
 ```
 
-Here are examples of applying the above definitions for decoding a textual
+Here are examples of applying the above definitions for decoding a string
 representation:
 
 | Definition | Text repr. | Data value (JSON)           |
@@ -639,7 +639,7 @@ either as a constant (key `length`) or minimum (key `min_length`) and/or
 maximum (key `max_length`) number of elements. Empty lists are supported, i.e.
 the `min_length` can be set to the value 0.
 
-If in the textual representation, the elements of the list are separated
+If in the string representation, the elements of the list are separated
 by a constant string, this can be specified in the definition. If the separator
 string is never contained in the elements (not even escaped), it is given
 under the key `splitted_by`; otherwise it is given under the key `separator`.
@@ -690,7 +690,7 @@ below). In other cases, e.g. if the separator is missing along with the
 element, multiple `composed_of` definitions (with and without the said middle
 element) can be combined using a `one_of` definition (such as in `cof3` below).
 
-If in the textual representation, the elements of the list are separated by a
+If in the string representation, the elements of the list are separated by a
 constant string, this can be specified in the definition. If the separator
 string is never contained in the elements (not even escaped), it is given under
 the key `splitted_by`; otherwise it is given under the key `separator`.  By
@@ -764,16 +764,16 @@ The decoded data value of a `named_values` definition is a table (Nim), mapping
 (YAML), dict (Python), JSON object (JSON, C/C++), except if the `as_string`
 option is set (see section "Validation-only compound definitions").
 The mapping contains an entry for each of the names present at least once in
-the textual representation.
+the string representation.
 
 By default, all names may be absent from the set. Names of elements which must
 be present at least once can be listed as value of the optional key `required`.
-By default, for each name present in the textual representation, the value of
+By default, for each name present in the string representation, the value of
 the decoded data entry is a list, containing the possibly multiple values
 of the elements with that name. Names of elements which can only be present
 once can be listed as value of the optional key `single`.
 In case a name is listed under `single`, the value of the entry for the name
-(if this is present in the textual representation) is the decoded value
+(if this is present in the string representation) is the decoded value
 of the element value, and not a list, as it would be if the name is not
 in `single`.
 
@@ -783,7 +783,7 @@ the definition mapping under the key `internal_separator`.  The internal separat
 must be different from the elements separator given under `splitted_by` and the
 two strings shall not contain each other. The internal separator cannot be
 contained in the element names, because it is used to split the name from the
-rest of the text. However, the textual representations of the element values
+rest of the text. However, the string representations of the element values
 can contain the internal separator. The elements separator cannot be present in
 both element names and values.
 
@@ -832,7 +832,7 @@ strings).
 The decoded data value of a `tagged_values` definition is a table (Nim),
 mapping (YAML), dict (Python), JSON object (JSON, C/C++), except if the
 `as_string` option is set (see section "Validation-only compound definitions").
-The mapping contains an entry for each of the tagnames present in the textual
+The mapping contains an entry for each of the tagnames present in the string
 representation. Multiple instances of the same tagname are not allowed (as by
 the current implementation). The value of the entry for a tagname is a mapping
 with two entries, `type` and `value`. The value of `type` is the typecode, as
@@ -853,7 +853,7 @@ specified in the definition mapping under the key `internal_separator`. The
 internal separator must be different from the elements separator given under
 `splitted_by` and the two strings shall not contain each other. The internal
 separator cannot be contained in the tagnames and in the typecodes, because it
-is used to split them from the rest of the text. However, the textual
+is used to split them from the rest of the text. However, the string
 representations of the tag values can contain the internal separator. The
 elements separator cannot be present in tagnames, typecodes or values.
 
@@ -887,7 +887,7 @@ Example of usage of the definitions above are given in the following table:
 
 ## Formatting options for compound definitions
 
-In the textual representation of a compound datatype, the textual
+In the string representation of a compound datatype, the string
 representations of the elements are either just concatenated to each other, or
 separated by a constant string. Furthermore, they can be preceded and followed
 by constant strings, such as opening and closing brackets.
@@ -898,7 +898,7 @@ For `list_of` and `composed_of` definitions, two kind of options can be used to
 specify a separator string, if necessary.  If the separator string is never
 contained in the text representation of the elements (not even in an escaped
 form), the `splitted_by` key is used.  In this case, the parser directly uses
-the separator string in some cases for splitting the textual representation.
+the separator string in some cases for splitting the string representation.
 In the case the separator string can be present in the elements, the
 `separator` key must be used instead.
 
@@ -947,7 +947,7 @@ as `{"x": 1, "y": 20, "z": 0}`.
 In the current implementation, `named_values` and `tagged_values` only support
 the `splitted_by` key and the key is required for these kind of definitions.
 I.e. a non-empty string must be present between the elements, which is never
-found in the textual representation of the elements themselves.
+found in the string representation of the elements themselves.
 
 Besides the elements separator, the `named_values` and `tagged_values`
 definitions, must include a key for specify the separator used for splitting
@@ -956,7 +956,7 @@ in the two sections describing these kinds of definitions.
 
 ### Prefix and suffix
 
-The textual representations of the elements of a compound datatype are
+The string representations of the elements of a compound datatype are
 sometimes preceded and/or followed by constant strings. E.g. often a list of
 elements is enclosed in brackets. It is therefore possible to specify which
 strings to use, under the keys `prefix` and `suffix` of the datatype definition.
@@ -965,7 +965,7 @@ By default, no prefix and suffix are used.
 ## Validation-only compound definitions
 
 If the option `as_string: true` is added to the definition mapping, the decoded
-data value of the definition is the textual representation of the string.
+data value of the definition is the same as the string representation.
 I.e. the definition is then used for parsing and validation, but then the
 unparsed string is used as decoded value.
 

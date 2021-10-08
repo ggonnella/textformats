@@ -2,7 +2,7 @@
 
 version       = "1.0.0"
 author        = "Giorgio Gonnella"
-description   = "Easy specification of textual formats for structured data"
+description   = "Easy specification of text formats for structured data"
 license       = "ISC"
 srcDir        = "src"
 binDir        = "cli"

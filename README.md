@@ -7,7 +7,7 @@ for structured data.
 
 Given a format definition in a simple declarative language (TF-Spec),
 the library provides functions for switching
-from the textual representation of data ("encoded string") to the actual
+from the string representation of data ("encoded string") to the actual
 data which the text represents ("decoded data") and vice-versa.
 
 The library aims at allowing rapid prototyping of libraries for supporting
@@ -30,7 +30,7 @@ a CIGAR string represents a list of multi-edit operations, each consisting
 of a length (positive integer value) and an operation code (one among a short
 list of possible codes).
 
-A textual representation of a CIGAR is for example
+A string representation of a CIGAR is for example
 "10M1D20M1I40M". The string compactly represents a list of mappings,
 each with two members "length" and "code". In JSON its representation would
 be: [{length: 10, code: "M"}, {length: 1, code: "D"}, {length: 20, code: "M"},
@@ -47,15 +47,15 @@ cigar:
 
 Once the definition is provided, the library provides the following functions:
 ```
-# decoding: textual representation => data
+# decoding: string representation => data
 "10M1D".decode(cigar)
 # => [{length: 10, code: "M"}, {length: 1, code: "D"}]
 
-# encoding: data => textual representation
+# encoding: data => string representation
 [{length: 10, code: "M"}, {length: 1, code: "D"}].encode(cigar)
 # => "10M1D"
 
-# validation of textual representation
+# validation of string representation
 "10M1D".is_valid(cigar)
 # => true
 
@@ -98,7 +98,7 @@ often structured elements contain formatting constant strings such
 as separators, prefixes and suffixes, which must not be included in the
 resulting decoded data
 - define default values:
-sometimes a given symbol or part of a textual representation is missing
+sometimes a given symbol or part of a string representation is missing
 when representing a default value.
 
 ## Defining a format

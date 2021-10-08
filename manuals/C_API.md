@@ -237,7 +237,7 @@ Once it is not used anymore, it is possible to communicate this fact to
 the Nim Garbage Collector using the function
 `void tf_delete_definition(DatatypeDefinition* dd)`.
 
-A verbose textual description of the content of the definition is obtained
+A verbose description of the content of the definition is obtained
 using `char* tf_describe(DatatypeDefinition* dd)`.
 
 ## Decoding the string representation of data

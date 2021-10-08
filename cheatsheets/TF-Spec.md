@@ -56,8 +56,8 @@ Refer to file included in included, namespaced | `x::y::z`
 | `splitted_by` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, never found in them |
 | `separator` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, possibly also found in them |
 | `internal_separator` | `tagged_values`, `named_values` | string | `:` | constant string between componentes of each element |
-| `canonical` | `regex` | string | undefined | textual representation to be used for encoding |
-| `canonical` | `regexes`, `values` | mapping | undefined | textual representations to be used for encoding |
+| `canonical` | `regex` | string | undefined | string representation to be used for encoding |
+| `canonical` | `regexes`, `values` | mapping | undefined | string representations to be used for encoding |
 
 ## Validation of the represented data
 

@@ -92,7 +92,7 @@ In case the test is unsuccessful, an exception is raised.
 To obtain a datatype definition from a specification, use the proc
 `get_definition(s: Specification, datatype_name: string): DatatypeDefinition`.
 
-The textual representation of the definition (`$(d: DatatypeDefinition)`)
+The string representation of the definition (`$(d: DatatypeDefinition)`)
 is a verbose text describing the definition in detail.
 
 ## Decoding the string representation of data

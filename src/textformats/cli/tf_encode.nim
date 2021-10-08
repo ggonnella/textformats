@@ -4,7 +4,7 @@
 ## The input data is provided as JSON representation of the
 ## decoded data.
 ##
-## The output is the encoded textual representation, according
+## The output is the encoded string representation, according
 ## to the specification.
 ##
 

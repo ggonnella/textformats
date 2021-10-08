@@ -62,7 +62,7 @@ datatypes:
 ## Strings
 
 The following definitions describe components of a format which represent
-strings, either unchanged from the textual representation
+strings, either unchanged from the string representation
 or modified.
 
 If a component of a format can contain any string,
@@ -132,7 +132,7 @@ datatypes:
 
 By default, string are just encoded as the string itself, i.e. parsing involves
 validation, but no modification of the value itself. In some cases a different
-string should be present in the textual representation compared to the decoded
+string should be present in the string representation compared to the decoded
 value: e.g. one could want to expand an acronym. For this a decoded mapping is
 used:
 
@@ -215,7 +215,7 @@ datatypes:
 In general, there is no special support for numbers formatted unconventially.
 That is, they must be validated as strings and the conversion to/from numbers
 is then done in the calling code. An exception are cases in which there is
-a limited number of values, for which the textual representations
+a limited number of values, for which the string representations
 can be simply enumerated:
 ```YAML
 datatypes:
@@ -635,7 +635,7 @@ datatypes:
     empty:  {"a": "z", "b": "z"}
 ```
 
-In case a data value has multiple textual representations, the
+In case a data value has multiple string representations, the
 canonical one must be specified, which is then used for encoding:
 ```YAML
   dict11:
