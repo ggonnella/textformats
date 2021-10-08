@@ -3,9 +3,9 @@ import os
 from textformats import Specification
 
 testdir = os.path.dirname(os.path.realpath(__file__))
-specfile = testdir + "/../../bio/gfa2/gfa2.datatypes.yaml"
+specfile = testdir + "/../../bio/gfa/gfa2.yaml"
 spec = Specification(specfile)
-gfa2_position = spec["gfa2_position"]
+gfa2_position = spec["gfa2::position"]
 
 decoded = gfa2_position.decode("2$")
 print(decoded)
