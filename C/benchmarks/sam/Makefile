@@ -20,6 +20,8 @@ DEFLATEHASH=${DEFLATEHASH_LINUX}
 HTSLIBDIR=${CONDADIR}/pkgs/htslib-${HTSLIBVERSION}-${HTSLIBHASH}
 DEFLATEDIR=${CONDADIR}/pkgs/libdeflate-${DEFLATEVERSION}-${DEFLATEHASH}
 
+LD_LIBRARY_PATH=${HTSLIBDIR}/lib:${DEFLATEDIR}/lib
+
 default: compare
 
 PRJDIR=../../..
@@ -34,8 +36,9 @@ textformats_based: nimcache/textformats_c.h textformats_based.c
 		nimcache/*.o textformats_based.c -lm
 
 htslib_based: htslib_based.c
-	gcc -DNDEBUG -o $@ -O3 -I${HTSLIBDIR}/include \
-		-L${HTSLIBDIR}/lib -lhts htslib_based.c -lm
+	env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} gcc -DNDEBUG -o $@ -O3 \
+		-I${HTSLIBDIR}/include \
+		-L${HTSLIBDIR}/lib htslib_based.c -lhts -lm
 
 INPUT=${PRJDIR}/benchmarks/data/sam/100000.lines.sam
 
@@ -50,7 +53,6 @@ run_textformats_based: ${SPEC} ${INPUT} textformats_based
 	@>&2 echo "#   Datatype:      ${DT}"
 	@time ./textformats_based ${INPUT} ${SPEC} ${DT}
 
-LD_LIBRARY_PATH=${HTSLIBDIR}/lib:${DEFLATEDIR}/lib
 run_htslib_based: ${INPUT} htslib_based
 	@>&2 echo "### Running benchmark ###"
 	@>&2 echo "# Input file:    ${INPUT}"
