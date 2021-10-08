@@ -52,7 +52,7 @@ def parse_cigarstr_findall(cigarstr):
 def main(args):
   with open(args["<inputfn>"]) as f:
     for line in f:
-      cigar = parse_cigarstr_findall(line.rstrip())
+      cigar = parse_cigarstr_chairwise(line.rstrip())
       opstats = compute_stats(cigar)
       print_all_opstats(opstats)
 
