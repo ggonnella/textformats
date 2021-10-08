@@ -14,7 +14,7 @@ int main(void)
   /* (2) parse specification and get datatype definition  */
   Specification *spec = tf_specification_from_file(
       "../../benchmarks/data/cigars/cigars.yaml");
-  DatatypeDefinition *datatype = tf_get_definition(spec, "cigar");
+  DatatypeDefinition *datatype = tf_get_definition(spec, "cigar_str");
 
   /* (3) decode to a "node", convert to_string() */
   JsonNode *node = tf_decode(encoded, datatype);
