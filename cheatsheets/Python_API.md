@@ -52,10 +52,9 @@ Decode file with embedded spec    | `for elm in ddef.decoded_file(fname, True)`
 Yielding single elements of ddef  | `for elm in ddef.decoded_file(fname, bool, True)`
 Yielding JSON strings             | `for elm in ddef.decoded_file(fname, bool, bool, True)`
                                   |
-Using a processing function       | `decode_file(fname, ddef, has_embedded_spec_bool,`
+Using a processing function       | `ddef.decode_file(fname, has_embedded_spec_bool,`
                                   | `            decoded_processor, decoded_proc_data,`
                                   | `            decoded_proc_level, to_json)`
-
 Signature of decoded processor fn    | `decoded_processor(decoded_element, proc_data)`
 Decoded processor levels             | `DECODED_PROCESSOR_LEVEL.WHOLE`: whole file/section;
 (scope `file`/`section`)             | `DECODED_PROCESSOR_LEVEL.ELEMENT`: element of compound definition;
