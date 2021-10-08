@@ -1,18 +1,11 @@
 # Definitions by kind of represented value
 
-The goal of a specification is to describe each part
-of the format, separately, and how to combine them, hierarchically,
-to compose the entire format. The smallest components are often
-scalar values: strings, numbers, booleans, undefined values.
-These are usually combined into sets of values.
-
-The following section
-describes how to describe parts of the format, depending on the type
-of value they represent.
+This documents describes the TF-Spec syntax to define datatypes of a format
+based on the type of value they represent.
 
 ## An example
 
-When writing the specification for a format, you will need to think
+When writing the specification for a format, one will need to think
 what is the target kind of data for the result of parsing each part of a
 format and then read the corresponding section. E.g. the following format:
 ```

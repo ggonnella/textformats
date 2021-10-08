@@ -1,4 +1,4 @@
-# Format specifications syntax
+# TF-Spec: TextFormats specifications syntax
 
 The goal of the TextFormats library is to parse a textual representation
 of data and translate it into data (decoding) and vice versa (encoding).
@@ -7,17 +7,23 @@ must describe the format of the textual representation and the rules used for
 validating, decoding and encoding the data. This is done by writing a
 specification.
 
-A TextFormats specification is a mapping/dictionary. Its syntax is conceived
-so to be representable as JSON (and YAML 1.2, which is a superset of JSON):
-i.e. the mapping keys are strings, the values are mappings (with string keys),
-arrays/lists, strings, numeric values, boolean values or null. Therefore it can
-be stored in a JSON or YAML file, or constructed programmatically. Examples
-in this file are given as YAML.
+Specifications are written using a declarative language named TF-Spec.
+The syntax of the language is conceived so to be representable as a
+JSON object or a YAML 1.2 mapping: i.e. keywords are given in the form
+of mapping keys (as strings) and their arguments are the values associated
+with the key (in the form of mappings, sequences/lists or scalars).
 
-## Root level keys
+Examples in this file are given as YAML 1.2. However the language can
+also be written in JSON format, or a mapping with the same content
+can be constructed programmatically.
 
-The following keys at the top level of the specification mapping have
-a defined meaning:
+## Sections
+
+As explained above, a specification must be a mapping. The root level
+of the mapping contains keys, which define different sections of the
+specification.
+
+The following sections are defined:
 `datatypes`
 : Definitions of the textual representations and parsing rules for the format
 (whole data and/or its components)
@@ -29,12 +35,10 @@ included in other specifications
 `testdata`
 : Examples of valid and invalid text representation and parsed data
 
-Any other key at root level is ignored and reserved for use in future
-versions.
-A specification must contain at least a `datatypes` and/or an `include`
-entry to be valid.
-The syntax and purpose of each of the entries is explained in the
-next sections.
+Any other key at root level is currently ignored, but could be in use in future
+versions.  A specification must contain at least a `datatypes` and/or an
+`include` section to be valid.  The syntax and purpose of each of the sections
+is explained in the next sections.
 
 ## Organization of the specification
 
