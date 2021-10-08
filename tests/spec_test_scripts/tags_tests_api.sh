@@ -3,7 +3,7 @@
 testsdir=$(dirname $0)
 
 datadir=$testsdir/../../bio
-spec=$datadir/gfa2/gfa2.complete.yaml
-tests=$datadir/gfa2/gfa2.datatypes_tests.yaml
+spec=$datadir/gfa/gfa.tags.yaml
+tests=$datadir/tests/tags.yaml
 
 $testsdir/spec_tests_apibased.py $spec $tests
