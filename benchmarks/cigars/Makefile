@@ -19,17 +19,19 @@ DT=cigar_str
 run_textformats_based: ${SPEC} ${INPUT} textformats_based
 	@>&2 echo "### Running benchmark ###"
 	@>&2 echo "# Input file:    ${INPUT}"
+	@>&2 echo "# Output file:   textformats_based.out"
 	@>&2 echo "# Program:       textformats_based"
 	@>&2 echo "# Parameters:"
 	@>&2 echo "#   Specification: ${SPEC}"
 	@>&2 echo "#   Datatype:      ${DT}"
-	@time ./textformats_based ${INPUT} ${SPEC} ${DT}
+	@time ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
 
 run_ad_hoc: ${INPUT} ad_hoc
 	@>&2 echo "### Running benchmark ###"
 	@>&2 echo "# Input file:    ${INPUT}"
+	@>&2 echo "# Output file:   ad_hoc.out"
 	@>&2 echo "# Program:       ad_hoc"
-	@time ./ad_hoc ${INPUT}
+	@time ./ad_hoc ${INPUT} > ad_hoc.out
 
 compare: ${INPUT} textformats_based ad_hoc
 	@echo "Input file: ${INPUT}"
