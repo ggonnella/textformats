@@ -1,5 +1,6 @@
 import nimporter
 import json
+from enum import IntEnum
 import textformats.py_bindings as tf
 from textformats.error import handle_textformats_errors, \
                               handle_nimpy_exception
@@ -183,3 +184,9 @@ class Specification:
     return "TextFormats Specification table\n" + src +\
       f"- defined/included datatypes:\n" +\
       "\n".join([f"  - {n}"for n in self.datatype_names])
+
+class DECODED_PROCESSOR_LEVEL(IntEnum):
+  WHOLE = 0
+  ELEMENT = 1
+  LINE = 2
+

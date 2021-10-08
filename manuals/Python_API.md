@@ -174,8 +174,11 @@ level. The default is the `whole` level, while the `element` level is selected
 by setting the boolean parameter `yield_elements`.
 
 In contrast, all three levels can be selected, if the proc `decode_file` is
-used, setting the parameter `decoded_processor_level` to 0 (whole, default),
-1 (element) or 2 (line). Further parameters are the processing function
+used, setting the parameter `decoded_processor_level` to one of the values
+of the `DECODED_PROCESSOR_LEVEL` enum of the `textformats` module:
+`DECODED_PROCESOR_LEVEL.WHOLE` (default), `DECODED_PROCESOR_LEVEL.ELEMENT` or
+`DECODED_PROCESOR_LEVEL.LINE`.
+Further parameters are the processing function
 (`decoded_processor`), which is applied to each decoded value (at the selected
 level), and `decoded_processor_data`, which can be any value passed to the
 processing function, in order to provide to it access to any further necessary

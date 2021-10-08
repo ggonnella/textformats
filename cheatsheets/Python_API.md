@@ -57,9 +57,9 @@ Using a processing function       | `decode_file(fname, ddef, has_embedded_spec_
                                   | `            decoded_proc_level, to_json)`
 
 Signature of decoded processor fn    | `decoded_processor(decoded_element, proc_data)`
-Decoded processor levels             | 0: whole file/section;
-(scope `file`/`section`)             | 1: element of compound definition;
-                                     | 2: single lines
+Decoded processor levels             | `DECODED_PROCESSOR_LEVEL.WHOLE`: whole file/section;
+(scope `file`/`section`)             | `DECODED_PROCESSOR_LEVEL.ELEMENT`: element of compound definition;
+                                     | `DECODED_PROCESSOR_LEVEL.LINE`: single lines
 Set scope of definition              | `ddef.scope = scope`
 where scope is (string):             | `line`, `unit`, `section` or `file`
 Set unitsize (scope `unit`)          | `ddef.unitsize = int_nlines`
