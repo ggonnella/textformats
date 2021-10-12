@@ -11,7 +11,7 @@ encoded_wrong = "1M;100D1I2M3M4M"
 print(f"Encoded: {encoded}")
 
 # open specification and get datatype definition
-spec = Specification(f"{cigarsdir}/cigars.yaml");
+spec = Specification(f"{cigarsdir}/cigars.yaml")
 datatype = spec["cigar_str"]
 
 # decode
