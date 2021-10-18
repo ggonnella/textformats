@@ -69,8 +69,24 @@ datatypes:
   # https://www.ncbi.nlm.nih.gov/books/NBK21091/table/ch18.T.refseq_accession_numbers_and_mole/
   refseq:
     composed_of:
-      - molecule_type: {regex: "(AC|N[CGTWZMR]|X[MR]|[ANYXW]P)"}
-      - number: {regex: "[0-9]+"}
+      - metadata:
+          values:
+          - AC: {molecule_type: genomic, completeness: complete, assembly: alternate}
+          - NC: {molecule_type: genomic, completeness: complete, assembly: reference}
+          - NG: {molecule_type: genomic, completeness: incomplete}
+          - NT: {molecule_type: genomic, completeness: contig/scaffold, strategy: clone-based/WGS}
+          - NW: {molecule_type: genomic, completeness: contig/scaffold, strategy: WGS}
+          - NZ: {molecule_type: genomic, completeness: ordered WGS sequence collection, strategy: WGS}
+          - NM: {molecule_type: mRNA, annotation: curated}
+          - NR: {molecule_type: non-protein-coding RNA, annotation: curated}
+          - XM: {molecule_type: mRNA, annotation: predicted model}
+          - XR: {molecule_type: non-protein-coding RNA, annotation: predicted model}
+          - AP: {molecule_type: protein, annotated_on: AC}
+          - MP: {molecule_type: protein, transcript: NM/NC}
+          - XP: {molecule_type: protein, transcript: XM}
+          - YP: {molecule_type: protein, transcript: none}
+          - WP: {molecule_type: protein, type: common to multiple taxa}
+      - entry_id: {regex: "[0-9]+"}
     splitted_by: "_"
   # https://www.uniprot.org/help/accession_numbers
   uniprotkb:
@@ -94,3 +110,4 @@ datatypes:
       - entry_id:
           regex:
             "[0-9]{11}"
+
