@@ -1,3 +1,4 @@
+include: ["gfa/gfa.B.tags.yaml"]
 datatypes:
   rname: {regex: "[0-9A-Za-z!#$%&+./:;?@^_|~-][0-9A-Za-z!#$%&*+./:;=?@^_|~-]*"}
   qname: {regex: "[!-?A-~]+"}
@@ -25,12 +26,17 @@ datatypes:
       - sequence: {one_of: [placeholder, sequence]}
       - qual: {one_of: [placeholder, qual]}
       - tags:
-          tagged_values: {i: string, Z: string}
-          tagname: "[A-Z][A-Z]"
+          tagged_values:
+            A: {regex: "[!-~]"}
+            B: tagB::array
+            H: {list_of: {regex: "[0-9a-fA-F]{2}"}}
+            Z: {regex: "[ -~]*"}
+            i: integer
+            f: float
           splitted_by: "\t"
-          internal_separator: ":"
+          tagname: "[A-Za-z][A-Za-z0-9]"
     splitted_by: "\t"
-    required: 8
+    required: 11
   header:
     named_values:
       "@HD":
