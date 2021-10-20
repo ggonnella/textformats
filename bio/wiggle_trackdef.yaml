@@ -39,7 +39,7 @@ datatypes:
     composed_of: [key: {constant: description}, value: double_quoted_string]
     separator: "="
 
-  wiggle_trackdef_line_item_description:
+  wiggle_trackdef_line_item_visibility:
     composed_of: [key: {constant: visibility},
                   value: {values: [full, dense, hide]}]
     splitted_by: "="
