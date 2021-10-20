@@ -1,0 +1,149 @@
+#
+# This format was created to demostrate the use of TextFormat
+# for defining new bioinformatics formats.
+#
+# The goal of the format is to describe the expected content of genomes
+# in terms of values of given attributes (such as sequence statistics or feature
+# counts), depending on the membership of the organism (to which the genome
+# belong) to taxonomic or phenotypic groups.
+#
+# The format is similar to GFA in its structure:
+# - each non-comment line (i.e. not starting with the hash symbol) is a record
+# - a record consists of fields separated by tabs
+# - the first field is a single uppercase letter coding for the record type
+# - the record type determines the number and semantics of the following fields
+#
+# Record types:
+# - A --> attribute line: defines a measurable attribute (name, datatype,
+#         unit of measurement); links to an external ontology; optionally
+#         allows to collect attributes into groups
+# - P --> phenotypic group line: describes a phenotype; links to an external
+#         ontology
+# - T --> taxon line: names a taxonomic group; links to the NCBI taxonomy DB
+# - E --> expectation line; associates a taxonomic or phenotypic group to
+#         an expected value of an attribute (equal to a given boolean or
+#         numeric value; or, for numeric values, lower/higher than a
+#         given threshold or in a given range); links to a publication
+#         or other document or database record, which documents the expectation
+#         using Pubmed ID, DDOI or unique identifiers (UUID).
+#
+datatypes:
+  boolean:
+    values: [F: False, T: True]
+  interval_type:
+    values:
+      - "..": "closed"
+      - ">..": "min-open"
+      - ">..<": "open"
+      - "..<": "max-open"
+  interval:
+    one_of:
+     - composed_of: {min: integer, max: integer}, splitted_by: ".."
+     - composed_of: {min: float, interval_type: interval_type, max: float}
+  placeholder:
+    constant: "."
+  identifier:
+    regex: "[A-Za-z][A-za-z0-9_]*"
+  description: # allows spaces and some punctuation
+    regex: "[A-Za-z][A-za-z0-9_,.:;-+=\(\) ]*"
+  ontology_link:
+    composed_of:
+      - ontology_prefix: identifier
+      - ontology_term: {regex: "\S+"}
+    separator: ":"
+  pubmed_id:
+    composed_of:
+      - constant: "pmid:"
+      - id: unsigned_integer
+  doi:
+    prefix: "doi:"
+    composed_of:
+      - constant: "10"
+      - sep1: "."
+      - registrant: {regex: "[^\t\n]+"}
+      - sep2: "/"
+      - object: {regex: "[^\t\n]+"}
+    hide_constants: true
+  hexchar:
+    regex: "[0-9a-fA-F]"
+  uuid:
+    prefix: "uuid:"
+    composed_of:
+      - g1: {list_of: hexchar, length: 8, as_string: True}
+      - g2: {list_of: hexchar, length: 4, as_string: True}
+      - g3: {list_of: hexchar, length: 4, as_string: True}
+      - g4: {list_of: hexchar, length: 4, as_string: True}
+      - g5: {list_of: hexchar, length: 12, as_string: True}
+    splitted_by: "-"
+  data_descriptor:
+    list_of:
+      composed_of:
+        - datatype:
+          values:
+          - i: "signed integer"
+          - u: "unsigned integer"
+          - f: "float"
+          - b: "boolean"
+        - unit: identifier
+        - name: identifier
+      splitted_by: ":"
+    n_required: 2
+    separator: ","
+    minlength: 1
+  comment_line:
+    regex: "#[^\n]*"
+  attribute_line:
+    composed_of:
+      - record_type: {"A": "attribute_object"}
+      - name: identifier
+      - ontology_link: ontology_link
+      - data_descriptor: data_descriptor
+      - group_name: {one_of: [placeholder, identifier]}
+    splitted_by: "\t"
+  taxon_line:
+    composed_of:
+      - record_type: {"T": "taxon"}
+      - name: description
+      - ncbi_taxid: unsigned_integer
+    splitted_by: "\t"
+  phenotype_line:
+    composed_of:
+      - record_type: {"P": "phenotype"}
+      - name: identifier
+      - definition: {one_of: [placeholder, description]}
+      - ontology_link: {one_of: [placeholder, ontology_link]}
+    splitted_by: "\t"
+  subject_ref:
+    one_of:
+      - composed_of:
+          - prefix: {constant: "T"}
+          - ncbi_taxid: unsigned_integer
+        splitted_by: ":"
+      - composed_of:
+          - prefix: {constant: "P"}
+          - phenotype_name: identifier
+        splitted_by: ":"
+  bool_expectation_line:
+    composed_of:
+      - record_type: {"E": "expectation"}
+      - subject: subject_ref
+      - relation: {constant: "="}
+      - value: boolean
+      - reference: {one_of: [pubmed_id, doi, uuid]}
+    splitted_by: "\t"
+  numeric_expectation_line:
+    composed_of:
+      - record_type: {"E": "expectation"}
+      - subject: subject_ref
+      - relation: {values: ["<", "<=", "=", ">=", ">"]}
+      - value: {one_of: [integer, float]}
+      - reference: {one_of: [pubmed_id, doi, uuid]}
+    splitted_by: "\t"
+  interval_expectation_line:
+    composed_of:
+      - record_type: {"E": "expectation"}
+      - subject: subject_ref
+      - relation: {one_of: ["in", "notin"]}
+      - value: interval
+      - reference: {one_of: [pubmed_id, doi, uuid]}
+    splitted_by: "\t"
