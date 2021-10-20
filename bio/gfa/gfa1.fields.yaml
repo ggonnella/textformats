@@ -22,9 +22,9 @@ datatypes:
   # alignments
   cigar_op: {composed_of: [length: unsigned_integer,
                            code: {regex: "[MIDNSHPX=]"}]}
-  cigar: {list_of: cigar_op, sep: "", minlength: 1}
+  cigar: {list_of: cigar_op, minlength: 1}
   alignment: {one_of: [placeholder, cigar]}
-  alignments_list: {list_of: alignment, sep: ","}
+  alignments_list: {list_of: alignment, splitted_by: ","}
 
 testdata:
   placeholder:
