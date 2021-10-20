@@ -1,21 +1,41 @@
 #
 # This is a version of the GFA2 specification which
-# does not include the exact specification of tags,
+# does not use the exact specification of tags,
 # but just a generic parsing of the name/type/value
 # of the tags
+#
+# This file demonstrate how to redefine part of a
+# specification
 #
 # Use gfa2.yaml for the specification including
 # complete tags parsing
 #
-include: [gfa2.lines.yaml, gfa2.datatypes.yaml]
+include: gfa2.yaml
 datatypes:
-  gfa_tag_generic:
+  # This is a re-definition of a previously defined datatype.
+  #
+  # Originally gfa::tags is defined in gfa.tags.yaml
+  # and it consists of a "tagged_value" definition.
+  #
+  # Note that the definition uses a reference (to gfa::generic_tag).
+  # References inside of re-definitions *must* use the same namespace
+  # as the re-definition (thus the gfa::). This also if the
+  # datatype to which it refers did not exist, as in this case.
+  gfa::tags:
+    list_of: gfa::generic_tag
+    splitted_by: "\t"
+    minlength: 0
+  #
+  # Definition used by the reference of a re-definition.
+  #
+  # It is not a re-definition itself, since gfa::generic_tag did not exist yet.
+  # Since it is used by a re-definition, however, it *must* use the same
+  # namespace, hence the "gfa::". Note that it is not forbidden to add any
+  # namespace to local definitions - as in this case.
+  #
+  gfa::generic_tag:
     composed_of:
       - name: {regex: "[A-Za-z][A-Za-z0-9]"}
       - type: {regex: "[ABHJZif]"}
       - value: {regex: "[ -~]*"}
     splitted_by: ":"
-  gfa_tags:
-    list_of: gfa_tag_generic
-    splitted_by: "\t"
-    minlength: 0
