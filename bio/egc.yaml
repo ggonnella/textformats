@@ -38,31 +38,31 @@ datatypes:
       - "..<": "max-open"
   interval:
     one_of:
-     - composed_of: {min: integer, max: integer}, splitted_by: ".."
-     - composed_of: {min: float, interval_type: interval_type, max: float}
+      - {composed_of: [min: integer, max: integer], splitted_by: ".."}
+      - composed_of: [min: float, interval_type: interval_type, max: float]
   placeholder:
     constant: "."
   identifier:
     regex: "[A-Za-z][A-za-z0-9_]*"
   description: # allows spaces and some punctuation
-    regex: "[A-Za-z][A-za-z0-9_,.:;-+=\(\) ]*"
+    regex: '[A-Za-z][A-za-z0-9_,.:;\-+=\(\) ]*'
   ontology_link:
     composed_of:
       - ontology_prefix: identifier
-      - ontology_term: {regex: "\S+"}
+      - ontology_term: {regex: '\S+'}
     separator: ":"
   pubmed_id:
+    prefix: "pmid:"
     composed_of:
-      - constant: "pmid:"
       - id: unsigned_integer
   doi:
     prefix: "doi:"
     composed_of:
-      - constant: "10"
-      - sep1: "."
-      - registrant: {regex: "[^\t\n]+"}
-      - sep2: "/"
-      - object: {regex: "[^\t\n]+"}
+      - ten: {constant: "10"}
+      - sep1: {constant: "."}
+      - registrant: {regex: '[^\t\n]+'}
+      - sep2: {constant: "/"}
+      - object: {regex: '[^\t\n]+'}
     hide_constants: true
   hexchar:
     regex: "[0-9a-fA-F]"
@@ -78,23 +78,19 @@ datatypes:
   data_descriptor:
     list_of:
       composed_of:
-        - datatype:
-          values:
-          - i: "signed integer"
-          - u: "unsigned integer"
-          - f: "float"
-          - b: "boolean"
+        - datatype: {values: [i: "integer", u: "unsigned integer",
+                              f: "float", b: "boolean"]}
         - unit: identifier
         - name: identifier
       splitted_by: ":"
-    n_required: 2
+      required: 2
     separator: ","
     minlength: 1
   comment_line:
     regex: "#[^\n]*"
   attribute_line:
     composed_of:
-      - record_type: {"A": "attribute_object"}
+      - record_type: {constant: {"A": "attribute_object"}}
       - name: identifier
       - ontology_link: ontology_link
       - data_descriptor: data_descriptor
@@ -102,13 +98,13 @@ datatypes:
     splitted_by: "\t"
   taxon_line:
     composed_of:
-      - record_type: {"T": "taxon"}
+      - record_type: {constant: {"T": "taxon"}}
       - name: description
       - ncbi_taxid: unsigned_integer
     splitted_by: "\t"
   phenotype_line:
     composed_of:
-      - record_type: {"P": "phenotype"}
+      - record_type: {constant: {"P": "phenotype"}}
       - name: identifier
       - definition: {one_of: [placeholder, description]}
       - ontology_link: {one_of: [placeholder, ontology_link]}
@@ -125,7 +121,7 @@ datatypes:
         splitted_by: ":"
   bool_expectation_line:
     composed_of:
-      - record_type: {"E": "expectation"}
+      - record_type: {constant: {"E": "expectation"}}
       - subject: subject_ref
       - relation: {constant: "="}
       - value: boolean
@@ -133,7 +129,7 @@ datatypes:
     splitted_by: "\t"
   numeric_expectation_line:
     composed_of:
-      - record_type: {"E": "expectation"}
+      - record_type: {constant: {"E": "expectation"}}
       - subject: subject_ref
       - relation: {values: ["<", "<=", "=", ">=", ">"]}
       - value: {one_of: [integer, float]}
@@ -141,9 +137,9 @@ datatypes:
     splitted_by: "\t"
   interval_expectation_line:
     composed_of:
-      - record_type: {"E": "expectation"}
+      - record_type: {constant: {"E": "expectation"}}
       - subject: subject_ref
-      - relation: {one_of: ["in", "notin"]}
+      - relation: {values: ["in", "notin"]}
       - value: interval
       - reference: {one_of: [pubmed_id, doi, uuid]}
     splitted_by: "\t"
