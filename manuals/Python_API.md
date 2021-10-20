@@ -155,7 +155,7 @@ portion of the file while decoding (thus the parameter must be set).
 ### Level of decoded processing/yielding
 
 Definitions at `file` or `section` scope are compound datatypes (`composed_of`,
-`list_of` or `named_values`), which consist of multiple elements (each in one
+`list_of` or `labeled_list`), which consist of multiple elements (each in one
 or multiple lines).
 
 The default is to work with the entire file or section at once (`whole` level).

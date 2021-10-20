@@ -52,7 +52,7 @@ datatypes:
     splitted_by: ","
 
   attributes_table:
-    named_values:
+    labeled_list:
       y: float
       k: {values: {"T": true, "F": false}}
     required: [k]
@@ -550,17 +550,17 @@ missing. For this see below the section "Adding implicit dictionary entries".
 In case a elements are represented in a non-fixed order, the semantic
 and datatype of the elements is sometimes given as a key preceding
 the value. The set of possible keys is known in advance. In this case
-a `named_values` definition is used:
+a `labeled_list` definition is used:
 ```YAML
 datatypes:
   dict6:
-    named_values:
+    labeled_list:
       rank: unsigned_integer
       name: string
     splitted_by: ";"
 ```
 The keys and the datatypes of the associated values are given under
-the `named_values` key, as a mapping.
+the `labeled_list` key, as a mapping.
 
 Note that an `internal_separator` string can be specified, separating the key
 from the value. The default is `:`. The internal separator cannot be empty and
@@ -573,7 +573,7 @@ be enforced by listing them under the `single` key:
 ```YAML
 datatypes:
   dict7:
-    named_values:
+    labeled_list:
       rank: unsigned_integer
       name: string
     splitted_by: ";"
@@ -585,7 +585,7 @@ of the names must be present, they are listed under the `required` key:
 ```YAML
 datatypes:
   dict8:
-    named_values:
+    labeled_list:
       rank: unsigned_integer
       name: string
     splitted_by: ";"
@@ -600,16 +600,16 @@ in a non-fixed order, and are each accompanied by a name and typecode,
 i.e. as triples value/name/typecode.
 
 Thereby, the name defines the semantic of the value and not all names
-(differently from named values) must be defined in advance.  The typecode is
-associated to a datatype definition.
+(differently from labeled values lists) must be defined in advance.
+The typecode is associated to a datatype definition.
 
-For these cases, the `tagged_values` definition
+For these cases, the `tagged_list` definition
 key is used, under which all available datatypes codes and the associated
-datatype definitions are given under the `tagged_values` key as a mapping.
+datatype definitions are given under the `tagged_list` key as a mapping.
 ```YAML
 datatypes:
   dict9:  # e.g. A.i.12;B.f.1.3 <-> {"A": 12, "B": 1.3}
-    tagged_values:
+    tagged_list:
       i: integer
       f: float
     tagname: "[A-Z]"
@@ -650,7 +650,7 @@ canonical one must be specified, which is then used for encoding:
 In some cases, the decoded dictionary shall contain a given constant
 key/value pair, which is not explicitely encoded. These are specified
 using the `implicit` mapping, which is available for `composed_of`,
-`named_values` and `tagged_values` definitions:
+`labeled_list` and `tagged_list` definitions:
 ```YAML
   dict11:
     composed_of:   # e.g. "16S,2" <-> {"name": "16S", copies: 2, type: "rRNA"}

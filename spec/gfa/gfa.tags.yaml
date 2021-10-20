@@ -3,7 +3,7 @@ include: "gfa.B.tags.yaml"
 datatypes:
   tags:
     tagname: "[A-Za-z][A-Za-z0-9]"
-    tagged_values:
+    tagged_list:
       A: {regex: "[!-~]"}
       B: tagB::array
       H: {list_of: {regex: "[0-9a-fA-F]{2}"}}

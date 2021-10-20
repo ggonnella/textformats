@@ -1,10 +1,10 @@
 datatypes:
   t_simple:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     splitted_by: ","
   t_predefined_only:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: ""
     splitted_by: ","
@@ -14,7 +14,7 @@ datatypes:
       CD: x
       ef: x
   t_fullopts:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
       "y": string
       z: integer

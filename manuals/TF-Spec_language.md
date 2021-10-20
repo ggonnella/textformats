@@ -749,19 +749,19 @@ The following table gives examples of using the three definitions above:
 | `cof3`   | `1:B:-3` | `{"node1": 1 , "relation": "B", "node2": -3}` |
 | `cof3`   | `1:-3`   | `{"node1": 1 , "relation": "X", "node2": -3}` |
 
-## Definitions of kind `named_values`
+## Definitions of kind `labeled_list`
 
-Definitions of kind `named_values` are used for compound elements which of sets
+Definitions of kind `labeled_list` are used for compound elements which of sets
 of instances of sub-elements, each associated to a name (from a set of
 predefined names), for which the type depends on the name. The datatype
 associated with each of the names is given as a mapping (name: datatype) under
-the `named_values` key.  Thereby the datatype is given either as a definition
+the `labeled_list` key.  Thereby the datatype is given either as a definition
 mapping, or as a reference to another datatype.  Any kind of of element
-definition can be used (including `named_values` and other compound datatypes,
+definition can be used (including `labeled_list` and other compound datatypes,
 although in this case the definition must carefully avoid ambuiguitites, e.g.
 using different separator strings).
 
-The decoded data value of a `named_values` definition is a table (Nim), mapping
+The decoded data value of a `labeled_list` definition is a table (Nim), mapping
 (YAML), dict (Python), JSON object (JSON, C/C++), except if the `as_string`
 option is set (see section "Validation-only compound definitions").
 The mapping contains an entry for each of the names present at least once in
@@ -778,7 +778,7 @@ In case a name is listed under `single`, the value of the entry for the name
 of the element value, and not a list, as it would be if the name is not
 in `single`.
 
-For `named_values` datatypes, the name and the value are splitted by a
+For `labeled_list` datatypes, the name and the value are splitted by a
 non-empty string. The default value is `:`, a different value can be given in
 the definition mapping under the key `internal_separator`.  The internal separator
 must be different from the elements separator given under `splitted_by` and the
@@ -788,17 +788,17 @@ rest of the text. However, the string representations of the element values
 can contain the internal separator. The elements separator cannot be present in
 both element names and values.
 
-Examples of `named_values` definitions are given here:
+Examples of `labeled_list` definitions are given here:
 ```YAML
 datatypes:
   nv1:
-   named_values:
+   labeled_list:
      score: float
      count: unsigned_integer
      name: {regex: "[A-Za-z]+"}
    splitted_by: "  "
   nv2:
-   named_values:
+   labeled_list:
      score: float
      count: unsigned_integer
      name: {regex: "[A-Za-z]+"}
@@ -817,20 +817,20 @@ Example of usage of the definitions above are given in the following table:
 | `nv2`    | `name=A  score=1.0`              | `{"score": [1.0], "name": "A"}`                |
 | `nv2`    | `name=A  score=1.0  count=12`    | `{"name": "A", "score": [1.0], "count": [12]}` |
 
-## Definitions of kind `tagged_values`
+## Definitions of kind `tagged_list`
 
-Definitions of kind `tagged_values` are used for compound elements which of
+Definitions of kind `tagged_list` are used for compound elements which of
 sets of instances of sub-elements, each associated to a tagname and a typecode
 (from a set of predefined typecodes), for which the type depends on the
 typecode. The datatype associated with each of the typecodes is given as a
-mapping (typecode: datatype) under the `tagged_values` key.  Thereby the
+mapping (typecode: datatype) under the `tagged_list` key.  Thereby the
 datatype is given either as a definition mapping, or as a reference to another
 datatype.  Any kind of of element definition can be used (including
-`tagged_values` and other compound datatypes, although in this case the
+`tagged_list` and other compound datatypes, although in this case the
 definition must carefully avoid ambuiguitites, e.g.  using different separator
 strings).
 
-The decoded data value of a `tagged_values` definition is a table (Nim),
+The decoded data value of a `tagged_list` definition is a table (Nim),
 mapping (YAML), dict (Python), JSON object (JSON, C/C++), except if the
 `as_string` option is set (see section "Validation-only compound definitions").
 The mapping contains an entry for each of the tagnames present in the string
@@ -848,7 +848,7 @@ of the tagnames. The default value is `[A-Za-z_][0-9A-Za-z_]*`.
 Predefined tagnames do not have to match it. If it is set to an empty
 string, no other tagnames except the predefined ones are allowed.
 
-For `tagged_values` datatypes, the tagname, typecode and the value are splitted
+For `tagged_list` datatypes, the tagname, typecode and the value are splitted
 by a non-empty string. The default value is `:`. A different string can be
 specified in the definition mapping under the key `internal_separator`. The
 internal separator must be different from the elements separator given under
@@ -858,17 +858,17 @@ is used to split them from the rest of the text. However, the string
 representations of the tag values can contain the internal separator. The
 elements separator cannot be present in tagnames, typecodes or values.
 
-The following are examples of `tagged_values` definitions:
+The following are examples of `tagged_list` definitions:
 ```YAML
 datatypes:
   t1:
-   tagged_values:
+   tagged_list:
      f: float
      u: unsigned_integer
      n: {regex: "[A-Za-z]+"}
    splitted_by: " "
   t2:
-   tagged_values:
+   tagged_list:
      s: float
      u: unsigned_integer
      n: {regex: "[A-Za-z]+"}
@@ -945,14 +945,14 @@ datatypes:
 For example the string `1:20/0` would be parsed using the definition `xyz`
 as `{"x": 1, "y": 20, "z": 0}`.
 
-### Separators for `named_values` and `tagged_values` definitions
+### Separators for `labeled_list` and `tagged_list` definitions
 
-In the current implementation, `named_values` and `tagged_values` only support
+In the current implementation, `labeled_list` and `tagged_list` only support
 the `splitted_by` key and the key is required for these kind of definitions.
 I.e. a non-empty string must be present between the elements, which is never
 found in the string representation of the elements themselves.
 
-Besides the elements separator, the `named_values` and `tagged_values`
+Besides the elements separator, the `labeled_list` and `tagged_list`
 definitions, must include a key for specify the separator used for splitting
 the components of the elements (`internal_separator`).  More details are given
 in the two sections describing these kinds of definitions.

@@ -1,12 +1,12 @@
 datatypes:
   d_m2:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
     required: [name, a]
   d_m2_s1:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
@@ -14,7 +14,7 @@ datatypes:
     required: [name, a]
     single: [name]
   d_m2_s2:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
@@ -22,33 +22,33 @@ datatypes:
     required: [name, a]
     single: [name, a]
   d_o2:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
   d_o2_s1:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
     internal_separator: ":"
     single: [name]
   d_o2_s2:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
     internal_separator: ":"
     single: [name, a]
   d_m1_o1:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
     internal_separator: ":"
     required: [name]
   d_m1_o1_s1:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
@@ -56,7 +56,7 @@ datatypes:
     required: [name]
     single: [name]
   d_m1_o1_s2:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
     splitted_by: ","
@@ -64,31 +64,31 @@ datatypes:
     required: [name]
     single: [name, a]
   d_m1:
-    named_values:
+    labeled_list:
       name: string
     splitted_by: ","
     internal_separator: ":"
     required: [name]
   d_m1_s1:
-    named_values:
+    labeled_list:
       name: string
     splitted_by: ","
     internal_separator: ":"
     single: [name]
     required: [name]
   d_o1:
-    named_values:
+    labeled_list:
       name: string
     splitted_by: ","
     internal_separator: ":"
   d_o1_s1:
-    named_values:
+    labeled_list:
       name: string
     splitted_by: ","
     internal_separator: ":"
     single: [name]
   d_fullopt:
-    named_values:
+    labeled_list:
       name: string
       a: {constant: a}
       i: integer

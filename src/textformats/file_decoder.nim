@@ -183,7 +183,7 @@ proc validate_section_def(dd: DatatypeDefinition) =
   if dd.kind notin @[ddkStruct, ddkList, ddkDict]:
     raise newException(TextFormatsRuntimeError,
             "Wrong datatype definition for file section\n" &
-            "Expected: composed_of, list_of or named_values\n" &
+            "Expected: composed_of, list_of or labeled_list\n" &
             &"Found: '{dd.kind}'")
   if dd.sep != "\n":
     raise newException(TextFormatsRuntimeError,

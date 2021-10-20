@@ -11,7 +11,7 @@ const
 
   # def keys, one and only one must be present
   ConstDefKey* = "constant"
-  DictDefKey* = "named_values"
+  DictDefKey* = "labeled_list"
   EnumDefKey* = "values"
   ListDefKey* = "list_of"
   FloatRangeDefKey* = "float"
@@ -20,7 +20,7 @@ const
   RegexesMatchDefKey* = "regexes"
   RegexMatchDefKey* = "regex"
   StructDefKey* = "composed_of"
-  TagsDefKey* = "tagged_values"
+  TagsDefKey* = "tagged_list"
   UnionDefKey* = "one_of"
 
   # additional keys for datatype definition

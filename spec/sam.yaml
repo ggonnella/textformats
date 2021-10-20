@@ -26,7 +26,7 @@ datatypes:
       - sequence: {one_of: [placeholder, sequence]}
       - qual: {one_of: [placeholder, qual]}
       - tags:
-          tagged_values:
+          tagged_list:
             A: {regex: "[!-~]"}
             B: tagB::array
             H: {list_of: {regex: "[0-9a-fA-F]{2}"}}
@@ -38,9 +38,9 @@ datatypes:
     splitted_by: "\t"
     required: 11
   header:
-    named_values:
+    labeled_list:
       "@HD":
-        named_values:
+        labeled_list:
           VN: string
           SO: {values: [unknown, unsorted, queryname, coordinate]}
           GO: {values: [none, query, reference]}
@@ -53,7 +53,7 @@ datatypes:
         internal_separator: ":"
         required: [VN]
       "@SQ":
-        named_values:
+        labeled_list:
           SN: rname
           LN: {unsigned_integer: {min: 1}}
           AH:
@@ -83,7 +83,7 @@ datatypes:
         splitted_by: "\t"
         internal_separator: ":"
       "@RG":
-        named_values:
+        labeled_list:
           ID: strvalue
           BC: strvalue
           CN: strvalue
@@ -116,7 +116,7 @@ datatypes:
         internal_separator: ":"
         required: [ID]
       "@PG":
-        named_values: {ID: strvalue, PN: strvalue, CL: strvalue,
+        labeled_list: {ID: strvalue, PN: strvalue, CL: strvalue,
                        PP: strvalue, DS: strvalue, VN: strvalue}
         splitted_by: "\t"
         internal_separator: ":"

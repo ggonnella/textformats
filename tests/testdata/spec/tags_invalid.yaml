@@ -1,49 +1,49 @@
 datatypes:
   t_unknown_key:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: ":"
     x: 0
   t_no_splitted_by:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "[a-z]{2}"
     internal_separator: ":"
     x: 0
   t_splitted_by_clash:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: ","
   t_isep_empty:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: ""
   t_isep_contains_splitted_by:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: "a,"
   t_typekey_contains_splitted_by:
-    tagged_values:
+    tagged_list:
       axa: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: "x"
     internal_separator: ":"
   t_typekey_contains_isep:
-    tagged_values:
+    tagged_list:
       axa: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: "x"
   t_predefined_contains_splitted_by:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "_[a-z]_"
     predefined:
@@ -51,7 +51,7 @@ datatypes:
     splitted_by: "a"
     internal_separator: ":"
   t_predefined_contains_isep:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "_[a-z]_"
     predefined:
@@ -59,19 +59,19 @@ datatypes:
     splitted_by: ","
     internal_separator: "a"
   t_empty:
-    tagged_values: {}
+    tagged_list: {}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: ":"
   t_seq:
-    tagged_values:
+    tagged_list:
     - x: {constant: x}
     - "y": {constant: y}
     tagname: "[a-z]{2}"
     splitted_by: ","
     internal_separator: ":"
   t_predefined_implicit_nameclash:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
       "y": {constant: y}
     tagname: "[a-z]{2}"
@@ -82,7 +82,7 @@ datatypes:
     implicit:
       ab: 1
   t_predefined_unknown_type:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: "[a-z]{2}"
     splitted_by: ","
@@ -90,20 +90,20 @@ datatypes:
     predefined:
       ab: y
   t_empty_tagname_no_predefined:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     splitted_by: ","
     internal_separator: ":"
     tagname: ""
   t_empty_tagname_empty_predefined:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     tagname: ""
     splitted_by: ","
     internal_separator: ":"
     predefined: {}
   t_invalid_tagname:
-    tagged_values:
+    tagged_list:
       x: {constant: x}
     splitted_by: ","
     internal_separator: ":"

@@ -41,8 +41,8 @@ Refer to file included in included, namespaced | `x::y::z`
 `float` | floating point value, optionally validated by a given range
 `list_of` | ordered set; values datatypes and semantics do not depend on their position
 `composed_of` | ordered set; values datatype and semantic depend on their position
-`named_values` | key/value pairs set; datatype and semantic depend on the key
-`tagged_values` | tagname/typecode/value triples set; semantic depends on tagname, datatype on typecode
+`labeled_list` | key/value pairs set; datatype and semantic depend on the key
+`tagged_list` | tagname/typecode/value triples set; semantic depends on tagname, datatype on typecode
 `one_of` | different formats possible, described as separate definitions
 
 # Other keys (non definition-kind keys)
@@ -51,11 +51,11 @@ Refer to file included in included, namespaced | `x::y::z`
 
 | Key | Definition kinds | Value type | Default | Purpose |
 | --- | ---              | ---        | ---     |
-| `prefix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string preceding the set of elements |
-| `suffix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string following the set of elements |
-| `splitted_by` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, never found in them (1) |
+| `prefix` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | constant string preceding the set of elements |
+| `suffix` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | constant string following the set of elements |
+| `splitted_by` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | constant string between elements, never found in them (1) |
 | `separator` | `list_of`, `composed_of` | string | constant string between elements, possibly also found in them |
-| `internal_separator` | `tagged_values`, `named_values` | string | `:` | constant string between componentes of each element |
+| `internal_separator` | `tagged_list`, `labeled_list` | string | `:` | constant string between componentes of each element |
 | `canonical` | `regex` | string | undefined | string representation to be used for encoding |
 | `canonical` | `regexes`, `values` | mapping | undefined | string representations to be used for encoding |
 
@@ -70,10 +70,10 @@ Notes:
 `max_length` | `list_of`      | unsigned integer | infinite  | max number of elements |
 `length`     | `list_of`      | unsigned integer | undefined | number of elements |
 `required`   | `composed_of`  | unsigned integer | length of `composed_of` list | first `required` elements of the list must always be present |
-`required`   | `named_values` | list of strings  | empty     | elements which must always be present |
-`single`     | `named_values` | list of strings  | empty     | elements which can be present only once |
-`predefined` | `tagged_values`| mapping (tagnames: typecodes) | empty | type of predefined tags |
-`tagnames`   | `tagged_values`| string | `[A-Za-z_][0-9A-Za-z_]*` | regular expression for validation of tagnames |
+`required`   | `labeled_list` | list of strings  | empty     | elements which must always be present |
+`single`     | `labeled_list` | list of strings  | empty     | elements which can be present only once |
+`predefined` | `tagged_list`| mapping (tagnames: typecodes) | empty | type of predefined tags |
+`tagnames`   | `tagged_list`| string | `[A-Za-z_][0-9A-Za-z_]*` | regular expression for validation of tagnames |
 
 ## Format of the represented data
 
@@ -84,7 +84,7 @@ Notes:
 | `wrapped` | `one_of` | boolean | false | augment decoded value with branch names |
 | `branch_names` | `one_of` | list of strings | ref.names/`[n]` | names of the branches to use for `wrapped` |
 | `hide_constants` | `composed_of` | boolean | if set, elements of type `constant` are not used in the decoded value |
-| `implicit` | `composed_of`, `named_values`, `tagged_values` | mapping (keys: values) | constant entries to add to decoded data |
+| `implicit` | `composed_of`, `labeled_list`, `tagged_list` | mapping (keys: values) | constant entries to add to decoded data |
 
 ## Numeric datatype intervals
 
@@ -160,16 +160,16 @@ Explicit branch information      | `one_of: [def1, def2], wrapped: true`
 | ---           | ---              | ---              | ---
 `list_of`       | constant         | constant         | list
 `composed_of`   | ordinal position | ordinal position | mapping
-`named_values`  | name             | name             | mapping
-`tagged_values` | typecode         | tagname          | mapping
+`labeled_list`  | name             | name             | mapping
+`tagged_list` | typecode         | tagname          | mapping
 
 | Kind          | Formatting keys                     | Validation keys
 | ---           | ---                                 | ---
 (common)        | `prefix`, `suffix`                  |
 `list_of`       | `separator`/`splitted_by`           | `length`, `min_length`, `max_length`
 `composed_of`   | `separator`/`splitted_by`           | `required`
-`named_values`  | `internal_separator`, `splitted_by` | `single`, `required`
-`tagged_values` | `internal_separator`, `splitted_by` | `predefined`, `tagnames`
+`labeled_list`  | `internal_separator`, `splitted_by` | `single`, `required`
+`tagged_list`   | `internal_separator`, `splitted_by` | `predefined`, `tagnames`
 
 # Lists
 
@@ -210,19 +210,19 @@ Implicit values, not in text repr       | `composed_of: [v1: integer, v2: string
                                         |
 Validate, but do not parse seq content  | `..., as_string: true`
 
-# Named values list
+# Labeled values list
 
 |                                        |                                                          |
 | ---------------------------------------| -------------------------------------------------------- |
-Named values list                        | `named_values: {i: integer, f: float}, splitted_by: " "` |
+Labeled values list                      | `labeled_list: {i: integer, f: float}, splitted_by: " "` |
                                          | e.g. i:12 f:3.2
-" with name-value separator other than : | `...,internal_separator: "="` e.g. i=12 f=3.2
+" w. label-value separator other than :  | `...,internal_separator: "="` e.g. i=12 f=3.2
                                          |
-Default: each name present 0,1,>1 times  |
--> require some names                    | `..., required: [f, f2, f3]`
--> allow some names only once            | `..., single: [i, i2, i3]`
+Default: each label present 0,1,>1 times |
+-> require some labels                   | `..., required: [f, f2, f3]`
+-> allow some labels only once           | `..., single: [i, i2, i3]`
                                          |
-Strings surroundings named values list   | `..., prefix: "[", suffix: "]"`
+Strings surroundings labeled values list | `..., prefix: "[", suffix: "]"`
                                          |
 Validate, but do not parse list content  | `..., as_string: true`
 
@@ -230,7 +230,7 @@ Validate, but do not parse list content  | `..., as_string: true`
 
 |                                        |                                                          |
 | ---------------------------------------| -------------------------------------------------------- |
-Tagged values list                       | `tagged_values: {i: integer, f: float}, splitted_by: " "` |
+Tagged values list                       | `tagged_list: {i: integer, f: float}, splitted_by: " "` |
                                          | e.g. AZ:i:12 XY:f:3.2
 " with internal separator other than :   | `...,internal_separator: "="` e.g. AZ=i=12
 " with tagnames other than SAM-style     | `..., tagnames: "[ABC][1-9][A-Z]"`

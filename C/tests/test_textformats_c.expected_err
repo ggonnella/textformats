@@ -118,7 +118,7 @@ Error (TextFormatsRuntimeError):
 
 Error (TextFormatsRuntimeError):
   Wrong datatype definition for file section
-  Expected: composed_of, list_of or named_values
+  Expected: composed_of, list_of or labeled_list
   Found: 'ddkUnion'
 
 Error (DecodingError):

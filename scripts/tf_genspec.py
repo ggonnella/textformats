@@ -1398,11 +1398,11 @@ def define_datatype_dtkinds_help(data, name):
             "Each sub-element is equivalent, i.e. "
             "its format does not depend on its position.")
   printhelp(format_answer("[3]")+
-            "\nThe element is a list of key/values pairs, with "
-            "no predefined order; the key is the name of the "
+            "\nThe element is a list of label/values pairs, with "
+            "no predefined order; the label is the name of the "
             "sub-element and determines the format of the value "
-            "The list of possible keys is predefined. Keys can be "
-            "mandatory or optional.")
+            "The list of valid labels is given in the definition. "
+            "Labels can be mandatory or optional.")
   printhelp(format_answer("[4]")+
             "\nThe element is a list of tagged values, with no predefined "
             "ordered; each member of the list is prefixed by "

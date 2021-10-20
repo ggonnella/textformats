@@ -222,7 +222,7 @@ where `I` is an integer larger than 1.
 ## Splitted processing
 
 Definitions at `file` or `section` scope are compound datatypes
-(`composed_of`, `list_of` or `named_values`), which consist of multiple
+(`composed_of`, `list_of` or `labeled_list`), which consist of multiple
 elements (each in one or multiple lines).
 
 If the flag `--splitted` or `-x` of
