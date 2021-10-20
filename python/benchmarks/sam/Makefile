@@ -3,7 +3,7 @@ default: compare
 PRJDIR=../../..
 INPUT=${PRJDIR}/benchmarks/data/sam/100000.lines.sam
 
-SPEC=${PRJDIR}/bio/sam.yaml
+SPEC=${PRJDIR}/spec/sam.yaml
 DT=file
 run_textformats_based: ${SPEC} ${INPUT} textformats_based.py
 	@>&2 echo "### Running benchmark ###"

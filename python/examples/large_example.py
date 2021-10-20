@@ -3,7 +3,7 @@ import os
 from textformats import Specification, DECODED_PROCESSOR_LEVEL
 
 testdir = os.path.dirname(os.path.realpath(__file__))
-specdir = testdir + "/../../bio"
+specdir = testdir + "/../../spec"
 biotestdir = testdir + "/../../tests/testdata/bio"
 
 header = ">ABCD some sequence"

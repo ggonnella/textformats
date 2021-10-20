@@ -2,7 +2,7 @@ import strformat, tables, json
 import textformats
 
 const
-  specdir = "../bio"
+  specdir = "../spec"
   biotestdir = "../tests/testdata/bio"
   header = ">ABCD some sequence"
 let

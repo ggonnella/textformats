@@ -42,7 +42,7 @@ htslib_based: htslib_based.c
 
 INPUT=${PRJDIR}/benchmarks/data/sam/100000.lines.sam
 
-SPEC=${PRJDIR}/bio/sam.yaml
+SPEC=${PRJDIR}/spec/sam.yaml
 DT=file
 run_textformats_based: ${SPEC} ${INPUT} textformats_based
 	@>&2 echo "### Running benchmark ###"

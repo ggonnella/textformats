@@ -25,7 +25,7 @@ const
   PRJDIR = "../.."
   INPUT = &"{PRJDIR}/benchmarks/data/sam/100000.lines.sam"
   LD = &"{HTSLIBDIR}/lib:{DEFLATEDIR}/lib"
-  SPEC = &"{PRJDIR}/bio/sam.yaml"
+  SPEC = &"{PRJDIR}/spec/sam.yaml"
   DT = "file"
 
 task run_htslib_based, "run benchmark using htslib":

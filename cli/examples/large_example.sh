@@ -2,7 +2,7 @@
 
 PATH=${PATH}:${PWD}/..
 
-specdir="../../bio"
+specdir="../../spec"
 biotestdir="../../tests/testdata/bio"
 header=">ABCD some sequence"
 decoded_header="{\"fastaid\": \"ABCD\", \"desc\": \"some sequence\"}"
