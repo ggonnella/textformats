@@ -692,7 +692,8 @@ element) can be combined using a `one_of` definition (such as in `cof3` below).
 
 If in the string representation, the elements of the list are separated by a
 constant string, this can be specified in the definition. If the separator
-string is never contained in the elements (not even escaped), it is given under
+string is never contained in the elements (not even escaped), with
+the only possible exception of the last element, it is given under
 the key `splitted_by`; otherwise it is given under the key `separator`.  By
 default no separator string is used.  If different separators are used for
 different elements, they can be defined as `constant` elements and
@@ -895,12 +896,14 @@ by constant strings, such as opening and closing brackets.
 ### Separators for `list_of` and `composed_of` definitions
 
 For `list_of` and `composed_of` definitions, two kind of options can be used to
-specify a separator string, if necessary.  If the separator string is never
+specify a separator string, if necessary. If the separator string is never
 contained in the text representation of the elements (not even in an escaped
-form), the `splitted_by` key is used.  In this case, the parser directly uses
-the separator string in some cases for splitting the string representation.
-In the case the separator string can be present in the elements, the
-`separator` key must be used instead.
+form), the `splitted_by` key is used.  As only exception, the last element of
+`composed_of` definitions may freely contain the separator string.  In case a
+`splitted_by` is used, the parser directly uses the separator string for
+splitting the string representation. In the case the separator string can be
+present in the `list_of` elements or in any `composed_of` element except
+the last one, the `separator` key must be used instead.
 
 If no separator is present, the elements must be separable by other means, i.e.
 by the formatting of the elements themselves. E.g. `-10-2-332` could be a valid

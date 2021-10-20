@@ -53,11 +53,14 @@ Refer to file included in included, namespaced | `x::y::z`
 | --- | ---              | ---        | ---     |
 | `prefix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string preceding the set of elements |
 | `suffix` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string following the set of elements |
-| `splitted_by` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, never found in them |
-| `separator` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, possibly also found in them |
+| `splitted_by` | `list_of`, `composed_of`, `named_values`, `tagged_values` | string | constant string between elements, never found in them (1) |
+| `separator` | `list_of`, `composed_of` | string | constant string between elements, possibly also found in them |
 | `internal_separator` | `tagged_values`, `named_values` | string | `:` | constant string between componentes of each element |
 | `canonical` | `regex` | string | undefined | string representation to be used for encoding |
 | `canonical` | `regexes`, `values` | mapping | undefined | string representations to be used for encoding |
+
+Notes:
+(1) with the possible exception of the last element of `composed_of` elements
 
 ## Validation of the represented data
 

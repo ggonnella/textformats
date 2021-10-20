@@ -921,14 +921,15 @@ def get_min_repeats():
         "What is the minimum number of instances of the element?", "uint")
   return min_repeats
 
-def get_seppfxsfx(data, name):
+def get_seppfxsfx(data, name, exceptlast):
   opt_txt = ""
   if data["scope"] in ["file", "section"]:
     opt_txt += f", {key['SepKey']}: \"\\n\""
   else:
-    question = "What is the formatting of the set of sub-elements?\n"+\
+    exception = " (except the last)" if exceptlast else ""
+    question = "What is the formatting of the set of elements?\n"+\
         "E0, E1, E2 ... => elements\n"+\
-        "X => exclusive separator, never contained in the elements\n"+\
+        f"X => exclusive separator, not contained in elements{exception}\n"+\
         "D => non-exclusive delimiter, can be contained in elements\n"+\
         "P => prefix; S => suffix"
     choice = ask(question, "seppfxsfx")
@@ -936,10 +937,12 @@ def get_seppfxsfx(data, name):
       print()
       printhelp("<b>DELIMITER</b>")
       print()
+      exception = " with the possible exception of the last element" \
+          if exceptlast else ""
       printhelp("Components of a set are often separated "+\
           "from each other by a delimiter (e.g. comma, tags, colon). ")
-      printhelp("The delimiter may be exclusive (i.e. never found in the "+\
-          "elements themselves, not even escaped ). "+\
+      printhelp(f"The delimiter may be exclusive (i.e. never found in the "+\
+          "elements themselves, not even escaped{exception}). "+\
           "Choose [0] or [3] in this case.")
       printhelp("In cases the delimiter is not exclusive choose [1] or [4]. "+\
           "In case there is no delimiter choose [2] or [5]. "+\
@@ -1095,7 +1098,7 @@ def define_datatype_struct(data, name):
   def_txt += get_subdef_list(name, elemnames)
   def_txt += get_struct_n_required(len(elemnames))
   def_txt += get_implicit(name, elemnames)
-  def_txt += get_seppfxsfx(data, name)
+  def_txt += get_seppfxsfx(data, name, True)
   def_txt += get_emptystrvalue(name)
   def_txt += add_scope(data)
   def_txt += "}"
@@ -1324,7 +1327,7 @@ def define_datatype_list(data, name):
   say("The datatype for the sub-elements will be defined later.")
   say(f"It will be called: '{itemname}'.")
   opt_txt += get_list_lenrange()
-  opt_txt += get_seppfxsfx(data, name)
+  opt_txt += get_seppfxsfx(data, name, False)
   opt_txt += get_emptystrvalue(name)
   opt_txt += add_scope(data)
   if register_definition(data, name, f"{{{key['ListDefKey']}: "+itemname+opt_txt+"}"):
