@@ -9,6 +9,7 @@
 #
 # The URL of the source documentations are given in comments.
 #
+namespace: accessions
 datatypes:
   # https://www.ncbi.nlm.nih.gov/Sequin/acc.html
   # https://www.ddbj.nig.ac.jp/acc_def-e.html

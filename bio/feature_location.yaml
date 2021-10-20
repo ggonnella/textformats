@@ -1,3 +1,8 @@
+#
+# Feature locations in the feature table
+# in a Genbank, EMBL-Bank or DDBJ sequence record
+#
+include: {"accessions.yaml": [insd_annotated, nucleotide, protein, bulk, mga]}
 datatypes:
   location: {one_of: [internal_location, external_location]}
   internal_location: {one_of: [singlebase, range, approximate, betweenbases,
@@ -19,7 +24,8 @@ datatypes:
   joincomplement: {composed_of: [joined: join],
                    prefix: "complement(", suffix: ")"}
   complement: {one_of: [rangecomplement, joincomplement]}
-  external: {composed_of: [external_ref: versioned_accession,
-                           location: internal_location],
+  external_location: {composed_of: [external_ref: versioned_accession,
+                                    location: internal_location],
              splitted_by: ":"}
-  versioned_accession: {composed_of: [accession: accession, version: version]}
+  versioned_accession: {composed_of:
+    [accession: accessions::insd_annotated, version: unsigned_integer]}
