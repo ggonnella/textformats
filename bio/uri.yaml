@@ -37,7 +37,7 @@ datatypes:
       - composed_of:
           - authority: uri_authority
           - path: uri_path_abempty
-        pfx: "//"
+        prefix: "//"
       - uri_path_absolute
       - uri_path_noscheme
     empty: {}
