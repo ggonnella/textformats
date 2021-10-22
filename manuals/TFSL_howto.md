@@ -1,7 +1,10 @@
 # Definitions by kind of represented value
 
-This documents describes the TF-Spec syntax to define datatypes of a format
-based on the type of value they represent.
+This documents explains how to use TFSL (Text Formats Specification
+Language) for the definition of datatypes of a text format,
+based on the type of value they represent (string, numeric value,
+boolean value, list/array/sequence,
+dictionary/map/table/object/struct/tuple).
 
 ## An example
 

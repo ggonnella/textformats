@@ -1,4 +1,4 @@
-# TF-Spec: TextFormats specifications syntax
+# Syntax of the Text Formats Specification Language (TFSL)
 
 The goal of the TextFormats library is to parse a string representation
 of data and translate it into data (decoding) and vice versa (encoding).
@@ -7,7 +7,8 @@ must describe the format of the string representation and the rules used for
 validating, decoding and encoding the data. This is done by writing a
 specification.
 
-Specifications are written using a declarative language named TF-Spec.
+Specifications are written using a declarative language named TFSL (Text
+Formats Specification Language).
 The syntax of the language is conceived so to be representable as a
 JSON object or a YAML 1.2 mapping: i.e. keywords are given in the form
 of mapping keys (as strings) and their arguments are the values associated

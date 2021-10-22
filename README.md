@@ -5,15 +5,15 @@
 TextFormats is a library for rapidly defining and using text formats
 for structured data.
 
-Given a format definition in a simple declarative language (TF-Spec),
-the library provides functions for switching
+Given a format definition in a simple declarative language (TFSL, Text Formats
+Specification Language), the library provides functions for switching
 from the string representation of data ("encoded string") to the actual
 data which the text represents ("decoded data") and vice-versa.
 
 The library aims at allowing rapid prototyping of libraries for supporting
 file formats in Nim, C and Python, by providing base functionality,
 on which further operations can be added. Furthermore, the definition
-of the formats in TF-Spec is human readable and reduces the requirement
+of the formats in TFSL is human readable and reduces the requirement
 of complex regular expression. Finally, as opposed to lexers or regular
 expressions, it does not only validates and splits different parts of a
 format, but converts them to data in built-in scalar and compound datatypes,
