@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 inputdir="../../benchmarks/data/cigars/"
-inputfn="10k_cigars_len100"
+inputfn="100k_cigars_len100"
 input="$inputdir/$inputfn"
 if [ ! -e $input ]; then
   cd $inputdir
