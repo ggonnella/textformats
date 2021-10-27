@@ -77,7 +77,7 @@ Notes:
 ## Format of the represented data
 
 | Key | Definition kinds | Value type | Default | Purpose |
-| --- | ---              | ---        | ---     |
+| --- | ---              | ---        | ---     | ---     |
 | `empty`     | all | any | undefined | data value if element is missing in text repr. |
 | `as_string` | all | boolean | false | if set, definition is used only for validation |
 | `wrapped` | `one_of` | boolean | false | augment decoded value with branch names |
@@ -90,7 +90,7 @@ Notes:
 Note: given in map under definition kind, e.g. `{integer: {min: ...}}`
 
 | Key | Definition kinds | Value type | Default | Purpose |
-| --- | ---              | ---        | ---     |
+| --- | ---              | ---        | ---     | ---     |
 | `min` | `integer` | integer | -infinite | minimum valid data value |
 | `max` | `integer` | integer | infinite | maximum valid data value |
 | `min` | `unsigned_integer` | unsigned integer | 0 | minimum valid data value |
