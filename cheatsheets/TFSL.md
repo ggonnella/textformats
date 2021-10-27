@@ -49,11 +49,11 @@ Refer to file included in included, namespaced | `x::y::z`
 ## Formatting of the text representation
 
 | Key | Definition kinds | Value type | Default | Purpose |
-| --- | ---              | ---        | ---     |
-| `prefix` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | constant string preceding the set of elements |
-| `suffix` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | constant string following the set of elements |
-| `splitted_by` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | constant string between elements, never found in them (1) |
-| `separator` | `list_of`, `composed_of` | string | constant string between elements, possibly also found in them |
+| --- | ---              | ---        | ---     | --- |
+| `prefix` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | (empty) | constant string preceding the set of elements |
+| `suffix` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | (empty) | constant string following the set of elements |
+| `splitted_by` | `list_of`, `composed_of`, `labeled_list`, `tagged_list` | string | (empty) | constant string between elements, never found in them (1) |
+| `separator` | `list_of`, `composed_of` | string | (empty) | constant string between elements, possibly also found in them |
 | `internal_separator` | `tagged_list`, `labeled_list` | string | `:` | constant string between componentes of each element |
 | `canonical` | `regex` | string | undefined | string representation to be used for encoding |
 | `canonical` | `regexes`, `values` | mapping | undefined | string representations to be used for encoding |
@@ -63,8 +63,8 @@ Notes:
 
 ## Validation of the represented data
 
-| Key        | Kind           | Value type       | Default   \| Purpose |
-| ---        | ---            | ---              | ---       |
+| Key        | Kind           | Value type       | Default | Purpose |
+| ---        | ---            | ---              | ---       | --- |
 `min_length` | `list_of`      | unsigned integer | 1         | min number of elements |
 `max_length` | `list_of`      | unsigned integer | infinite  | max number of elements |
 `length`     | `list_of`      | unsigned integer | undefined | number of elements |
@@ -247,6 +247,7 @@ Definition of an entire file       | `..., scope: file`
 
 # Testdata syntax
 
+|                    |                                                         |
 | ------------------ | ------------------------------------------------------- |
 Structure            | `testdata: {datatype1: {...}, datatype2: {...}, ...}`
 Tests for a datatype | `datatype1: {valid: ..., invalid: ...}`
