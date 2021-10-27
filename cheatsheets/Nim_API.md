@@ -14,7 +14,7 @@ Errors                        | `TextFormatsError` and descendants
 Parse/load specification    | `specification_from_file(filename)`
 Parse specification string  | `parse_specification(string)`
 List datatype names         | `datatype_names(spec): seq[string]`
-                            |
+&nbsp;                      | &nbsp;
 Compile specification       | `compile_specification(infn, outfn)`
 Check if compiled           | `is_compiled(filename)`
 Run tests in file           | `run_specification_testfile(spec, testfn)`
@@ -44,14 +44,9 @@ Validate data for repr in text format | `boolvar = is_valid(json_node, ddef)`
 Decode file (wo embedded spec)    | `for elm in decoded_file(fname, ddef, false, false)`
 Decode file with embedded spec    | `for elm in decoded_file(fname, ddef, true, false)`
 Yielding single elements of ddef  | `for elm in decoded_file(fname, ddef, bool, true)`
-Using a processing function       | `decode_file(fname, ddef, has_embedded_spec_bool,`
-                                  | `            decoded_processor, decoded_proc_data,`
-                                  | `            decoded_proc_level)`
-
+Using a processing function       | `decode_file(fname, ddef, has_embedded_spec_bool,` <br/> `            decoded_processor, decoded_proc_data,` <br/> `            decoded_proc_level)`
 Signature of decoded processor fn    | `void decoded_processor(JsonNode *n, void *data)`
-Decoded processor levels             | DplWhole: whole file/section;
-(scope `file`/`section`)             | DplElement: element of compound definition;
-                                     | DplLine: single lines
+Decoded processor levels <br/> (scope `file`/`section`) | `DplWhole` (whole file/section) <br/> `DplElement` (element of compound definition), <br/> `DplLine` (single lines)
 Set scope of definition              | `set_scope(ddef, scope)`
 where scope is (string):             | `line`, `unit`, `section` or `file`
 Set unitsize (scope `unit`)          | `set_unitsize(ddef, int_nlines)`

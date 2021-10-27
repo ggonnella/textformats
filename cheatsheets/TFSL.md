@@ -12,8 +12,7 @@ Examples / Tests                  | `testdata`
 | ------------------------------- | --------------------------------- |
 Include single file | `include: a.yaml`
 Include multiple files | `include [a.yaml, b.yaml]`
-Include only selected datatypes | `include: {a.yaml: [a, b]}`
-                                | `include: [a.yaml: [a, b], b.yaml: [c, d]]`
+Include only selected datatypes | `include: {a.yaml: [a, b]}` <br/> `include: [a.yaml: [a, b], b.yaml: [c, d]]`
 Specifying namespace if file is include | `namespace: foo`
 Use datatype of included file with namespace | `foo::bar`
 Refer to file included in included, namespaced | `x::y::z`
@@ -112,8 +111,7 @@ One of a set of values (1)      | `values: [a, 1, {x: true}], empty: false`   | 
 Regex                 | `regex: '\d{2,3}'` | 10, 100 | "10", "100" |
 Regex with mapping    | `regex: {'[Tt]rue': true}, canonical: "True", empty: false` | True, true, "" | true, true, false |
 Multiple regexes      | `regexes: ["\d{2,3}", "A", "x\d"]` | 10, "A", x2 | "10", "A", "x2" |
-Multiple regexes with mappings | `regexes: {"[Tt1]": true}, "[Ff0]": false},` |
-                               | `canonical: {"T": true, "F": false}` | "T", "t", "F" | true, true, false |
+Multiple regexes with mappings | `regexes: {"[Tt1]": true}, "[Ff0]": false},` <br/> `canonical: {"T": true, "F": false}` | "T", "t", "F" | true, true, false |
 
 (1) Not all values must be strings, e.g. in the given examples, 1 is numeric
 
@@ -148,7 +146,7 @@ Any floating point           | `float` | 1, 0.2E-10 | 1, 0.2E-10 |
 Multiple alternative definitions | `one_of: [def1, def2]`
 " giving definition inline       | `one_of: [{constant: "XYZ"}, def2]`
 " allowing absence of value      | `one_of: [def1, def2], empty: "X"`
-                                 |
+&nbsp;                           | &nbsp;
 Explicit branch information      | `one_of: [def1, def2], wrapped: true`
 -> for references to definitions | e.g. "XYZ" -decode-> {"def1": "XYZ"}
 -> for n-th inline def (-> [n])  | e.g. "XYZ" -decode-> {"[1]": "XYZ"}
@@ -161,7 +159,7 @@ Explicit branch information      | `one_of: [def1, def2], wrapped: true`
 `list_of`       | constant         | constant         | list
 `composed_of`   | ordinal position | ordinal position | mapping
 `labeled_list`  | name             | name             | mapping
-`tagged_list` | typecode         | tagname          | mapping
+`tagged_list`   | typecode         | tagname          | mapping
 
 | Kind          | Formatting keys                     | Validation keys
 | ---           | ---                                 | ---
@@ -178,13 +176,13 @@ Explicit branch information      | `one_of: [def1, def2], wrapped: true`
 List, separator never found in elements | `list_of: integer, splitted_by: ";"`
 List, separator can be in elements (1)  | `list_of: integer, separator: "+"`
 List, without separator (1)             | `list_of: {regex: "\d{2}"}`
-                                        |
+&nbsp;                                  | &nbsp;
 Strings surrounding list                | `list_of: x, prefix: "[", suffix: "]"`
-                                        |
+&nbsp;                                  | &nbsp;
 List with fixed length                  | `list_of: x, length: 1`
 Minimum length (default: 1)             | `list_of: x, min_length: 0`
 Maximum length (default: infinite)      | `list_of: x, max_length: 100`
-                                        |
+&nbsp;                                  | &nbsp;
 Validate, but do not parse list content | `list_of: x, as_string: true`
 
 (1) parsed from left to right, greedyly
@@ -196,50 +194,46 @@ Validate, but do not parse list content | `list_of: x, as_string: true`
 Sequence of elements, no separator (1)  | `composed_of: [elem1: def1, elem2: def2]`
 Separator not found in elements         | `..., splitted_by: ":"`
 Separator can be in elements (1)        | `..., separator: ":"`
-                                        |
-Multiple separators                     | `composed_of: [elem1: def1, sep12: {constant: '-'},`
-                                        | `  elem2: def2, sep23: {constant: ','}, elem3: def3],`
-                                        | `  hide_constants: true`
-                                        |
+&nbsp;                                  | &nbsp;
+Multiple separators                     | `composed_of: [elem1: def1, sep12: {constant: '-'},` <br/> `  elem2: def2, sep23: {constant: ','}, elem3: def3],` <br/> `  hide_constants: true`
+&nbsp;                                  | &nbsp;
 Strings surrounding sequence            | `..., prefix: "[", suffix: "]"`
-                                        |
+&nbsp;                                  | &nbsp;
 Allow elems after first 3 to be absent  | `..., required: 3`
-                                        |
-Implicit values, not in text repr       | `composed_of: [v1: integer, v2: string], implicit: {v3: "x"}`
-                                        | 123a => {v1: 123, v2: "a", v3: "x"}
-                                        |
+&nbsp;                                  | &nbsp;
+Implicit values, not in text repr       | `composed_of: [v1: integer, v2: string], implicit: {v3: "x"}` <br/> 123a => {v1: 123, v2: "a", v3: "x"}
+&nbsp;                                  | &nbsp;
 Validate, but do not parse seq content  | `..., as_string: true`
 
 # Labeled values list
 
 |                                        |                                                          |
 | ---------------------------------------| -------------------------------------------------------- |
-Labeled values list                      | `labeled_list: {i: integer, f: float}, splitted_by: " "` |
-                                         | e.g. i:12 f:3.2
+Labeled values list                      | `labeled_list: {i: integer, f: float}, splitted_by: " "` <br/> e.g. i:12 f:3.2
 " w. label-value separator other than :  | `...,internal_separator: "="` e.g. i=12 f=3.2
-                                         |
+&nbsp;                                   | &nbsp;
 Default: each label present 0,1,>1 times |
 -> require some labels                   | `..., required: [f, f2, f3]`
 -> allow some labels only once           | `..., single: [i, i2, i3]`
-                                         |
+&nbsp;                                   | &nbsp;
 Strings surroundings labeled values list | `..., prefix: "[", suffix: "]"`
-                                         |
+&nbsp;                                   | &nbsp;
+Strings surroundings labeled values list | `..., prefix: "[", suffix: "]"`
 Validate, but do not parse list content  | `..., as_string: true`
 
 # Tagged values list
 
 |                                        |                                                          |
 | ---------------------------------------| -------------------------------------------------------- |
-Tagged values list                       | `tagged_list: {i: integer, f: float}, splitted_by: " "` |
-                                         | e.g. AZ:i:12 XY:f:3.2
+Tagged values list                       | `tagged_list: {i: integer, f: float}, splitted_by: " "` <br/> e.g. AZ:i:12 XY:f:3.2
 " with internal separator other than :   | `...,internal_separator: "="` e.g. AZ=i=12
 " with tagnames other than SAM-style     | `..., tagnames: "[ABC][1-9][A-Z]"`
-
+&nbsp;                                   | &nbsp;
 Tagnames with predefined type            | `predefined: {"AB": "i", "XY": "f"}`
 Accept only predefined tagnames          | `tagnames: "", predefined: {...`
-                                         |
+&nbsp;                                   | &nbsp;
 Strings surrounding tag list             | `..., prefix: "[", suffix: "]"`
-                                         |
+&nbsp;                                   | &nbsp;
 Validate, but do not parse list content  | `..., as_string: true`
 
 # File parsing, definition scope
@@ -250,4 +244,13 @@ Definition of a line               | `..., scope: line`
 Definition of a fixed n of lines   | `..., scope: unit, n_lines: 3`
 Definition of a section of a file  | `..., scope: section`
 Definition of an entire file       | `..., scope: file`
+
+# Testdata syntax
+
+| ------------------ | ------------------------------------------------------- |
+Structure            | `testdata: {datatype1: {...}, datatype2: {...}, ...}`
+Tests for a datatype | `datatype1: {valid: ..., invalid: ...}`
+-> decoded as string | `valid ["1", "2", "3"], invalid: [1, "x"]`
+-> other kind of values | `valid: {"1": 1, "2": 2}, invalid: ["", true]`
+-> non-canonical repr. | `datatype1: {valid: ..., oneway: ..., invalid: ...}` <br/> e.g. `valid: [1], oneway: {"+1": 1}`
 

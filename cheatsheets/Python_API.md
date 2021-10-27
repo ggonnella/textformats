@@ -14,10 +14,10 @@ Parse/load specification    | `spec = Specification(filename)`
 Construct specification programmatically | `Specification({"datatypes": {...}})`
 List datatype names         | `spec.datatype_names(spec)`
 Filename of spec object     | `spec.filename`
-                            |
+&nbsp;                      | &nbsp;
 Compile specification       | `Specification.compile(infn, outfn)`
 Check if compiled           | `spec.is_compiled`
-                            |
+&nbsp;                      | &nbsp;
 Run tests in file           | `spec.test(testfn)`
 Run tests constructed programmatically | `spec.test({"testdata": {...}})`
 
@@ -51,14 +51,10 @@ Decode file (wo embedded spec)    | `for elm in ddef.decoded_file(fname)`
 Decode file with embedded spec    | `for elm in ddef.decoded_file(fname, True)`
 Yielding single elements of ddef  | `for elm in ddef.decoded_file(fname, bool, True)`
 Yielding JSON strings             | `for elm in ddef.decoded_file(fname, bool, bool, True)`
-                                  |
-Using a processing function       | `ddef.decode_file(fname, has_embedded_spec_bool,`
-                                  | `            decoded_processor, decoded_proc_data,`
-                                  | `            decoded_proc_level, to_json)`
+&nbsp;                      | &nbsp;
+Using a processing function       | `ddef.decode_file(fname, has_embedded_spec_bool,` <br/> `            decoded_processor, decoded_proc_data,` <br/> `            decoded_proc_level, to_json)`
 Signature of decoded processor fn    | `decoded_processor(decoded_element, proc_data)`
-Decoded processor levels             | `DECODED_PROCESSOR_LEVEL.WHOLE`: whole file/section;
-(scope `file`/`section`)             | `DECODED_PROCESSOR_LEVEL.ELEMENT`: element of compound definition;
-                                     | `DECODED_PROCESSOR_LEVEL.LINE`: single lines
+Decoded processor levels <br/> (scope `file`/`section`) | `DECODED_PROCESSOR_LEVEL.WHOLE`: whole file/section; <br/> `DECODED_PROCESSOR_LEVEL.ELEMENT`: element of compound definition; <br/>  `DECODED_PROCESSOR_LEVEL.LINE`: single lines
 Set scope of definition              | `ddef.scope = scope`
 where scope is (string):             | `line`, `unit`, `section` or `file`
 Set unitsize (scope `unit`)          | `ddef.unitsize = int_nlines`
