@@ -14,7 +14,7 @@ installExt    = @["nim"] # required for hybrid packages
 
 # Dependencies
 
-requires "nim >= 1.0.2 <= 1.4.8",
+requires "nim >= 1.0.2 & <= 1.4.8",
          "cligen >= 1.5.5",
          "yaml >= 0.14",
          "regex >= 0.15",
