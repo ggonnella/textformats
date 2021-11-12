@@ -1,5 +1,4 @@
 import options, strformat
-from re import escape_re
 import regex
 import yaml/dom
 import ../support/yaml_support
