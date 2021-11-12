@@ -1,7 +1,4 @@
-NIM:=$(shell which nim)
-NIM:=$(shell readlink -f ${NIM})
-NIMDIR:=$(shell dirname ${NIM})
-NIMLIB:=${NIMDIR}/../lib
+NIMLIB:=$(shell ../../scripts/find_nimbase.sh)
 
 HTSLIBVERSION=1.13
 DEFLATEVERSION=1.7
@@ -42,7 +39,11 @@ htslib_based: htslib_based.c
 		-I${HTSLIBDIR}/include \
 		-L${HTSLIBDIR}/lib htslib_based.c -lhts -lm
 
-INPUT=${PRJDIR}/benchmarks/data/sam/100000.lines.sam
+INPUTDIR=${PRJDIR}/benchmarks/data/sam
+INPUT=${INPUTDIR}/100000.lines.sam
+
+${INPUT}:
+	cd ${INPUTDIR} && make ${INPUT}
 
 SPEC=${PRJDIR}/spec/sam.yaml
 DT=file

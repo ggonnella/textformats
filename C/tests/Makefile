@@ -1,10 +1,7 @@
 default: test
 .PHONY: test clean cleanup
 
-NIM:=$(shell which nim)
-NIM:=$(shell readlink -f ${NIM})
-NIMDIR:=$(shell dirname ${NIM})
-NIMLIB:=${NIMDIR}/../lib
+NIMLIB:=$(shell ../scripts/find_nimbase.sh)
 
 nimcache/textformats_c.h: ../textformats_c.nim
 	nim c --gc:mark_and_sweep --d:danger --noMain \

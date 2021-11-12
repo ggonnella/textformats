@@ -1,7 +1,4 @@
-NIM:=$(shell which nim)
-NIM:=$(shell readlink -f ${NIM})
-NIMDIR:=$(shell dirname ${NIM})
-NIMLIB:=${NIMDIR}/../lib
+NIMLIB:=$(shell ../scripts/find_nimbase.sh)
 
 default: run
 

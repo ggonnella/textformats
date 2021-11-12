@@ -1,9 +1,6 @@
 default: compare
 
-NIM:=$(shell which nim)
-NIM:=$(shell readlink -f ${NIM})
-NIMDIR:=$(shell dirname ${NIM})
-NIMLIB:=${NIMDIR}/../lib
+NIMLIB:=$(shell ../../scripts/find_nimbase.sh)
 
 PRJDIR=../../..
 
@@ -18,7 +15,11 @@ textformats_based: nimcache/textformats_c.h textformats_based.c
 ad_hoc: ad_hoc.c
 	gcc -DNDEBUG -o $@ -O3 $<
 
-INPUT=${PRJDIR}/benchmarks/data/cigars/100k_cigars_len100
+INPUTDIR=${PRJDIR}/benchmarks/data/cigars
+INPUT=${INPUTDIR}/100k_cigars_len100
+
+${INPUT}:
+	cd ${INPUTDIR} && make $(shell basename ${INPUT})
 
 SPEC=${PRJDIR}/benchmarks/data/cigars/cigars.yaml
 DT=cigar_str
