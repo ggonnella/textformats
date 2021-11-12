@@ -1,4 +1,3 @@
-import tables
 import options
 import yaml/dom
 import ../support/yaml_support
