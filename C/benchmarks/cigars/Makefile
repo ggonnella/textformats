@@ -1,7 +1,9 @@
-NIMVERSION=1.4.8
-NIMLIB:=${HOME}/.choosenim/toolchains/nim-${NIMVERSION}/lib
-
 default: compare
+
+NIM:=$(shell which nim)
+NIM:=$(shell readlink -f ${NIM})
+NIMDIR:=$(shell dirname ${NIM})
+NIMLIB:=${NIMDIR}/../lib
 
 PRJDIR=../../..
 

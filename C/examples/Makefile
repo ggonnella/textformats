@@ -1,5 +1,7 @@
-VERSION:=1.4.8
-NIMLIB:=${HOME}/.choosenim/toolchains/nim-${VERSION}/lib
+NIM:=$(shell which nim)
+NIM:=$(shell readlink -f ${NIM})
+NIMDIR:=$(shell dirname ${NIM})
+NIMLIB:=${NIMDIR}/../lib
 
 default: run
 

@@ -1,8 +1,10 @@
 default: test
 .PHONY: test clean cleanup
 
-VERSION:=1.4.8
-NIMLIB:=${HOME}/.choosenim/toolchains/nim-${VERSION}/lib
+NIM:=$(shell which nim)
+NIM:=$(shell readlink -f ${NIM})
+NIMDIR:=$(shell dirname ${NIM})
+NIMLIB:=${NIMDIR}/../lib
 
 nimcache/textformats_c.h: ../textformats_c.nim
 	nim c --gc:mark_and_sweep --d:danger --noMain \

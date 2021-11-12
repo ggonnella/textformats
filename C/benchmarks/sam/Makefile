@@ -1,5 +1,7 @@
-NIMVERSION=1.4.8
-NIMLIB:=${HOME}/.choosenim/toolchains/nim-${NIMVERSION}/lib
+NIM:=$(shell which nim)
+NIM:=$(shell readlink -f ${NIM})
+NIMDIR:=$(shell dirname ${NIM})
+NIMLIB:=${NIMDIR}/../lib
 
 HTSLIBVERSION=1.13
 DEFLATEVERSION=1.7
