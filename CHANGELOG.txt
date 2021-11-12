@@ -3,6 +3,7 @@
 - make clear requirements in nimble file
 - support newer versions of NimYAML and regex libraries
 - automatically find nimbase.h in C Makefiles
+- make sure nimporter==1.0.2 is installed when installing Py module
 - add changelog file
 
 === 1.0.0 ===
