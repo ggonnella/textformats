@@ -3,7 +3,7 @@
 ##
 
 import strformat, tables, json, options, streams, os
-import yaml / [dom, serialization, taglib, hints]
+import yaml / [dom, serialization, taglib, hints, data]
 import error_support
 
 type
@@ -11,8 +11,6 @@ type
   NodeValueError*   = object of YamlSupportError
   KeyMissingError*  = object of YamlSupportError
   KeyUnknownError*  = object of YamlSupportError
-
-let tlib = initCoreTagLibrary()
 
 # private, exported because it is used by public templates
 proc PRV_has_kind*(n: YamlNode, expected: YamlNodeKind): bool =
@@ -65,9 +63,9 @@ template validate_tag_or_guesstype*(n: YamlNode,
                                    emsg_pfx: string,
                                    emsg_sfx: string) =
   if not condition_met:
-    var tagstr = n.tag
+    var tagstr = $n.tag
     if n.is_scalar:
-      if tlib.tags[tagstr] == yTagQuestionMark:
+      if n.tag == yTagQuestionMark:
         tagstr &= "\nNode guessed type: " & $guesstype(n.content)
     raise newException(NodeValueError, emsg_pfx & "\n" &
                          "Node: " & $n & "\n" &
@@ -92,35 +90,35 @@ template is_null*(n: YamlNode): bool =
   if not n.is_scalar:
     false
   else:
-    let tag = tlib.tags[n.tag]
+    let tag = n.tag
     tag == yTagNull or (tag == yTagQuestionMark and guessed_null(n))
 
 template is_int*(n: YamlNode): bool =
   if not n.is_scalar:
     false
   else:
-    let tag = tlib.tags[n.tag]
+    let tag = n.tag
     tag == yTagInteger or (tag == yTagQuestionMark and guessed_int(n))
 
 template is_float*(n: YamlNode): bool =
   if not n.is_scalar:
     false
   else:
-    let tag = tlib.tags[n.tag]
+    let tag = n.tag
     tag == yTagFloat or (tag == yTagQuestionMark and guessed_float(n))
 
 template is_bool*(n: YamlNode): bool =
   if not n.is_scalar:
     false
   else:
-    let tag = tlib.tags[n.tag]
+    let tag = n.tag
     tag == yTagBoolean or (tag == yTagQuestionMark and guessed_bool(n))
 
 template is_string*(n: YamlNode): bool =
   if not n.is_scalar:
     false
   else:
-    let tag = tlib.tags[n.tag]
+    let tag = n.tag
     tag == yTagString or tag == yTagExclamationMark or
                          (tag == yTagQuestionMark and guessed_string(n))
 
@@ -252,7 +250,7 @@ when is_main_module:
   do_assert not is_int(yamldoc.root)
   yamldoc = load_dom("!!int '3'")
   do_assert is_int(yamldoc.root)
-  do_assert yamldoc.root + 1 == 4
+  do_assert yamldoc.root + 1.int == 4.int
   yamldoc = load_dom("'1'")
   do_assert not is_int(yamldoc.root)
 
@@ -377,7 +375,11 @@ proc getKeys*(n: YamlNode,
 template yamlparse_errmsg*(filename: string, desc: string,
                           errmsg: string): string =
   let fn = if len(filename) > 0: "file '" & filename & "'" else: "input"
-  ("Error parsing " & desc & " " & fn & ":\n") & errmsg.indent(2)
+  let pfx = "Error parsing " & desc & " " & fn
+  if len(errmsg) > 0:
+    pfx & ":\n" & errmsg.indent(2)
+  else:
+    pfx
 
 proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
                             input: string, strinput: bool,
@@ -402,9 +404,13 @@ proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
   try:
     yaml = load_dom(stream)
     stream.close
+  except YamlConstructionError:
+    discard
   except:
     raise newException(parsing_errtype,
        yamlparse_errmsg(fn, inputdesc, get_current_exception_msg()))
+  if yaml.root.isNil:
+    raise newException(parsing_errtype, yamlparse_errmsg(fn, inputdesc, ""))
   try:
     yaml.root.validate_is_mapping()
   except NodeValueError:

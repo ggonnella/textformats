@@ -1,6 +1,6 @@
 Error (InvalidSpecError):
   Error parsing specification input:
-    Unexpected token (expected ']')
+    Unexpected token (expected ',' or ']'): MapEnd
 
 Error (InvalidSpecError):
   Error parsing specification file '../../tests/testdata/api/wrong_yaml_syntax.yaml':
