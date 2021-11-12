@@ -2,9 +2,8 @@ from setuptools import setup
 import nimporter
 
 def readme():
-  ""
-  #with open('../README.md') as f:
-  #  return f.read()
+  with open('../README.md') as f:
+    return f.read()
 
 import sys
 if not sys.version_info[0] == 3:
