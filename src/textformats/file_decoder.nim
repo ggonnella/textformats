@@ -57,7 +57,8 @@ iterator decoded_lines_or_units(filename: string, dd: DatatypeDefinition,
     linesgroup = newseq[string](ddef.unitsize)
     n_in_group = 0
     shall_decode = true
-  assert ddef.unitsize >= 1
+  if ddef.unitsize < 1:
+    ddef.unitsize = 1
   for line in lines(file):
     line_no += 1
     case state:
