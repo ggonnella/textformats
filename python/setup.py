@@ -2,7 +2,7 @@ from setuptools import setup
 import nimporter
 
 def readme():
-  with open('../README.md') as f:
+  with open('README.md') as f:
     return f.read()
 
 import sys
