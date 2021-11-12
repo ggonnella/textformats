@@ -13,7 +13,7 @@ if not sys.version_info[0] == 3:
 setup(name='textformats',
       packages=["textformats", "textformats/py_bindings"],
       package_data={"": ['*.nim', "*.nimble", "*.nims"]},
-      version='0.1.0',
+      version='1.1.0',
       description='Easily defined compact human-readable data representations',
       long_description=readme(),
       url='https://github.com/ggonnella/gfapy',

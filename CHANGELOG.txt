@@ -1,0 +1,10 @@
+=== 1.1.0 ===
+
+- make clear requirements in nimble file
+- support newer versions of NimYAML and regex libraries
+- automatically find nimbase.h in C Makefiles
+- add changelog file
+
+=== 1.0.0 ===
+
+Initial release
