@@ -1,4 +1,4 @@
-from re import escape_re
+import regex
 import ../types/datatype_definition
 
 proc regex_apply_formatting*(dd: DatatypeDefinition) =

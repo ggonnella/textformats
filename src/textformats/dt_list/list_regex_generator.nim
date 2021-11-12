@@ -1,4 +1,4 @@
-from re import escape_re
+import regex
 import ../support/openrange
 import ../types/datatype_definition
 import ../regex_generator

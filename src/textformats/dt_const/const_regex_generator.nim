@@ -1,4 +1,4 @@
-from re import escape_re
+import regex
 import ../types/datatype_definition
 import ../types/match_element
 import ../dt_anyfloat/anyfloat_regex_generator

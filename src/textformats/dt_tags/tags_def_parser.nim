@@ -1,5 +1,4 @@
 import strformat, tables, sequtils, strutils
-from re import escape_re
 import yaml
 import regex
 import ../support / [yaml_support, error_support]

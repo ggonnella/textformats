@@ -1,4 +1,4 @@
-from re import escape_re
+import regex
 import tables
 import strutils
 import ../types/datatype_definition

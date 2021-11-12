@@ -1,4 +1,4 @@
-from re import escape_re
+import regex
 import strutils, options
 import ../types/datatype_definition
 import ../types/match_element
