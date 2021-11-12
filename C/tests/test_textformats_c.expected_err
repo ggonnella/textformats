@@ -3,8 +3,7 @@ Error (InvalidSpecError):
     Unexpected token (expected ',' or ']'): MapEnd
 
 Error (InvalidSpecError):
-  Error parsing specification file '../../tests/testdata/api/wrong_yaml_syntax.yaml':
-    Unexpected token: ltStreamEnd
+  Error parsing specification file '../../tests/testdata/api/wrong_yaml_syntax.yaml'
 
 Error (TextFormatsRuntimeError):
   File not found:../../tests/testdata/api/xyz.yaml
@@ -21,7 +20,7 @@ Error (UnexpectedEncodedInvalidError):
       Datatype name: header
       Encoded string: 'invalid'
         Error: encoded structure content not matching regular expression.
-        Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+        Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
         Reason for not matching: 
           Error: wrong format for encoded structure
           Error: invalid prefix
@@ -37,7 +36,7 @@ Error (UnexpectedEncodedInvalidError):
       Datatype name: header
       Encoded string: 'invalid'
         Error: encoded structure content not matching regular expression.
-        Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+        Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
         Reason for not matching: 
           Error: wrong format for encoded structure
           Error: invalid prefix
@@ -65,7 +64,7 @@ Error (DecodingError):
   Datatype name: header
   Encoded string: 'ABCD some sequence'
     Error: encoded structure content not matching regular expression.
-    Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+    Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
     Reason for not matching: 
       Error: wrong format for encoded structure
       Error: invalid prefix
@@ -77,7 +76,7 @@ Error (DecodingError):
   Datatype name: header
   Encoded string: 'ABCD some sequence'
     Error: encoded structure content not matching regular expression.
-    Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+    Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
     Reason for not matching: 
       Error: wrong format for encoded structure
       Error: invalid prefix
@@ -156,7 +155,8 @@ Error (DecodingError):
   Encoded string: 'TGCTGCAGCATG
   CATGCTGATGC'
     Error: encoded structure content not matching regular expression.
-    Regular expression: (?P<0>\x3E(?:(?P<0_0>\w*)(?:\x20(?P<0_1>.*))?)?)(?P<1>(?P<1_0>([^>]*|[^>].*))(\x0A(?P<1_1>([^>]*|[^>].*))){0,})
+    Regular expression: (?P<0>>(?:(?P<0_0>\w*)(?:\ (?P<0_1>.*))?)?)(?P<1>(?P<1_0>([^>]*|[^>].*))(\
+    (?P<1_1>([^>]*|[^>].*))){0,})
     Reason for not matching: 
       Error: invalid encoded value for structure element
       Element name: header
@@ -167,7 +167,7 @@ Error (DecodingError):
           Datatype name: header
           Encoded string: ''
             Error: encoded structure content not matching regular expression.
-            Regular expression: \x3E(?:(?P<0>\w*)(?:\x20(?P<1>.*))?)?
+            Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
             Reason for not matching: 
               Error: wrong format for encoded structure
               Error: no prefix found
