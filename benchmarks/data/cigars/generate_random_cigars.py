@@ -16,6 +16,16 @@ Options:
 
 from docopt import docopt
 from random import randint
+import importlib
+
+tqdm_spec = importlib.util.find_spec("tqdm")
+has_tqdm = tqdm_spec is not None
+if has_tqdm:
+  from tqdm import tqdm
+else:
+  def tqdm(it):
+    for x in it:
+      yield x
 
 maxoplen = 1024
 opcodes = ["M", "I", "D"]
@@ -33,17 +43,18 @@ def main(args):
   avgnops = int(args["<avgnops>"])
   avail_ops = ncigars * avgnops
   cigars = []
-  while ncigars > 0:
-    avgnops = int(avail_ops/ncigars)
+  left = ncigars
+  for cigarnum in tqdm(range(ncigars)):
+    avgnops = int(avail_ops/left)
     if avgnops < 1: avgnops = 1
-    if ncigars == 1:
+    if left == 1:
       cigarlen = avail_ops
     else:
       cigarlen = int(avgnops/2) + randint(1, avgnops)
     cigar = generate_cigar(cigarlen)
     print(cigar)
     avail_ops -= cigarlen
-    ncigars -= 1
+    left -= 1
 
 if __name__ == "__main__":
   args = docopt(__doc__, version="0.1")

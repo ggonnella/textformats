@@ -43,7 +43,7 @@ INPUTDIR=${PRJDIR}/benchmarks/data/sam
 INPUT=${INPUTDIR}/100000.lines.sam
 
 ${INPUT}:
-	cd ${INPUTDIR} && make ${INPUT}
+	cd ${INPUTDIR} && make $(shell basename ${INPUT})
 
 SPEC=${PRJDIR}/spec/sam.yaml
 DT=file
