@@ -7,3 +7,4 @@ nim-extensions
 dist/
 prv.*
 *.tfs
+nimbledeps
