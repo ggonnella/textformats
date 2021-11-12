@@ -17,6 +17,7 @@ int main(void)
   char *header = ">ABCD some sequence";
   char *decoded_header_json =
     "{\"fastaid\":\"ABCD\",\"desc\":\"some sequence\"}";
+  printf("--- Begin of the large example ---\n");
   printf("Encoded: %s\n", header);
   fas_spec = tf_specification_from_file("../../spec/fasta.yaml");
   if (!tf_is_compiled("../../spec/fasta.yaml"))
@@ -55,5 +56,6 @@ int main(void)
   tf_delete_definition(fas_entry);
   tf_delete_definition(fas_header);
   tf_delete_specification(fas_spec);
+  printf("--- End of the large example ---\n");
   return 0;
 }

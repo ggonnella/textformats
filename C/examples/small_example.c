@@ -12,6 +12,8 @@ int main(void)
        *decoded = "[{\"length\":100,\"code\":\"M\"},"\
                    "{\"length\":10, \"code\":\"D\"}]";
 
+  printf("--- Begin of the small example ---\n");
+
   /* (2) parse specification and get datatype definition  */
   Specification *spec = tf_specification_from_file(
       "../../benchmarks/data/cigars/cigars.yaml");
@@ -41,6 +43,8 @@ int main(void)
   /* (6) tell the GC that the references are not used anymore */
   tf_delete_specification(spec);
   tf_delete_definition(datatype);
+
+  printf("--- End of the small example ---\n");
 
   return 0;
 }
