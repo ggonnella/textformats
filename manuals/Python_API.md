@@ -1,4 +1,4 @@
-# Python API
+# TextFormats Python API
 
 The subdirectory `python` contains the Python API, as a pip package.
 

@@ -8,3 +8,5 @@ dist/
 prv.*
 *.tfs
 nimbledeps
+manuals/*.pdf
+README.pdf

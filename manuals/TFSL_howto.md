@@ -1,6 +1,6 @@
-# Definitions by kind of represented value
+# TFSL Howto: definitions by kind of represented data
 
-This documents explains how to use TFSL (Text Formats Specification
+This documents explains how to use TFSL (TextFormats Specification
 Language) for the definition of datatypes of a text format,
 based on the type of value they represent (string, numeric value,
 boolean value, list/array/sequence,

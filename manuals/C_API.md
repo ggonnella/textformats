@@ -1,4 +1,4 @@
-# C API
+# TextFormats C API
 
 The TextFormats library can be used in a `C/C++` program (including the Nim
 library). A `C` API is provided for this purpose, and is contained in the

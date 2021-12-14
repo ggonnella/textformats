@@ -1,4 +1,4 @@
-# Testing a specification
+# TextFormats: Syntax of the specifications test data
 
 Specification test data are examples of string representations and/or
 data values which are valid and invalid according to the

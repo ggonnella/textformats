@@ -1,4 +1,4 @@
-# Developer manual
+# TextFormats Developer manual
 
 The present text describes the current organization of the source code,
 as well as current conventions used in it.

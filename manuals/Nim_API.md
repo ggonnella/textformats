@@ -1,4 +1,4 @@
-# Nim API
+# TextFormats Nim API
 
 The public API of the library is defined in the file `src/textformats.nim`.
 

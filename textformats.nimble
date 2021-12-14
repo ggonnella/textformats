@@ -22,6 +22,23 @@ requires "nim >= 1.0.2 & <= 1.4.8",
 
 # Tasks
 
+import os
+
+proc md2pdf(infile: string) =
+  let
+    outfile = changeFileExt(infile, "pdf")
+    capture_title = "grep -P -o '(?<=^# ).*' " & infile & "| head -n 1"
+    (title, errcode1) = gorgeEx(capture_title)
+    (today, errcode2) = gorgeEx("date +%D")
+  var hdr: string
+  hdr =  "% " & title & "\n"
+  hdr &= "% " & author & "\n"
+  hdr &=  "% Version " & version & " - " & today & "\n"
+  hdr &= "\\pagebreak\n"
+  exec("echo " & quoteshell(hdr) & "| pandoc --toc - " &
+       infile & " -o " & outfile)
+  echo "    created manual " & outfile
+
 task climan, "compile the man pages of the CLI tools":
   let
     indir = "src/textformats/cli"
@@ -45,3 +62,14 @@ task alltests, "run unit, Nim/C/Python API and CLI tests":
   exec("nimble clitest")
   exec("nimble pytest")
   exec("nimble ctest")
+task manuals, "create PDF manuals using pandoc":
+  let (tmpout, haspandoc) = gorgeEx("which pandoc")
+  if (haspandoc == 0):
+    for manual in walkDir("manuals"):
+      let infile = manual.path
+      if infile.endswith(".md"):
+        md2pdf(infile)
+    md2pdf("README.md")
+  else:
+    echo "  ERROR: This task requires pandoc\n" &
+         "    (pandoc must be installed and the pandoc binary must be in PATH)"

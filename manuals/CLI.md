@@ -1,4 +1,4 @@
-# Command line interface
+# TextFormats Command Line Interface
 
 TextFormats can be accessed using a set of command line tools. These are build
 using the command `nimble build` from the main directory of the TextFormats

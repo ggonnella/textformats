@@ -1,4 +1,4 @@
-# Syntax of the Text Formats Specification Language (TFSL)
+# Syntax of the TextFormats Specification Language (TFSL)
 
 The goal of the TextFormats library is to parse a string representation
 of data and translate it into data (decoding) and vice versa (encoding).
