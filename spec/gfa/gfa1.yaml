@@ -7,7 +7,8 @@
 include: [gfa1.fields.yaml, gfa.tags.yaml]
 namespace: gfa1
 datatypes:
-  line: {one_of: [comment, header, segment, link, containment, path]}
+  line: {one_of: [comment, header, segment, link, containment, path],
+         scope: line}
   comment:
     composed_of:
       - line_type: {constant: {"#": "comment"}}

@@ -1,0 +1,20 @@
+#
+# Specification which allows to read the corrupted GFA output by Bandage reduce
+#
+include: [../../../spec/gfa/gfa1.yaml,
+          ../../../spec/gfa/gfa1.fields.yaml,
+          ../../../spec/gfa/gfa.B.tags.yaml]
+datatypes:
+  gfa1::gfa::tags:
+    tagname: "[A-Za-z][A-Za-z0-9]"
+    tagged_list:
+      A: {regex: "[!-~]"}
+      B: tagB::array
+      H: {list_of: {regex: "[0-9a-fA-F]{2}"}}
+      J: json
+      Z: {regex: "[ -~]*"}
+      z: {regex: "[ -~]*"}
+      i: integer
+      f: float
+    splitted_by: "\t"
+  gfa1::sequence: {one_of: [placeholder, regex: "[A-Za-z=.]+"], empty: null}
