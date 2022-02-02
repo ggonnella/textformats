@@ -25,7 +25,7 @@ The following code example shows how to load the datatype from the specification
 and use it for decoding and encoding data:
 
 ```Python
-import textformats as tf
+from textformats import Specification
 
 # use a specification from file:
 s = Specification("myspec.yaml")
@@ -134,7 +134,7 @@ of the data is yielded instead.
 
 In alternative, the following function can be used:
 ```Nim
-datatype_definition.decode_file(filename, skip_embedded_spec = false,
+datatype_definition.decode_file(filename, skip_embedded_spec,
             decoded_processor, decoded_processor_data,
             decoded_processor_level, to_json=False)
 ```
