@@ -1,0 +1,26 @@
+#
+# This is a specification for a custom feature table format
+# as an example of usage of TextFormats for format conversion
+#
+# include gff3.yaml, since the data is compatible with the datatypes
+# defined in GFF3 but with a different formatting
+include: ../../../spec/gff3.yaml
+#
+datatypes:
+  file:
+    scope: file
+    composed_of:
+      - comment_line: gff3::comment
+      - feature_lines: {list_of: feature_line, separator: "\n"}
+    separator: "\n"
+  feature_line:
+    composed_of:
+      - type: gff3::column_type
+      - start: gff3::column_start
+      - end: gff3::column_end
+      - strand: gff3::column_strand
+      - phase: gff3::column_phase
+      - ID: gff3::id
+      - Parent: {list_of: gff3::id, splitted_by: ",", minlength: 0}
+      - Name: {composed_of: [value: gff3::id], empty: null, as_string: true}
+    separator: "\t"
