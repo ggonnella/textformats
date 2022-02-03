@@ -86,4 +86,5 @@ datatypes:
     implicit: {line_type: "custom_line"}
     required: 1
   line: {one_of: [header, segment, edge, ordered_group, unordered_group, gap,
-                  fragment, comment, custom_line]}
+         fragment, comment, custom_line], scope: line}
+  file: {list_of: line, separator: "\n", scope: file}
