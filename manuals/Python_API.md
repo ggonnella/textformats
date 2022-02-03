@@ -120,37 +120,64 @@ the optional boolean flag `json` must be set.
 
 ## Decoding a file
 
-To decode a file, the following iterator is used:
+### Scope of the definition
+
+In order to use a definition for decoding a file, a scope must be provided.
+This determines which part of the file shall be decoded applying the definition.
+The scope can be provided directly in the datatype definition and must be
+"line", "unit" (constant number of lines), "section" (part of the file, as long
+as possible, following a definition; greedy) or "file".
+
+The scope of a definition can also be set using the property
+`datatype_definition.scope=scopestr`, where `scopestr` is a
+string containing one of the above values.
+
+If the scope is set to "unit", the number of lines of a unit must be set,
+either in the datatype definition, or setting the property
+`datatype_definition.unitsize=n_lines` where `n_lines` is a integer
+larger than 1.
+
+### Iterate over the decoded values
+
+To decode a file, the following iterator can be used:
 ```Python
-datatype_definition.decoded_file(filename, skip_embedded_spec=False,
-                                 yield_elements=False, to_json=False)
+datatype_definition.decoded_file(filename,
+                                 yield_elements=False,
+                                 skip_embedded_spec=False,
+                                 to_json=False)
 ```
 
 Thereby the file is decoded into one or multiple values, which are yielded
-by the iterator. By default, the data is yielded as Python instances
-of `NoneType`, `bool`, `int`, `float`, `str`, `list` or `dict`.
-If the optional boolean flag `to_json` is set, the JSON representation
-of the data is yielded instead.
+by the iterator.
 
-In alternative, the following function can be used:
+Options:
+
+- `to_json`: yield a JSON representation of the data (`str`);
+             default: yield Python objects
+             (`NoneType`, `bool`, `int`, `float`, `str`, `list` or `dict`)
+- `yield_elements`: affects definitions of scope `file` and `section`;
+             yield single members of the decoded object;
+             default: yield entire decoded object
+             (see also "Levels of decoded processing/yielding")
+- `skip_embedded_spec`: skip the specification embedded at the beginning of
+                        the input file (see "Embedded specifications")
+
+### Use a processing function
+
+In alternative to the iterator, the following function can be used:
 ```Nim
-datatype_definition.decode_file(filename, skip_embedded_spec,
-            decoded_processor, decoded_processor_data,
-            decoded_processor_level, to_json=False)
+datatype_definition.decode_file(filename,
+            decoded_processor,
+            decoded_processor_data=None,
+            decoded_processor_level=DECODED_PROCESSOR_LEVEL.WHOLE,
+            skip_embedded_spec=None,
+            to_json=False)
 ```
 
-The function version, in comparison with the iterator, allows in some cases for
-working with smaller pieces of the decoded value at once (see below under
-"Level of decoded processing/yielding").
-
-### Embedded specifications
-
-The optional boolean parameter `skip_embedded_spec` of `decoded_file` must be set
-if the data and the specification are contained in the same file. A data
-file may contain an embedded YAML specification, preceding the data and
-separated from it by a YAML document separator line (`---`). In this case
-the file decoding function must know that it shall skip the specification
-portion of the file while decoding (thus the parameter must be set).
+This has the advantage of allowing to process the decoded value
+of each line separately, also in cases when this is not possible
+using the iterator. This is explained below under
+"Level of decoded processing/yielding".
 
 ### Level of decoded processing/yielding
 
@@ -188,28 +215,19 @@ value (if `to_json` is False, default), or as JSON string (if `to_json` is True)
 and data is the data passed to `decode_file` as `decoded_processor_data`.
 For scope `line` and `unit` the `decoded_processor_level` parameter is ignored.
 
-### Scope of the definition
+### Embedded specifications
 
-In order to use a definition for decoding a file, a scope must be provided.
-This determines which part of the file shall be decoded applying the definition.
-The scope can be provided directly in the datatype definition and must be
-"line", "unit" (constant number of lines), "section" (part of the file, as long
-as possible, following a definition; greedy) or "file".
-
-The scope of a definition can also be set using the property
-`datatype_definition.scope=scopestr`, where `scopestr` is a
-string containing one of the above values.
-
-If the scope is set to "unit", the number of lines of a unit must be set,
-either in the datatype definition, or setting the property
-`datatype_definition.unitsize=n_lines` where `n_lines` is a integer
-larger than 1.
+The optional boolean parameter `skip_embedded_spec` of `decoded_file` must be
+set if the data and the specification are contained in the same file. A data
+file may contain an embedded YAML specification, preceding the data and
+separated from it by a YAML document separator line (`---`). In this case the
+file decoding function must know that it shall skip the specification portion
+of the file while decoding (thus the parameter must be set).
 
 ### Reporting the branch of "one of" used by decoding
 
 When a `one_of` definition is used for decoding, it is possible to set the
 decoded value to contain information about which branch was used for the
-decoding. This is obtained by setting the key `wrapped` in the
-datatype definition, or using the `wrapped` property setter of the definition
-object.
+decoding. This is obtained by setting the key `wrapped` in the datatype
+definition, or using the `wrapped` property setter of the definition object.
 

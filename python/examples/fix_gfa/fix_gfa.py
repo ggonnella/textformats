@@ -37,5 +37,5 @@ header = {"line_type":"header",
 print(gfa1spec["header"].encode(header))
 
 # fix lines of corrupted format
-inputspec["gfa1::line"].decode_file(args["<inputfile>"], False,
+inputspec["gfa1::line"].decode_file(args["<inputfile>"],
     process_gfaline, gfa1spec, DECODED_PROCESSOR_LEVEL.LINE)

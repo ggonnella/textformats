@@ -48,11 +48,11 @@ Validate JSON str for text format | `boolvar = ddef.is_valid_encoded(data, true)
 |                                 |                                   |
 | ------------------------------- | --------------------------------- |
 Decode file (wo embedded spec)    | `for elm in ddef.decoded_file(fname)`
-Decode file with embedded spec    | `for elm in ddef.decoded_file(fname, True)`
-Yielding single elements of ddef  | `for elm in ddef.decoded_file(fname, bool, True)`
-Yielding JSON strings             | `for elm in ddef.decoded_file(fname, bool, bool, True)`
+Decode file with embedded spec    | `for elm in ddef.decoded_file(fname, skip_embedded_spec=True)`
+Yielding single elements of ddef  | `for elm in ddef.decoded_file(fname, as_elements=True)`
+Yielding JSON strings             | `for elm in ddef.decoded_file(fname, to_json=True)`
 &nbsp;                      | &nbsp;
-Using a processing function       | `ddef.decode_file(fname, has_embedded_spec_bool,` <br/> `            decoded_processor, decoded_proc_data,` <br/> `            decoded_proc_level, to_json)`
+Using a processing function       | `ddef.decode_file(fname, decoded_processor` <br/> `            decoded_proc_data, decoded_proc_level,` <br/> `            skip_embedded_spec, to_json)`
 Signature of decoded processor fn    | `decoded_processor(decoded_element, proc_data)`
 Decoded processor levels <br/> (scope `file`/`section`) | `DECODED_PROCESSOR_LEVEL.WHOLE`: whole file/section; <br/> `DECODED_PROCESSOR_LEVEL.ELEMENT`: element of compound definition; <br/>  `DECODED_PROCESSOR_LEVEL.LINE`: single lines
 Set scope of definition              | `ddef.scope = scope`

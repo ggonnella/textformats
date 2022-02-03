@@ -48,10 +48,12 @@ class Datatype:
     else:
       tf.unset_wrapped(self._definition)
 
-  def decode_file(self, filename, skip_embedded_spec=False,
+  def decode_file(self, filename,
                   decoded_processor = lambda n, d : print(n),
                   decoded_processor_data = None,
-                  decoded_processor_level=0, to_json=False):
+                  decoded_processor_level = 0,
+                  skip_embedded_spec=False,
+                  to_json=False):
     try:
       if to_json:
         tf.decode_file_to_json(filename, self._definition,
@@ -64,8 +66,10 @@ class Datatype:
     except tf.NimPyException as e:
       handle_nimpy_exception(e)
 
-  def decoded_file(self, filename, skip_embedded_spec=False,
-                   as_elements=False, to_json=False):
+  def decoded_file(self, filename,
+                   as_elements=False,
+                   skip_embedded_spec=False,
+                   to_json=False):
     if to_json:
       try:
         for value in tf.decoded_file_to_json(filename, self._definition,

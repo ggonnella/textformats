@@ -8,7 +8,7 @@ Arguments:
   <datatype>   datatype to use
 """
 from docopt import docopt
-from textformats import Specification
+from textformats import Specification, DECODED_PROCESSOR_LEVEL
 from counts import Counts
 
 def process_decoded(decoded, c):
@@ -25,14 +25,12 @@ def process_decoded(decoded, c):
         if tagname == "RG":
           c.count_rg(tag["type"], tag["value"])
 
-DECODED_PROCESSOR_LEVEL_LINE = 2
-
 if __name__ == "__main__":
   arguments = docopt(__doc__, version="1.0.0")
   input_file = arguments["<sam>"]
   spec = Specification(arguments["<spec>"])
   ddef = spec[arguments["<datatype>"]]
   c = Counts()
-  ddef.decode_file(input_file, False, process_decoded, c,
-      DECODED_PROCESSOR_LEVEL_LINE, False)
+  ddef.decode_file(input_file, process_decoded, c,
+                   DECODED_PROCESSOR_LEVEL.LINE)
   c.print()

@@ -13,17 +13,16 @@ Arguments:
 """
 
 from docopt import docopt
-import textformats as tf
+from textformats import Specification
 from opstats import OpStats, compute_stats, print_all_opstats
 
-def process_cigar(cigar, data):
+def process_cigar(cigar, empty):
   print_all_opstats(compute_stats(cigar))
 
 def main(args):
-  spec = tf.Specification(args["<specfn>"])
+  spec = Specification(args["<specfn>"])
   dd = spec[args["<datatype>"]]
-  dd.decode_file(args["<inputfn>"], False, process_cigar, None,
-                 tf.DECODED_PROCESSOR_LEVEL.WHOLE, False)
+  dd.decode_file(args["<inputfn>"], process_cigar)
 
 if __name__ == "__main__":
   args = docopt(__doc__, version="0.1")

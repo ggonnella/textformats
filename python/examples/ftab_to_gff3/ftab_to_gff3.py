@@ -50,6 +50,6 @@ print(gff3spec["sequence_region_directive"].encode(sregion))
 
 # annotation lines from custom format
 ftabspec["file"].decode_file(
-    args["<inputfile>"], False, process_feature_line,
+    args["<inputfile>"], process_feature_line,
     {"seqid": args["<seqid>"], "gff3spec": gff3spec},
     DECODED_PROCESSOR_LEVEL.LINE)

@@ -38,11 +38,11 @@ def decoded_processor(decoded, processor_data):
   print(f"Decoded value: {decoded}")
 
 print("\nDecode file, level \"whole\"")
-fas_entry.decode_file(f"{biotestdir}/test.fas", False, decoded_processor,
-    None, DECODED_PROCESSOR_LEVEL.WHOLE, False)
+fas_entry.decode_file(f"{biotestdir}/test.fas", decoded_processor,
+    None, DECODED_PROCESSOR_LEVEL.WHOLE)
 print("\nDecode file, level \"element\"")
-fas_entry.decode_file(f"{biotestdir}/test.fas", False, decoded_processor,
-    None, DECODED_PROCESSOR_LEVEL.ELEMENT, False)
+fas_entry.decode_file(f"{biotestdir}/test.fas", decoded_processor,
+    None, DECODED_PROCESSOR_LEVEL.ELEMENT)
 print("\nDecode file, level \"line\"")
-fas_entry.decode_file(f"{biotestdir}/test.fas", False, decoded_processor,
-    None, DECODED_PROCESSOR_LEVEL.LINE, False)
+fas_entry.decode_file(f"{biotestdir}/test.fas", decoded_processor,
+    None, DECODED_PROCESSOR_LEVEL.LINE)
