@@ -36,8 +36,9 @@ def process_gfaline(line, info):
     for e in line.items:
       if e.record_type == "S":
         info.sref(e.sid)
-  #for tn, content in line.tags, {}).items():
-  #  info.tag(tn, content["type"])
+  for tn in line.tagnames:
+    tt = line.get_datatype(tn)
+    info.tag(tn, tt)
 
 def main(args):
   info = Info()
