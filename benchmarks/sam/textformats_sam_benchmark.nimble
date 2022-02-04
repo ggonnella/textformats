@@ -28,11 +28,18 @@ const
   SPEC = &"{PRJDIR}/spec/sam.yaml"
   DT = "file"
 
+task show_htslib_based_cmd, "show command executed by run_htslib_based task":
+  echo(&"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}")
+
 task run_htslib_based, "run benchmark using htslib":
   echo("### Running benchmark ###")
   echo(&"# Input file:    {INPUT}")
   echo("# Program:       htslib_based")
   exec &"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}"
+
+task show_textformats_based_cmd,
+    "show command executed by run_textformats_based task":
+  echo(&"time ./textformats_based {INPUT} {SPEC} {DT}")
 
 task run_textformats_based, "run benchmark using textformats":
   echo("### Running benchmark ###")
