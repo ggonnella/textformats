@@ -17,7 +17,7 @@ installExt    = @["nim"] # required for hybrid packages
 requires "nim == 1.6.2",
          "cligen == 1.5.19",
          "yaml == 0.16.0",
-         "regex == 0.18.0",
+         "regex == 0.19.0",
          "nimpy == 0.2.0"
 
 # Tasks
