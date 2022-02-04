@@ -3,10 +3,8 @@
 ## can be undefined, with the meaning +/- Infinite
 ##
 
-#from options import is_some, unsafe_get, is_none, Option, none, some
-import options
-export options
 import strformat
+import options
 
 const
   OpenrangeInfStr* = "Inf"
@@ -15,90 +13,111 @@ const
 type
   MemberT = Natural or int64 or uint64
   OpenRange*[T: MemberT] = object
-    rmin*: Option[T]
-    rmax*: Option[T]
+    l: T
+    h: T
+    has_low*: bool
+    has_high*: bool
 
-#
-# the nim `$` method applied to uint options seems to be buggy, therefore the
-# minstr/maxstr methods currently convert to int (where maxstr will of course
-# fail for an uint value > int.high)
-#
-
-proc lowstr*[T: MemberT](o: OpenRange[T]): string {.inline.} =
-  if o.rmin.is_some:
-    let val = o.rmin.unsafe_get
-    result = $(val.int64)
+proc newOpenRange*[T: MemberT](l: Option[T] or T,
+                               h: Option[T] or T): OpenRange[T] =
+  when l is T:
+    result.l = l
+    result.has_low = true
   else:
-    if o.low == 0: result = "0"
-    else: result = OpenrangeNegInfStr
+    if l.is_some:
+      result.l = l.unsafe_get
+      result.has_low = true
+    else:
+      result.has_low = false
+  when h is T:
+    result.h = h
+    result.has_high = true
+  else:
+    if h.is_some:
+      result.h = h.unsafe_get
+      result.has_high = true
+    else:
+      result.has_high = false
 
-proc highstr*[T: MemberT](o: OpenRange[T]): string {.inline.} =
-  if is_some[T](o.rmax):
-    let val = o.rmax.unsafe_get
-    result = $(val.int64)
+#
+# note on converted to_openrage:
+# using "T or Option[T]" in the converter tuple elements type does not work
+#
+
+converter to_openrange*[T: MemberT](r: tuple[l: T, h: T]):
+  OpenRange[T] = newOpenRange(r.l, r.h)
+
+converter to_openrange*[T: MemberT](r: tuple[l: Option[T], h: T]):
+  OpenRange[T] = newOpenRange(r.l, r.h)
+
+converter to_openrange*[T: MemberT](r: tuple[l: T, h: Option[T]]):
+  OpenRange[T] = newOpenRange(r.l, r.h)
+
+converter to_openrange*[T: MemberT](r: tuple[l: Option[T], h: Option[T]]):
+  OpenRange[T] = newOpenRange(r.l, r.h)
+
+proc low*[T](self: OpenRange[T]): T =
+  if self.has_low: self.l else: T.low
+
+proc high*[T](self: OpenRange[T]): T =
+  if self.has_high: self.h else: T.high
+
+proc `low=`*[T](self: var OpenRange[T], i: T) =
+  self.has_low = true
+  self.l = i
+
+proc `low=`*[T](self: var OpenRange[T], i: Option[T]) =
+  if i.is_none:
+    self.has_low = false
+  else:
+    self.has_low = true
+    self.l = i.unsafe_get
+
+proc `high=`*[T](self: var OpenRange[T], i: T) =
+  self.has_high = true
+  self.h = i
+
+proc `high=`*[T](self: var OpenRange[T], i: Option[T]) =
+  if i.is_none:
+    self.has_high = false
+  else:
+    self.has_high = true
+    self.h = i.unsafe_get
+
+proc lowstr*[T: MemberT](self: OpenRange[T]): string {.inline.} =
+  if self.has_low: result = $self.l
+  elif T.low == 0: result = "0"
+  else: result = OpenrangeNegInfStr
+
+proc highstr*[T: MemberT](self: OpenRange[T]): string {.inline.} =
+  if self.has_high: result = $self.h
   else: result = OpenrangeInfStr
 
-proc `$`*[T: MemberT](o: OpenRange[T]): string =
-  "[" & lowstr(o) & ", " & highstr(o) & "]"
+proc `$`*[T: MemberT](self: OpenRange[T]): string =
+  "[" & self.lowstr() & ", " & self.highstr() & "]"
 
-proc safe_inc_min*[T](r: var OpenRange[T]) =
-  if r.rmin.is_some and r.rmin.unsafe_get < T.high:
-    r.rmin = (r.rmin.unsafe_get + 1.T).T.some
+proc safe_inc_min*[T](self: var OpenRange[T]) =
+  if self.has_low and self.l < T.high:
+    self.l += 1.T
 
-proc safe_dec_max*[T](r: var OpenRange[T]) =
-  if r.rmax.is_some and r.rmax.unsafe_get > T.low:
-    r.rmax = (r.rmax.unsafe_get - 1.T).T.some
+proc safe_dec_max*[T](self: var OpenRange[T]) =
+  if self.has_high and self.h > T.low:
+    self.h -= 1.T
 
-proc low*[T](o: OpenRange[T]): T =
-  if o.rmin.is_some: o.rmin.unsafe_get
-  else: T.low
+proc contains*[T](self: OpenRange[T], i: T): bool =
+  (not self.has_low or i >= self.l) and
+  (not self.has_high or i <= self.h)
 
-proc has_low*[T: MemberT](o: OpenRange[T]): bool =
-  o.rmin.is_some
+proc valid_min*[T](i: T, self: OpenRange[T]): bool =
+  (not self.has_low or i >= self.l)
 
-proc high*[T](o: OpenRange[T]): T =
-  if o.rmax.is_some: o.rmax.unsafe_get
-  else:
-    when T is uint64: int64.high.uint64
-    else: T.high
-
-proc has_high*[T](o: OpenRange[T]): bool =
-  o.rmax.is_some
-
-template `<=`[T](i: T, rrmax: Option[T]): bool =
-  (rrmax.is_none or i <= rrmax.unsafe_get)
-
-template `>=`[T](i: T, rrmin: Option[T]): bool =
-  (rrmin.is_none or i >= rrmin.unsafe_get)
-
-proc contains*[T](r: OpenRange[T], i: T): bool =
-  i >= r.rmin and i <= r.rmax
-
-proc contains*(r: OpenRange[uint64], i: int64): bool =
-  i.uint64 >= r.rmin and i.uint64 <= r.rmax
-
-proc valid_min*[T](i: T, r: OpenRange[T]): bool=
-  (r.rmin.is_none or i >= r.rmin.unsafe_get)
-
-proc valid_max*[T](i: T, r: OpenRange[T]): bool =
-  (r.rmax.is_none or i <= r.rmax.unsafe_get)
+proc valid_max*[T](i: T, self: OpenRange[T]): bool =
+  (not self.has_high or i <= self.h)
 
 proc validate*(self: OpenRange) =
-  if self.rmin.is_some and self.rmax.is_some and
-      self.rmax.unsafe_get < self.rmin.unsafe_get:
+  if self.has_low and self.has_high and self.h < self.l:
     raise newException(ValueError,
-            "Invalid range definition: 'max' value < 'min' value.\n" &
-            &"- min: {self.lowstr}\n" &
-            &"- max: {self.highstr}\n")
-
-converter to_opt*[T: MemberT](i: T): Option[T] =
-  i.some
-
-converter to_openrange*[T: MemberT](
-            r: tuple[rmin: T or Option[T],
-                     rmax: T or Option[T]]): OpenRange[T] =
-  when r.rmin is T: result.rmin = r.rmin.some
-  else: result.rmin = r.rmin
-  when r.rmax is T: result.rmax = r.rmax.some
-  else: result.rmax = r.rmax
+            "Invalid range definition: 'low' value < 'high' value.\n" &
+            &"- low: {self.lowstr}\n" &
+            &"- high: {self.highstr}\n")
 

@@ -4,36 +4,17 @@ import options
 import textformats/support/openrange
 
 suite "openrange":
-  test "to_openrange":
-    check (int64.none, int64.none).to_openrange ==
-      OpenRange[int64](rmin: int64.none, rmax: int64.none)
-    check (1.int64, 2.int64).to_openrange ==
-      OpenRange[int64](rmin: 1.int64, rmax: 2.int64)
-    check (1.int64, int64.none).to_openrange ==
-      OpenRange[int64](rmin: 1.int64, rmax: int64.none)
-    check (uint64.none, uint64.none).to_openrange ==
-      OpenRange[uint64](rmin: uint64.none, rmax: uint64.none)
-    #
-    # in Nim 1.2.x the following generates
-    # wrong C code and does not compile correctly (it uses the methods for
-    # int64 instead of those for Natural)
-    #
-    # check (Natural.none, Natural.none).to_openrange ==
-    #   OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)
-    #
-    # as a consequence in the following tests, OpenRange[Natural] is always
-    # created using the constructor
   test "intrange_contains":
     let i = 0.int64
-    check i in (int64.none, int64.none)
-    check i in (-1.int64, int64.none)
-    check i in (int64.none, 1.int64)
-    check i in (-1.int64, 1.int64)
-    check i in (0.int64, 1.int64)
-    check i in (-1.int64, 0.int64)
-    check i notin (-2.int64, -1.int64)
-    check i notin (int64.none, -1.int64)
-    check i notin (1.int64, int64.none)
+    check i in (int64.none, int64.none).to_openrange
+    check i in (-1.int64, int64.none).to_openrange
+    check i in (int64.none, 1.int64).to_openrange
+    check i in (-1.int64, 1.int64).to_openrange
+    check i in (0.int64, 1.int64).to_openrange
+    check i in (-1.int64, 0.int64).to_openrange
+    check i notin (-2.int64, -1.int64).to_openrange
+    check i notin (int64.none, -1.int64).to_openrange
+    check i notin (1.int64, int64.none).to_openrange
   test "intrange_valid_min":
     let i = 0.int64
     check i.valid_min((int64.none, int64.none).to_openrange)
@@ -161,18 +142,18 @@ suite "openrange":
       a = (uint64.none, uint64.none).to_openrange
       b = (uint64.none, 1.uint64).to_openrange
       c = (uint64.none, 0.uint64).to_openrange
-    check a.high == int64.high.uint64
+    check a.high == uint64.high
     check b.high == 1.uint64
     check c.high == 0.uint64
     a.safe_dec_max
     b.safe_dec_max
     c.safe_dec_max
-    check a.high == int64.high.uint64
+    check a.high == uint64.high
     check b.high == 0.uint64
     check c.high == 0.uint64
   test "uintrange_limits":
     check low((uint64.none, uint64.none)) == 0.uint64
-    check high((uint64.none, uint64.none)) == int64.high.uint64
+    check high((uint64.none, uint64.none)) == uint64.high
   test "uintrange_lowstr":
     check (uint64.none, uint64.none).to_openrange.lowstr == "0"
     check (uint64.none, 0.uint64).to_openrange.lowstr == "0"
@@ -200,56 +181,56 @@ suite "openrange":
     expect(ValueError): (1.uint64, 0.uint64).to_openrange.validate
   test "naturalrange_contains":
     let u = 0.Natural
-    check u in OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)
-    check u in OpenRange[Natural](rmin: 0.Natural, rmax: Natural.none)
-    check u in OpenRange[Natural](rmin: Natural.none, rmax: 1.Natural)
-    check u in OpenRange[Natural](rmin: 0.Natural, rmax: 1.Natural)
-    check u notin OpenRange[Natural](rmin: 1.Natural, rmax: 2.Natural)
-    check u notin OpenRange[Natural](rmin: 1.Natural, rmax: Natural.none)
+    check u in newOpenRange(Natural.none, Natural.none)
+    check u in newOpenRange(0.Natural.some, Natural.none)
+    check u in newOpenRange(Natural.none, 1.Natural.some)
+    check u in newOpenRange(0.Natural.some, 1.Natural.some)
+    check u notin newOpenRange[Natural](1.Natural.some, 2.Natural.some)
+    check u notin newOpenRange[Natural](1.Natural.some, Natural.none)
   test "naturalrange_valid_min":
     let u = 0.Natural
     let v = 10.Natural
     check u.valid_min(
-      OpenRange[Natural](rmin: Natural.none, rmax: Natural.none))
+      newOpenRange[Natural](Natural.none, Natural.none))
     check u.valid_min(
-      OpenRange[Natural](rmin: 0.Natural, rmax: Natural.none))
+      newOpenRange[Natural](0.Natural.some, Natural.none))
     check u.valid_min(
-      OpenRange[Natural](rmin: Natural.none, rmax: 1.Natural))
+      newOpenRange[Natural](Natural.none, 1.Natural.some))
     check u.valid_min(
-      OpenRange[Natural](rmin: 0.Natural, rmax: 1.Natural))
+      newOpenRange[Natural](0.Natural.some, 1.Natural.some))
     check not u.valid_min(
-      OpenRange[Natural](rmin: 1.Natural, rmax: 2.Natural))
+      newOpenRange[Natural](1.Natural.some, 2.Natural.some))
     check not u.valid_min(
-      OpenRange[Natural](rmin: 1.Natural, rmax: Natural.none))
+      newOpenRange[Natural](1.Natural.some, Natural.none))
     check v.valid_min(
-      OpenRange[Natural](rmin: 1.Natural, rmax: 2.Natural))
+      newOpenRange[Natural](1.Natural.some, 2.Natural.some))
     check v.valid_min(
-      OpenRange[Natural](rmin: 1.Natural, rmax: Natural.none))
+      newOpenRange[Natural](1.Natural.some, Natural.none))
   test "naturalrange_valid_max":
     let u = 0.Natural
     let v = 10.Natural
     check u.valid_max(
-      OpenRange[Natural](rmin: Natural.none, rmax: Natural.none))
+      newOpenRange[Natural](Natural.none, Natural.none))
     check u.valid_max(
-      OpenRange[Natural](rmin: 0.Natural, rmax: Natural.none))
+      newOpenRange[Natural](0.Natural.some, Natural.none))
     check u.valid_max(
-      OpenRange[Natural](rmin: Natural.none, rmax: 1.Natural))
+      newOpenRange[Natural](Natural.none, 1.Natural.some))
     check u.valid_max(
-      OpenRange[Natural](rmin: 0.Natural, rmax: 1.Natural))
+      newOpenRange[Natural](0.Natural.some, 1.Natural.some))
     check u.valid_max(
-      OpenRange[Natural](rmin: 1.Natural, rmax: 2.Natural))
+      newOpenRange[Natural](1.Natural.some, 2.Natural.some))
     check u.valid_max(
-      OpenRange[Natural](rmin: 1.Natural, rmax: Natural.none))
+      newOpenRange[Natural](1.Natural.some, Natural.none))
     check not v.valid_max(
-      OpenRange[Natural](rmin: 1.Natural, rmax: 2.Natural))
+      newOpenRange[Natural](1.Natural.some, 2.Natural.some))
     check v.valid_max(
-      OpenRange[Natural](rmin: 1.Natural, rmax: Natural.none))
+      newOpenRange[Natural](1.Natural.some, Natural.none))
   test "naturalrange_safe_inc_min":
     var
-      a = OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)
-      b = OpenRange[Natural](rmin: (Natural.high-1).Natural.some,
-                             rmax: Natural.none)
-      c = OpenRange[Natural](rmin: Natural.high, rmax: Natural.none)
+      a = newOpenRange[Natural](Natural.none, Natural.none)
+      b = newOpenRange[Natural]((Natural.high-1).Natural.some,
+                             Natural.none)
+      c = newOpenRange[Natural](Natural.high.some, Natural.none)
     check a.low == 0.Natural
     check b.low == (Natural.high-1.Natural)
     check c.low == Natural.high
@@ -261,9 +242,9 @@ suite "openrange":
     check c.low == Natural.high
   test "naturalrange_safe_dec_max":
     var
-      a = OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)
-      b = OpenRange[Natural](rmin: Natural.none, rmax: 1.Natural.some)
-      c = OpenRange[Natural](rmin: Natural.none, rmax: 0.Natural.some)
+      a = newOpenRange[Natural](Natural.none, Natural.none)
+      b = newOpenRange[Natural](Natural.none, 1.Natural.some)
+      c = newOpenRange[Natural](Natural.none, 0.Natural.some)
     check a.high == Natural.high
     check b.high == 1.Natural
     check c.high == 0.Natural
@@ -274,41 +255,41 @@ suite "openrange":
     check b.high == 0.Natural
     check c.high == 0.Natural
   test "naturalrange_limits":
-    check low(OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)) ==
+    check low(newOpenRange[Natural](Natural.none, Natural.none)) ==
       0.Natural
-    check high(OpenRange[Natural](rmin: Natural.none, rmax: Natural.none)) ==
+    check high(newOpenRange[Natural](Natural.none, Natural.none)) ==
       Natural.high
   test "naturalrange_lowstr":
-    check OpenRange[Natural](rmin:Natural.none, rmax: Natural.none).lowstr ==
+    check newOpenRange[Natural](Natural.none, Natural.none).lowstr ==
       "0"
-    check OpenRange[Natural](rmin:Natural.none, rmax:0.Natural).lowstr == "0"
-    check OpenRange[Natural](rmin:1.Natural, rmax:Natural.none).lowstr == "1"
+    check newOpenRange[Natural](Natural.none, 0.Natural.some).lowstr == "0"
+    check newOpenRange[Natural](1.Natural.some, Natural.none).lowstr == "1"
   test "naturalrange_highstr":
-    check OpenRange[Natural](rmin:Natural.none, rmax: Natural.none).highstr ==
+    check newOpenRange[Natural](Natural.none, Natural.none).highstr ==
       "Inf"
-    check OpenRange[Natural](rmin:Natural.none, rmax:1.Natural).highstr == "1"
-    check OpenRange[Natural](rmin:0.Natural, rmax:Natural.none).highstr == "Inf"
+    check newOpenRange[Natural](Natural.none, 1.Natural.some).highstr == "1"
+    check newOpenRange[Natural](0.Natural.some, Natural.none).highstr == "Inf"
   test "naturalrange_has_low":
-    check not OpenRange[Natural](rmin:Natural.none, rmax: Natural.none).has_low
-    check not OpenRange[Natural](rmin:Natural.none, rmax:0.Natural).has_low
-    check OpenRange[Natural](rmin:1.Natural, rmax:Natural.none).has_low
+    check not newOpenRange[Natural](Natural.none, Natural.none).has_low
+    check not newOpenRange[Natural](Natural.none, 0.Natural.some).has_low
+    check newOpenRange[Natural](1.Natural.some, Natural.none).has_low
   test "naturalrange_has_high":
-    check not OpenRange[Natural](rmin:Natural.none, rmax: Natural.none).has_high
-    check OpenRange[Natural](rmin:Natural.none, rmax:1.Natural).has_high
-    check not OpenRange[Natural](rmin:0.Natural, rmax:Natural.none).has_high
+    check not newOpenRange[Natural](Natural.none, Natural.none).has_high
+    check newOpenRange[Natural](Natural.none, 1.Natural.some).has_high
+    check not newOpenRange[Natural](0.Natural.some, Natural.none).has_high
   test "naturalrange_dollar":
-    check $(OpenRange[Natural](rmin:Natural.none, rmax: Natural.none)) ==
+    check $(newOpenRange[Natural](Natural.none, Natural.none)) ==
       "[0, Inf]"
-    check $(OpenRange[Natural](rmin:Natural.none, rmax:1.Natural)) ==
+    check $(newOpenRange[Natural](Natural.none, 1.Natural.some)) ==
       "[0, 1]"
-    check $(OpenRange[Natural](rmin:1.Natural, rmax:Natural.none)) ==
+    check $(newOpenRange[Natural](1.Natural.some, Natural.none)) ==
       "[1, Inf]"
   test "naturalrange_validate":
-    try: OpenRange[Natural](rmin:Natural.none, rmax: Natural.none).validate
+    try: newOpenRange[Natural](Natural.none, Natural.none).validate
     except: check false
-    try: OpenRange[Natural](rmin:Natural.none, rmax:1.Natural).validate
+    try: newOpenRange[Natural](Natural.none, 1.Natural.some).validate
     except: check false
-    try: OpenRange[Natural](rmin:1.Natural, rmax:Natural.none).validate
+    try: newOpenRange[Natural](1.Natural.some, Natural.none).validate
     except: check false
     expect(ValueError):
-      OpenRange[Natural](rmin:1.Natural, rmax:0.Natural).validate
+      newOpenRange[Natural](1.Natural.some, 0.Natural.some).validate

@@ -38,12 +38,12 @@ const
 proc parse_range_u(min_max_optnodes: tuple[min: Option[YamlNode],
                      max: Option[YamlNode]]): Openrange[uint64] =
   try:
-    result.rmin = min_max_optnodes.min.to_opt_uint
+    result.low = min_max_optnodes.min.to_opt_uint
   except NodeValueError:
     reraise_prepend(
       &"Invalid value for '{MinKey}' ({min_max_optnodes.min}).\n")
   try:
-    result.rmax = min_max_optnodes.max.to_opt_uint
+    result.high = min_max_optnodes.max.to_opt_uint
   except NodeValueError:
     reraise_prepend(
       &"Invalid value for '{MaxKey}' ({min_max_optnodes.max}).\n")

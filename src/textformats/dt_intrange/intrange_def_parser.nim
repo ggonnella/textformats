@@ -35,13 +35,13 @@ proc parse_range_i(min_max_optnodes:
                    tuple[min: Option[YamlNode], max: Option[YamlNode]]):
                    Openrange[int64] =
   try:
-    result.rmin = min_max_optnodes.min.to_opt_int
+    result.low = min_max_optnodes.min.to_opt_int
   except NodeValueError:
     raise newException(DefSyntaxError,
       &"Invalid value for '{MinKey}' ({min_max_optnodes.min}).\n" &
       get_current_exception_msg())
   try:
-    result.rmax = min_max_optnodes.max.to_opt_int
+    result.high = min_max_optnodes.max.to_opt_int
   except NodeValueError:
     raise newException(DefSyntaxError,
       &"Invalid value for '{MaxKey}' ({min_max_optnodes.max}).\n" &

@@ -95,11 +95,11 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
       if defnodes[3].is_some:
         raise newException(DefSyntaxError,
                 &"Key '{LenKey}' is incompatible with '{LenrangeMaxKey}'\n")
-      result.lenrange = (defnodes[9].parse_lenrange_min,
-                         defnodes[9].parse_lenrange_max)
+      result.lenrange.low = defnodes[9].parse_lenrange_min
+      result.lenrange.high = defnodes[9].parse_lenrange_max
     else:
-      result.lenrange = (defnodes[2].parse_lenrange_min,
-                         defnodes[3].parse_lenrange_max)
+      result.lenrange.low = defnodes[2].parse_lenrange_min
+      result.lenrange.high = defnodes[3].parse_lenrange_max
     result.lenrange.validate
   except YamlSupportError, DefSyntaxError, ValueError:
     reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
