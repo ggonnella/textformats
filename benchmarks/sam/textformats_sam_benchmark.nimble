@@ -4,6 +4,7 @@ description = "Use textformats or hts-nim for computing and printing " &
               "some statistics about a SAM file"
 bin = @["htslib_based", "textformats_based"]
 license = "CC-BY-SA"
+backend = "cpp"
 requires "hts", "textformats"
 
 import strformat

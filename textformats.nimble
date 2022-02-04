@@ -6,6 +6,7 @@ description   = "Easy specification of text formats for structured data"
 license       = "ISC"
 srcDir        = "src"
 binDir        = "cli"
+backend       = "cpp"
 namedBin      = {"textformats/cli/tf_decode": "tf_decode",
                  "textformats/cli/tf_encode": "tf_encode",
                  "textformats/cli/tf_validate": "tf_validate",
