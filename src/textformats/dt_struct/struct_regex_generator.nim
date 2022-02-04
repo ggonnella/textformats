@@ -1,5 +1,5 @@
 import regex
-import options, strutils
+import strutils
 import ../types/datatype_definition
 
 proc struct_compute_regex*(dd: DatatypeDefinition)

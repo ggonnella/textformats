@@ -1,5 +1,4 @@
 import strutils, strformat, options, json
-import ../support/openrange
 import ../types / [datatype_definition, def_syntax]
 
 const regexesmatch_describe* = "string value " &

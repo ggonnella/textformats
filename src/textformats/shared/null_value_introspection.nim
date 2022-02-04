@@ -1,5 +1,4 @@
 import strutils, strformat, options, json
-import ../support/openrange
 import ../types / [datatype_definition, def_syntax]
 
 proc null_value_verbose_desc*(d: DatatypeDefinition, indent: int): string =

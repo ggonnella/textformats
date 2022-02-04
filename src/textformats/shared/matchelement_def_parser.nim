@@ -1,4 +1,3 @@
-import options
 import yaml/dom
 import ../support/yaml_support
 import ../types/match_element

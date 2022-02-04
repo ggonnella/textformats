@@ -1,7 +1,8 @@
 import unittest
-import options, json, tables
+import json, tables
 import yaml/dom
-import textformats/types / [datatype_definition, match_element, textformats_error]
+import textformats/types / [datatype_definition, match_element,
+                            textformats_error]
 import textformats/support / [yaml_support, openrange]
 import textformats/dt_tags/tags_def_parser
 import common

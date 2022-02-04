@@ -1,6 +1,5 @@
 import strutils
 import strformat
-import options
 import json
 import ../types / [datatype_definition, textformats_error]
 import ../support/openrange

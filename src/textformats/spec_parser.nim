@@ -7,7 +7,7 @@ import streams, strformat, tables, options, os, sets, strutils
 import regex
 import yaml, yaml / [dom,serialization, hints]
 import types / [specification, def_syntax, textformats_error]
-import support / [yaml_support, error_support]
+import support / [yaml_support]
 import regex_generator, ref_solver, def_parser
 
 const

@@ -1,4 +1,4 @@
-import strutils, strformat, options
+import strutils, strformat
 import ../types / [datatype_definition, def_syntax]
 
 proc implicit_verbose_desc*(d: DatatypeDefinition, indent: int): string =

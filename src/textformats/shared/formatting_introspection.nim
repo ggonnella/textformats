@@ -1,4 +1,4 @@
-import strutils, strformat, options, json
+import strutils, strformat, json
 import ../types / [datatype_definition, def_syntax]
 
 proc formatting_verbose_desc*(d: DatatypeDefinition, indent: int): string =

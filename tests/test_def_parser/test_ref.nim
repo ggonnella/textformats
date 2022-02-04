@@ -1,5 +1,4 @@
 import unittest
-import options
 import yaml/dom
 import textformats/types/datatype_definition
 import textformats/support/yaml_support

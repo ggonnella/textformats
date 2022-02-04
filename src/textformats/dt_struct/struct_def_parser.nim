@@ -6,7 +6,7 @@ import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../shared / [formatting_def_parser, null_value_def_parser,
                     implicit_def_parser, nameddef_def_parser,
                     as_string_def_parser, scope_def_parser]
-import ../support / [yaml_support, error_support, openrange]
+import ../support / [yaml_support, error_support]
 
 proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
                                   DatatypeDefinition

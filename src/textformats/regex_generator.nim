@@ -11,7 +11,6 @@ import regex
 import types / [datatype_definition, specification]
 import introspection
 import support/error_support
-import support/openrange
 import shared/formatting_regex_generator
 
 proc compute_and_get_regex*(dd: DatatypeDefinition): DatatypeRegex

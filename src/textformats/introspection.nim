@@ -1,5 +1,5 @@
 # standard library
-import options, strformat, strutils
+import strutils, strformat
 import types/datatype_definition
 
 proc verbose_desc*(d: DatatypeDefinition, indent: int): string

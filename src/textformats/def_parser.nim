@@ -4,7 +4,7 @@
 ##
 
 import strformat, options, strutils
-import yaml / [dom,serialization, hints]
+import yaml / [dom, serialization]
 import types / [datatype_definition, def_syntax, textformats_error]
 import support/yaml_support
 

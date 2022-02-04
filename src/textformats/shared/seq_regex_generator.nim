@@ -1,5 +1,4 @@
 import strformat
-import ../support/openrange
 import ../types/regex_grppfx
 import ../regex_generator
 

@@ -1,4 +1,4 @@
-import json, strutils, options, strformat
+import strutils, strformat, json
 import regex
 import ../support/openrange
 import ../types / [datatype_definition, textformats_error, regex_grppfx]

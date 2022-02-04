@@ -1,4 +1,4 @@
-import strutils, strformat, options, json
+import strutils, strformat, json
 import ../introspection
 import ../types / [datatype_definition, def_syntax]
 

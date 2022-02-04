@@ -1,4 +1,4 @@
-import strutils, strformat, options, json
+import strutils, strformat, json
 import ../types/datatype_definition
 import ../support/openrange
 import ../shared/num_decoder

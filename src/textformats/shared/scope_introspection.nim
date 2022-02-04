@@ -1,4 +1,4 @@
-import strutils, strformat, options
+import strutils, strformat
 import ../types / [datatype_definition, def_syntax]
 
 proc describe(scope: DatatypeDefinitionScope): string =

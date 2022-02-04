@@ -1,5 +1,5 @@
 import unittest
-import options, json
+import json
 import yaml/dom
 import textformats/types / [datatype_definition, match_element, textformats_error]
 import textformats/support / [yaml_support, openrange]

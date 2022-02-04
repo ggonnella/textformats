@@ -1,5 +1,4 @@
 import strutils, strformat, options, tables
-import ../support/openrange
 import ../types / [datatype_definition, def_syntax]
 
 proc encoded_verbose_desc*(d: DatatypeDefinition, indent: int): string =

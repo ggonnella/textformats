@@ -1,4 +1,4 @@
-import sets, tables, sequtils, json, options
+import sets, tables, sequtils, json
 import ../types/datatype_definition
 import ../support/json_support
 import ../shared/implicit_decoded_validator

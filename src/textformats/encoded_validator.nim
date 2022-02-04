@@ -1,7 +1,6 @@
 import options
 import regex
 import types/datatype_definition
-import support/openrange
 
 proc is_valid*(input: string, dd: DatatypeDefinition): bool
 import dt_floatrange/floatrange_encoded_validator

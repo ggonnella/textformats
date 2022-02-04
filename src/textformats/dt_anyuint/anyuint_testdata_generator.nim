@@ -1,6 +1,5 @@
 import tables
 import json
-import options
 import ../types / [datatype_definition, testdata]
 import ../shared/num_testdata_generator
 

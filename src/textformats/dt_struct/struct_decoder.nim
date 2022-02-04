@@ -1,4 +1,5 @@
-import strutils, strformat, options, json, tables
+import strutils, strformat
+import json, tables
 import regex
 import ../types / [datatype_definition, textformats_error, regex_grppfx]
 import ../shared/formatting_decoder

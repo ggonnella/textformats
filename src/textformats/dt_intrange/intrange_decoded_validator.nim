@@ -1,4 +1,4 @@
-import json, options, strformat
+import json, strformat
 import ../types / [datatype_definition, validity_report]
 import ../support / [json_support, openrange]
 

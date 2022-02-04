@@ -1,4 +1,4 @@
-import strformat, options, json
+import strformat, json
 import ../types / [datatype_definition, textformats_error, file_lines_reader]
 import struct_decoder
 import ../file_decoder

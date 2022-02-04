@@ -1,4 +1,4 @@
-import strutils, strformat, options
+import strutils, strformat
 import ../types/datatype_definition
 
 proc generated_regex_verbose_desc*(d: DatatypeDefinition, indent: int): string =
