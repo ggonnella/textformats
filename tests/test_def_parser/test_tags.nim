@@ -3,9 +3,10 @@ import json, tables
 import yaml/dom
 import textformats/types / [datatype_definition, match_element,
                             textformats_error]
-import textformats/support / [yaml_support, openrange]
+import textformats/support/yaml_support
 import textformats/dt_tags/tags_def_parser
 import common
+import options
 when defined(nimHasUsed): {.used.} # avoid UnusedImport
 
 suite "test_tags_def_parser":

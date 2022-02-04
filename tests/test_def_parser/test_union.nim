@@ -1,10 +1,12 @@
 import unittest
 import json
 import yaml/dom
-import textformats/types / [datatype_definition, match_element, textformats_error]
-import textformats/support / [yaml_support, openrange]
+import textformats/types / [datatype_definition, match_element,
+                            textformats_error]
+import textformats/support/yaml_support
 import textformats/dt_union/union_def_parser
 import common
+import options
 when defined(nimHasUsed): {.used.} # avoid UnusedImport
 
 suite "test_union_def_parser":
