@@ -20,7 +20,8 @@ proc parse_args(): Bam =
   if (paramCount() != 1):
     echo(HelpMsg % [getAppFilename()])
     quit(0)
-  open(result, paramStr(1))
+  let filename = paramStr(1).cstring
+  open(result, filename)
   return result
 
 proc parse_header(input_file: Bam, counts: Counts) =
