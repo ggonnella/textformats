@@ -12,7 +12,7 @@ datatypes:
     splitted_by: "\t"
     composed_of:
       - line_type: {constant: {S: "segment"}}
-      - sid: gfa2::opt_id
+      - sid: gfa2::id
       - slen: unsigned_integer
       - sequence: gfa2::sequence
       - tags: gfa::tags
