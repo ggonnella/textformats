@@ -66,7 +66,7 @@ proc decode_to_json*(input: string, dd: DatatypeDefinition):
   pretty(textformats.decode(input, dd))
 
 proc encode*(obj: PyObject, dd: DatatypeDefinition): string {.exportpy.} =
-  textformats.encode(obj.to_json, dd)
+  textformats.encode(obj.to(JsonNode), dd)
 
 proc encode_json*(json_str: string, dd: DatatypeDefinition):
                   string {.exportpy.} =
@@ -78,7 +78,7 @@ proc is_valid_encoded*(
 
 proc is_valid_decoded*(
        obj: PyObject, dd: DatatypeDefinition): bool {.exportpy.} =
-  textformats.is_valid(obj.to_json, dd)
+  textformats.is_valid(obj.to(JsonNode), dd)
 
 proc is_valid_decoded_json*(
        json_str: string, dd: DatatypeDefinition): bool {.exportpy.} =
