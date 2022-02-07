@@ -3,7 +3,7 @@
 Display information about the contents of a GFA2 file
 (version based on GfaPy)
 
-Usage: ./gfapy_based.py <inputfile>
+Usage: ./gfa2_info_gfapy_based.py <inputfile>
 
 Arguments:
   <inputfile>  Input file in the GFA2 format
