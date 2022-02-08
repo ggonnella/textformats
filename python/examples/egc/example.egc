@@ -1,0 +1,55 @@
+#
+# This is an example of valid EGC file
+#
+# The companion file example.json contains the equivalent
+# data in JSON format (including these comments).
+#
+#
+# "T" records define taxa which are referred to in the E lines;
+#     include their name and NCBI taxonomy ID
+#
+T	Nice species	1234
+T	martians	234
+T	venusians	2345
+T	very nice subspecies	14325
+T	all living forms	1
+#
+# "P" records define phenotypes which are referred to in the E lines;
+#     include their name, an optional description and
+#     an optional link to an ontology
+#
+P	magnetotactic	senses the magnetic field	.
+P	foobar	.	FooOnto:BAR12
+P	pheno1	it is the first one	FooOnto:BAR1
+P	pheno2	it is the 2nd one	FooOnto:BAR2
+P	pheno3	just another random phenotype	FooOnto:BAR3
+#
+# "A" records define attributes which are referred to in the E lines;
+#     include an identifier, a mandatory link to an ontology;
+#     a description of the data (list of datatype:unit[:optional_name])
+#     and an optional attribute group identifier
+#
+A	gene123	Genes:FAKE1	b:presence	.
+A	attr3	AttrOnto:A435	value:i:count,quality:f:score	.
+A	n_rRNA	SO:1234	i:count	counts
+A	pos_gene5	AttrOnto:BLA1	i:pos	.
+A	n_bla5	AttrOnto:V005	i:count	counts
+A	statP	AttrOnto:XYZ2	f:score	seqscores
+#
+# "E" records define expectations;
+#     they include a link to a T or P line, then to an A line,
+#     a relation (e.g. <, >, etc), a value,
+#     and a reference as pubmed ID / UUID or DOI
+#
+E	T:1234	gene123	=	T	uuid:6DEBA9e6-bFA2-6DCA-6bF4-E419e7d3E419
+E	T:234	gene123	=	F	doi:10.41123/5r37487
+E	P:pheno1	attr3.value	<	1	pmid:34451
+E	P:pheno2	n_rRNA	<=	12	uuid:1DA18DFB-FEC8-BDCA-64BA-F4C15A0F4C15
+E	T:1234	n_bla5	=	14	doi:10.1923x/103-A2123
+E	P:pheno3	value5	>=	32	pmid:5387
+E	T:2345	n_bla5	>	5	uuid:6de18df6-d1c5-bbc8-6b89-d4c2ea30d4c2
+E	T:3456	pos_gene5	in	1..12	doi:10.abc/obj1023
+E	P:magnetotactic	statP	in	1.0..3.0	pmid:12342
+E	P:foobar	foo5	notin	-1.0..<1.0	uuid:6DFBA125-6DE1-bD4B-6C19-bFE4CadfbFE4
+E	T:14325	statP	notin	3.0>..5.0	doi:10.AGZFx/0000123
+E	T:1	statP	notin	3.1>..<5.0	pmid:232344

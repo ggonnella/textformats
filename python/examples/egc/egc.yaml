@@ -1,32 +1,3 @@
-#
-# This format was created to demostrate the use of TextFormat
-# for defining new bioinformatics formats.
-#
-# The goal of the format is to describe the expected content of genomes
-# in terms of values of given attributes (such as sequence statistics or feature
-# counts), depending on the membership of the organism (to which the genome
-# belong) to taxonomic or phenotypic groups.
-#
-# The format is similar to GFA in its structure:
-# - each non-comment line (i.e. not starting with the hash symbol) is a record
-# - a record consists of fields separated by tabs
-# - the first field is a single uppercase letter coding for the record type
-# - the record type determines the number and semantics of the following fields
-#
-# Record types:
-# - A --> attribute line: defines a measurable attribute (name, datatype,
-#         unit of measurement); links to an external ontology; optionally
-#         allows to collect attributes into groups
-# - P --> phenotypic group line: describes a phenotype; links to an external
-#         ontology
-# - T --> taxon line: names a taxonomic group; links to the NCBI taxonomy DB
-# - E --> expectation line; associates a taxonomic or phenotypic group to
-#         an expected value of an attribute (equal to a given boolean or
-#         numeric value; or, for numeric values, lower/higher than a
-#         given threshold or in a given range); links to a publication
-#         or other document or database record, which documents the expectation
-#         using Pubmed ID, DDOI or unique identifiers (UUID).
-#
 datatypes:
   boolean:
     values: [F: False, T: True]
@@ -38,10 +9,14 @@ datatypes:
       - "..<": "max-open"
   interval:
     one_of:
-      - {composed_of: [min: integer, max: integer], splitted_by: ".."}
-      - composed_of: [min: float, interval_type: interval_type, max: float]
+      - composed_of: [min: integer, max: integer]
+        splitted_by: ".."
+        implicit: {"interval_type": "closed"}
+      - composed_of: [min: float,
+                     interval_type: interval_type,
+                     max: float]
   placeholder:
-    constant: "."
+    constant: {".": null}
   identifier:
     regex: "[A-Za-z][A-za-z0-9_]*"
   description: # allows spaces and some punctuation
@@ -55,6 +30,7 @@ datatypes:
     prefix: "pmid:"
     composed_of:
       - id: unsigned_integer
+    implicit: {type: "Pubmed ID"}
   doi:
     prefix: "doi:"
     composed_of:
@@ -64,6 +40,7 @@ datatypes:
       - sep2: {constant: "/"}
       - object: {regex: '[^\t\n]+'}
     hide_constants: true
+    implicit: {type: "DOI"}
   hexchar:
     regex: "[0-9a-fA-F]"
   uuid:
@@ -75,17 +52,23 @@ datatypes:
       - g4: {list_of: hexchar, length: 4, as_string: True}
       - g5: {list_of: hexchar, length: 12, as_string: True}
     splitted_by: "-"
+    implicit: {type: "UUID"}
+  data_descriptor_dt: {values: [i: "integer", u: "unsigned integer",
+                                f: "float", b: "boolean"]}
   data_descriptor:
-    list_of:
-      composed_of:
-        - datatype: {values: [i: "integer", u: "unsigned integer",
-                              f: "float", b: "boolean"]}
-        - unit: identifier
-        - name: identifier
-      splitted_by: ":"
-      required: 2
-    separator: ","
-    minlength: 1
+    one_of:
+      - composed_of:
+        - datatype: data_descriptor_dt
+        - category: identifier
+        splitted_by: ":"
+      - list_of:
+          composed_of:
+          - element: identifier
+          - datatype: data_descriptor_dt
+          - category: identifier
+          splitted_by: ":"
+        minlength: 1
+        separator: ","
   comment_line:
     regex: "#[^\n]*"
   attribute_line:
@@ -119,10 +102,18 @@ datatypes:
           - prefix: {constant: "P"}
           - phenotype_name: identifier
         splitted_by: ":"
+  attribute_ref:
+    one_of:
+      - identifier
+      - composed_of:
+        - attribute: identifier
+        - element: identifier
+        splitted_by: "."
   bool_expectation_line:
     composed_of:
       - record_type: {constant: {"E": "expectation"}}
       - subject: subject_ref
+      - attribute: attribute_ref
       - relation: {constant: "="}
       - value: boolean
       - reference: {one_of: [pubmed_id, doi, uuid]}
@@ -131,6 +122,7 @@ datatypes:
     composed_of:
       - record_type: {constant: {"E": "expectation"}}
       - subject: subject_ref
+      - attribute: attribute_ref
       - relation: {values: ["<", "<=", "=", ">=", ">"]}
       - value: {one_of: [integer, float]}
       - reference: {one_of: [pubmed_id, doi, uuid]}
@@ -139,7 +131,22 @@ datatypes:
     composed_of:
       - record_type: {constant: {"E": "expectation"}}
       - subject: subject_ref
+      - attribute: attribute_ref
       - relation: {values: ["in", "notin"]}
       - value: interval
       - reference: {one_of: [pubmed_id, doi, uuid]}
     splitted_by: "\t"
+  line:
+    scope: line
+    one_of:
+      - comment_line
+      - bool_expectation_line
+      - numeric_expectation_line
+      - interval_expectation_line
+      - phenotype_line
+      - taxon_line
+      - attribute_line
+  file:
+   scope: file
+   list_of: line
+   splitted_by: "\n"
