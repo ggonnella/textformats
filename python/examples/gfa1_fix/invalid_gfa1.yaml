@@ -1,5 +1,5 @@
 #
-# Specification which allows to read the corrupted GFA output by Bandage reduce
+# Specification which allows to read the invalid GFA output by Bandage reduce
 #
 include: [../../../spec/gfa/gfa1.yaml,
           ../../../spec/gfa/gfa1.fields.yaml,

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 This file implements an example application of TextFormats:
-fixing a wrongly formatted GFA output by another tool.
+fixing a wrongly formatted GFA1 output by Bandage.
 
-Usage: ./fix_gfa.py <inputfile> <gfa1spec> <inputspec>
+Usage: ./gfa1_fix.py <inputfile> <gfa1spec> <inputspec>
 
 Arguments:
-  <inputfile>  Input file in the corrupted GFA1 format
+  <inputfile>  Input file in the invalid GFA1 format
   <gfa1spec>   Specification file describing the GFA1 format
-  <inputspec>  Specification file describing the corrupted GFA1 format
+  <inputspec>  Specification file describing the invalid GFA1 format
 """
 from textformats import Specification, DECODED_PROCESSOR_LEVEL
 from docopt import docopt
@@ -36,6 +36,6 @@ header = {"line_type":"header",
           "tags":{"VN":{"type":"Z","value":"1.0"}}}
 print(gfa1spec["header"].encode(header))
 
-# fix lines of corrupted format
+# fix lines of invalid format
 inputspec["gfa1::line"].decode_file(args["<inputfile>"],
     process_gfaline, gfa1spec, DECODED_PROCESSOR_LEVEL.LINE)
