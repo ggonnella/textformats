@@ -14,11 +14,26 @@ proc handle_reverse*(t: var TestData, e: Option[TableRef[JsonNode, string]]) =
       t.v[k] = v
     t.o = newTable[string, JsonNode]()
 
+#
+# Allow to use the \w, \W, \s, \S, \d and \D escape codes
+# not supported by exrex
+#
 proc normalize_regex(rgx: string): string =
-  result = rgx.replace(   re"^\\w",      "[a-zA-Z]")
-  result = result.replace(re"(?<!\\)\\w", "[a-zA-Z]")
-  result = result.replace(re"^\\d",      "[0-9]")
+  # handle the codes at the beginning of the regex
+  result = rgx.replace(   re"^\\w",       "[a-zA-Z0-9_]")
+  result = result.replace(re"^\\W",       "[^a-zA-Z0-9_]")
+  result = result.replace(re"^\\s",       "[ \\t\\n\\r\\f\\v]")
+  result = result.replace(re"^\\S",       "[^ \\t\\n\\r\\f\\v]")
+  result = result.replace(re"^\\d",       "[0-9]")
+  result = result.replace(re"^\\D",       "[^0-9]")
+  # handle the codes in the middle of the regex
+  # (avoiding to replace if \ is escaped)
+  result = result.replace(re"(?<!\\)\\w", "[a-zA-Z0-9_]")
+  result = result.replace(re"(?<!\\)\\W", "[^a-zA-Z0-9_]")
+  result = result.replace(re"(?<!\\)\\s", "[ \\t\\n\\r\\f\\v]")
+  result = result.replace(re"(?<!\\)\\S", "[^ \\t\\n\\r\\f\\v]")
   result = result.replace(re"(?<!\\)\\d", "[0-9]")
+  result = result.replace(re"(?<!\\)\\D", "[^0-9]")
 
 iterator exrex(rgx: string, n_random_strings: int,
                max_range_size: int): string =
