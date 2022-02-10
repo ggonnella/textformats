@@ -5,7 +5,7 @@ import ../types / [datatype_definition, textformats_error]
 
 proc regexesmatch_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if not value.is_scalar:
-    raise newException(EncodingError, "Error: value is not a scalar\n" &
+    raise newException(EncodingError, "Value is not a scalar, found: " &
                        value.describe_kind & "\n")
   if dd.encoded.is_some:
     if value in dd.encoded.unsafe_get:
@@ -19,8 +19,7 @@ proc regexesmatch_encode*(value: JsonNode, dd: DatatypeDefinition): string =
       if value.is_string and value.get_str.match(r):
         return $value.get_str
   raise newException(EncodingError,
-      "Error: value does not match any of the specified regular expressions\n" &
-      "Regular expressions: " & dd.regexes_raw.join(", ") & "\n")
+      "Regular expressions not matching: " & dd.regexes_raw.join(", ") & "\n")
 
 proc regexesmatch_unsafe_encode*(
          value: JsonNode, dd: DatatypeDefinition): string =

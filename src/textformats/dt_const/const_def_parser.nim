@@ -47,6 +47,7 @@ proc parse_decoded(n: YamlNode): seq[Option[JsonNode]] =
 
 proc newConstDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let defnodes = collect_defnodes(defroot, @[DefKey, NullValueKey,
                                                AsStringKey])
@@ -56,4 +57,5 @@ proc newConstDatatypeDefinition*(defroot: YamlNode, name: string):
         null_value:       defnodes[1].parse_null_value,
         as_string:        defnodes[2].parse_as_string)
   except YamlSupportError, DefSyntaxError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)

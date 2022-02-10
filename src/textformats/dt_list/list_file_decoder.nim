@@ -15,7 +15,7 @@ template foreach_list_section_element(reader, dd, actions: untyped) =
       inc element_num
     except DecodingError:
       if element_num == 0 or element_num < dd.lenrange.low:
-        raise_invalid_list_element(element_num, dd, get_current_exception_msg())
+        reraise_invalid_list_element(element_num, dd)
       else: break
 
 proc decode_list_section*(reader: var FileLinesReader,

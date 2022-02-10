@@ -14,8 +14,7 @@ proc collect_defnodes*(defroot: YamlNode, keys: openArray[string],
 proc validate_requires*(key1: string, optnode1: Option[YamlNode],
                         key2: string, optnode2: Option[YamlNode])
 
-template raise_def_syntax_error*(name: string, msg: string, syntaxhelp: string,
-                                 defkey = "") =
+proc format_def_syntax_errmsg*(name, msg, syntaxhelp, defkey = ""): string =
   let
     intro = "Error in the definition of datatype '" & name & "':\n"
     invalidstr = block:
@@ -23,13 +22,13 @@ template raise_def_syntax_error*(name: string, msg: string, syntaxhelp: string,
       else: ""
     syntaxstr = "\n\n==== Expected datatype definition syntax ====\n\n" &
                 syntaxhelp
-  raise newException(DefSyntaxError,
-                     intro & invalidstr & msg & syntaxstr)
+  return intro & invalidstr & msg & syntaxstr
 
-template reraise_as_def_syntax_error*(name: string, syntaxhelp: string,
-                                      defkey = "") =
-  var e = getCurrentException()
-  raise_def_syntax_error(name, e.msg, syntaxhelp, defkey)
+template raise_if_had_error*(msg: string, name: string, syntaxhelp: string,
+                             defkey = "") =
+  if len(msg) > 0:
+    raise newException(DefSyntaxError,
+            format_def_syntax_errmsg(name, msg, syntaxhelp, defkey))
 
 #
 # each datatype kind has a submodule, except for the base datatypes
@@ -101,7 +100,8 @@ proc parse_datatype_definition_map(defroot: YamlNode, name: string):
   let emsg = "The definition mapping does not " &
     "include any of the keys for defining a datatype.\n"  &
     &"Node content (JSON): {defroot.to_json_node}"
-  raise_def_syntax_error(name, emsg, SyntaxHelp)
+  raise newException(DefSyntaxError,
+            format_def_syntax_errmsg(name, emsg, SyntaxHelp))
 
 proc mark_unresolved_ref(dd: var DatatypeDefinition) =
   dd.has_unresolved_ref = false
@@ -122,4 +122,5 @@ proc newDatatypeDefinition*(node: YamlNode, name: string):
   of ySequence:
     let emsg = "Definition content is a sequence.\n" &
                &"Node content (JSON): {node.to_json_node}"
-    raise_def_syntax_error(name, emsg, SyntaxHelp)
+    raise newException(DefSyntaxError,
+            format_def_syntax_errmsg(name, emsg, SyntaxHelp))

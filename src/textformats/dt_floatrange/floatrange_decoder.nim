@@ -13,8 +13,6 @@ proc decode_floatrange*(input: string, dd: DatatypeDefinition): JsonNode =
       min_incl_str = if dd.min_incl: "included" else: "excluded"
       max_incl_str = if dd.max_incl: "included" else: "excluded"
     raise newException(DecodingError,
-            "Error: Float value outside range limits\n" &
-            &"Float value: {val}\n" &
-            &"Minimum value: {dd.min_f} ({min_incl_str})\n" &
-            &"Maximum value: {dd.max_f} ({max_incl_str})\n")
+            &"Float {val} out of range: {dd.min_f} ({min_incl_str}) .. " &
+            &"{dd.max_f} ({max_incl_str})\n")
   return %*val

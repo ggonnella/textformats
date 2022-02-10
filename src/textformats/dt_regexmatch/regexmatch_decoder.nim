@@ -14,6 +14,4 @@ proc decode_regexmatch*(input: string, dd: DatatypeDefinition): JsonNode =
     return input.translated(dd)
   else:
     raise newException(DecodingError,
-             "Error: Encoded string does not match the " &
-             "specified regular expression\n" &
-             &"Regular expression: {dd.regex.raw}\n")
+             &"Regular expression not matching: {dd.regex.raw}\n")

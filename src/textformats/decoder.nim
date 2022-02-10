@@ -34,16 +34,14 @@ import dt_dict/dict_decoder
 import dt_tags/tags_decoder
 import dt_union/union_decoder
 
-template raise_decoding_error*(input: string, msg: string,
+template reraise_decoding_error*(input: string,
                                dd: DatatypeDefinition) =
-  var smsg = msg
-  smsg = smsg.strip(leading=false)
-  smsg.stripLineEnd()
-  raise newException(DecodingError,
-                     "Error: invalid encoded string according to datatype\n" &
-                     "Datatype name: " & dd.name & "\n" &
-                     "Encoded string: '" & $input & "'\n" &
-                     smsg.indent(2))
+  let e = get_current_exception()
+  e.msg = e.msg.strip(leading=false)
+  e.msg.stripLineEnd()
+  e.msg = "Invalid encoded string for datatype '" & dd.name &
+          "': " & $input & "\n" & e.msg.indent(2)
+  raise
 
 proc prematched_decode*(input: string, slice: Slice[int],
                  dd: DatatypeDefinition, m: RegexMatch, childnum: int,
@@ -115,7 +113,6 @@ proc decode*(input: string, dd: DatatypeDefinition): JsonNode
       of ddkTags:          result = input.decode_tags(dd)
       of ddkUnion:         result = input.decode_union(dd)
     except DecodingError:
-      let e = get_current_exception()
-      raise_decoding_error(input, e.msg, dd)
+      reraise_decoding_error(input, dd)
   return if dd.as_string: %input else: result
 

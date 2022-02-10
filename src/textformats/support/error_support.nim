@@ -4,7 +4,7 @@ template reraise_prepend*(pfx: string) =
   ## (can only be used in an except blocks)
   var e = getCurrentException()
   e.msg = pfx & e.msg
-  raise e
+  raise
 
 template reraise_prepend_append*(pfx: string, sfx: string) =
   ## Re-raise current exception prepending `pfx` and
@@ -13,7 +13,7 @@ template reraise_prepend_append*(pfx: string, sfx: string) =
   ## (can only be used in an except blocks)
   var e = getCurrentException()
   e.msg = pfx & e.msg & sfx
-  raise e
+  raise
 
 template reraise_append*(sfx: string) =
   ## Re-raise current exception appending `sfx` to the message.
@@ -21,4 +21,4 @@ template reraise_append*(sfx: string) =
   ## (can only be used in an except blocks)
   var e = getCurrentException()
   e.msg = e.msg & sfx
-  raise e
+  raise

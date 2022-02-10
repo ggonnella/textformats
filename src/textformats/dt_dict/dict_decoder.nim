@@ -9,9 +9,9 @@ proc decode_value*(value_str: string, dd: DatatypeDefinition,
   try:
     result = value_str.decode(value_def)
   except DecodingError:
-    raise newException(DecodingError,
-                       &"Error: invalid value for key '{key}'\n" &
-                       getCurrentExceptionMsg().indent(2))
+    let e = getCurrentException()
+    e.msg = &"Invalid value for key '{key}'\n" & e.msg.indent(2)
+    raise
 
 template validate_required*(fields, dd: untyped) =
   for key in dd.dict_members.keys:
@@ -23,7 +23,7 @@ template parse_and_validate_element*(elem, dd, previous_keys: untyped):
   let components = elem.split(dd.dict_internal_sep, max_split=1)
   if components.len < 2:
     raise newException(DecodingError,
-                       "Error: internal key/value separator not found\n")
+                       "Internal separator (key/value) not found\n")
   let
     key = components[0]
     value_str = components[1]
@@ -45,7 +45,7 @@ proc decode_dict*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkDict
   result = newJObject()
   let core = validate_and_remove_pfx_and_sfx(input, dd,
-               emsg_pfx = "Error: wrong formatting of encoded string.\n")
+               emsg_pfx = "Wrong formatting of encoded string.\n")
   for elem in core.split(dd.sep):
     elem.decode_element(dd, result.fields)
   result.fields.validate_required(dd)

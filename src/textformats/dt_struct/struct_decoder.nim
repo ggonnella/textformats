@@ -5,16 +5,14 @@ import ../types / [datatype_definition, textformats_error, regex_grppfx]
 import ../shared/formatting_decoder
 import ../decoder
 
-proc raise_invalid_element*(emsg: string, membername: string) =
-  raise newException(DecodingError,
-          "Error: invalid encoded value for structure element\n" &
-          &"Element name: {membername}\n{emsg.indent(2)}")
+proc reraise_invalid_element*(membername: string) =
+  let e = getCurrentException()
+  e.msg = &"Invalid structure element '{membername}':\n" & e.msg.indent(2)
+  raise
 
 proc raise_invalid_min_n_elements*(found: int, expected: int) =
   raise newException(DecodingError,
-          "Error: invalid number of elements in structure\n" &
-          &"Expected minimum number of elements: {expected}\n" &
-          &"Found number of elements: {found}\n")
+          &"Invalid structure size ({found}), min.expected: {expected}\n")
 
 proc prematched_decode_struct*(input: string, slice: Slice[int],
             dd: DatatypeDefinition, match_obj: RegexMatch, childnum: int,
@@ -46,7 +44,7 @@ proc prematched_decode_struct*(input: string, slice: Slice[int],
         elements.add((member.name, elem_decoded))
       except DecodingError:
         assert(false)
-        #raise_invalid_element(getCurrentExceptionMsg(), member.name)
+        #reraise_invalid_element(member.name)
     i += 1
   if i < dd.n_required:
     raise_invalid_min_n_elements(i, dd.n_required)
@@ -68,7 +66,7 @@ proc splitting_decode_struct(input: string, dd: DatatypeDefinition): JsonNode =
       if i notin dd.hidden:
         elements.add((member.name, elem_decoded))
     except DecodingError:
-      raise_invalid_element(get_current_exception_msg(), member.name)
+      reraise_invalid_element(member.name)
     i += 1
   if i < dd.n_required:
     raise_invalid_min_n_elements(i, dd.n_required)
@@ -84,12 +82,10 @@ proc split_and_raise(input: string, dd: DatatypeDefinition) =
     discard input.splitting_decode_struct(dd)
     do_assert(false)
   except DecodingError:
-    raise newException(DecodingError,
-                    "Error: encoded structure content not "&
-                    "matching regular expression.\n" &
-                    &"Regular expression: {dd.regex.raw}\n" &
-                    "Reason for not matching: \n" &
-                    get_current_exception_msg().indent(2))
+    let e = getCurrentException()
+    e.msg = &"Structure not matching reg.expr. {dd.regex.raw}, error:\n" &
+              e.msg.indent(2)
+    raise
 
 proc elementwise_decode_struct(input: string, dd: DatatypeDefinition):
                                JsonNode =
@@ -112,7 +108,7 @@ proc elementwise_decode_struct(input: string, dd: DatatypeDefinition):
       if i notin dd.hidden:
         elements.add((member.name, elem_decoded))
     except DecodingError:
-      raise_invalid_element(get_current_exception_msg(), member.name)
+      reraise_invalid_element(member.name)
     i += 1
   if i < dd.n_required:
     raise_invalid_min_n_elements(i, dd.n_required)

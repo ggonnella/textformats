@@ -10,13 +10,10 @@ proc validate_nonmember_keys*(value: JsonNode, value_keys: var HashSet[string],
       if member.name in value_keys:
         if value[member.name] != member.value:
           raise newException(EncodingError,
-                             "Error: invalid value for implicit key\n" &
-                             &"Implicit key: {member.name}\n" &
-                             &"Expected value: '{member.value}'\n" &
-                             &"Found: '{value[member.name]}'\n")
+                  &"Invalid value '{value[member.name]}' " &
+                  &"for '{member.name}' key, expected '{member.value}'\n")
         value_keys.excl(member.name)
     if value_keys.len > 0:
       raise newException(EncodingError,
-                         "Error: invalid keys found in dictionary\n" &
-                         &"Invalid key(s): {value_keys}\n")
+                         &"Invalid key(s) in dictionary: {value_keys}\n")
 

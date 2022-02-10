@@ -7,8 +7,7 @@ import ../shared/matchelement_encoder
 
 proc const_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if not value.is_scalar:
-    raise newException(EncodingError,
-            "Error: value is not a scalar value\n" &
+    raise newException(EncodingError, "Value is not a scalar value, found: " &
             value.describe_kind & "\n")
   var encoded: string
   if dd.decoded[0].is_some:
@@ -19,9 +18,8 @@ proc const_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   else:
     if encode_match_elem_wo_decoded(value, dd.constant_element, encoded):
       return encoded
-  raise newException(EncodingError,
-              "Error: value does not match specified constant\n" &
-              &"Constant: {dd.constant_element}\n")
+  raise newException(EncodingError, &"Value '{value}' found, " &
+                                    &"expected {dd.constant_element}\n")
 
 proc const_unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   var encoded: string

@@ -100,6 +100,7 @@ proc parse_branch_names(optnode: Option[YamlNode], name: string,
 
 proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
                                  DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     var defnodes = collect_defnodes(defroot, [DefKey,
                       NullValueKey, AsStringKey, WrappedKey,
@@ -113,4 +114,5 @@ proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
     result.branch_names = defnodes[4].parse_branch_names(name,
                                         defnodes[0].unsafe_get)
   except YamlSupportError, DefSyntaxError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)

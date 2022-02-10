@@ -7,34 +7,34 @@ import ../encoder
 template format_results(results: seq[string], dd: DatatypeDefinition): string =
   dd.pfx & results.join(dd.sep) & dd.sfx
 
-proc raise_invalid_element(name: string, results: seq[string],
-                           errmsg: string, dd: DatatypeDefinition) =
-  raise newException(EncodingError,
-          "Error: invalid value for structure element\n" &
-          &"Key of invalid element: {name}\n" &
-          "Partial encoded string " &
-          &"(before invalid element): {results.format_results(dd)}\n" &
-          "Error while encoding value:\n" & errmsg.indent(2))
+proc reraise_invalid_element(name: string, results: seq[string],
+                             dd: DatatypeDefinition) =
+  let
+    before = results.format_results(dd)
+    e = getCurrentException()
+  e.msg = &"Invalid value for structure element '{name};:\n" & e.msg.indent(2)
+  if len(before) > 0:
+    e.msg = "After encoding: '{before}'\n" & e.msg
+  raise
 
 proc raise_required_key_missing(name: string, i: int, results: seq[string],
                                 dd: DatatypeDefinition) =
-  raise newException(EncodingError,
-          "Error: required dictionary key missing\n" &
-          &"Number of keys found: {i+1}\n"&
-          &"Number of required keys: {dd.n_required}\n"&
-          "Partial encoded string " &
-          &"(before missing value): {results.format_results(dd)}\n" &
-          &"Missing key: {name}\n")
+  let
+    before = results.format_results(dd)
+    e = newException(EncodingError, &"Missing required dict.key '{name}'\n")
+  if len(before) > 0:
+    e.msg = "After encoding: '{before}'\n" & e.msg
+  raise e
 
 proc raise_optional_key_missing(name: string, optname: string,
                                 results: seq[string], dd: DatatypeDefinition) =
-  raise newException(EncodingError,
-          "Error: required dictionary key missing\n" &
-          &"Optional key '{optname}' is present, requiring all optional "&
-            "keys before it to be present as well\n" &
-          "Partial encoded string " &
-          &"(before missing value): {results.format_results(dd)}\n" &
-          &"Missing key: {name}\n")
+  let
+    before = results.format_results(dd)
+    e = newException(EncodingError,
+          &"Missing dict.key '{name}', required since '{optname}' is present\n")
+  if len(before) > 0:
+    e.msg = "After encoding: '{before}'\n" & e.msg
+  raise e
 
 template try_encoding(element: JsonNode, namemsg: string,
                       subdef: DatatypeDefinition,
@@ -42,12 +42,11 @@ template try_encoding(element: JsonNode, namemsg: string,
   try:
     results.add(element.encode(subdef))
   except EncodingError:
-    let e = get_current_exception()
-    raise_invalid_element(namemsg, results, e.msg, dd)
+    reraise_invalid_element(namemsg, results, dd)
 
 proc struct_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if not value.is_object:
-    raise newException(EncodingError, "Error: value is not a dictionary\n" &
+    raise newException(EncodingError, "Value is not a dictionary, found: " &
             value.describe_kind & "\n")
   var
     value_keys = to_seq(value.get_fields.keys).to_hash_set

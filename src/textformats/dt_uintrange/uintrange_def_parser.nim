@@ -62,6 +62,7 @@ proc parse_base(n: Option[YamlNode]): int =
 
 proc newUintRangeDatatypeDefinition*(defroot: YamlNode, name: string):
                                      DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let
       defnodes = collect_defnodes(defroot, [DefKey, NullValueKey, AsStringKey])
@@ -81,4 +82,5 @@ proc newUintRangeDatatypeDefinition*(defroot: YamlNode, name: string):
       result.range_u.safe_dec_max
     result.range_u.validate
   except YamlSupportError, DefSyntaxError, ValueError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)

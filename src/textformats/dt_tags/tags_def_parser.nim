@@ -140,6 +140,7 @@ proc parse_tagname_regex(dd: var DatatypeDefinition, optn: Option[YamlNode]) =
 
 proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let defnodes = collect_defnodes(defroot,
                      [DefKey, SplittedKey, TagnameKey, TagsInternalSepKey,
@@ -164,4 +165,5 @@ proc newTagsDatatypeDefinition*(defroot: YamlNode, name: string):
                         TagsInternalSepKey ,"name/type/value")
     result.validate_names_vs_separators
   except YamlSupportError, DefSyntaxError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)

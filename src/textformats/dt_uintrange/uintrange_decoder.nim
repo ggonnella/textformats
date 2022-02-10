@@ -10,13 +10,8 @@ proc decode_uintrange*(input: string, dd: DatatypeDefinition): JsonNode =
   let val = decode_int(input, dd.base)
   if val < 0:
     raise newException(DecodingError,
-            "Error: negative integer value for unsigned integer\n" &
-            "Expected: non-negative integer\n" &
-            "Found: " & $val & "\n")
+               "Negative value (" & $val & ") found, expected: non-negative\n")
   if not dd.range_u.contains(val.uint64):
-    raise newException(DecodingError,
-            "Error: unsigned integer value outside range limits\n" &
-            &"Unsigned integer value: {val}\n" &
-            &"Minimum value: {dd.range_u.lowstr}\n" &
-            &"Maximum value: {dd.range_u.highstr}\n")
+    raise newException(DecodingError, &"Value ({val}) outside range limits: " &
+            &"{dd.range_u.lowstr}..{dd.range_u.highstr}\n")
   %*(val)

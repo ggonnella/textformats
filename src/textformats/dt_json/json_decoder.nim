@@ -2,13 +2,13 @@ import json
 import ../types / [datatype_definition, textformats_error]
 
 template decode_json*(input: string, dd: DatatypeDefinition): JsonNode =
-  var val: JsonNode
+  var
+    val: JsonNode
+    haderr = ""
   try:
     val = input.parse_json
   except JsonParsingError:
-    let e = get_current_exception()
-    raise newException(DecodingError,
-                       "Error: invalid inline JSON\n" &
-                       "Error reported by the json library:\n" &
-                       e.msg)
+    haderr = get_current_exception().msg
+  if len(haderr) > 0:
+    raise newException(DecodingError, "Inline JSON invalid, error: " & haderr)
   val

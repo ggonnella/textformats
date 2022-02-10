@@ -4,16 +4,21 @@ import ../types/textformats_error
 export DecodingError
 
 template decode_float*(input: string): float =
-  var value: float
+  var
+    value: float
+    haderr = false
   try: value = parse_float(input)
   except ValueError:
-    raise newException(DecodingError,
-            "Error: encoded string is not a valid " &
-            "representation of a floating point number\n")
+    haderr = true
+  if haderr:
+    let msg = &"Expected floating point number, found '{input}'\n"
+    raise newException(DecodingError, msg)
   value
 
 template decode_int*(input: string, base = 10): int =
-  var value: int
+  var
+    value: int
+    haderr = false
   try:
     case base:
     of 10: value = parse_int(input)
@@ -22,8 +27,8 @@ template decode_int*(input: string, base = 10): int =
     of 8: value = from_oct[int](input)
     else: assert(false)
   except ValueError:
-    raise newException(DecodingError,
-             "Error: encoded string is not a valid " &
-             "representation of an integer number in base " &
-             $base & "\n")
+    haderr = true
+  if haderr:
+    let msg = "Expected integer in base " & $base & ", found '" & input & "'\n"
+    raise newException(DecodingError, msg)
   value

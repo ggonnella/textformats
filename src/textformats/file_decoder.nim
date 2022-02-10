@@ -112,7 +112,7 @@ template on_section_def(ddef, actions_true: untyped, actions_false: untyped) =
     try:
       actions_true
     except DecodingError:
-      raise_decoding_error(reader.line, get_current_exception_msg(), ddef)
+      reraise_decoding_error(reader.line, ddef)
   else:
     actions_false
     reader.consume

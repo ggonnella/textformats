@@ -31,9 +31,7 @@ proc decode_enum*(input: string, dd: DatatypeDefinition): JsonNode =
     of meString:
       if input == me.s_value: return input.translated(dd, i)
   raise newException(DecodingError,
-           "Error: Encoded value does not match any valid value.\n" &
-           &"Valid values: {dd.elements.show_elements}")
-
+           &"Expected one of: {dd.elements.show_elements}\n")
 
 proc prematched_decode_enum*(input: string, slice: Slice[int],
                               dd: DatatypeDefinition, m: RegexMatch,

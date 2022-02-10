@@ -9,9 +9,8 @@ proc decode_regexesmatch*(input: string, dd: DatatypeDefinition): JsonNode =
     if input.match(r):
       return input.translated(dd, i)
   raise newException(DecodingError,
-           "Error: Encoded string does not match any of " &
-           "the specified regular expressions\n" &
-           "Regular expressions: " & dd.regexes_raw.join(", ") & "\n")
+           "Regular expressions not matching: " &
+           dd.regexes_raw.join(", ") & "\n")
 
 proc prematched_decode_regexesmatch*(input: string, slice: Slice[int],
                               dd: DatatypeDefinition, m: RegexMatch,

@@ -12,11 +12,8 @@ template validate_constant(value, constant, typestr): untyped =
   if value == constant:
     return value.translated(dd)
   else:
-    raise newException(DecodingError,
-            "Error: encoded value does not match the expected constant.\n" &
-            "Constant type: " & typestr & "\n" &
-            "Expected value: " & $constant & "\n" &
-            "Found value: " & $value & "\n")
+    raise newException(DecodingError, "Expected constant: " & $constant &
+                       " (" & typestr & "), found: " & $value & "\n")
 
 proc decode_const*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkConst

@@ -69,6 +69,7 @@ proc compute_encoded_map_validation_info(rrs: seq[string],
 
 proc newRegexesMatchDatatypeDefinition*(defroot: YamlNode, name: string):
                                         DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let defnodes = collect_defnodes(defroot, @[DefKey,
                                     EncodedKey, NullValueKey])
@@ -82,5 +83,6 @@ proc newRegexesMatchDatatypeDefinition*(defroot: YamlNode, name: string):
       avoid_warning_tmp = defnodes[1].parse_encoded(info)
     result.encoded = avoid_warning_tmp
   except YamlSupportError, DefSyntaxError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)
 

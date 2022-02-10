@@ -7,25 +7,20 @@ import ../decoder
 
 proc raise_invalid_list_size*(list_size: int, dd: DatatypeDefinition) =
   raise newException(DecodingError,
-                    "Error: Invalid number of items in list.\n" &
-                    &"Minimum valid n. of items: '{dd.lenrange.lowstr}'\n" &
-                    &"Maximum valid n. of items: '{dd.lenrange.highstr}'\n" &
-                    &"Found n. of items: '{list_size}'\n")
+                     &"Invalid list length ({list_size}); " &
+                     &"expected range: {dd.lenrange.lowstr}.." &
+                     &"{dd.lenrange.highstr}\n")
 
-proc raise_invalid_list_element*(i: int, dd: DatatypeDefinition,
-                                errmsg: string) =
-  raise newException(DecodingError,
-                     "Error: Invalid element in list.\n" &
-                     &"Element number: {i}\n" &
-                     "Error while decoding element:\n" &
-                     errmsg.indent(2))
+proc reraise_invalid_list_element*(i: int, dd: DatatypeDefinition) =
+  let e = getCurrentException()
+  e.msg = "Invalid element " & $i & " in list. Error:\n" & e.msg.indent(2)
+  raise
 
 proc raise_invalid_list_formatting(found: string, expected: string,
                                    label: string) =
   raise newException(DecodingError,
-                      &"Error: Invalid {label} in list.\n" &
-                      &"Expected {label}: '{expected}'\n" &
-                      &"Found {label}: '{found}'\n")
+                      &"Invalid {label} in list, " &
+                      &"expected '{expected}', found '{found}'\n")
 
 proc raise_invalid_list_pfx(pfx: string, dd: DatatypeDefinition) =
   raise_invalid_list_formatting(pfx, dd.pfx, "prefix")
@@ -57,7 +52,7 @@ proc prematched_decode_list*(input: string, slice: Slice[int],
                                              match_obj, subchildnum, pfx0))
         except DecodingError:
           assert(false)
-          #raise_invalid_list_element(0, dd, get_current_exception_msg())
+          #reraise_invalid_list_element(0, dd)
         has_i0 = true
         break
   var i = 0
@@ -70,7 +65,7 @@ proc prematched_decode_list*(input: string, slice: Slice[int],
       except DecodingError:
         assert(false)
         #let coord = if has_i0: i+1 else: i
-        #raise_invalid_list_element(coord, dd, get_current_exception_msg())
+        #reraise_invalid_list_element(coord, dd)
       i += 1
   if has_i0:
     i += 1
@@ -101,7 +96,7 @@ proc splitting_decode_list(input: string, dd: DatatypeDefinition): JsonNode =
     try:
       decoded = elem.decode(dd.members_def)
     except DecodingError:
-      raise_invalid_list_element(list_size, dd, get_current_exception_msg())
+      reraise_invalid_list_element(list_size, dd)
     result.add(decoded)
     list_size += 1
   if list_size notin dd.lenrange:

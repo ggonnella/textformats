@@ -108,6 +108,7 @@ proc validate_names_vs_separators(dd: DatatypeDefinition) =
 
 proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let defnodes = collect_defnodes(defroot,
                      [DefKey, SplittedKey, DictInternalSepKey, NullValueKey,
@@ -135,4 +136,5 @@ proc newDictDatatypeDefinition*(defroot: YamlNode, name: string):
     result.validate_implicit
     result.validate_names_vs_separators
   except YamlSupportError, DefSyntaxError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)

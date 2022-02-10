@@ -4,7 +4,6 @@ import ../types / [datatype_definition, textformats_error]
 
 proc anyfloat_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if not value.is_float:
-    raise newException(EncodingError,
-            "Error: value is not a float\n" &
+    raise newException(EncodingError, "Value is not a float, found: " &
             value.describe_kind & "\n")
   return $value.get_float

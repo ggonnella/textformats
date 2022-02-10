@@ -70,6 +70,7 @@ proc parse_members_def(of_node: YamlNode, name: string):
 
 proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
                                 DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let defnodes = collect_defnodes(defroot, [DefKey, NullValueKey,
                                               LenrangeMinKey, LenrangeMaxKey,
@@ -102,4 +103,5 @@ proc newListDatatypeDefinition*(defroot: YamlNode, name: string):
       result.lenrange.high = defnodes[3].parse_lenrange_max
     result.lenrange.validate
   except YamlSupportError, DefSyntaxError, ValueError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)

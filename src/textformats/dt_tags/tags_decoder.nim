@@ -9,16 +9,14 @@ proc validate_tagname_format(tagname: string,
                              dd: DatatypeDefinition) {.inline.} =
   if not tagname.match(dd.tagname_regex_compiled):
     raise newException(DecodingError,
-                    "Error: tag name does not match regular expression\n" &
-                    &"Regular expression: {dd.tagname_regex_raw}\n" &
-                    &"Tag name: '{tagname}'\n")
+            &"Tag name '{tagname}' not matching reg.expr.: " &
+            &"{dd.tagname_regex_raw}\n")
 
 proc validate_tagname_unique(tagname: string,
                               found_tagnames: var HashSet[string]) {.inline.} =
   if tagname in found_tagnames:
     raise newException(DecodingError,
-                       "Error: multiple instances of tag found\n" &
-                       &"Tag name: '{tagname}'\n")
+                       "Multiple instances of tag '{tagname}' found\n")
   found_tagnames.incl(tagname)
 
 proc validate_if_predefined(tagname: string, tagtype: string,
@@ -27,29 +25,24 @@ proc validate_if_predefined(tagname: string, tagtype: string,
     let expectedtype = dd.predefined_tags[tagname]
     if expectedtype != tagtype:
       raise newException(DecodingError,
-                         "Error: wrong type for predefined tag\n" &
-                         &"Tag name: '{tagname}'\n" &
-                         &"Required tag type: {expectedtype}\n" &
-                         &"Found tag type: {tagtype}\n")
+                         &"Wrong type ('{tagtype}') for predefined tag, " &
+                         &"expected: {expectedtype}\n")
 
 proc validate_not_implicit(tagname: string, dd: DatatypeDefinition)
                            {.inline.} =
   for implicit in dd.implicit:
     if implicit.name == tagname:
       raise newException(DecodingError,
-                         "Error: tag name is equal to an implicit tag name\n" &
-                         &"Implicit tag name: {implicit.name}\n" &
-                         &"Implicitly defined as: {implicit.value}\n")
+                &"Tag {implicit.name} not allowed as implicitly predefined\n")
 
 proc decode_value(value_str: string, value_def: DatatypeDefinition,
                   tagname: string): JsonNode {.inline.} =
   try:
     result = value_str.decode(value_def)
   except DecodingError:
-    raise newException(DecodingError,
-                    "Error: invalid encoded value for tag\n" &
-                    &"Tag name: {tagname}\n" &
-                    get_current_exception_msg().indent(2))
+    let e = getCurrentException()
+    e.msg = &"Invalid value for tag {tagname}:\n" & e.msg.indent(2)
+    raise
 
 proc decode_tags*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkTags
@@ -62,12 +55,11 @@ proc decode_tags*(input: string, dd: DatatypeDefinition): JsonNode =
     let components = elem.split(dd.tags_internal_sep, max_split=2)
     if components.len == 1:
       raise newException(DecodingError,
-              "Error: Internal name/type/value separator not found\n")
+              "Internal separator (name/type/value) not found\n")
     elif components.len == 2:
       raise newException(DecodingError,
-              "Error: Internal name/type/value separator found only once\n" &
-              "Expected: separator should be present at least twince\n" &
-              "(between: (1) name and type; (2) type and value)\n")
+              "Internal separator (name/type/value) " &
+              "must be present at least twice\n")
     let
       tagtype = components[1]
       tagname = components[0]

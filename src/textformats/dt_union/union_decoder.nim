@@ -10,8 +10,7 @@ import ../decoder
 
 proc raise_all_invalid_error(errmsg: string) =
   raise newException(DecodingError,
-          "Error: value is invalid for all specified formats\n" &
-          "Error messages for each specified format:\n" & errmsg)
+          "Value invalid for all possible formats. Error messages:\n" & errmsg)
 
 template appenderr(errmsg, i, choice: untyped) =
    errmsg &= "==== [" & $i & ": " & choice.name & "] ====\n" &

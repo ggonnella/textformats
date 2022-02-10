@@ -12,8 +12,9 @@ template foreach_dict_section_element(reader, dd, actions: untyped) =
       i += 1
     except DecodingError:
       if i == 0:
-        raise newException(DecodingError, "Dict has no elements\n" &
-                           get_current_exception_msg().indent(2))
+        let e = getCurrentException()
+        e.msg = "Dict has no elements\n" & e.msg.indent(2)
+        raise
       break
 
 proc decode_dict_section*(reader: var FileLinesReader,

@@ -4,7 +4,6 @@ import ../types / [datatype_definition, textformats_error]
 
 proc anyint_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if not value.is_int:
-    raise newException(EncodingError,
-            "Error: value is not an integer\n" &
+    raise newException(EncodingError, "Value is not an integer, found: " &
             value.describe_kind & "\n")
   return $value.get_biggest_int

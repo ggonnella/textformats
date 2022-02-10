@@ -19,7 +19,7 @@ template foreach_struct_section_element(reader, dd, break_on_err,
     except DecodingError:
       if break_on_err:
         if element_num < dd.n_required:
-          raise_invalid_element(get_current_exception_msg(), mem.name)
+          reraise_invalid_element(mem.name)
         break
       else: continue
   if element_num < dd.n_required:

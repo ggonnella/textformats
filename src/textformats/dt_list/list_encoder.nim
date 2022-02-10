@@ -5,13 +5,11 @@ import ../encoder
 
 proc list_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if not value.is_array:
-    raise newException(EncodingError, "Error: value is not an array\n" &
+    raise newException(EncodingError, "Value is not an array, found: " &
                        value.describe_kind & "\n")
   if value.len notin dd.lenrange:
-    raise newException(EncodingError, "Error: list length is invalid\n" &
-                       &"Minimum valid list length: {dd.lenrange.low}\n" &
-                       &"Maximum valid list length: {dd.lenrange.high}\n" &
-                       &"Found list length: {value.len}\n")
+    raise newException(EncodingError, "List length {value.len} is not in " &
+                       &"range {dd.lenrange.low}..{dd.lenrange.high}\n")
   result = dd.pfx
   var i = 0
   for item in value:
@@ -19,10 +17,10 @@ proc list_encode*(value: JsonNode, dd: DatatypeDefinition): string =
     try:
       encoded = item.encode(dd.members_def)
     except EncodingError:
-      raise newException(EncodingError, "Error: list item is invalid\n" &
-                      &"N. of valid items before invalid one: {i}\n" &
-                      "Error of encoding invalid item:\n" &
-                      get_current_exception_msg().indent(2))
+      let e = get_current_exception()
+      e.msg = &"Invalid list element after {i} valid elements:\n" &
+              e.msg.indent(2)
+      raise
     if i > 0: result &= dd.sep
     result &= encoded
     i += 1

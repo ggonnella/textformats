@@ -8,29 +8,26 @@ proc unwrap(wrapped: JsonNode): (string, JsonNode) =
   (branch_name, wrapped[branch_name])
 
 proc wrapped_union_encode*(value: JsonNode, dd: DatatypeDefinition): string =
-  let expmsg = "Expected: wrapped value, " &
-               "i.e. a mapping with one entry, with:\n" &
-               " - key:   string, which one_of branch to use for encoding\n" &
-               " - value: the unwrapped decoded value\n"
+  let expmsg = "expected: wrapped {branch_name: value}\n"
   if not value.is_object:
     raise newException(EncodingError,
-            &"Error: value ({value}) is a '{describe_kind(value)}'\n" & expmsg)
+            &"Value ({value}) is a '{describe_kind(value)}', " & expmsg)
   if len(value) != 1:
     raise newException(EncodingError,
-            &"Error: wrapped value has {len(value)} entries\n" & expmsg)
+            &"Value has {len(value)} entries, " & expmsg)
   let (branch_name, unwrapped) = value.unwrap
   for i, c in dd.choices:
     if branch_name == dd.branch_names[i]:
       try: return unwrapped.encode(c)
       except EncodingError:
-        raise newException(EncodingError,
-                &"Error: invalid value '" &
-                unwrapped & "' for type '" &
-                branch_name & "'\n" &
-                get_current_exception_msg().indent(2) & "\n")
+        let e = getCurrentException()
+        e.msg = "Invalid value '" & unwrapped &
+                "' for type '" & branch_name & "':\n" &
+                e.msg.indent(2) & "\n"
+        raise
   raise newException(EncodingError,
-        &"Error: invalid branch name: '" & branch_name & "'\n" &
-        &"Expected one of: {dd.branch_names}\n")
+        &"Unknown branch name '" & branch_name & "', " &
+        &"expected one of: {dd.branch_names}\n")
 
 proc union_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.wrapped:
@@ -43,9 +40,9 @@ proc union_encode*(value: JsonNode, dd: DatatypeDefinition): string =
       errmsg &= &"==== [{i}: {c.name}] ====\n" &
                 get_current_exception_msg().indent(2) & "\n"
       i += 1
+      continue
   raise newException(EncodingError,
-          "Error: value is invalid for all possible formats\n" &
-          "List of errors found while encoding on each format:\n" &
+          "Value invalid for all possible formats:\n" &
           errmsg)
 
 proc union_unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =

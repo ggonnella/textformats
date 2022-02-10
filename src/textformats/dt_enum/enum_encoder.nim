@@ -16,9 +16,8 @@ proc enum_encode*(value: JsonNode, dd: DatatypeDefinition): string =
     else:
       if encode_match_elem_wo_decoded(value, me, encoded):
         return encoded
-  raise newException(EncodingError,
-          "Error: value does not match any of the valid constants\n" &
-          "Valid constants: " & ($dd.elements).join(", ") & "\n")
+  raise newException(EncodingError, "Found value {value}, expected one of: " &
+          ($dd.elements).join(", ") & "\n")
 
 proc enum_unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.encoded.is_some:

@@ -57,6 +57,7 @@ proc validate_float_range(min_f: float, max_f: float) =
 
 proc newFloatRangeDatatypeDefinition*(defroot: YamlNode, name: string):
                                       DatatypeDefinition {.noinit.} =
+  var errmsg = ""
   try:
     let
       defnodes = collect_defnodes(defroot, [DefKey, NullValueKey, AsStringKey])
@@ -74,5 +75,6 @@ proc newFloatRangeDatatypeDefinition*(defroot: YamlNode, name: string):
     validate_requires(MaxExcludedKey, subdefnodes[3], MaxKey, subdefnodes[1])
     validate_float_range(result.min_f, result.max_f)
   except YamlSupportError, DefSyntaxError:
-    reraise_as_def_syntax_error(name, SyntaxHelp, DefKey)
+    errmsg = getCurrentException().msg
+  raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)
 
