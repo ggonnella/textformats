@@ -387,37 +387,42 @@ proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
   var
     stream: Stream = nil
     yaml: YamlDocument = YamlDocument(root: YamlNode())
+    errstate = ""
   let fn = if strinput: "" else: input
+  if not strinput and input != "" and not fileExists(input):
+    raise newException(io_errtype,
+              yamlparse_errmsg(fn, inputdesc, "File not found"))
   try:
     if strinput:
       stream = newStringStream(input)
     elif input == "":
       stream = newFileStream(stdin)
     else:
-      if not fileExists(input):
-        raise newException(io_errtype,
-                yamlparse_errmsg(fn, inputdesc, "File not found"))
       stream = newFileStream(input, fmRead)
   except IOError:
-    raise newException(io_errtype,
-            yamlparse_errmsg(fn, inputdesc, get_current_exception_msg()))
+    errstate = get_current_exception_msg()
+  if len(errstate) > 0:
+    raise newException(io_errtype, yamlparse_errmsg(fn, inputdesc, errstate))
   try:
     yaml = load_dom(stream)
-    stream.close
   except YamlConstructionError:
     discard
   except:
+    errstate = get_current_exception_msg()
+  finally:
+    stream.close
+  if len(errstate) > 0:
     raise newException(parsing_errtype,
-       yamlparse_errmsg(fn, inputdesc, get_current_exception_msg()))
+                       yamlparse_errmsg(fn, inputdesc, errstate))
   if yaml.root.isNil:
     raise newException(parsing_errtype, yamlparse_errmsg(fn, inputdesc, ""))
   try:
     yaml.root.validate_is_mapping()
   except NodeValueError:
+    errstate = get_current_exception_msg()
+  if len(errstate) > 0:
     raise newException(parsing_errtype, yamlparse_errmsg(fn, inputdesc,
-      "Expected: " &
-      "The root node must be a mapping.\n" &
-      "Details of the validation error:" &
-      get_current_exception_msg()))
+      "The YAML root node must be a mapping.\n" &
+      "Details of the validation error:" & errstate))
   return yaml.root
 
