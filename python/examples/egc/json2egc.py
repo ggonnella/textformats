@@ -14,5 +14,5 @@ import json
 
 args = docopt(__doc__)
 with open(args["<inputfile>"]) as f:
-  data = json.load(f)
-print(Specification(args["<inputspec>"])["file"].encode(data))
+  print(Specification(args["<inputspec>"])["file"].encode(f.read(),
+    from_json=True))
