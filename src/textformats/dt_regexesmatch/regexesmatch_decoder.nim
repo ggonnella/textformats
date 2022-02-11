@@ -5,6 +5,9 @@ import ../shared/translation_decoder
 
 proc decode_regexesmatch*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkRegexesMatch
+  when defined(trace_regex):
+    debugEcho("trace_regex|decode|regexesmatch|" &
+              "match(r) for r in regexes|" & dd.name)
   for i, r in dd.regexes_compiled:
     if input.match(r):
       return input.translated(dd, i)

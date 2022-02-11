@@ -93,6 +93,9 @@ proc elementwise_decode_struct(input: string, dd: DatatypeDefinition):
     match_obj: RegexMatch
     elements = newseq_of_cap[(string, JsonNode)](dd.members.len)
     i = 0
+  when defined(trace_regex):
+    debugEcho("trace_regex|decode|struct|" &
+              "elementwise|match(rgx_entire_struct)|" & dd.name)
   if not input.match(dd.regex.compiled, match_obj):
     input.split_and_raise(dd)
   for member in dd.members:

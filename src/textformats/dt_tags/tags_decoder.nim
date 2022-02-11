@@ -7,6 +7,9 @@ import ../decoder
 
 proc validate_tagname_format(tagname: string,
                              dd: DatatypeDefinition) {.inline.} =
+  when defined(trace_regex):
+    debugEcho("trace_regex|decode|tag|validate|" &
+              "tagname.match(tagname_rgx)|" & dd.name)
   if not tagname.match(dd.tagname_regex_compiled):
     raise newException(DecodingError,
             &"Tag name '{tagname}' not matching reg.expr.: " &
@@ -43,6 +46,10 @@ proc decode_value(value_str: string, value_def: DatatypeDefinition,
     let e = getCurrentException()
     e.msg = &"Invalid value for tag {tagname}:\n" & e.msg.indent(2)
     raise
+
+#
+# TODO: WHERE DO I VALIDATE THE TAGTYPE?
+#
 
 proc decode_tags*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkTags

@@ -113,6 +113,9 @@ proc elementwise_decode_list(input: string, dd: DatatypeDefinition): JsonNode =
   if core.len == 0:
     if 0 in dd.lenrange: return
     else: raise_invalid_list_size(0, dd)
+  when defined(trace_regex):
+    debugEcho("trace_regex|decode|list|elementwise|" &
+              "find_all(members_def.regex)|" & dd.name)
   for m in core.find_all(dd.members_def.regex.compiled):
     let elem_bd = m.boundaries
     if list_size == 0:

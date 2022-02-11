@@ -10,6 +10,8 @@ template prematched_decode_regexmatch*(input: string, slice: Slice[int],
 
 proc decode_regexmatch*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkRegexMatch
+  when defined(trace_regex):
+    debugEcho("trace_regex|decode|regexmatch|match(r)|" & dd.name)
   if input.match(dd.regex.compiled):
     return input.translated(dd)
   else:
