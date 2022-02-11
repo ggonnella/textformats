@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 echo "Preparing input data"
-rm large.egc
+rm -f large.egc
 touch large.egc
-for i in {1..100}; do
+for i in {1..910}; do
   cat example.egc >> large.egc
 done
 echo
