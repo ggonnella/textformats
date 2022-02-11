@@ -9,6 +9,7 @@ proc const_compute_regex*(dd: DatatypeDefinition) =
   case dd.constant_element.kind:
     of meString:
       dd.regex.raw = dd.constant_element.s_value.escape_re
+      dd.regex.constant_pfx = dd.constant_element.s_value
     of meFloat:
       dd.regex.raw = AnyFloatRE
       dd.regex.ensures_valid = false

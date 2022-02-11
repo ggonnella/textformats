@@ -67,6 +67,7 @@ type
     compiled*: Regex
     raw*: string
     ensures_valid*: bool
+    constant_pfx*: string
 
   DatatypeDefinitionScope* = enum
     ddsUndef   = "undefined",
@@ -187,6 +188,8 @@ type
       choices*: seq[DatatypeDefinition]
       wrapped*: bool
       branch_names*: seq[string]
+      branch_pfx*: seq[string]
+      branch_pfx_ensure*: bool
 
     # Construction flags
 

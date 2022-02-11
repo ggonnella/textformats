@@ -1,4 +1,4 @@
-import json, strutils
+import json, strutils, strformat
 import regex
 import ../types / [datatype_definition, textformats_error, regex_grppfx]
 
@@ -22,16 +22,20 @@ template wrapped(value: JsonNode, dd: DatatypeDefinition): JsonNode =
 
 proc decode_union*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkUnion
-  var
-    errmsg = ""
-    i = 0
-  for c in dd.choices:
-    try:
-      return input.decode(c).wrapped(dd)
-    except DecodingError:
-      errmsg.appenderr(i, c)
-      i += 1
-      continue
+  var errmsg = ""
+  for i, pfx in dd.branch_pfx:
+    if len(pfx) == 0 or input[0 ..< len(pfx)] == pfx:
+      try:
+        return input.decode(dd.choices[i]).wrapped(dd)
+      except DecodingError:
+        if dd.branch_pfx_ensure:
+          let e = getCurrentException()
+          e.msg = &"Format identified by prefix '{pfx}' " &
+                  "but value is invalid:\n" & e.msg.indent(2)
+          raise
+        else:
+          errmsg.appenderr(i, dd.choices[i])
+          continue
   raise_all_invalid_error(errmsg)
 
 proc prematched_decode_union*(input: string, slice: Slice[int],
@@ -39,41 +43,39 @@ proc prematched_decode_union*(input: string, slice: Slice[int],
                            childnum: int, groupspfx: string):
                              JsonNode =
   var errmsg = ""
-  let pfx = if groupspfx.len > 0: groupspfx & groupspfx_sep else: ""
+  let gpfx = if groupspfx.len > 0: groupspfx & groupspfx_sep else: ""
   for i in 0..<dd.choices.len:
     let
-      choicepfx = pfx & $i
-      choicematch = m.group(choicepfx)
+      choicegpfx = gpfx & $i
+      choicematch = m.group(choicegpfx)
     if choicematch.len > 0:
-      if childnum == -1:
-        assert(choicematch.len == 1)
-        if dd.choices[i].regex.ensures_valid:
-          return input.prematched_decode(choicematch[0], dd.choices[i], m, -1,
-                                         choicepfx).wrapped(dd)
-        else:
+      #
+      # there are matches for this branch, so it must be either
+      # this branch or one of the following (in case the match does
+      # not ensure validity)
+      #
+      for boundaries in choicematch: # could be optimized
+                                     # with bsearch if list is long
+        let subchildnum = if childnum == -1: -1 else: -2
+        if childnum == -1 or boundaries == slice:
+          # input[boundaries] is the string to decode
+          # with any dd.choices[i..<dd.choice.len] with compatible prefix
           for i2 in i..<dd.choices.len:
-            try:
-              return input.prematched_decode(choicematch[0], dd.choices[i2], m,
-                                             -1, choicepfx).wrapped(dd)
-            except DecodingError:
-              errmsg.appenderr(i2, dd.choices[i2])
-              continue
-          raise_all_invalid_error(errmsg)
-      else:
-        for boundaries in choicematch: # note: for large lists,
-                                 # a binary search would be better
-          if boundaries == slice:
-            if dd.choices[i].regex.ensures_valid:
-              return input.prematched_decode(boundaries, dd.choices[i], m, -2,
-                                             choicepfx).wrapped(dd)
-            else:
-              for i2 in i..<dd.choices.len:
-                try:
-                  return input.prematched_decode(boundaries, dd.choices[i2],
-                                                 m, -2, choicepfx).wrapped(dd)
-                except DecodingError:
+            let pfx = dd.branch_pfx[i2]
+            if len(pfx) == 0 or input[boundaries][0 ..< len(pfx)] == pfx:
+              try:
+                return input.prematched_decode(boundaries, dd.choices[i2], m,
+                                               subchildnum,
+                                               choicegpfx).wrapped(dd)
+              except DecodingError:
+                if dd.branch_pfx_ensure:
+                  let e = getCurrentException()
+                  e.msg = &"Format identified by prefix '{pfx}' " &
+                          "but value is invalid:\n" & e.msg.indent(2)
+                  raise
+                else:
                   errmsg.appenderr(i2, dd.choices[i2])
                   continue
-              raise_all_invalid_error(errmsg)
+          raise_all_invalid_error(errmsg)
   assert(false)
 

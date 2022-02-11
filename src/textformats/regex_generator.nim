@@ -76,6 +76,7 @@ proc regex_apply_null_value(dd: DatatypeDefinition) =
 
 proc compute_and_get_regex*(dd: DatatypeDefinition): DatatypeRegex =
   if not dd.regex_computed:
+    dd.regex.constant_pfx = ""
     case dd.kind:
       of ddkRef:          dd.ref_compute_regex()
       of ddkAnyInteger:   dd.anyint_compute_regex()

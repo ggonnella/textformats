@@ -113,6 +113,7 @@ proc newUnionDatatypeDefinition*(defroot: YamlNode, name: string):
         scope:      defnodes[5].parse_scope)
     result.branch_names = defnodes[4].parse_branch_names(name,
                                         defnodes[0].unsafe_get)
+    result.branch_pfx = new_seq_of_cap[string](len(result.branch_names))
   except YamlSupportError, DefSyntaxError:
     errmsg = getCurrentException().msg
   raise_if_had_error(errmsg, name, SyntaxHelp, DefKey)
