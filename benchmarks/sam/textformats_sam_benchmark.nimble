@@ -4,10 +4,9 @@ description = "Use textformats or hts-nim for computing and printing " &
               "some statistics about a SAM file"
 bin = @["htslib_based", "textformats_based"]
 license = "CC-BY-SA"
-#backend = "cpp"
 requires "hts", "textformats"
 
-import strformat
+import strformat, strutils
 
 const
   # the following were used on Linux
@@ -24,42 +23,70 @@ const
 
 const
   PRJDIR = "../.."
-  INPUT = &"{PRJDIR}/benchmarks/data/sam/100000.lines.sam"
+  INPUTDIR = &"{PRJDIR}/benchmarks/data/sam"
+  INPUT = [&"{INPUTDIR}/100000.lines.sam",
+           &"{INPUTDIR}/500000.lines.sam",
+           &"{INPUTDIR}/1000000.lines.sam"]
   LD = &"{HTSLIBDIR}/lib:{DEFLATEDIR}/lib"
   SPEC = &"{PRJDIR}/spec/sam.yaml"
   DT = "file"
   TIME = "time"
+  N_TIMES = 3
 
 task show_htslib_based_cmd, "show command executed by run_htslib_based task":
-  echo(&"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}")
+  echo(&"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT[0]}")
 
 task run_htslib_based, "run benchmark using htslib":
   echo("### Running benchmark ###")
-  echo(&"# Input file:    {INPUT}")
+  echo(&"# Input file:    {INPUT[0]}")
   echo("# Program:       htslib_based")
-  exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}"
+  exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT[0]}"
 
 task show_textformats_based_cmd,
     "show command executed by run_textformats_based task":
-  echo(&"{TIME} ./textformats_based {INPUT} {SPEC} {DT}")
+  echo(&"{TIME} ./textformats_based {INPUT[0]} {SPEC} {DT}")
 
 task run_textformats_based, "run benchmark using textformats":
   echo("### Running benchmark ###")
-  echo(&"# Input file:    {INPUT}")
+  echo(&"# Input file:    {INPUT[0]}")
   echo("# Program:       textformats_based")
   echo("# Parameters:")
   echo(&"#   Specification: {SPEC}")
   echo(&"#   Datatype:      {DT}")
-  exec &"{TIME} ./textformats_based {INPUT} {SPEC} {DT}"
+  exec &"{TIME} ./textformats_based {INPUT[0]} {SPEC} {DT}"
 
 task compare, "compare results and execution time":
-  echo(&"Input file: {INPUT}")
+  echo(&"Input file: {INPUT[0]}")
   echo("")
   echo("Running htslib_based:")
-  exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT} > htslib_based.out"
+  exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT[0]} > htslib_based.out"
   echo("")
   echo("Running textformats_based:")
-  exec &"{TIME} ./textformats_based {INPUT} {SPEC} {DT} > textformats_based.out"
+  exec &"{TIME} ./textformats_based {INPUT[0]} {SPEC} {DT} > textformats_based.out"
   exec &"diff textformats_based.out htslib_based.out"
   echo("The two versions of the program produced the same output")
+
+task compare_full, &"compare {N_TIMES} times and also with 10X larger file":
+  for i in 0 ..< len(INPUT):
+    echo("=".repeat(50))
+    echo("")
+    echo(&"Input file {i+1}: {INPUT[i]}")
+    echo("")
+    echo("Running htslib_based:")
+    echo("")
+    for j in {1..N_TIMES}:
+      echo(&"=== {j}/{N_TIMES} ===")
+      exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT[i]} > htslib_based.out"
+      echo("")
+    echo("")
+    echo("Running textformats_based:")
+    echo("")
+    for j in {1..N_TIMES}:
+      echo(&"=== {j}/{N_TIMES} ===")
+      exec &"{TIME} ./textformats_based {INPUT[i]} {SPEC} {DT} > textformats_based.out"
+      echo("")
+    echo("")
+    exec &"diff textformats_based.out htslib_based.out"
+    echo("The two versions of the program produced the same output")
+    echo("")
 

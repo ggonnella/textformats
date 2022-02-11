@@ -77,9 +77,38 @@ compare: ${INPUT} textformats_based htslib_based
 	@diff textformats_based.out htslib_based.out
 	@echo "The two versions of the program produced the same output"
 
+N_TIMES=3
+
+compare_full_%: ${INPUTDIR}/%.lines.sam textformats_based htslib_based
+	@echo "============================================================"
+	@echo "Input file: $<"
+	@echo ""
+	@echo "Running htslib_based:"
+	@echo ""
+	@for ((i=0;i<${N_TIMES};i++)); do \
+		echo "=== $$[i+1]/${N_TIMES} ==="; \
+	  ${TIME} env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+		  ./htslib_based $< > htslib_based.out; \
+		echo ""; \
+	done
+	@echo ""
+	@echo "Running textformats_based:"
+	@echo ""
+	@for ((i=0;i<${N_TIMES};i++)); do \
+		echo "=== $$[i+1]/${N_TIMES} ==="; \
+	  ${TIME} ./textformats_based $< ${SPEC} ${DT} > textformats_based.out; \
+		echo ""; \
+	done
+	@echo ""
+	@diff textformats_based.out htslib_based.out
+	@echo "The two versions of the program produced the same output"
+	@echo ""
+
+compare_full: compare_full_100000 compare_full_500000 compare_full_1000000
+
 clean:
 	rm -rf nimcache textformats_based.out htslib_based.out
 
 cleanup: clean
-	rm -rf textformats_based htslib_based 
+	rm -rf textformats_based htslib_based
 
