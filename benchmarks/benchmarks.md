@@ -2,6 +2,9 @@
 
 ## Parsing CIGAR strings in a file
 
+Note: CIGAR strings are only part of the more representative benchmark for
+      the SAM format
+
 Each line of a file contains CIGAR strings, with an average of 100 operations
 per line. The operations in the CIGARs are only M, I and D.
 
