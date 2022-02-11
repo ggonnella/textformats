@@ -4,7 +4,7 @@ version       = "1.1.0"
 author        = "Giorgio Gonnella"
 description   = "Python bindings for the TextFormats library"
 license       = "ISC"
-backend       = "cpp"
+backend       = "c"
 
 # Dependencies
 

@@ -4,9 +4,9 @@ default: cleanup build install
 VERSION=1.1.0
 
 # command line tools
-PYTHON ?= "python3"
-PIP ?= "pip"
-NIMPORTER ?= "nimporter"
+PYTHON ?= python
+PIP ?= pip
+NIMPORTER ?= nimporter
 
 cleanup:
 	rm -rf textformats.egg-info build dist MANIFEST.in nim-extensions __pycache__

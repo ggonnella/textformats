@@ -47,5 +47,5 @@ setup(name='textformats',
       test_suite="nose.collector",
       tests_require=['nose'],
       install_requires=['nimporter==1.0.2'],
-      ext_modules=nimporter.build_nim_extensions()
+      ext_modules=nimporter.build_nim_extensions(danger=True)
     )

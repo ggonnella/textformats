@@ -26,7 +26,7 @@ default: compare
 PRJDIR=../../..
 
 nimcache/textformats_c.h: ${PRJDIR}/C/textformats_c.nim
-	nim c -d:danger --gc:mark_and_sweep --noMain --noLinking \
+	nim c -d:danger --noMain --noLinking \
 	    	--header:textformats_c.h \
 	    	--nimcache:nimcache $<
 
@@ -65,12 +65,12 @@ run_htslib_based: ${INPUT} htslib_based
 compare: ${INPUT} textformats_based htslib_based
 	@echo "Input file: ${INPUT}"
 	@echo ""
-	@echo "Running textformats_based:"
-	@time ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
-	@echo ""
 	@echo "Running htslib_based:"
 	@time env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
 		./htslib_based ${INPUT} > htslib_based.out
+	@echo ""
+	@echo "Running textformats_based:"
+	@time ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
 	@echo ""
 	@diff textformats_based.out htslib_based.out
 	@echo "The two versions of the program produced the same output"

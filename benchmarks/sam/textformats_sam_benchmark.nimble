@@ -4,7 +4,7 @@ description = "Use textformats or hts-nim for computing and printing " &
               "some statistics about a SAM file"
 bin = @["htslib_based", "textformats_based"]
 license = "CC-BY-SA"
-backend = "cpp"
+#backend = "cpp"
 requires "hts", "textformats"
 
 import strformat
@@ -54,11 +54,11 @@ task run_textformats_based, "run benchmark using textformats":
 task compare, "compare results and execution time":
   echo(&"Input file: {INPUT}")
   echo("")
-  echo("Running textformats_based:")
-  exec &"time ./textformats_based {INPUT} {SPEC} {DT} > textformats_based.out"
-  echo("")
   echo("Running htslib_based:")
-  exec &"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT} > htslib_based.out"
+  exec &"/usr/bin/time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT} > htslib_based.out"
+  echo("")
+  echo("Running textformats_based:")
+  exec &"/usr/bin/time ./textformats_based {INPUT} {SPEC} {DT} > textformats_based.out"
   exec &"diff textformats_based.out htslib_based.out"
   echo("The two versions of the program produced the same output")
 
