@@ -87,7 +87,7 @@ proc j_object_len*(n: JsonNodeRef): cint {.exportc, raises: [].} =
 
 proc j_object_get_key*(n: JsonNodeRef, index: cint):
                        cstring {.exportc, raises: [].} =
-  to_seq(json.keys(n.value))[index]
+  (cstring)(to_seq(json.keys(n.value))[index])
 
 proc j_object_get*(n: JsonNodeRef, name: cstring):
                    JsonNodeRef {.exportc, raises: [].} =
