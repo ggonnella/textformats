@@ -24,6 +24,7 @@ install:
 		${PIP} install nimporter==1.0.2; \
 	fi
 	${PYTHON} setup.py install -f
+	${PYTHON} -c "import textformats"
 
 test:
 	pytest

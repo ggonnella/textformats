@@ -1,7 +1,7 @@
 all: run
 
 INPUTDIR=../data/sam
-INPUTFN=100000.lines.sam
+INPUTFN=1000000.lines.sam
 INPUT=${INPUTDIR}/${INPUTFN}
 
 ${INPUT}:

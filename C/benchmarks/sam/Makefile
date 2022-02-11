@@ -15,6 +15,8 @@ CONDADIR=${CONDADIR_LINUX}
 HTSLIBHASH=${HTSLIBHASH_LINUX}
 DEFLATEHASH=${DEFLATEHASH_LINUX}
 
+TIME=time
+
 # =====> Paths to the HTS and Deflate libraries <=====
 HTSLIBDIR=${CONDADIR}/pkgs/htslib-${HTSLIBVERSION}-${HTSLIBHASH}
 DEFLATEDIR=${CONDADIR}/pkgs/libdeflate-${DEFLATEVERSION}-${DEFLATEHASH}
@@ -54,23 +56,23 @@ run_textformats_based: ${SPEC} ${INPUT} textformats_based
 	@>&2 echo "# Parameters:"
 	@>&2 echo "#   Specification: ${SPEC}"
 	@>&2 echo "#   Datatype:      ${DT}"
-	@time ./textformats_based ${INPUT} ${SPEC} ${DT}
+	@${TIME} ./textformats_based ${INPUT} ${SPEC} ${DT}
 
 run_htslib_based: ${INPUT} htslib_based
 	@>&2 echo "### Running benchmark ###"
 	@>&2 echo "# Input file:    ${INPUT}"
 	@>&2 echo "# Program:       htslib_based"
-	@time env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ./htslib_based ${INPUT}
+	@${TIME} env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ./htslib_based ${INPUT}
 
 compare: ${INPUT} textformats_based htslib_based
 	@echo "Input file: ${INPUT}"
 	@echo ""
 	@echo "Running htslib_based:"
-	@time env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+	@${TIME} env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
 		./htslib_based ${INPUT} > htslib_based.out
 	@echo ""
 	@echo "Running textformats_based:"
-	@time ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
+	@${TIME} ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
 	@echo ""
 	@diff textformats_based.out htslib_based.out
 	@echo "The two versions of the program produced the same output"

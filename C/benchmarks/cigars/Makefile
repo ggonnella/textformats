@@ -1,5 +1,7 @@
 default: compare
 
+TIME=time
+
 NIMLIB:=$(shell ../../scripts/find_nimbase.sh)
 
 PRJDIR=../../..
@@ -30,22 +32,22 @@ run_textformats_based: ${SPEC} ${INPUT} textformats_based
 	@>&2 echo "# Parameters:"
 	@>&2 echo "#   Specification: ${SPEC}"
 	@>&2 echo "#   Datatype:      ${DT}"
-	@time ./textformats_based ${SPEC} ${DT} ${INPUT}
+	@${TIME} ./textformats_based ${SPEC} ${DT} ${INPUT}
 
 run_ad_hoc: ${INPUT} ad_hoc
 	@>&2 echo "### Running benchmark ###"
 	@>&2 echo "# Input file:    ${INPUT}"
 	@>&2 echo "# Program:       ad_hoc"
-	@time ./ad_hoc ${INPUT}
+	@${TIME} ./ad_hoc ${INPUT}
 
 compare: ${INPUT} textformats_based ad_hoc
 	@echo "Input file: ${INPUT}"
 	@echo ""
 	@echo "Running textformats_based:"
-	@time ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
+	@${TIME} ./textformats_based ${INPUT} ${SPEC} ${DT} > textformats_based.out
 	@echo ""
 	@echo "Running ad_hoc:"
-	@time ./ad_hoc ${INPUT} > ad_hoc.out
+	@${TIME} ./ad_hoc ${INPUT} > ad_hoc.out
 	@echo ""
 	@diff textformats_based.out ad_hoc.out
 	@echo "The two versions of the program produced the same output"

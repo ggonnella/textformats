@@ -28,6 +28,7 @@ const
   LD = &"{HTSLIBDIR}/lib:{DEFLATEDIR}/lib"
   SPEC = &"{PRJDIR}/spec/sam.yaml"
   DT = "file"
+  TIME = "time"
 
 task show_htslib_based_cmd, "show command executed by run_htslib_based task":
   echo(&"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}")
@@ -36,11 +37,11 @@ task run_htslib_based, "run benchmark using htslib":
   echo("### Running benchmark ###")
   echo(&"# Input file:    {INPUT}")
   echo("# Program:       htslib_based")
-  exec &"time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}"
+  exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT}"
 
 task show_textformats_based_cmd,
     "show command executed by run_textformats_based task":
-  echo(&"time ./textformats_based {INPUT} {SPEC} {DT}")
+  echo(&"{TIME} ./textformats_based {INPUT} {SPEC} {DT}")
 
 task run_textformats_based, "run benchmark using textformats":
   echo("### Running benchmark ###")
@@ -49,16 +50,16 @@ task run_textformats_based, "run benchmark using textformats":
   echo("# Parameters:")
   echo(&"#   Specification: {SPEC}")
   echo(&"#   Datatype:      {DT}")
-  exec &"time ./textformats_based {INPUT} {SPEC} {DT}"
+  exec &"{TIME} ./textformats_based {INPUT} {SPEC} {DT}"
 
 task compare, "compare results and execution time":
   echo(&"Input file: {INPUT}")
   echo("")
   echo("Running htslib_based:")
-  exec &"/usr/bin/time env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT} > htslib_based.out"
+  exec &"{TIME} env LD_LIBRARY_PATH={LD} ./htslib_based {INPUT} > htslib_based.out"
   echo("")
   echo("Running textformats_based:")
-  exec &"/usr/bin/time ./textformats_based {INPUT} {SPEC} {DT} > textformats_based.out"
+  exec &"{TIME} ./textformats_based {INPUT} {SPEC} {DT} > textformats_based.out"
   exec &"diff textformats_based.out htslib_based.out"
   echo("The two versions of the program produced the same output")
 
