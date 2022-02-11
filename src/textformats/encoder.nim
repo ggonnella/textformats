@@ -71,7 +71,7 @@ proc encode*(value: JsonNode, dd: DatatypeDefinition): string =
   except EncodingError:
     let e = get_current_exception()
     e.msg = &"Error: invalid value ({value}) for datatype: '{dd.name}':\n" &
-            msg.indent(2)
+            e.msg.indent(2)
     raise
 
 proc unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
