@@ -24,15 +24,9 @@ import dt_dict/dict_encoder
 import dt_tags/tags_encoder
 import dt_union/union_encoder
 
-template raise_encoding_error(value: JsonNode, msg: string,
-                              dd: DatatypeDefinition) =
-  raise newException(EncodingError,
-                     "Error: invalid value for datatype\n" &
-                     "Invalid value (as JSON): '" & $value & "'\n" &
-                     "Datatype: " & dd.name & "\n" & msg)
-
 proc encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.as_string:
+    var errmsg = ""
     if not value.is_string:
       raise newException(EncodingError,
               "Error: value is not a string\n" &
@@ -41,10 +35,12 @@ proc encode*(value: JsonNode, dd: DatatypeDefinition): string =
     try:
       discard value.get_str.decode(dd)
     except DecodingError:
+      errmsg = get_current_exception_msg()
+    if len(errmsg) > 0:
       raise newException(EncodingError,
               "Error: error validating decoded string\n" &
               &"(with '{AsStringKey}' true):\n" &
-              get_current_exception_msg().indent(2) & "\n")
+              errmsg.indent(2) & "\n")
     return value.get_str
   if dd.kind == ddkRef:
     # handle separately to avoid repeated error messages
@@ -74,7 +70,9 @@ proc encode*(value: JsonNode, dd: DatatypeDefinition): string =
       of ddkUnion:                 return value.union_encode(dd)
   except EncodingError:
     let e = get_current_exception()
-    raise_encoding_error(value, e.msg, dd)
+    e.msg = &"Error: invalid value ({value}) for datatype: '{dd.name}':\n" &
+            msg.indent(2)
+    raise
 
 proc unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =
   if dd.as_string:              return value.get_str
