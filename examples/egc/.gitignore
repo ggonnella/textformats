@@ -4,3 +4,6 @@ large.egc
 large.json
 json2egc
 egc2json
+*.json
+*.lines.egc
+*.out.egc

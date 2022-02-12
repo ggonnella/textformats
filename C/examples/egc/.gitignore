@@ -4,3 +4,5 @@ large.egc
 large.json
 json2egc
 egc2json
+*.json
+*.egc
