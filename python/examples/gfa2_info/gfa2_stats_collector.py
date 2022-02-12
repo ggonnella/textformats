@@ -1,13 +1,16 @@
 from collections import defaultdict, Counter
 
-class Info:
-  def __init__(self):
+class Gfa2StatsCollector:
+  def __init__(self, external_segment_data = None):
     self.lt_counts = defaultdict(int)
     self.tags = defaultdict(lambda: defaultdict(int))
     self.nseq = 0
     self.provided_seqlen = 0
     self.non_provided_seqlen = 0
-    self.segment_data = defaultdict(lambda: {"is_s": False, "nref": 0})
+    if external_segment_data is not None:
+      self.segment_data = external_segment_data
+    else:
+      self.segment_data = defaultdict(lambda: {"is_s": False, "nref": 0})
 
   def lt(self, lt, n=1):
     self.lt_counts[lt] += n
@@ -38,9 +41,8 @@ class Info:
   def ntags(self):
     return sum([sum(x.values()) for x in self.tags.values()])
 
-  LINE_TYPES = ["header", "segment", "edge", "gap", "fragment",
-                "ordered_group", "unordered_group",
-                "comment", "custom_line"]
+  LINE_TYPES = ["header", "segment", "edge", "gap", "fragment", "ordered_group",
+                "unordered_group", "comment", "custom_line"]
 
   def __str__(self):
     nlines = self.nlines()
@@ -65,10 +67,8 @@ class Info:
         result += "  - average length of provided sequences: "+\
                   f"{self.provided_seqlen/self.nseq:.2f}\n"
       result += "\n"
-      segment_names = [s for s in self.segment_data.keys() \
-                       if self.segment_data[s]["is_s"]]
       refcounter = Counter({s: self.segment_data[s]["nref"] for s in
-        segment_names})
+        self.segment_data.keys() if self.segment_data[s]["is_s"]})
       nsref = sum(refcounter.values())
       result += f"Number of segment references: {nsref}\n"
       if nsref > 0:
