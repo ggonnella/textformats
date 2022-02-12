@@ -1,7 +1,7 @@
 __switches__ = {
     'import' : [
         'nimble',
-        'cpp',
+        'c',
         '--app:lib',
         '-d:danger',
         '--gc:mark_and_sweep',
@@ -10,7 +10,7 @@ __switches__ = {
     ],
     'bundle' : [
         'nimble' if IS_LIBRARY else 'nim',
-        'cpp',
+        'c',
         '-c',
         '--accept',
         '-d:danger',

@@ -8,11 +8,13 @@ PYTHON ?= python
 PIP ?= pip
 NIMPORTER ?= nimporter
 
+CFLAGS="-w"
+
 cleanup:
 	rm -rf textformats.egg-info build dist MANIFEST.in nim-extensions __pycache__
 
 build:
-	${PYTHON} setup.py build -f
+	env CFLAGS=${CFLAGS} ${PYTHON} setup.py build -f
 
 install:
 	if ${PIP} show nimporter > /dev/null; then \
