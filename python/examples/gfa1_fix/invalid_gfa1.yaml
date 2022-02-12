@@ -1,9 +1,5 @@
-#
 # Specification which allows to read the invalid GFA output by Bandage reduce
-#
-include: [../../../spec/gfa/gfa1.yaml,
-          ../../../spec/gfa/gfa1.fields.yaml,
-          ../../../spec/gfa/gfa.B.tags.yaml]
+include: [../../../spec/gfa/gfa1.yaml, ../../../spec/gfa/gfa1.fields.yaml, ../../../spec/gfa/gfa.B.tags.yaml]
 datatypes:
   gfa1::gfa::tags:
     tagname: "[A-Za-z][A-Za-z0-9]"
