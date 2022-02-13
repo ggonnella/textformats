@@ -7,11 +7,11 @@ type
   NodeNotFoundError* =  object of DirectedGraphError
   CycleFoundError* =    object of DirectedGraphError
 
-template raiseNodeNotFound(name: string) =
-  raise newException(NodeNotFoundError, "Node '" & name & "' not found")
+template raiseNodeNotFound(name: string, klass: typedesc) =
+  raise newException(klass, "Node '" & name & "' not found")
 
-template raiseCycleFound(name: string) =
-  raise newException(CycleFoundError, "Cycle found from node '" & name & "'")
+template raiseCycleFound(name: string, klass: typedesc) =
+  raise newException(klass, "Cycle found from node '" & name & "'")
 
 # == GraphNode ==
 
@@ -56,11 +56,11 @@ proc add_node*(self: Graph, name: string) =
                                name: name)
 
 proc add_edge*(self: Graph, src: string, dest: string,
-               add_nodes = false) =
+               add_nodes = false, klass = NodeNotFoundError) =
   for n in [src, dest]:
     if n notin self.nodes:
       if add_nodes: self.add_node(n)
-      else: raiseNodeNotFound(n)
+      else: raiseNodeNotFound(n, klass)
   if self.nodes[dest] notin self.nodes[src].dest:
     self.nodes[src].dest.add(self.nodes[dest])
 
@@ -83,8 +83,15 @@ proc node_names*(self: Graph): seq[string] =
   for k, v in self.nodes:
     result.add(k)
 
-proc validate_dag*(self: Graph) =
+proc is_valid_dag*(self: Graph): bool =
   self.reset_colors
   for node in self:
     if node.color == gncWhite and node.dfs_cycles:
-      raiseCycleFound(node.name)
+      return false
+  return true
+
+proc validate_dag*(self: Graph, klass = CycleFoundError) =
+  self.reset_colors
+  for node in self:
+    if node.color == gncWhite and node.dfs_cycles:
+      raiseCycleFound(node.name, klass)

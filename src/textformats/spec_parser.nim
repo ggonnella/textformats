@@ -24,10 +24,8 @@ const
                    "identifier by {NamespaceSeparator} (e.g. a::b::c)."
 
 proc parse_datatype_name(datatype_name_node: YamlNode): string =
-  try:
-    datatype_name_node.validate_is_string("Invalid datatype name.\n")
-  except NodeValueError:
-    raise newException(IdentifierError, get_current_exception_msg())
+  datatype_name_node.validate_is_string("Invalid datatype name.\n",
+                                        klass = IdentifierError)
   result = datatype_name_node.to_string
   if result in BaseDatatypes:
     raise newException(IdentifierError,
@@ -40,8 +38,6 @@ proc include_yaml(spec: Specification, input: string, strinput: bool,
                   use_namespace = true)
 
 proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
-  # ignore ProveInit warning thrown by options library
-  {.warning[ProveInit]: off.}
   try:
     let v = n[key]
     return some(v)
@@ -50,33 +46,30 @@ proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
 
 proc get_datatypes_node(root: YamlNode): Option[YamlNode] =
   result = YamlNode.none
-  try:
-    let whole_errmsg = "Expected: mapping containing at least one of the " &
-                       &"keys '{DatatypesKey}' or '{IncludeKey}'"
-    root.validate_is_mapping("Invalid content of specification\n",
-                             "\n" & whole_errmsg)
-    result = root.get_map_node(DatatypesKey)
-    if result.is_some:
-      result.unsafe_get.validate_is_mapping(
-        &"Invalid content of '{DatatypesKey}' key\n",
-        "It must be a mapping containing datatype definitions")
-    else:
-      if root.get_map_node(IncludeKey).is_none:
-        raise newException(InvalidSpecError,
-          "Invalid content of mapping\n" & whole_errmsg)
-  except NodeValueError:
-    raise newException(InvalidSpecError, get_current_exception_msg())
+  let whole_errmsg = "Expected: mapping containing at least one of the " &
+                     &"keys '{DatatypesKey}' or '{IncludeKey}'"
+  root.validate_is_mapping("Invalid content of specification\n",
+                           "\n" & whole_errmsg, klass = InvalidSpecError)
+  result = root.get_map_node(DatatypesKey)
+  if result.is_some:
+    result.unsafe_get.validate_is_mapping(
+      &"Invalid content of '{DatatypesKey}' key\n",
+      "It must be a mapping containing datatype definitions",
+      klass = InvalidSpecError)
+  else:
+    if root.get_map_node(IncludeKey).is_none:
+      raise newException(InvalidSpecError,
+        "Invalid content of mapping\n" & whole_errmsg)
 
 proc include_yaml_file(spec: Specification, path: string, filename: string,
                 prefix: string, datatypes: Option[HashSet[string]]) =
   try:
     spec.include_yaml(path / filename, false, datatypes, prefix)
   except YamlParserError:
-    raise newException(YamlParserError,
-            "Error while parsing included " &
-            &"specification: '{filename}'\n" &
-            &"Included filename: {path / filename}\n" &
-            get_current_exception_msg().indent(2))
+    let e = getCurrentException()
+    e.msg = &"Error parsing included specification: '{path / filename}':\n" &
+            e.msg.indent(2)
+    raise
 
 proc include_subspec_selection(spec: Specification, filename_map: YamlNode,
                           path: string, prefix: string,
@@ -84,20 +77,20 @@ proc include_subspec_selection(spec: Specification, filename_map: YamlNode,
   let errmsg = &"Invalid syntax of '{IncludeKey}' key\n" &
      "Mappings must contain a single key (filename) mapped to a " &
      "list of strings (datatype names)"
-  filename_map.validate_len(1, errmsg)
+  filename_map.validate_len(1, errmsg, klass = InvalidSpecError)
   var
     filename: string
     include_datatypes: HashSet[string]
   if datatypes.is_some:
     include_datatypes = datatypes.unsafe_get
   for filename_node, dt_seq_node in filename_map:
-    filename_node.validate_is_string(errmsg)
+    filename_node.validate_is_string(errmsg, klass = InvalidSpecError)
     filename = filename_node.to_string
-    dt_seq_node.validate_is_sequence(errmsg)
-    dt_seq_node.validate_min_len(1, errmsg)
+    dt_seq_node.validate_is_sequence(errmsg, klass = InvalidSpecError)
+    dt_seq_node.validate_min_len(1, errmsg, klass = InvalidSpecError)
     if datatypes.is_none:
       for dtname_node in dt_seq_node:
-        dtname_node.validate_is_string(errmsg)
+        dtname_node.validate_is_string(errmsg, klass = InvalidSpecError)
         include_datatypes.incl(dtname_node.to_string)
   spec.include_yaml_file(path, filename, prefix, include_datatypes.some)
 
@@ -106,35 +99,35 @@ proc include_subspec(spec: Specification, root: YamlNode, path: string,
   let include_optnode = get_map_node(root, IncludeKey)
   if include_optnode.is_some:
     let include_node = include_optnode.unsafe_get
-    try:
-      case include_node.kind:
-      of yScalar:
-        include_node.validate_is_string(
-              &"Invalid content of '{IncludeKey}' key\n")
-        spec.include_yaml_file(path, include_node.to_string, prefix, datatypes)
-      of ySequence:
-        for filename_node in include_node:
-          case filename_node.kind:
-          of yScalar:
-            filename_node.validate_is_string(
-              &"Invalid content of '{IncludeKey}' key\n")
-            spec.include_yaml_file(path, filename_node.to_string,
-                                 prefix, datatypes)
-          of yMapping:
-            spec.include_subspec_selection(filename_node, path,
-                                           prefix, datatypes)
-          of ySequence:
-            raise newException(SpecIncludeError,
-                    &"Invalid value in '{IncludeKey}' sequence\n" &
-                    "Sequence values must be strings (filenames) or maps " &
-                    "of filenames to sequences of strings (datatype names)")
-          filename_node.validate_is_scalar(
-                           &"Invalid value in '{IncludeKey}' sequence\n",
-                            "Sequence values must be strings (filenames)")
-      of yMapping:
-        spec.include_subspec_selection(include_node, path, prefix, datatypes)
-    except NodeValueError:
-      raise newException(SpecIncludeError, get_current_exception_msg())
+    case include_node.kind:
+    of yScalar:
+      include_node.validate_is_string(
+            &"Invalid content of '{IncludeKey}' key\n",
+            klass = SpecIncludeError)
+      spec.include_yaml_file(path, include_node.to_string, prefix, datatypes)
+    of ySequence:
+      for filename_node in include_node:
+        case filename_node.kind:
+        of yScalar:
+          filename_node.validate_is_string(
+            &"Invalid content of '{IncludeKey}' key\n",
+            klass = SpecIncludeError)
+          spec.include_yaml_file(path, filename_node.to_string,
+                               prefix, datatypes)
+        of yMapping:
+          spec.include_subspec_selection(filename_node, path,
+                                         prefix, datatypes)
+        of ySequence:
+          raise newException(SpecIncludeError,
+                  &"Invalid value in '{IncludeKey}' sequence\n" &
+                  "Sequence values must be strings (filenames) or maps " &
+                  "of filenames to sequences of strings (datatype names)")
+        filename_node.validate_is_scalar(
+                         &"Invalid value in '{IncludeKey}' sequence\n",
+                          "Sequence values must be strings (filenames)",
+                        klass = SpecIncludeError)
+    of yMapping:
+      spec.include_subspec_selection(include_node, path, prefix, datatypes)
 
 proc get_yaml_root(filename: string, strinput = false): YamlNode =
   get_yaml_mapping_root(TextFormatsRuntimeError,
@@ -180,7 +173,8 @@ proc compute_datatypes_prefix(root: YamlNode): string =
   if namespace_optnode.is_some:
     let namespace_node = namespace_optnode.unsafe_get
     namespace_node.validate_is_string(
-              &"Invalid content of '{NamespaceKey}' key\n")
+              &"Invalid content of '{NamespaceKey}' key\n",
+              klass = InvalidSpecError)
     let namespace = namespace_node.to_string
     if not namespace.match(IdentifierRE):
       raise newException(IdentifierError,
@@ -209,7 +203,7 @@ proc include_yaml(spec: Specification, input: string,
       e = get_current_exception()
       fn = if strinput: "" else: input
     e.msg = yamlparse_errmsg(fn, "specification", e.msg)
-    raise e
+    raise
 
 proc try_finalizing_definitions(spec: Specification, fn: string)
                                 {.inline.} =
@@ -218,7 +212,7 @@ proc try_finalizing_definitions(spec: Specification, fn: string)
   except:
     let e = get_current_exception()
     e.msg = yamlparse_errmsg(fn, "specification", e.msg)
-    raise e
+    raise
 
 proc parse_specification_input(input: string, strinput: bool): Specification =
   result = newSpecification()

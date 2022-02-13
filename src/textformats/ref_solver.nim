@@ -10,11 +10,10 @@ import types / [datatype_definition, specification, textformats_error,
                 def_syntax]
 import support/directed_graph
 
-template raise_brokenref(name, tname: untyped) =
-  raise newException(BrokenRefError,
-          "The definition of datatype '" & name & "' " &
-          "refers to a datatype named '" & tname & "'.\n" &
-          "However, no definition of '"  & tname & "' was found.")
+template brokenref_errmsg(name: string, tname: string): string =
+  "The definition of datatype '" & name & "' " &
+  "refers to a datatype named '" & tname & "'.\n" &
+  "However, no definition of '"  & tname & "' was found."
 
 proc qualified_target_name(dd: DatatypeDefinition, name: string): string =
   if dd.target_name notin BaseDatatypes:
@@ -34,7 +33,7 @@ proc resolve_references(dd: DatatypeDefinition, name: string,
     if dd.kind == ddkRef:
       let tname = dd.qualified_target_name(name)
       if tname notin spec:
-        raise_brokenref(name, tname)
+        raise newException(BrokenRefError, brokenref_errmsg(name, tname))
       let target = spec[tname]
       if target.has_unresolved_ref:
         target.resolve_references(tname, spec)
@@ -53,9 +52,11 @@ proc construct_dependency_subgraph(dd: DatatypeDefinition, name: string,
   if dd.kind == ddkRef:
     let tname = dd.qualified_target_name(name)
     try:
-      dependencies.add_edge(name, tname, true)
-    except NodeNotFoundError:
-      raise_brokenref(name, tname)
+      dependencies.add_edge(name, tname, true, klass = BrokenRefError)
+    except BrokenRefError:
+      let e = getCurrentException()
+      e.msg = brokenref_errmsg(name, tname)
+      raise
   else:
     for sub in dd.children:
       sub.construct_dependency_subgraph(name, dependencies)
@@ -64,9 +65,7 @@ proc validate_dependencies*(spec: Specification) =
   var dependencies = newGraph()
   for name, dd in spec:
     dd.construct_dependency_subgraph(name, dependencies)
-  try:
-    dependencies.validate_dag
-  except CycleFoundError:
+  if not dependencies.is_valid_dag:
     raise newException(CircularDefError,
        "\nCircular definition found.\n" &
        "The definition of a datatype " &
