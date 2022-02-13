@@ -53,7 +53,7 @@ proc parse_choices(defnode: YamlNode, name: string): seq[DatatypeDefinition] =
       reraise_prepend(&"Invalid element in '{DefKey}' key.\n")
     i += 1
 
-proc parse_branch_names(optnode: Option[YamlNode], name: string,
+proc parse_branch_names(optnode: OptYamlNode, name: string,
                         choices_node: YamlNode): seq[string] =
   var assign_defaults = false
   let n_branches = len(choices_node.elems)

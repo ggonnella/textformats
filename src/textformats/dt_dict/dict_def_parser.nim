@@ -67,7 +67,7 @@ proc parse_dict_members(n: YamlNode, name: string):
     raise newException(DefSyntaxError,
             &"No elements defined in '{DefKey}'\n")
 
-proc parse_keys_list(opt_n: Option[YamlNode], key: string,
+proc parse_keys_list(opt_n: OptYamlNode, key: string,
                          dict_members: TableRef[string, DatatypeDefinition]):
                            seq[string] =
   result = newseq[string]()
@@ -87,7 +87,7 @@ proc parse_keys_list(opt_n: Option[YamlNode], key: string,
                 &"Keys of '{DefKey}': {to_seq(dict_members.keys)}")
       result.add(i.to_string)
 
-proc parse_dict_internal_sep*(node: Option[YamlNode]): string =
+proc parse_dict_internal_sep*(node: OptYamlNode): string =
   node.to_string(default=DefaultDictInternalSep, DictInternalSepKey)
 
 proc validate_implicit(dd: DatatypeDefinition) =

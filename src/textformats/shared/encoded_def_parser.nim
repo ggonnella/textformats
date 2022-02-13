@@ -92,7 +92,7 @@ proc validate_encoded_str(encoded_str: string,
             &"Invalid encoded value: {encoded_str}\n" &
             "Value does not match:\n" & errmsg)
 
-proc parse_encoded*(n: Option[YamlNode],
+proc parse_encoded*(n: OptYamlNode,
                     validation_info: ValidationInfo):
                     Option[TableRef[JsonNode, string]] =
   if n.is_none:

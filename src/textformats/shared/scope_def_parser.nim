@@ -1,5 +1,4 @@
-import options, strformat
-import yaml/dom
+import strformat
 import ../support/yaml_support
 import ../types / [def_syntax, datatype_definition, textformats_error]
 
@@ -10,7 +9,7 @@ const
   UnitsizeHelp* = "(default: 1) how many lines does a unit contain; " &
                   &"the value is used only if {ScopeKey}=unit"
 
-proc parse_scope*(node: Option[YamlNode]): DatatypeDefinitionScope =
+proc parse_scope*(node: OptYamlNode): DatatypeDefinitionScope =
   let value = node.to_string(default="undefined", ScopeKey)
   case value:
   of "undefined": ddsUndef
@@ -22,7 +21,7 @@ proc parse_scope*(node: Option[YamlNode]): DatatypeDefinitionScope =
     raise newException(DefSyntaxError, &"Invalid value for key '{ScopeKey}'\n" &
                        &"Expected: {ScopeValues}\nFound: {value}\n")
 
-proc parse_unitsize*(node: Option[YamlNode]): int =
+proc parse_unitsize*(node: OptYamlNode): int =
   result = node.to_int(default=1, UnitsizeKey).int
   if result < 1:
     raise newException(DefSyntaxError,

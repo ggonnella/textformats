@@ -1,6 +1,5 @@
-import options, strformat
+import strformat
 import regex
-import yaml/dom
 import ../support/yaml_support
 import ../types / [def_syntax, textformats_error]
 
@@ -19,8 +18,8 @@ const
   SfxHelp* = "constant suffix after last element, if any " &
                 " (string, default: none)"
 
-proc parse_sep*(sep_node: Option[YamlNode],
-                splitted_node: Option[YamlNode]): (string, bool) =
+proc parse_sep*(sep_node: OptYamlNode,
+                splitted_node: OptYamlNode): (string, bool) =
   if sep_node.is_some:
     if splitted_node.is_some:
       raise newException(DefSyntaxError,
@@ -35,10 +34,10 @@ proc parse_sep*(sep_node: Option[YamlNode],
   else:
     return ("", false)
 
-proc parse_pfx*(node: Option[YamlNode]): string =
+proc parse_pfx*(node: OptYamlNode): string =
   node.to_string(default="", PfxKey)
 
-proc parse_sfx*(node: Option[YamlNode]): string =
+proc parse_sfx*(node: OptYamlNode): string =
   node.to_string(default="", SfxKey)
 
 proc validate_separators*(sep: string, internal_sep: string,

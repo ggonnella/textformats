@@ -37,15 +37,14 @@ proc include_yaml(spec: Specification, input: string, strinput: bool,
                   disable_including_incomplete_specs = false,
                   use_namespace = true)
 
-proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
+proc get_map_node(n: YamlNode, key: string): OptYamlNode {.inline.} =
   try:
     let v = n[key]
-    return some(v)
+    return OptYamlNode(is_some: true, unsafe_get: v)
   except KeyError:
-    return none(YamlNode)
+    return OptYamlNode(is_some: false)
 
-proc get_datatypes_node(root: YamlNode): Option[YamlNode] =
-  result = YamlNode.none
+proc get_datatypes_node(root: YamlNode): OptYamlNode =
   let whole_errmsg = "Expected: mapping containing at least one of the " &
                      &"keys '{DatatypesKey}' or '{IncludeKey}'"
   root.validate_is_mapping("Invalid content of specification\n",

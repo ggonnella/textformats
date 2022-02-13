@@ -108,77 +108,77 @@ suite "yaml_support":
     check s.to_string == "a"
   test "to_opt_int":
     check i.some.to_opt_int == 1'i64.some
-    check (YamlNode.none).to_opt_int == int64.none
+    check (OptYamlNode(is_some: false)).to_opt_int == int64.none
     check i2.some.to_opt_int == (-1'i64).some
     expect(NodeValueError): discard f.some.to_opt_int
     expect(NodeValueError): discard q.some.to_opt_int
   test "to_opt_uint":
     check i.some.to_opt_uint == 1'u64.some
-    check YamlNode.none.to_opt_uint == uint64.none
+    check OptYamlNode(is_some: false).to_opt_uint == uint64.none
     expect(NodeValueError): discard i2.some.to_opt_uint
   test "to_opt_natural":
     check i.some.to_opt_natural == 1.Natural.some
-    check YamlNode.none.to_opt_natural == Natural.none
+    check OptYamlNode(is_some: false).to_opt_natural == Natural.none
     expect(NodeValueError): discard i2.some.to_opt_natural
   test "to_opt_float":
     check f.some.to_opt_float == (1.0).some
-    check YamlNode.none.to_opt_float == float.none
+    check OptYamlNode(is_some: false).to_opt_float == float.none
     expect(NodeValueError): discard s.some.to_opt_float
   test "to_opt_bool":
     check b.some.to_opt_bool == true.some
-    check YamlNode.none.to_opt_bool == bool.none
+    check OptYamlNode(is_some: false).to_opt_bool == bool.none
     expect(NodeValueError): discard s.some.to_opt_bool
   test "to_opt_string":
     check s.some.to_opt_string == "a".some
-    check YamlNode.none.to_opt_string == string.none
+    check OptYamlNode(is_some: false).to_opt_string == string.none
   test "to_int_default":
     check i.some.to_int(0) == 1'i64
-    check YamlNode.none.to_int(0) == 0
+    check OptYamlNode(is_some: false).to_int(0) == 0
     expect(NodeValueError): discard f.some.to_int(0)
     expect(NodeValueError): discard q.some.to_int(0)
   test "to_uint_default":
     check i.some.to_uint(0) == 1'u64
-    check YamlNode.none.to_uint(0'u64) == 0'u
+    check OptYamlNode(is_some: false).to_uint(0'u64) == 0'u
     expect(NodeValueError): discard i2.some.to_uint(0'u)
   test "to_natural_default":
     check i.some.to_natural(0.Natural) == 1.Natural
-    check YamlNode.none.to_natural(0.Natural) == 0.Natural
+    check OptYamlNode(is_some: false).to_natural(0.Natural) == 0.Natural
     expect(NodeValueError): discard i2.some.to_natural(0.Natural)
   test "to_float_default":
     check f.some.to_float(0.0) == 1.0
-    check YamlNode.none.to_float(0.0) == 0.0
+    check OptYamlNode(is_some: false).to_float(0.0) == 0.0
     expect(NodeValueError): discard s.some.to_float(0.0)
   test "to_bool_default":
     check b.some.to_bool(false) == true
-    check YamlNode.none.to_bool(false) == false
+    check OptYamlNode(is_some: false).to_bool(false) == false
     expect(NodeValueError): discard s.some.to_bool(false)
   test "to_string_default":
     check s.some.to_string("") == "a"
-    check YamlNode.none.to_string("") == ""
+    check OptYamlNode(is_some: false).to_string("") == ""
   test "to_int_default_name":
     check i.some.to_int(0, "x") == 1'i64
-    check YamlNode.none.to_int(0, "x") == 0
+    check OptYamlNode(is_some: false).to_int(0, "x") == 0
     expect(NodeValueError): discard f.some.to_int(0, "x")
     expect(NodeValueError): discard q.some.to_int(0, "x")
   test "to_uint_default_name":
     check i.some.to_uint(0, "x") == 1'u64
-    check YamlNode.none.to_uint(0'u, "x") == 0'u
+    check OptYamlNode(is_some: false).to_uint(0'u, "x") == 0'u
     expect(NodeValueError): discard i2.some.to_uint(0'u, "x")
   test "to_natural_default_name":
     check i.some.to_natural(0.Natural, "x") == 1.Natural
-    check YamlNode.none.to_natural(0.Natural, "x") == 0.Natural
+    check OptYamlNode(is_some: false).to_natural(0.Natural, "x") == 0.Natural
     expect(NodeValueError): discard i2.some.to_natural(0.Natural, "x")
   test "to_float_default_name":
     check f.some.to_float(0.0, "x") == 1.0
-    check YamlNode.none.to_float(0.0, "x") == 0.0
+    check OptYamlNode(is_some: false).to_float(0.0, "x") == 0.0
     expect(NodeValueError): discard s.some.to_float(0.0, "x")
   test "to_bool_default_name":
     check b.some.to_bool(false, "x") == true
-    check YamlNode.none.to_bool(false, "x") == false
+    check OptYamlNode(is_some: false).to_bool(false, "x") == false
     expect(NodeValueError): discard s.some.to_bool(false, "x")
   test "to_string_default_name":
     check s.some.to_string("", "x") == "a"
-    check YamlNode.none.to_string("", "x") == ""
+    check OptYamlNode(is_some: false).to_string("", "x") == ""
   test "validate_is_scalar":
     try: n.validate_is_scalar except: check false
     expect(NodeValueError): validate_is_scalar(m)
@@ -228,7 +228,7 @@ suite "yaml_support":
     check f.some.to_opt_json_node == some(%*1.0)
     check m.some.to_opt_json_node == some(%*{"b": "c"})
     check q.some.to_opt_json_node == some(%*[1'i64, 2'i64])
-    check YamlNode.none.to_opt_json_node == JsonNode.none
+    check OptYamlNode(is_some: false).to_opt_json_node == JsonNode.none
   test "validate_has_key":
     try: m.validate_has_key("b") except: check false
     expect(NodeValueError): m.validate_has_key("c")

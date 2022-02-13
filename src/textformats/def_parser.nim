@@ -10,9 +10,9 @@ import support/yaml_support
 
 proc new_datatype_definition*(node: YamlNode, name: string): DatatypeDefinition
 proc collect_defnodes*(defroot: YamlNode, keys: openArray[string],
-                      n_required = 1): seq[Option[YamlNode]]
-proc validate_requires*(key1: string, optnode1: Option[YamlNode],
-                        key2: string, optnode2: Option[YamlNode])
+                      n_required = 1): seq[OptYamlNode]
+proc validate_requires*(key1: string, optnode1: OptYamlNode,
+                        key2: string, optnode2: OptYamlNode)
 
 proc format_def_syntax_errmsg*(name, msg, syntaxhelp, defkey = ""): string =
   let
@@ -68,12 +68,12 @@ const
   """
 
 proc collect_defnodes*(defroot: YamlNode, keys: openArray[string],
-                      n_required = 1): seq[Option[YamlNode]] =
+                      n_required = 1): seq[OptYamlNode] =
   result = getKeys(defroot, keys, n_required,
                    "Invalid datatype definition: \n")
 
-proc validate_requires*(key1: string, optnode1: Option[YamlNode],
-                        key2: string, optnode2: Option[YamlNode]) =
+proc validate_requires*(key1: string, optnode1: OptYamlNode,
+                        key2: string, optnode2: OptYamlNode) =
   if optnode1.is_some:
     if optnode2.is_none:
       raise newException(DefSyntaxError,

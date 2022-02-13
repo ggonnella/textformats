@@ -32,7 +32,7 @@ const
   - {AsStringKey}: {AsStringHelp}
 """
 
-proc parse_min_f(min_optnode: Option[YamlNode]): float =
+proc parse_min_f(min_optnode: OptYamlNode): float =
   try:
     let value = min_optnode.to_opt_float
     return if value.is_none: NegInf else: value.unsafe_get
@@ -40,7 +40,7 @@ proc parse_min_f(min_optnode: Option[YamlNode]): float =
     raise newException(DefSyntaxError,
             &"Invalid value for '{MinKey}' ({min_optnode})")
 
-proc parse_max_f(max_optnode: Option[YamlNode]): float =
+proc parse_max_f(max_optnode: OptYamlNode): float =
   try:
     let value = max_optnode.to_opt_float
     return if value.is_none: Inf else: value.unsafe_get

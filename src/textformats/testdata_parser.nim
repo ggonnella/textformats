@@ -13,31 +13,26 @@ proc get_yaml_root(input: string, strinput: bool): YamlNode =
   get_yaml_mapping_root(TextFormatsRuntimeError, InvalidTestdataError,
                         input, strinput, "testdata")
 
-proc get_map_node(n: YamlNode, key: string): Option[YamlNode] {.inline.} =
-  # ignore ProveInit warning thrown by options library
-  {.warning[ProveInit]: off.}
+proc get_map_node(n: YamlNode, key: string): OptYamlNode {.inline.} =
   try:
     let v = n[key]
-    return some(v)
+    return OptYamlNode(is_some: true, unsafe_get: v)
   except KeyError:
-    return none(YamlNode)
+    return OptYamlNode(is_some: false)
 
 proc get_testdata_node(root: YamlNode): YamlNode =
-  var node = YamlNode.none
-  try:
-    let whole_errmsg = &"Expected: mapping with key '{TestdataRootKey}'"
-    root.validate_is_mapping("Invalid content\n", "\n" & whole_errmsg)
-    node = root.get_map_node(TestdataRootKey)
-    if node.is_some:
-      node.unsafe_get.validate_is_mapping(
-        &"  Invalid content of '{TestdataRootKey}' key\n",
-        "  It must be a mapping containing test data")
-      return node.unsafe_get
-    else:
-      raise newException(InvalidTestdataError,
-        "  Invalid content of mapping\n" & whole_errmsg)
-  except NodeValueError:
-    raise newException(InvalidTestdataError, get_current_exception_msg())
+  let whole_errmsg = &"Expected: mapping with key '{TestdataRootKey}'"
+  root.validate_is_mapping("Invalid content\n", "\n" & whole_errmsg,
+                           klass = InvalidTestdataError)
+  let node = root.get_map_node(TestdataRootKey)
+  if node.is_some:
+    node.unsafe_get.validate_is_mapping(
+      &"  Invalid content of '{TestdataRootKey}' key\n",
+      "  It must be a mapping containing test data")
+    return node.unsafe_get
+  else:
+    raise newException(InvalidTestdataError,
+      "  Invalid content of mapping\n" & whole_errmsg)
 
 proc test_encoded_validation(input: string, datatype: DatatypeDefinition,
                              failed: string, success: string) =

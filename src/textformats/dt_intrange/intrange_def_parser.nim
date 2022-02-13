@@ -32,7 +32,7 @@ const
 """
 
 proc parse_range_i(min_max_optnodes:
-                   tuple[min: Option[YamlNode], max: Option[YamlNode]]):
+                   tuple[min: OptYamlNode, max: OptYamlNode]):
                    Openrange[int64] =
   try:
     result.low = min_max_optnodes.min.to_opt_int

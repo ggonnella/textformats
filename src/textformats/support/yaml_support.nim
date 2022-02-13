@@ -3,7 +3,7 @@
 ##
 
 import strformat, tables, json, options, streams, os
-import yaml / [dom, serialization, taglib, hints, data]
+import yaml / [dom, serialization, taglib, hints, data, parser]
 import error_support
 
 type
@@ -11,6 +11,17 @@ type
   NodeValueError*   = object of YamlSupportError
   KeyMissingError*  = object of YamlSupportError
   KeyUnknownError*  = object of YamlSupportError
+
+  OptYamlNode* = object
+    case is_some*: bool
+    of true: unsafe_get*: YamlNode
+    of false: discard
+
+proc is_none*(n: OptYamlNode): bool =
+  not n.is_some
+
+proc some*(n: YamlNode): OptYamlNode =
+  OptYamlNode(is_some: true, unsafe_get: n)
 
 # private, exported because it is used by public templates
 proc PRV_has_kind*(n: YamlNode, expected: YamlNodeKind): bool =
@@ -180,73 +191,73 @@ converter to_bool*(n: YamlNode): bool =
 converter to_string*(n: YamlNode): string =
   n.validate_is_string(); result = n.content #.load(result)
 
-converter to_opt_int*(n: Option[YamlNode]): Option[int64] =
+converter to_opt_int*(n: OptYamlNode): Option[int64] =
   if n.is_some: n.unsafe_get.to_int.some else: int64.none
 
-converter to_opt_uint*(n: Option[YamlNode]): Option[uint64] =
+converter to_opt_uint*(n: OptYamlNode): Option[uint64] =
   if n.is_some: n.unsafe_get.to_uint.some else: uint64.none
 
-converter to_opt_natural*(n: Option[YamlNode]): Option[Natural] =
+converter to_opt_natural*(n: OptYamlNode): Option[Natural] =
   if n.is_some: n.unsafe_get.to_natural.some else: Natural.none
 
-converter to_opt_float*(n: Option[YamlNode]): Option[float] =
+converter to_opt_float*(n: OptYamlNode): Option[float] =
   if n.is_some: n.unsafe_get.to_float.some else: float.none
 
-converter to_opt_bool*(n: Option[YamlNode]): Option[bool] =
+converter to_opt_bool*(n: OptYamlNode): Option[bool] =
   if n.is_some: n.unsafe_get.to_bool.some else: bool.none
 
-converter to_opt_string*(n: Option[YamlNode]): Option[string] =
+converter to_opt_string*(n: OptYamlNode): Option[string] =
   if n.is_some: n.unsafe_get.to_string.some else: string.none
 
-proc to_int*(n: Option[YamlNode], default: int64): int64 =
+proc to_int*(n: OptYamlNode, default: int64): int64 =
   if n.is_some: n.unsafe_get.to_int else: default
 
-proc to_int*(n: Option[YamlNode], default: int64, name: string): int64 =
+proc to_int*(n: OptYamlNode, default: int64, name: string): int64 =
   try:
     result = n.to_int(default=default)
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{name}'.\n")
 
-proc to_uint*(n: Option[YamlNode], default: uint64): uint64 =
+proc to_uint*(n: OptYamlNode, default: uint64): uint64 =
   if n.is_some: n.unsafe_get.to_uint else: default
 
-proc to_uint*(n: Option[YamlNode], default: uint64, name: string): uint64 =
+proc to_uint*(n: OptYamlNode, default: uint64, name: string): uint64 =
   try:
     result = n.to_uint(default=default)
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{name}'.\n")
 
-proc to_natural*(n: Option[YamlNode], default: Natural): Natural =
+proc to_natural*(n: OptYamlNode, default: Natural): Natural =
   if n.is_some: n.unsafe_get.to_natural else: default
 
-proc to_natural*(n: Option[YamlNode], default: Natural, name: string): Natural =
+proc to_natural*(n: OptYamlNode, default: Natural, name: string): Natural =
   try:
     result = n.to_natural(default=default)
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{name}'.\n")
 
-proc to_float*(n: Option[YamlNode], default: float): float =
+proc to_float*(n: OptYamlNode, default: float): float =
   if n.is_some: n.unsafe_get.to_float else: default
 
-proc to_float*(n: Option[YamlNode], default: float, name: string): float =
+proc to_float*(n: OptYamlNode, default: float, name: string): float =
   try:
     result = n.to_float(default=default)
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{name}'.\n")
 
-proc to_bool*(n: Option[YamlNode], default: bool): bool =
+proc to_bool*(n: OptYamlNode, default: bool): bool =
   if n.is_some: n.unsafe_get.to_bool else: default
 
-proc to_bool*(n: Option[YamlNode], default: bool, name: string): bool =
+proc to_bool*(n: OptYamlNode, default: bool, name: string): bool =
   try:
     result = n.to_bool(default=default)
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{name}'.\n")
 
-proc to_string*(n: Option[YamlNode], default: string): string =
+proc to_string*(n: OptYamlNode, default: string): string =
   if n.is_some: n.unsafe_get.to_string else: default
 
-proc to_string*(n: Option[YamlNode], default: string, name: string): string =
+proc to_string*(n: OptYamlNode, default: string, name: string): string =
   try:
     result = n.to_string(default=default)
   except NodeValueError:
@@ -289,7 +300,7 @@ converter to_json_node*(n: YamlNode): JsonNode {.noInit.} =
         else: $(k.to_json_node)
       result[key] = v.to_json_node
 
-converter to_opt_json_node*(n: Option[YamlNode]): Option[JsonNode] {.noInit.} =
+converter to_opt_json_node*(n: OptYamlNode): Option[JsonNode] {.noInit.} =
   if n.is_none: JsonNode.none
   else: n.unsafe_get.to_json_node.some
 
@@ -345,7 +356,7 @@ proc validate_min_len*(n: YamlNode, expected_min_len: int,
 proc getKeys*(n: YamlNode, keys: openArray[string], n_required: int,
               errmsgpfx = "", klass_v = NodeValueError,
               klass_u = KeyUnknownError, klass_m = KeyMissingError):
-              seq[Option[YamlNode]] =
+              seq[OptYamlNode] =
   ## Validate a map YAML node with a set of predefined keys and
   ## collect the corresponding values.
   ##
@@ -375,7 +386,7 @@ proc getKeys*(n: YamlNode, keys: openArray[string], n_required: int,
     for i, accepted_key in keys.pairs:
       if key == accepted_key:
         known = true
-        result[i] = some[YamlNode](value_node)
+        result[i] = OptYamlNode(unsafe_get: value_node, is_some: true)
     if not known:
       raise newException(klass_u,
         &"{errmsgpfx}Invalid key: '{key}'\n" &
@@ -395,12 +406,47 @@ template yamlparse_errmsg*(filename: string, desc: string,
   else:
     pfx
 
+#
+# This is based on load_dom, for supporting the embedded specifications.
+#
+# The "YAML document" after the first document does not need
+# to be YAML at all in files with embedded specification.
+#
+# Unfortunately load_dom() throws an error when finding a document
+# after the first one, and load_multi_dom() throws an error when
+# the subsequent documents are not valid YAML (as in this case).
+#
+proc loadFirstDocumentDom*(s: Stream | string): YamlDocument
+    {.raises: [IOError, OSError, YamlParserError, YamlConstructionError].} =
+  result = YamlDocument(root: YamlNode())
+  var
+    parser = initYamlParser()
+    events = parser.parse(s)
+    e: Event
+  try:
+    e = events.next()
+    assert(e.kind == yamlStartStream)
+    result = compose(events)
+    e = events.next()
+    if e.kind != yamlEndStream:
+      return
+  except YamlStreamError:
+    result = YamlDocument(root: YamlNode())
+    let ex = getCurrentException()
+    if ex.parent of YamlParserError:
+      raise (ref YamlParserError)(ex.parent)
+    elif ex.parent of IOError:
+      raise (ref IOError)(ex.parent)
+    elif ex.parent of OSError:
+      raise (ref OSError)(ex.parent)
+    else: assert(false)
+
 proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
                             input: string, strinput: bool,
                             inputdesc: string): YamlNode =
   var
+    yaml = YamlDocument(root: YamlNode())
     stream: Stream = nil
-    yaml: YamlDocument = YamlDocument(root: YamlNode())
     errstate = ""
   let fn = if strinput: "" else: input
   if not strinput and input != "" and not fileExists(input):
@@ -418,7 +464,7 @@ proc get_yaml_mapping_root*(io_errtype: typedesc, parsing_errtype: typedesc,
   if len(errstate) > 0:
     raise newException(io_errtype, yamlparse_errmsg(fn, inputdesc, errstate))
   try:
-    yaml = load_dom(stream)
+    yaml = loadFirstDocumentDom(stream)
   except YamlConstructionError:
     discard
   except:

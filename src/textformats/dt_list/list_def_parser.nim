@@ -44,7 +44,7 @@ const
   - {UnitsizeKey}: {UnitsizeHelp}
 """
 
-proc parse_lenrange_min(minlength_optnode: Option[YamlNode]): Option[Natural] =
+proc parse_lenrange_min(minlength_optnode: OptYamlNode): Option[Natural] =
   try:
     result = minlength_optnode.to_opt_natural
     if result.is_none:
@@ -54,7 +54,7 @@ proc parse_lenrange_min(minlength_optnode: Option[YamlNode]): Option[Natural] =
   except NodeValueError:
     reraise_prepend(&"Invalid value for '{LenrangeMinKey}'.\n")
 
-proc parse_lenrange_max(maxlength_optnode: Option[YamlNode]): Option[Natural] =
+proc parse_lenrange_max(maxlength_optnode: OptYamlNode): Option[Natural] =
   try:
     result = maxlength_optnode.to_opt_natural
   except NodeValueError:

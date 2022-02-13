@@ -73,7 +73,7 @@ proc parse_tagtypes(n: YamlNode, name: string):
                    TableRef[string, DatatypeDefinition] =
   n.parse_named_definitions_to_table(name & ".type", DefKey)
 
-proc parse_predefined_tags(opt_n: Option[YamlNode]): TableRef[string, string] =
+proc parse_predefined_tags(opt_n: OptYamlNode): TableRef[string, string] =
   result = newTable[string, string]()
   if opt_n.is_some:
     let n = opt_n.unsafe_get
@@ -91,7 +91,7 @@ proc validate_predefined_tags(d: DatatypeDefinition) =
                          &"  {v} is not one of the defined types " &
                           to_seq(d.tagtypes.keys).join(", "))
 
-proc parse_tags_internal_sep*(node: Option[YamlNode]): string =
+proc parse_tags_internal_sep*(node: OptYamlNode): string =
   node.to_string(default=DefaultTagsInternalSep, TagsInternalSepKey)
 
 proc validate_names_vs_separators(dd: DatatypeDefinition) =
@@ -107,7 +107,7 @@ proc validate_names_vs_separators(dd: DatatypeDefinition) =
   validate_names_vs_separator(pn, pnlbl, dd.sep, seplbl)
   validate_names_vs_separator(pn, pnlbl, dd.tags_internal_sep, iseplbl)
 
-proc parse_tagname_regex(dd: var DatatypeDefinition, optn: Option[YamlNode]) =
+proc parse_tagname_regex(dd: var DatatypeDefinition, optn: OptYamlNode) =
   let invaliderr = "Invalid value for '" & TagnameKey & "'.\n"
   if optn.is_none:
     dd.tagname_regex_raw = DefaultTagnameRegex

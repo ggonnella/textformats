@@ -1,4 +1,4 @@
-import strformat, options, json
+import strformat, json
 import yaml
 import ../support/yaml_support
 import ../types / [def_syntax, textformats_error]
@@ -6,7 +6,7 @@ import ../types / [def_syntax, textformats_error]
 const
   ImplicitHelp* = "mapping: strings (key names) to scalar values"
 
-proc parse_implicit*(optnode: Option[YamlNode]): seq[(string, JsonNode)] =
+proc parse_implicit*(optnode: OptYamlNode): seq[(string, JsonNode)] =
   result = newseq[(string, JsonNode)]()
   if optnode.is_some:
     let node = optnode.unsafe_get

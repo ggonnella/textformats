@@ -53,7 +53,7 @@ proc parse_struct_members(n: YamlNode, name: string):
   result = n.parse_named_definitions_to_seq(name, DefKey)
   n.validate_min_len(1, &"Invalid length of '{DefKey}' content.\n")
 
-proc parse_n_required(dd: var DatatypeDefinition, opt_n: Option[YamlNode]) =
+proc parse_n_required(dd: var DatatypeDefinition, opt_n: OptYamlNode) =
   if opt_n.is_none:
     dd.n_required = dd.members.len
   else:
