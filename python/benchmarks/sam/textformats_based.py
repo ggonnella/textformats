@@ -26,7 +26,7 @@ def process_decoded(decoded, c):
           c.count_rg(tag["type"], tag["value"])
 
 if __name__ == "__main__":
-  arguments = docopt(__doc__, version="1.0.0")
+  arguments = docopt(__doc__, version="1.2.0")
   input_file = arguments["<sam>"]
   spec = Specification(arguments["<spec>"])
   ddef = spec[arguments["<datatype>"]]

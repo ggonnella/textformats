@@ -1,3 +1,27 @@
+=== 1.2.0 ===
+
+- performance improvements:
+  - avoid nested exception handling
+  - branch prediction in union datatypes decoding
+  - use refc GC (was markAndSweep)
+
+- adapt to newer library/compiler versions:
+  - use Nim 1.6 (was Nim 1.4)
+  - use regex 0.19 (was 0.18)
+
+- new example applications and benchmarks:
+  - SAM: generate larger data for benchmarks
+  - GFA1: show how to fix invalid data output
+          by another application
+  - GFA2: gfa2_info script implemented in
+          Python with TextFormats and
+          with gfapy (for comparison)
+  - EGC: compare to Python ad-hoc parser;
+         compare Python to Nim and C;
+         generate large benchmark data
+  - GFF3: data conversion from custom
+          tabular annotation data
+
 === 1.1.0 ===
 
 - make clear requirements in nimble file

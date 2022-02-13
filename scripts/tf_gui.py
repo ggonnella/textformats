@@ -38,7 +38,7 @@ def show_error(self, exc, val, tb):
 Tk.report_callback_exception = show_error
 
 root = Tk()
-root.title("TextFormats GUI")
+root.title("TextFormats 1.2.0 GUI")
 lf1 = ttk.Labelframe(root, padding="3 3 12 12", text="Encoded")
 lf1.grid(column=0, row=0, sticky=(N, W, E, S))
 lf2 = ttk.Labelframe(root, padding="3 3 12 12", text="Specification")

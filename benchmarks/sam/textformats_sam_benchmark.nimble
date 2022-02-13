@@ -1,4 +1,4 @@
-version = "1.0.0"
+version = "1.2.0"
 author = "Giorgio Gonnella"
 description = "Use textformats or hts-nim for computing and printing " &
               "some statistics about a SAM file"

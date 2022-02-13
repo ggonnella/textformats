@@ -14,7 +14,7 @@ import nimporter, split_and_namecapt_regex_nimpy
 import sys
 
 if __name__ == "__main__":
-  args = docopt(__doc__, version="0.1")
+  args = docopt(__doc__, version="1.2.0")
   if not args["--input"]:
     sys.stderr.write(__doc__)
     exit(1)
