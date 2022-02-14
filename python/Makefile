@@ -1,7 +1,7 @@
 default: cleanup build install
 
 # package version
-VERSION=1.1.0
+VERSION=1.2.0
 
 # command line tools
 PYTHON ?= python
@@ -11,19 +11,22 @@ NIMPORTER ?= nimporter
 CFLAGS="-w"
 
 cleanup:
-	rm -rf textformats.egg-info build dist MANIFEST.in nim-extensions __pycache__
+	rm -rf textformats.egg-info build dist MANIFEST.in nim-extensions __pycache__ \
+		     textformats/__pycache__ textformats/py_bindings/__pycache__
 
 build:
 	env CFLAGS=${CFLAGS} ${PYTHON} setup.py build -f
+
+NIMPORTER_VERSION=1.0.2
 
 install:
 	if ${PIP} show nimporter > /dev/null; then \
 		VER=$$(${PIP} show nimporter | grep -P -o "(?<=Version: ).*"); \
 		if test "$$VER" != "1.0.2"; then \
-		  ${PIP} install nimporter==1.0.2; \
+		  ${PIP} install nimporter==${NIMPORTER_VERSION}; \
 		fi; \
 	else \
-		${PIP} install nimporter==1.0.2; \
+		${PIP} install nimporter==${NIMPORTER_VERSION}; \
 	fi
 	${PYTHON} setup.py install -f
 	${PYTHON} -c "import textformats"

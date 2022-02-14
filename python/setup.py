@@ -20,7 +20,7 @@ def readme():
 
 setup(name='textformats',
       packages=["textformats", "textformats/py_bindings"],
-      package_data={"": ['*.nim', "*.nimble", "*.nims"]},
+      package_data={"": ['*.nim', "*.nimble", "*.nims", "*.cfg"]},
       version='1.2.0',
       description='Easily defined compact human-readable data representations',
       long_description=readme(),
