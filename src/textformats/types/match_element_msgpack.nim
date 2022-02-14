@@ -1,4 +1,4 @@
-import streams, msgpack4nim
+import msgpack4nim
 
 proc pack_type*[ByteStream](s: ByteStream, me: MatchElement) =
   s.pack(me.kind)

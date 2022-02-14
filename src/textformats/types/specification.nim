@@ -1,7 +1,9 @@
-import tables, marshal, strformat, os, json, streams, strutils
+import tables, strformat, os, json, streams
 import datatype_definition, textformats_error
 when defined(msgpack):
   import msgpack4nim
+else:
+  import strutils, marshal
 
 export pairs
 
@@ -75,7 +77,7 @@ proc load_specification*(filename: string,
     when defined(msgpack):
       var s = newFileStream(filename, fmRead)
       var magic_string = "        "
-      s.read_data_str(magic_string, 0..7)
+      discard s.read_data_str(magic_string, 0..7)
       if magic_string != TFS_MAGIC_STRING:
         raise newException(TextFormatsRuntimeError,
                            errmsg_pfx &
@@ -125,7 +127,7 @@ proc is_compiled*(specfile: string): bool =
     defer: stream.close()
     when defined(msgpack):
       var magic_string = "        "
-      stream.read_data_str(magic_string, 0..7)
+      discard stream.read_data_str(magic_string, 0..7)
       return magic_string == "TFS1.0--"
     else:
       var firstchar: char
