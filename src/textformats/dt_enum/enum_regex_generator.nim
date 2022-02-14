@@ -1,8 +1,7 @@
 import regex
-import strutils, options
+import strutils
 import ../types/datatype_definition
 import ../types/match_element
-import ../regex_generator
 import ../dt_anyfloat/anyfloat_regex_generator
 
 proc enum_compute_regex*(dd: DatatypeDefinition) =

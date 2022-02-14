@@ -1,7 +1,7 @@
 import json, strformat, strutils, options
 import regex
 import ../types / [datatype_definition, match_element,
-                   regex_grppfx, textformats_error]
+                   textformats_error]
 import ../shared/translation_decoder
 
 proc show_elements(elements: seq[MatchElement]): string =
