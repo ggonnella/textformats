@@ -37,23 +37,4 @@ proc prematched_decode_enum*(input: string, slice: Slice[int],
                               dd: DatatypeDefinition, m: RegexMatch,
                               childnum: int, groupspfx: string):
                                 JsonNode =
-  var has_translations = false
-  for i in 0..<dd.elements.len:
-    if dd.decoded[i].is_some:
-      has_translations = true
-      break
-  if not has_translations:
-    return %*input[slice]
-  else:
-    let pfx = if groupspfx.len > 0: groupspfx & groupspfx_sep else: ""
-    for i in 0..<dd.elements.len:
-      let match = m.group(pfx & $i)
-      if childnum == -1:
-        if match.len > 0:
-          assert(match.len == 1)
-          return input[match[0]].translated(dd, i)
-      else:
-        for boundaries in match:
-          if boundaries == slice:
-            return input[boundaries].translated(dd, i)
-    assert(false)
+  input[slice].decode_enum(dd)

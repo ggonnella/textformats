@@ -13,16 +13,13 @@ proc enum_compute_regex*(dd: DatatypeDefinition) =
     regexes = newseq[string](dd.elements.len)
   dd.regex.ensures_valid = true
   var
-    has_translations = false
     charclass = true
   for i, e in dd.elements:
-    if dd.decoded[i].is_some:
-      has_translations = true
     case e.kind:
       of meString:
-        let rgx = e.s_value.escape_re
-        if len(rgx) > 1:
+        if len(e.s_value) > 1:
           charclass = false
+        let rgx = e.s_value.escape_re
         regexes[i] = rgx
       of meFloat:
         if float_added:
@@ -35,12 +32,7 @@ proc enum_compute_regex*(dd: DatatypeDefinition) =
         let i_str = if i > 0: "\\+?" & $i else: $i
         regexes[i] = i_str
         charclass = false
-  if has_translations:
-    for i in 0..<dd.elements.len:
-      regexes[i] = regexes[i].to_named_group($i)
-    dd.regex.raw = "(" & regexes.join("|") & ")"
+  if charclass:
+    dd.regex.raw = "[" & regexes.join("") & "]"
   else:
-    if charclass:
-      dd.regex.raw = "[" & regexes.join("") & "]"
-    else:
-      dd.regex.raw = "(" & regexes.join("|") & ")"
+    dd.regex.raw = "(" & regexes.join("|") & ")"
