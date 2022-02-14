@@ -78,14 +78,20 @@ proc pack_type*[ByteStream](s: ByteStream, dd: DatatypeDefinition) =
       s.pack(dd.n_required)
       s.pack(dd.hidden)
     of ddkDict:
-      s.pack(dd.dict_members)
+      s.pack(dd.dict_members.len)
+      for tk, tv in dd.dict_members:
+        s.pack(tk)
+        s.pack(tv)
       s.pack(dd.required_keys)
       s.pack(dd.single_keys)
       s.pack(dd.dict_internal_sep)
     of ddkTags:
       s.pack(dd.tagname_regex_raw)
       s.pack(dd.tagname_regex_compiled)
-      s.pack(dd.tagtypes)
+      s.pack(dd.tagtypes.len)
+      for tk, tv in dd.tagtypes:
+        s.pack(tk)
+        s.pack(tv)
       s.pack(dd.predefined_tags)
       s.pack(dd.tags_internal_sep)
       s.pack(dd.type_key)
@@ -189,14 +195,30 @@ proc unpack_type*[ByteStream](s: ByteStream, dd: var DatatypeDefinition) =
       s.unpack(dd.n_required)
       s.unpack(dd.hidden)
     of ddkDict:
-      s.unpack(dd.dict_members)
+      s.unpack(l)
+      dd.dict_members = newTable[string, DatatypeDefinition]()
+      for i in 0 ..< l:
+        var
+          tk: string
+          tv: DatatypeDefinition
+        s.unpack(tk)
+        s.unpack(tv)
+        dd.dict_members[tk] = tv
       s.unpack(dd.required_keys)
       s.unpack(dd.single_keys)
       s.unpack(dd.dict_internal_sep)
     of ddkTags:
       s.unpack(dd.tagname_regex_raw)
       s.unpack(dd.tagname_regex_compiled)
-      s.unpack(dd.tagtypes)
+      s.unpack(l)
+      dd.tagtypes = newTable[string, DatatypeDefinition]()
+      for i in 0 ..< l:
+        var
+          tk: string
+          tv: DatatypeDefinition
+        s.unpack(tk)
+        s.unpack(tv)
+        dd.tagtypes[tk] = tv
       s.unpack(dd.predefined_tags)
       s.unpack(dd.tags_internal_sep)
       s.unpack(dd.type_key)
