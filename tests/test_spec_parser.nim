@@ -23,7 +23,8 @@ suite "test_spec_parser":
       "datatype_name_empty.yaml", "datatype_name_invchar.yaml",
       "datatype_name_num.yaml", "datatype_name_startnum.yaml",
       "datatypes_scalar.yaml", "datatypes_seq.yaml", "included_map.yaml",
-      "wrong_yaml_syntax.yaml", "ref_included_wo_namespace.yaml"]:
+      "wrong_yaml_syntax.yaml", "ref_included_wo_namespace.yaml",
+      "empty.yaml", "spacesonly.yaml"]:
     test "invalid_" & filename:
       expect(InvalidSpecError):
         discard specification_from_file(badspecdir & filename)
