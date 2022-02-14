@@ -58,6 +58,8 @@ proc prematched_decode*(input: string, slice: Slice[int],
     elif not dd.regex.ensures_valid:
       result = sliced.decode(dd)
     else:
+      if dd.as_string:
+        result = %sliced
       # the following should never raise exceptions, since the input is
       # already validated by the regular expression
       case dd.kind:
@@ -84,6 +86,17 @@ proc prematched_decode*(input: string, slice: Slice[int],
       else: assert(false)
   return if dd.as_string: %sliced else: result
 
+proc decode_as_string_by_regex*(input: string, dd: DatatypeDefinition):
+                                JsonNode =
+  assert dd.as_string
+  when defined(trace_regex):
+    debugEcho("trace_regex|decode|as_string|match(r)|" & dd.name)
+  if input.match(dd.regex.compiled):
+    return input.translated(dd)
+  else:
+    raise newException(DecodingError,
+             &"Regular expression not matching: {dd.regex.raw}\n")
+
 proc decode*(input: string, dd: DatatypeDefinition): JsonNode
             {.raises: [DecodingError].} =
   if input.len == 0 and dd.null_value.is_some:
@@ -91,6 +104,8 @@ proc decode*(input: string, dd: DatatypeDefinition): JsonNode
     result = dd.null_value.unsafe_get
   else:
     try:
+      if dd.as_string and dd.regex.ensures_valid:
+        return input.decode_as_string_by_regex(dd)
       case dd.kind:
       of ddkRef:
         assert(not dd.target.is_nil)

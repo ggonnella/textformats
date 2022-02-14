@@ -98,6 +98,8 @@ proc compute_and_get_regex*(dd: DatatypeDefinition): DatatypeRegex =
       of ddkUnion:        dd.union_compute_regex()
     dd.regex_apply_formatting
     dd.regex_apply_null_value
+    if dd.as_string:
+      dd.regex.raw = dd.regex.raw.wo_group_names
     dd.compile_regex
     dd.regex_computed = true
   return dd.regex
