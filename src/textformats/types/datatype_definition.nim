@@ -199,7 +199,9 @@ type
 proc children*(dd: DatatypeDefinition): seq[DatatypeDefinition] =
   result = newseq[DatatypeDefinition]()
   case dd.kind:
-  of ddkRef: result.add(dd.target)
+  of ddkRef:
+    if not dd.target.isNil:
+      result.add(dd.target)
   of ddkAnyInteger, ddkAnyUInteger, ddkAnyFloat,
      ddkIntRange, ddkUIntRange, ddkFloatRange,
      ddkAnyString, ddkRegexMatch, ddkRegexesMatch,
@@ -268,3 +270,4 @@ proc set_wrapped*(d: DatatypeDefinition) =
 proc unset_wrapped*(d: DatatypeDefinition) =
   let dd = dereference(d)
   dd.wrapped = false
+
