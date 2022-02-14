@@ -18,6 +18,7 @@ datatypes:
       - uri_path_absolute
       - uri_path_rootless
     empty: {}
+    as_string: true
   uri_reference:
     one_of:
       - uri
@@ -86,12 +87,14 @@ datatypes:
       - value: uri_string_upsqs
     hide_constants: true
     empty: {}
+    as_string: true
   uri_fragment:
     composed_of:
       - pfx: {"constant": "#"}
       - value: uri_string_upsqs
     hide_constants: true
     empty: {}
+    as_string: true
   uri_path_abempty:
     as_string: true
     list_of:
