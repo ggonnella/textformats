@@ -21,6 +21,9 @@ requires "nim >= 1.6.0",
          "regex == 0.19.0",
          "nimpy == 0.2.0"
 
+when defined(msgpack):
+  requires "msgpack4nim"
+
 # Tasks
 
 import os

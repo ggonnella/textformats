@@ -271,3 +271,6 @@ proc unset_wrapped*(d: DatatypeDefinition) =
   let dd = dereference(d)
   dd.wrapped = false
 
+when defined(msgpack):
+  include datatype_definition_msgpack
+
