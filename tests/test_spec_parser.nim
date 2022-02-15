@@ -5,17 +5,36 @@ import tables
 const
   badspecdir = currentSourcePath.parentDir() & "/testdata/badspec/"
   goodspecdir = currentSourcePath.parentDir() & "/testdata/goodspec/"
+  ddefspecdir = currentSourcePath.parentDir() & "/testdata/spec/"
+  mainspecdir = currentSourcePath.parentDir().parentDir() & "/spec/"
+
+template test_valid_walk(globpattern: string) =
+  for filename in walkfiles(globpattern):
+    let fn = splitFile(filename)[1]
+    test "yaml_" & fn:
+      check len(specification_from_file(filename)) > 0
+    test "tfs_" & fn:
+      let tfsfn = ddefspecdir & fn & ".tfs"
+      compile_specification(filename, tfsfn)
+      check len(specification_from_file(tfsfn)) > 0
 
 suite "test_spec_parser":
-  for filename in @["include_incomplete.yaml", "no_datatypes.yaml",
-      "include_select_included.yaml", "include_select_subincluded.yaml",
-      "include_select_unknown.yaml", "redefine_included.yaml",
-      "redefine_subincluded.yaml", "to_be_included1.yaml",
-      "to_be_included2.yaml", "unknown_keys_ignored.yaml",
-      "to_be_included_namespace.yaml", "include_namespace.yaml",
-      "include_include_namespace.yaml"]:
-    test "valid_" & filename:
-      check len(specification_from_file(goodspecdir & filename)) > 0
+  test_valid_walk(ddefspecdir & "/*_valid.yaml")
+  test_valid_walk(mainspecdir & "/*.yaml")
+  test_valid_walk(mainspecdir & "/gfa/*.yaml")
+  for filename in @["include_incomplete", "no_datatypes",
+      "include_select_included", "include_select_subincluded",
+      "include_select_unknown", "redefine_included",
+      "redefine_subincluded", "to_be_included1",
+      "to_be_included2", "unknown_keys_ignored",
+      "to_be_included_namespace", "include_namespace",
+      "include_include_namespace"]:
+    test "yaml_valid_" & filename:
+      check len(specification_from_file(goodspecdir & filename & ".yaml")) > 0
+    test "tfs_valid_" & filename:
+      compile_specification(goodspecdir & filename & ".yaml",
+                            goodspecdir & filename & ".tfs")
+      check len(specification_from_file(goodspecdir & filename & ".tfs")) > 0
   for filename in @["broken_ref.yaml", "circular_aba.yaml",
       "circular_abca.yaml", "circular_abcda.yaml", "circular_dict.yaml",
       "circular_list.yaml", "circular_struct.yaml", "circular_tags.yaml",
