@@ -25,7 +25,7 @@ def process_sam(input_file, c):
         c.count_rg("Z", tagvalue)
 
 if __name__ == "__main__":
-  arguments = docopt(__doc__, version="1.2.0")
+  arguments = docopt(__doc__)
   input_file = arguments["<sam>"]
   c = Counts()
   process_sam(input_file, c)

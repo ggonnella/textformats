@@ -1486,7 +1486,7 @@ def introduction():
           "unitsize": 0,
           "missing_definitions": []}
   say("<maroon>Welcome</maroon> "
-      "to the interactive <i>TextFormats</i> 1.2.0 specification wizard.")
+      "to the interactive <i>TextFormats</i> specification wizard.")
   specname = ask("Enter a name for the specification:", "name")
   filename_help = "File path (absolute or relative).\n"+\
                   "Suggested file suffix: '.tf.yaml'"

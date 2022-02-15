@@ -25,6 +25,6 @@ def main(args):
   dd.decode_file(args["<inputfn>"], process_cigar)
 
 if __name__ == "__main__":
-  args = docopt(__doc__, version="1.2.0")
+  args = docopt(__doc__)
   main(args)
 

@@ -11,7 +11,7 @@ import traceback
 from idlelib.tooltip import Hovertip
 
 root = Tk()
-root.title("TextFormats 1.2.0 Specification Generator (v.0.1)")
+root.title("TextFormats Specification Generator (draft code v.0.1)")
 
 lf_general = ttk.Labelframe(root, padding="3 3 12 12", text="General settings")
 lf_general.grid(column=0, row=0, sticky=(N, W, E, S))

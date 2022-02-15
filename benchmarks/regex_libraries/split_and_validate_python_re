@@ -27,6 +27,6 @@ def match_cigars(filename):
   return 0
 
 if __name__ == "__main__":
-  args = docopt(__doc__, version="1.2.0")
+  args = docopt(__doc__)
   match_cigars(args["--input"])
 

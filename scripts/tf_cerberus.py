@@ -253,6 +253,6 @@ def main(arguments: dict) -> int:
   return 0
 
 if __name__ == "__main__":
-  arguments = docopt.docopt(__doc__, version="1.2.0")
+  arguments = docopt.docopt(__doc__)
   main(arguments)
 
