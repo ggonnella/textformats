@@ -60,7 +60,7 @@ The C API of TextFormats is documented in the
 [C API manual](https://github.com/ggonnella/textformats/blob/main/manuals/C_API.md)
 and [cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheets/C_API.md)
 and is located in the ``C`` directory of the
-[git repository](https://github.com/gonnella/textformats.git).
+[git repository](https://github.com/ggonnella/textformats.git).
 
 The nim compiler must also be installed (see below).
 
