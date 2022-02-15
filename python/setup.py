@@ -1,10 +1,50 @@
 from setuptools import setup, Extension
+from setuptools.command.install import install
+from distutils.command.build import build
+
 from glob import glob
 import subprocess
 import re
 import os
 import shutil
 
+BASEPATH = os.path.dirname(os.path.abspath(__file__))
+
+# inspired by https://github.com/Turbo87/py-xcsoar/blob/master/setup.py
+class TfBuilder(build):
+  def run(self):
+    build.run(self)
+    build_path = os.path.abspath(self.build_temp)
+    cmd = ['make', 'bindings',
+           'OUT=' + os.path.join(build_path, 'py_bindings')]
+    target_files = [os.path.join(build_path,
+                    'py_bindings', 'py_bindings.so')]
+    def compile():
+      subprocess.call(cmd, cwd=BASEPATH)
+    self.execute(compile, [], 'Compiling py bindings')
+    self.mkpath(os.path.join(self.build_lib, "textformats"))
+    if not self.dry_run:
+      for target in target_files:
+        self.copy_file(target,
+                       os.path.join(self.build_lib, "textformats"))
+
+class TfInstaller(install):
+  def initialize_options(self):
+    install.initialize_options(self)
+    self.build_scripts = None
+
+  def finalize_options(self):
+    install.finalize_options(self)
+    self.set_undefined_options('build', ('build_scripts', 'build_scripts'))
+
+  def run(self):
+    install.run(self)
+    #self.mkpath(os.path.join(self.install_lib, "textformats"))
+    #self.copy_file(os.path.join(self.build_lib, 'textformats',
+    #  'py_bindings.so'),
+    #               os.path.join(self.install_lib, 'textformats',
+    #                            'py_bindings.so'))
+    self.copy_tree(self.build_lib, self.install_lib)
 
 errmsg="""
 
@@ -12,16 +52,17 @@ errmsg="""
 
 PROBLEM:
 
-For installing a source extension developed in Nim, the Nim library
+For installing a source extension developed in Nim, the Nim compiler
 is necessary. However, it could not be located in the system.
 
 SOLUTION:
 
 Is the Nim compiler already installed?
 
-[Yes] => provide the Nim compiler location as follows:
+[Yes] => in case the compiler is not in the PATH,
+         provide the Nim compiler location as follows:
 
-           env NIM=/path/to/nim pip install textformats
+           env PATH=$PATH:/path/to/nim/ pip install textformats
 
 [No] => install Nim, using one of the following systems
         and run 'pip install textformats' afterwards
@@ -38,43 +79,20 @@ Is the Nim compiler already installed?
 
 """
 
-def find_nimlib():
-  nim_bin = os.environ.get("NIM", None)
+def check_nim():
+  nim_bin = shutil.which("nim")
   if nim_bin:
-    print(f"NIM env variable found, value: {nim_bin}")
+    print(f"'nim' found in PATH: {nim_bin}")
   else:
-    print(f"NIM env variable not found")
-    nim_bin = shutil.which("nim")
-    if nim_bin:
-      print(f"'nim' found in PATH: {nim_bin}")
-    else:
-      print(f"'nim' not found in PATH: {os.get_exec_path()}")
-      raise RuntimeError(errmsg)
-  if shutil.which("choosenim"):
-    proc = subprocess.Popen(["nim", "--version"], stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    stdout, stderr = proc.communicate()
-    nim_ver = re.findall(r"Version (\S+)", stdout.decode("utf-8"))[0]
-    nim_dir=os.path.join(os.environ["HOME"], ".choosenim", "toolchains",
-                         f"nim-{nim_ver}")
-  else:
-    nim_dir = os.path.dirname(os.path.dirname(
-                os.path.abspath(os.path.realpath(nim_bin))))
-  nim_lib = os.path.join(nim_dir, "lib")
-  if not os.path.exists(os.path.join(nim_lib,"nimbase.h")):
-    raise RuntimeError(f"Could not find nim library header in {nim_lib}\n\n"+
-                       errmsg)
-  return nim_lib
+    print(f"'nim' not found in PATH: {os.get_exec_path()}")
+    raise RuntimeError(errmsg)
+
+check_nim()
 
 setup_args = dict(
-  ext_modules = [
-    Extension(
-      'textformats.py_bindings',
-      glob("py_bindings/extension/*.c"),
-      include_dirs = [find_nimlib()],
-      py_limited_api = True,
-      extra_compile_args=["-w"]
-    )
-  ]
+  cmdclass = {
+    'build': TfBuilder,
+    'install': TfInstaller
+  }
 )
 setup(**setup_args)

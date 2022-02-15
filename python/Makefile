@@ -16,7 +16,9 @@ cleanup: clean
 	rm -rf textformats/*.so
 	${PIP} uninstall textformats
 
-install: install_wheel
+install:
+	${PYTHON} setup.py bdist_wheel
+	${PIP} install dist/*.whl --force-reinstall
 
 test:
 	pytest
@@ -41,10 +43,13 @@ TFBINDINGS=textformats/py_bindings.so
 BUILD=build/lib/textformats
 
 ${BINDINGS}: ${PY_SOURCES}
-	cd py_bindings && ${NIMBLE} build
-
-${TFBINDINGS}: ${BINDINGS}
-	cp $< $@
+	cd py_bindings && ${NIMBLE} build; \
+	if [ "${OUT}" != "" ]; then \
+	  mkdir -p ${OUT}; \
+		echo $$PWD;\
+		ls .;\
+	  cp py_bindings.so ${OUT}/py_bindings.so; \
+	fi
 
 ${BUILD}: ${TFBINDINGS} README.md
 	rm -f dist/*.whl
