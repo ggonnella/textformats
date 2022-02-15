@@ -1,4 +1,4 @@
-import nimporter
+#import nimporter
 import json
 from enum import IntEnum
 import textformats.py_bindings as tf
@@ -193,3 +193,7 @@ class DECODED_PROCESSOR_LEVEL(IntEnum):
   ELEMENT = 1
   LINE = 2
 
+def __minitest__():
+  spec = Specification({"datatypes": {"foo": {"constant": "bar"}}})
+  if spec["foo"].decode("bar") == "bar":
+    print("minitest successfull")

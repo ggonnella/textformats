@@ -1,4 +1,4 @@
-default: cleanup build install
+default: clean install
 
 # package version
 VERSION=1.2.0
@@ -6,51 +6,41 @@ VERSION=1.2.0
 # command line tools
 PYTHON ?= python
 PIP ?= pip
-NIMPORTER ?= nimporter
+NIMBLE ?= nimble
 
-CFLAGS="-w"
+clean:
+	rm -rf *.egg-info build dist MANIFEST.in nim-extensions \
+		     __pycache__ */__pycache__ */*/__pycache__
 
-cleanup:
-	rm -rf textformats.egg-info build dist MANIFEST.in nim-extensions __pycache__ \
-		     textformats/__pycache__ textformats/py_bindings/__pycache__
+cleanup: clean
+	${PIP} uninstall textformats
 
-build:
-	env CFLAGS=${CFLAGS} ${PYTHON} setup.py build -f
+BINDINGS=py_bindings/py_bindings.so
+TFBINDINGS=textformats/py_bindings.so
+BUILD=build/lib/textformats
+WHEEL=dist/textformats-${VERSION}-py3-none-any.whl
 
-NIMPORTER_VERSION=1.0.2
+${BINDINGS}: py_bindings/py_bindings.nimble \
+	           py_bindings/src/py_bindings.nim.cfg \
+						 py_bindings/src/py_bindings.nim
+	cd py_bindings && ${NIMBLE} build
 
-install:
-	if ${PIP} show nimporter > /dev/null; then \
-		VER=$$(${PIP} show nimporter | grep -P -o "(?<=Version: ).*"); \
-		if test "$$VER" != "1.0.2"; then \
-		  ${PIP} install nimporter==${NIMPORTER_VERSION}; \
-		fi; \
-	else \
-		${PIP} install nimporter==${NIMPORTER_VERSION}; \
-	fi
-	${PYTHON} setup.py install -f
-	${PYTHON} -c "import textformats"
+${TFBINDINGS}: ${BINDINGS}
+	cp $< $@
+
+${BUILD}: ${TFBINDINGS}
+	${PYTHON} setup.py build -f
+
+${WHEEL}: ${BUILD}
+	${PYTHON} setup.py bdist_wheel
+
+install: ${WHEEL}
+	${PIP} install ${WHEEL} --force-reinstall
 
 test:
 	pytest
 
-SRCDIST=dist/textformats-${VERSION}.tar.gz
-
-${SRCDIST}:
-	${NIMPORTER} bundle src
-
-install_src: ${SRCDIST}
-	${PIP} install $<
-
-WHEEL_BUILT=dist/textformats.wheel_built
-WHEEL=$(shell ls dist/textformats*.whl)
-
-${WHEEL_BUILT}:
-	${NIMPORTER} bundle bin
-	touch ${WHEEL_BUILT}
-
-install_wheel: ${WHEEL_BUILT}
-	${PIP} install ${WHEEL}
-
-uninstall:
-	${PIP} uninstall textformats
+# shortcuts for partial execution
+bindings: ${BINDINGS}
+build: ${BUILD}
+wheel: ${WHEEL}

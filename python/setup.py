@@ -3,24 +3,13 @@ import sys
 if not sys.version_info[0] == 3:
   sys.exit("Sorry, only Python 3 is supported")
 
-import importlib
-nimporter_spec = importlib.util.find_spec("nimporter")
-has_nimporter = nimporter_spec is not None
-if has_nimporter:
-  import nimporter
-else:
-  print("# Nimporter version 1.0.2 must be installed")
-  print("# please run:")
-  print("pip install nimporter==1.0.2")
-  exit(1)
-
 def readme():
   with open('README.md') as f:
     return f.read()
 
 setup(name='textformats',
-      packages=["textformats", "textformats/py_bindings"],
-      package_data={"": ['*.nim', "*.nimble", "*.nims", "*.cfg"]},
+      packages=["textformats"],
+      package_data={"": ['*.so']},
       version='1.2.0',
       description='Easily defined compact human-readable data representations',
       long_description=readme(),
@@ -47,6 +36,4 @@ setup(name='textformats',
       zip_safe=False,
       test_suite="nose.collector",
       tests_require=['nose'],
-      install_requires=['nimporter==1.0.2'],
-      ext_modules=nimporter.build_nim_extensions(danger=True)
     )
