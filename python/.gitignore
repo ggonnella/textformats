@@ -4,3 +4,5 @@ dist/
 nim-extensions/
 MANIFEST.in
 textformats.egg-info/
+.eggs
+README.md
