@@ -1,29 +1,146 @@
 # TextFormats
 
-## Purpose
+TextFormats is a library for rapidly defining and using text formats for
+structured data, and allows for rapid prototyping of parsers for
+such file formats in Nim, Python and C/C++.
 
-TextFormats is a library for rapidly defining and using text formats
-for structured data.
+Given a format definition, expressed in a simple declarative language (TFSL,
+Text Formats Specification Language), the library provides functions for
+switching from the text representation of the data ("encoded string") to the
+actual data it represents ("decoded data") and vice-versa.
 
-Given a format definition in a simple declarative language (TFSL, Text Formats
-Specification Language), the library provides functions for switching
-from the string representation of data ("encoded string") to the actual
-data which the text represents ("decoded data") and vice-versa.
+The definition of the formats in TFSL is human readable and reduces the
+requirement of complex regular expression. As opposed to lexers or regular
+expressions, it does not only validates and splits different parts of a format,
+but converts them to data in built-in scalar and compound datatypes, allowing
+for fine tuning of the conversion.
 
-The library aims at allowing rapid prototyping of libraries for supporting
-file formats in Nim, C and Python, by providing base functionality,
-on which further operations can be added. Furthermore, the definition
-of the formats in TFSL is human readable and reduces the requirement
-of complex regular expression. Finally, as opposed to lexers or regular
-expressions, it does not only validates and splits different parts of a
-format, but converts them to data in built-in scalar and compound datatypes,
-allowing for fine tuning of the conversion.
+## Python
 
-The library, implemented in the programming language Nim, can be easily
-accessed and employed in programs and scripts written in Nim, Python and C/C++,
-or using the provided command line tools.
+The Python API of TextFormats is documented in the
+[Python API manual](https://github.com/ggonnella/textformats/blob/main/manuals/Python_API.md)
+and [cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheets/Python_API.md)
+and can be installed using:
 
-# An example
+```
+pip install textformats
+```
+
+If a binary package compatible with the system is available, it will
+be downloaded and installed. Nim installation is not required.
+
+If no binary package is available, the source distribution is downloaded.
+In this case, the Nim compiler must be installed (see section
+"Nim compiler installation" below) and the ``nim`` binary must be in PATH.  Then,
+the ``pip install textformats`` command will automatically compile and install
+the package.
+
+Example applications based on the Python API are available in the git repository
+[here](https://github.com/ggonnella/textformats/tree/main/python/examples)
+and [here](https://github.com/ggonnella/textformats/tree/main/python/benchmarks).
+
+## Nim
+
+The Nim API of TextFormats is documented in the
+[Nim API manual](https://github.com/ggonnella/textformats/blob/main/manuals/Nim_API.md)
+and [cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheets/Nim_API.md).
+and is installed using:
+
+```
+nimble install textformats
+```
+
+Example applications based on the C API are available in the git repository
+[here](https://github.com/ggonnella/textformats/tree/main/examples)
+and [here](https://github.com/ggonnella/textformats/tree/main/benchmarks).
+
+## C/C++
+
+The C API of TextFormats is documented in the
+[C API manual](https://github.com/ggonnella/textformats/blob/main/manuals/C_API.md)
+and [cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheets/C_API.md)
+and is located in the ``C`` directory of the
+[git repository](https://github.com/gonnella/textformats.git).
+
+The nim compiler must also be installed (see below).
+
+Example applications based on the C API are available in the git repository
+[here](https://github.com/ggonnella/textformats/tree/main/C/examples)
+and [here](https://github.com/ggonnella/textformats/tree/main/C/benchmarks).
+
+## Command line tools
+
+The CLI tools developed with TextFormats allows the use of the library
+from the command line (e.g. in Bash scripts). For using it, the Nim compiler
+must be installed and the Nim package installed.
+The tools are ``tf_spec`` (work with TFSL specifications),
+ ``tf_decode`` (convert a format to JSON), ``tf_encode`` (convert JSON to a format)
+  and ``tf_validate`` (validate data or its text representations).
+They are installed along with the Nim package and compiled, using:
+```
+nimble install textformats
+```
+
+The CLI tools are documented in the
+[CLI manual](https://github.com/ggonnella/textformats/blob/main/manuals/CLI.md),
+[cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheets/CLI.md).
+Man pages can be generated using ``nimble climan`` from the source code
+directory.
+
+Examples of use of the CLI tools are given in the git repository
+[here](https://github.com/ggonnella/textformats/tree/main/cli/examples)
+[here](https://github.com/ggonnella/textformats/tree/main/cli/tests).
+
+## Nim compiler installation
+
+The Nim compiler must be installed to work with Nim, C or in Python if no
+binary package is available.
+
+For installing the Nim compiler there
+are several options (any will do, but some will only be available on some
+systems, thus they are all listed here):
+```
+# option 1: pip
+pip install choosenim_install
+
+# option 2: conda
+conda install nim
+
+# option 3: choosenim
+curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+
+# option 4: nim
+# see => https://nim-lang.org/install_unix.html
+```
+
+In case there is any problem during the Python package installation
+from the source distribution set an environment variable NIM
+containing  the _absolute_ path to the `nim` binary, before running
+`pip`.
+
+## Format specifications
+
+The TFSL (TextFormats Specification Language) is usually input by the user
+as a YAML file. In alternative, the interactive Python script `tf_genspec.py`
+can be used, which allows the generation of a specification from scratch.
+
+Several specifications are made available with the package and are contained
+in the git repository in the
+[spec directory](https://github.com/ggonnella/textformats/tree/main/spec)
+
+The specification language is documented in a
+[manual](https://github.com/ggonnella/textformats/blob/main/manuals/TFSL_syntax.md),
+and a
+[cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheet/TFSL.md),
+describing the syntax,
+a [howto](https://github.com/ggonnella/textformats/blob/main/manuals/TFSL_howto.md)
+explaining how to define text representations
+for different kind of values: strings, numeric, boolean, list, dictionaries, etc.
+and a
+[tests manual]((https://github.com/ggonnella/textformats/blob/main/manuals/TFSL_tests.md),
+describing how to implement specification tests.
+
+### Format specifications: an example
 
 In multiple biological sequence analysis formats (e.g. SAM, GFA),
 a CIGAR string represents a list of multi-edit operations, each consisting
@@ -101,85 +218,26 @@ resulting decoded data
 sometimes a given symbol or part of a string representation is missing
 when representing a default value.
 
-## Defining a format
+### Understanding specification errors
 
-In TextFormats, formats are defined in a specification file, which is written
-in a human-readable YAML format or is created automatically using the provided
-interactive command-line format description generator.
-
-Once a text format is defined, its specification can be tested.
-Random examples of each data type described in the format are automatically
-created. The user can also provide other examples of string representations
-and corresponding decoded data. These examples are used for automatically
-test the specification.
-
-## Implementation
-
-The library is implemented using the programming language Nim.
-This language was used, since it combines some of the advantages of Python
-with those of compiled languages.
-
-During compilation, C code is created and then compiled to binary.
-Besides in Nim code itself, the resulting library can be easily employed
-in C/C++ and in Python.
-
-## Documentation
-
-Under the directory `manuals` are the following documents, in Markdown
-format:
-
-`specifications.md`
-: Describes the syntax of TextFormats specifications, which
-are used to describe to the library all components of a format.
-It contains a systematic list of the specification syntax, as
-well as many examples.
-`spec_howto_by_valuekind.md`
-: Howto document, which explains how to define text representations
-for different kind of values: strings, numeric, boolean, list, dictionaries, etc
-`specification_tests.md`
-: Specification test data are examples used to be sure that the format
-specification reflects the expectations. This document describes
-the syntax of test data and explains how to run tests.
-`Nim_API.md`
-: Describes the API of the TextFormats library in the Nim programming language
-(in which the library is implemented)
-`Python_API.md`
-: Describes the API of the wrapper to the TextFormats library, for using it
-in the Python programming language.
-`C_API.md`
-: Describes the API of the wrapper to the library, for using it in the C and
-C++ programming languages.
-`CLI.md`
-: Describes the command line interface of TextFormats: a collection of tools,
-for decoding, encoding, validating data, inspecting and testing specifications
-and more.
-`developer_manual.md`
-: Code organization and conventions, used in the implementation of the
-TextFormats library. This is addressed to the library software developer,
-not to the library user.
-
-### Cheatsheets
-
-Under the directory `cheatsheets` are cheatsheets, im Markdown format,
-containing tables, summarizing the specification syntax and test syntax,
-and the usage of the Nim, Python and C API as well as the CLI tools.
-
-## Validating a specification
-
-Using `tf_spec info -s <SPECFILE>` the list of datatypes of a (valid)
+The tool ``tf_spec`` (see above Command line tools) can be used as
+`tf_spec info -s <SPECFILE>` to list of datatypes of a (valid)
 specification are output. An error will be output if the specification
 is invalid.
 
 A further tool to validate the syntax of a YAML or JSON specification, which can
-be sometimes useful to find specification errors, is `tf_cerberus.py`,
-based on the Python library `cerberus` (which is required in order to use this
+be sometimes useful to better understand specification errors, is `tf_cerberus.py`,
+provided under `scripts` in the
+source code git repository.
+It is based on the Python library `cerberus` (which is required in order to use this
 tool). The script has some limitations: it is not always guaranteed that a
 validated specification is indeed valid (e.g. circular or invalid references
 are not found).
 
-## Generating a specification
+### Interactive generation
 
-An interactive script `tf_genspec.py` is provided under `scripts`.  It can be
+An interactive script `tf_genspec.py` is provided under `scripts` in the
+source code git repository.  It can be
 used to generate a TextFormats specification in YAML file.
 The script has some limitations: it is not always guaranteed that the generated
 specification is correct (e.g. the user can create circular or invalid
@@ -191,10 +249,23 @@ from each of the defined datatypes using `cli/tf_spec generate_tests -s
 Furthermore, the results can be inspected to check that the examples reflect
 the expectations.
 
-## Running the test suite
+## Developer notes
+
+The library is implemented using the programming language Nim.
+This language was used, since it combines some of the advantages of Python
+with those of compiled languages.
+
+During compilation, C code is created and then compiled to binary.
+Besides in Nim code itself, the resulting library can be easily employed
+in C/C++ and in Python.
+
+Code organization and conventions, used in the implementation of the
+TextFormats library, addressed to the library software developer,
+are documented in the
+[developer manual](https://github.com/ggonnella/textformats/blob/main/manuals/developer_manual.md)
 
 To run the unit test suite of the library, use the
-``nimble test`` command.
+``nimble test`` command from the main project source code directory.
 To run the CLI tools tests, first build it using ``nimble build`` or
 ``nimble install``, then use the ``nimble clitest`` command.
 To run the C API tests, use ``nimble ctest``.
