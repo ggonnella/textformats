@@ -58,7 +58,7 @@ task pymake, "make python API package":
 task pytest, "test python API package":
   exec("cd python && make test")
 task ctest, "test C API package":
-  exec("cd C/tests && make")
+  exec("cd C/tests && make cleanup && make")
 task alltests, "run unit, Nim/C/Python API and CLI tests":
   exec("nimble test")
   exec("nimble clitest")

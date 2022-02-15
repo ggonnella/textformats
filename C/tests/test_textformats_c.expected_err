@@ -3,7 +3,9 @@ Error (InvalidSpecError):
     Unexpected token (expected ',' or ']'): MapEnd
 
 Error (InvalidSpecError):
-  Error parsing specification file '../../tests/testdata/api/wrong_yaml_syntax.yaml'
+  Error parsing specification file '../../tests/testdata/api/wrong_yaml_syntax.yaml':
+    The YAML root node must be a mapping, yScalar found.
+    
 
 Error (TextFormatsRuntimeError):
   File not found:../../tests/testdata/api/xyz.yaml
@@ -16,92 +18,55 @@ Error (UnexpectedEncodedInvalidError):
     Encoded string: 'invalid'
     Expected decoded data (JSON): {"fastaid":"invalid"}
     Instead, decoding failed with an error:
-      Error: invalid encoded string according to datatype
-      Datatype name: header
-      Encoded string: 'invalid'
-        Error: encoded structure content not matching regular expression.
-        Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
-        Reason for not matching: 
+      Invalid encoded string for datatype 'header': invalid
+        Structure not matching reg.expr. >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?, error:
           Error: wrong format for encoded structure
-          Error: invalid prefix
-          Prefix found: i
-          Expected prefix: >
+          No prefix '>' found in 'invalid'
 
 Error (UnexpectedEncodedInvalidError):
   [Failed] Datatype: 'header':
     Encoded string: 'invalid'
     Expected decoded data (JSON): {"fastaid":"invalid"}
     Instead, decoding failed with an error:
-      Error: invalid encoded string according to datatype
-      Datatype name: header
-      Encoded string: 'invalid'
-        Error: encoded structure content not matching regular expression.
-        Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
-        Reason for not matching: 
+      Invalid encoded string for datatype 'header': invalid
+        Structure not matching reg.expr. >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?, error:
           Error: wrong format for encoded structure
-          Error: invalid prefix
-          Prefix found: i
-          Expected prefix: >
+          No prefix '>' found in 'invalid'
 
 Error (UnexpectedEncodedInvalidError):
   [Failed] Datatype: 'x':
     Encoded string: 'y'
     Expected decoded data (JSON): "y"
     Instead, decoding failed with an error:
-      Error: invalid encoded string according to datatype
-      Datatype name: x
-      Encoded string: 'y'
-        Error: encoded value does not match the expected constant.
-        Constant type: string
-        Expected value: x
-        Found value: y
+      Invalid encoded string for datatype 'x': y
+        Expected constant: x (string), found: y
 
 Error (TextFormatsRuntimeError):
   The datatype 'heder' is not defined in the specification.
 
 Error (DecodingError):
-  Error: invalid encoded string according to datatype
-  Datatype name: header
-  Encoded string: 'ABCD some sequence'
-    Error: encoded structure content not matching regular expression.
-    Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
-    Reason for not matching: 
+  Invalid encoded string for datatype 'header': ABCD some sequence
+    Structure not matching reg.expr. >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?, error:
       Error: wrong format for encoded structure
-      Error: invalid prefix
-      Prefix found: A
-      Expected prefix: >
+      No prefix '>' found in 'ABCD some sequence'
 
 Error (DecodingError):
-  Error: invalid encoded string according to datatype
-  Datatype name: header
-  Encoded string: 'ABCD some sequence'
-    Error: encoded structure content not matching regular expression.
-    Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
-    Reason for not matching: 
+  Invalid encoded string for datatype 'header': ABCD some sequence
+    Structure not matching reg.expr. >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?, error:
       Error: wrong format for encoded structure
-      Error: invalid prefix
-      Prefix found: A
-      Expected prefix: >
+      No prefix '>' found in 'ABCD some sequence'
 
 Error (EncodingError):
-  Error: invalid value for datatype
-  Invalid value (as JSON): '{"desc":"some sequence"}'
-  Datatype: header
-  Error: required dictionary key missing
-  Optional key 'desc' is present, requiring all optional keys before it to be present as well
-  Partial encoded string (before missing value): >
-  Missing key: fastaid
-  
+  Error: invalid value ({"desc":"some sequence"}) for datatype: 'header':
+    After encoding: '{before}'
+    Missing dict.key 'fastaid', required since 'desc' is present
+    
 
 Error (EncodingError):
-  Error: invalid value for datatype
-  Invalid value (as JSON): '{"desc":"some sequence"}'
-  Datatype: header
-  Error: required dictionary key missing
-  Optional key 'desc' is present, requiring all optional keys before it to be present as well
-  Partial encoded string (before missing value): >
-  Missing key: fastaid
-  
+  Error: invalid value ({"desc":"some sequence"}) for datatype: 'header':
+    After encoding: '{before}'
+    Missing dict.key 'fastaid', required since 'desc' is present
+    
 
 Error (TextFormatsRuntimeError):
   Error: scope must be one of the following values:
@@ -123,54 +88,28 @@ Error (TextFormatsRuntimeError):
 Error (DecodingError):
   File: '../../tests/testdata/api/test.fas'
   Line number: 1
-  Error: invalid encoded string according to datatype
-  Datatype name: line_failing
-  Encoded string: '>seq1 shorter'
-    Error: value is invalid for all specified formats
-    Error messages for each specified format:
+  Invalid encoded string for datatype 'line_failing': >seq1 shorter
+    Value invalid for all possible formats. Error messages:
     ==== [0: line_failing.double_header_symbol_line] ====
-      Error: invalid encoded string according to datatype
-      Datatype name: line_failing.double_header_symbol_line
-      Encoded string: '>seq1 shorter'
-        Error: invalid encoded string according to datatype
-        Datatype name: double_header_symbol_line
-        Encoded string: '>seq1 shorter'
-          Error: Encoded string does not match the specified regular expression
-          Regular expression: >>.*
+      Invalid encoded string for datatype 'line_failing.double_header_symbol_line': >seq1 shorter
+        Invalid encoded string for datatype 'double_header_symbol_line': >seq1 shorter
+          Regular expression not matching: >>.*
     ==== [1: line_failing.sequence_line] ====
-      Error: invalid encoded string according to datatype
-      Datatype name: line_failing.sequence_line
-      Encoded string: '>seq1 shorter'
-        Error: invalid encoded string according to datatype
-        Datatype name: sequence_line
-        Encoded string: '>seq1 shorter'
-          Error: Encoded string does not match the specified regular expression
-          Regular expression: ([^>]*|[^>].*)
+      Invalid encoded string for datatype 'line_failing.sequence_line': >seq1 shorter
+        Invalid encoded string for datatype 'sequence_line': >seq1 shorter
+          Regular expression not matching: ([^>]*|[^>].*)
 
 Error (DecodingError):
   File: '../../tests/testdata/api/test.fas'
   Line number: 4
-  Error: invalid encoded string according to datatype
-  Datatype name: unit_for_tests
-  Encoded string: 'TGCTGCAGCATG
-  CATGCTGATGC'
-    Error: encoded structure content not matching regular expression.
-    Regular expression: (?P<0>>(?:(?P<0_0>\w*)(?:\ (?P<0_1>.*))?)?)(?P<1>(?P<1_0>([^>]*|[^>].*))(\
-    (?P<1_1>([^>]*|[^>].*))){0,})
-    Reason for not matching: 
-      Error: invalid encoded value for structure element
-      Element name: header
-        Error: invalid encoded string according to datatype
-        Datatype name: unit_for_tests.header
-        Encoded string: ''
-          Error: invalid encoded string according to datatype
-          Datatype name: header
-          Encoded string: ''
-            Error: encoded structure content not matching regular expression.
-            Regular expression: >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?
-            Reason for not matching: 
+  Invalid encoded string for datatype 'unit_for_tests': TGCTGCAGCATG
+  CATGCTGATGC
+    Structure not matching reg.expr. (?P<0>>(?:(?P<0_0>\w*)(?:\ (?P<0_1>.*))?)?)(?P<1>(?P<1_0>([^>]*|[^>].*))(\
+    (?P<1_1>([^>]*|[^>].*))){0,}), error:
+      Invalid structure element 'header':
+        Invalid encoded string for datatype 'unit_for_tests.header': 
+          Invalid encoded string for datatype 'header': 
+            Structure not matching reg.expr. >(?:(?P<0>\w*)(?:\ (?P<1>.*))?)?, error:
               Error: wrong format for encoded structure
-              Error: no prefix found
-              String: 
-              Expected prefix: >
+              No prefix '>' found in ''
 
