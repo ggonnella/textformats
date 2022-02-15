@@ -95,7 +95,7 @@ proc load_specification*(filename: string): Specification =
                 "\n  Please try repeating the compilation."
     raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
   for name, dd in result:
-    dd.restore_references
+    dd.restore_references(result)
 
 const BaseDatatypes* = [
   "integer", "unsigned_integer", "float", "string", "json"

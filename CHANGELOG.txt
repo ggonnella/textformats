@@ -1,3 +1,12 @@
+=== 1.2.1 ===
+
+- make Python packaging more straightforward
+  (not based on nimporter)
+- improve handling of as_string option
+- avoid unnecessary operations when saving/loading TFS files
+- implement msgpack format for TFS files
+- great README improvements
+
 === 1.2.0 ===
 
 - performance improvements:

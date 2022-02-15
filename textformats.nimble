@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.2.0"
+version       = "1.2.1"
 author        = "Giorgio Gonnella"
 description   = "Easy specification of text formats for structured data"
 license       = "ISC"
@@ -20,7 +20,7 @@ requires "nim >= 1.6.0",
          "yaml == 0.16.0",
          "regex == 0.19.0",
          "nimpy == 0.2.0",
-         "msgpack4nim"
+         "msgpack4nim == 0.3.1"
 
 # Tasks
 

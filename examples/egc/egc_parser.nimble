@@ -1,4 +1,4 @@
-version = "1.2.0"
+version = "1.2.1"
 author = "Giorgio Gonnella"
 description = "Use TextFormats for parsing the ECG format"
 bin = @["egc2json", "json2egc"]

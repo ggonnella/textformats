@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.2.0"
+version       = "1.2.1"
 author        = "Giorgio Gonnella"
 description   = "Python bindings for the TextFormats library"
 license       = "ISC"
@@ -11,4 +11,4 @@ bin           = @["py_bindings.so"]
 # Dependencies
 
 requires "nim >= 1.6.0"
-requires "nimpy == 0.2.0", "textformats"
+requires "nimpy == 0.2.0", "textformats == 1.2.1"
