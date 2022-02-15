@@ -50,7 +50,7 @@ and is installed using:
 nimble install textformats
 ```
 
-Example applications based on the C API are available in the git repository
+Example applications based on the Nim API are available in the git repository
 [here](https://github.com/ggonnella/textformats/tree/main/examples)
 and [here](https://github.com/ggonnella/textformats/tree/main/benchmarks).
 
