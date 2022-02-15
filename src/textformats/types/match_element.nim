@@ -17,8 +17,7 @@ type
       of meInt:    i_value*: int64
       of meString: s_value*: string
 
-when defined(msgpack):
-  include match_element_msgpack
+include match_element_msgpack
 
 proc to_string*(self: MatchElement): string =
   case self.kind:

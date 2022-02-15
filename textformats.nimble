@@ -19,10 +19,8 @@ requires "nim >= 1.6.0",
          "cligen == 1.5.19",
          "yaml == 0.16.0",
          "regex == 0.19.0",
-         "nimpy == 0.2.0"
-
-when defined(msgpack):
-  requires "msgpack4nim"
+         "nimpy == 0.2.0",
+         "msgpack4nim"
 
 # Tasks
 

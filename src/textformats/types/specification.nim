@@ -1,9 +1,6 @@
 import tables, strformat, os, json, streams
 import datatype_definition, textformats_error
-when defined(msgpack):
-  import msgpack4nim
-else:
-  import strutils, marshal
+import msgpack4nim
 
 export pairs
 
@@ -42,76 +39,63 @@ proc remove_references*(dd: DatatypeDefinition) =
       sub.remove_references
   dd.has_unresolved_ref = true
 
-when defined(msgpack):
-  const
-    TFS_MAGIC_STRING* = "TFS1.0--"
+const
+  TFS_MAGIC_STRING* = "TFS1.0--"
 
 proc save_specification*(table: Specification, filename: string) =
   try:
-    when defined(msgpack):
-      var s = newFileStream(filename, fmWrite)
-      s.write(TFS_MAGIC_STRING)
-      s.pack(table.len)
-      for k, v in table:
-        s.pack(k)
-        s.pack(v)
-      s.close()
-    else:
-      for name, dd in table:
-        dd.remove_references
-      if filename == "":
-        stdout.write($$table)
-      else:
-        filename.writeFile($$table)
+    var s = newFileStream(filename, fmWrite)
+    s.write(TFS_MAGIC_STRING)
+    s.pack(table.len)
+    for k, v in table:
+      s.pack(k)
+      s.pack(v)
+    s.close()
   except IOError:
     let e = get_current_exception()
     raise newException(TextFormatsRuntimeError,
                        &"Error while saving specification file '{filename}'\n" &
                        e.msg)
 
-proc load_specification*(filename: string,
-                         msgpack = false): Specification =
+proc load_specification*(filename: string): Specification =
+  if filename == "":
+    raise newException(TextFormatsRuntimeError,
+                       "reading compiled specifications " &
+                       "from standard input not supported")
   let errmsg_pfx = "Error loading compiled specification\n" &
                    &"  Filename: '{filename}'\n"
+  var s: FileStream
   try:
-    when defined(msgpack):
-      var s = newFileStream(filename, fmRead)
-      var magic_string = "        "
-      discard s.read_data_str(magic_string, 0..7)
-      if magic_string != TFS_MAGIC_STRING:
-        raise newException(TextFormatsRuntimeError,
-                           errmsg_pfx &
-                           "Magic string not found, file is not TFS")
-      result = newSpecification()
-      var l: int
-      s.unpack(l)
-      for i in 0 ..< l:
-        var
-          k: string
-          v: DatatypeDefinition
-        s.unpack(k)
-        s.unpack(v)
-        result[k] = v
-      s.close()
-    else:
-      let filecontent =
-        if filename == "":
-          stdin.read_all.strip()
-        else:
-          filename.readFile()
-      result = filecontent.to[:Specification]
-    for name, dd in result:
-      discard
-    return
+    s = newFileStream(filename, fmRead)
   except IOError:
     let errmsg = block:
       if not fileExists(filename): "File not found"
       else: get_current_exception().msg
     raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
-  except JsonParsingError:
+  var magic_string = "        "
+  discard s.read_data_str(magic_string, 0..7)
+  if magic_string != TFS_MAGIC_STRING:
+    raise newException(TextFormatsRuntimeError,
+                       errmsg_pfx &
+                       "Magic string not found, file is not TFS")
+  result = newSpecification()
+  try:
+    var l: int
+    s.unpack(l)
+    for i in 0 ..< l:
+      var
+        k: string
+        v: DatatypeDefinition
+      s.unpack(k)
+      s.unpack(v)
+      result[k] = v
+    s.close()
+  except:
     let errmsg = "  Parsing error: is it really a compiled specification?" &
-              "\n  Please try repeating the compilation."
+                "\n  Please try repeating the compilation."
     raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
+  for name, dd in result:
+    dd.restore_references
 
 const BaseDatatypes* = [
   "integer", "unsigned_integer", "float", "string", "json"
@@ -125,14 +109,9 @@ proc is_compiled*(specfile: string): bool =
   try:
     let stream = newFileStream(specfile, mode = fmRead)
     defer: stream.close()
-    when defined(msgpack):
-      var magic_string = "        "
-      discard stream.read_data_str(magic_string, 0..7)
-      return magic_string == "TFS1.0--"
-    else:
-      var firstchar: char
-      discard stream.read_data(firstchar.addr, 1)
-      return firstchar == '['
+    var magic_string = "        "
+    discard stream.read_data_str(magic_string, 0..7)
+    return magic_string == "TFS1.0--"
   except IOError:
     let errmsg = block:
       if not fileExists(specfile): "File not found"
