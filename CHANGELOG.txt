@@ -4,6 +4,9 @@
   - fix some README file links
   - improve structure of CHANGELOG
 
+- Python packaging
+  - now compilation on MacOS arm64 works
+
 - Pre-compiled specifications:
   - tfs files can now be read from stdin
   - tf_spec compile accepts tfs specs in input

@@ -1,7 +1,7 @@
 default: clean install
 
 # package version
-VERSION=1.2.1
+VERSION=1.2.1.post1
 
 # command line tools
 PYTHON ?= python
@@ -27,9 +27,10 @@ install:
 test:
 	pytest
 
+NIM_SOURCES_CFG = py_bindings/src/py_bindings.nim.cfg
 NIM_SOURCES = py_bindings/py_bindings.nimble \
 				   	  py_bindings/src/py_bindings.nim \
-					    py_bindings/src/py_bindings.nim.cfg
+					    ${NIM_SOURCES_CFG}
 
 PY_SOURCES = textformats/__init__.py \
 					textformats/error.py \
@@ -47,7 +48,16 @@ TFBINDINGS=textformats/py_bindings.so
 BUILD=build/lib/textformats
 
 ${BINDINGS}: ${PY_SOURCES}
+	cp ${NIM_SOURCES_CFG} ${NIM_SOURCES_CFG}.orig
+	if [[ "$$(arch)" == "arm64" ]]; then \
+	  echo '--passC:"-arch arm64 -flto"' >> ${NIM_SOURCES_CFG}; \
+	  echo '--passL:"-arch arm64 -flto"' >> ${NIM_SOURCES_CFG}; \
+	else \
+	  echo '--passC:"-flto"' >> ${NIM_SOURCES_CFG}; \
+	  echo '--passL:"-flto"' >> ${NIM_SOURCES_CFG}; \
+	fi
 	cd py_bindings && ${NIMBLE} build
+	cp ${NIM_SOURCES_CFG}.orig ${NIM_SOURCES_CFG}
 
 bindings_cp: ${BINDINGS}
 	mkdir -p ${OUT}
