@@ -224,22 +224,35 @@ proc parse_specification*(input: string): Specification =
   parse_specification_input(input, true)
 
 proc parse_specification_file*(filename: string): Specification =
-  parse_specification_input(filename, false)
+  ## Parse YAML/JSON specification
+  ## if filename is empty, read from standard input
+  if filename == "":
+    let input = stdin.read_all().strip()
+    parse_specification_input(input, true)
+  else:
+    parse_specification_input(filename, false)
 
 proc specification_from_file*(specfile: string): Specification =
   ## Load specification if specfile is a compiled specification file
-  ## otherwise parse the file, assuming it is a YAML/JSON specification file
+  ## otherwise parse the file, assuming it is a YAML/JSON specification file;
+  ## if filename is empty, read from standard input
   if specfile == "":
-    let spec = stdin.read_all.strip()
-    return parse_specification(spec)
-  elif not fileExists(specfile):
-    raise newException(TextFormatsRuntimeError, &"File not found: {specfile}")
-  if specfile.is_compiled: return load_specification(specfile)
-  else: return parse_specification_file(specfile)
+    let input = stdin.read_all()
+    if input.is_compiled_buffer():
+      return input.load_specification_buffer()
+    else:
+      return input.strip().parse_specification()
+  else:
+    if not fileExists(specfile):
+      raise newException(TextFormatsRuntimeError, &"File not found: {specfile}")
+    if specfile.is_compiled():
+      return specfile.load_specification()
+    else:
+      return specfile.parse_specification_file()
 
 proc compile_specification*(inputfile: string, outputfile: string) =
   ## Compile a YAML/JSON specification
-  let spec = parse_specification_file(inputfile)
+  let spec = specification_from_file(inputfile)
   spec.save_specification(outputfile)
 
 proc list_specification_datatypes*(filename: string, strinput = false):

@@ -1,4 +1,4 @@
-import tables, strformat, os, json, streams
+import tables, strformat, os, json, streams, strutils
 import datatype_definition, textformats_error
 import msgpack4nim
 
@@ -44,40 +44,32 @@ const
 
 proc save_specification*(table: Specification, filename: string) =
   try:
-    var s = newFileStream(filename, fmWrite)
+    let s = block:
+      if filename == "" : newFileStream(stdout)
+      else: newFileStream(filename, fmWrite)
+    defer: s.close()
     s.write(TFS_MAGIC_STRING)
     s.pack(table.len)
     for k, v in table:
       s.pack(k)
       s.pack(v)
-    s.close()
   except IOError:
     let e = get_current_exception()
     raise newException(TextFormatsRuntimeError,
                        &"Error while saving specification file '{filename}'\n" &
                        e.msg)
 
-proc load_specification*(filename: string): Specification =
-  if filename == "":
-    raise newException(TextFormatsRuntimeError,
-                       "reading compiled specifications " &
-                       "from standard input not supported")
-  let errmsg_pfx = "Error loading compiled specification\n" &
-                   &"  Filename: '{filename}'\n"
-  var s: FileStream
-  try:
-    s = newFileStream(filename, fmRead)
-  except IOError:
-    let errmsg = block:
-      if not fileExists(filename): "File not found"
-      else: get_current_exception().msg
-    raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
+proc load_specification_stream(s: Stream, filedesc: string): Specification =
+  let errmsg_pfx = "Error loading pre-compiled specification\n" &
+                   "  " & filedesc & "\n"
   var magic_string = "        "
   discard s.read_data_str(magic_string, 0..7)
   if magic_string != TFS_MAGIC_STRING:
     raise newException(TextFormatsRuntimeError,
                        errmsg_pfx &
-                       "Magic string not found, file is not TFS")
+                       "Magic string not found, invalid TFS file\n" &
+                       &"Found: '{magic_string}'\n" &
+                       &"Expected: '{TFS_MAGIC_STRING}'\n")
   result = newSpecification()
   try:
     var l: int
@@ -91,32 +83,70 @@ proc load_specification*(filename: string): Specification =
       result[k] = v
     s.close()
   except:
-    let errmsg = "  Parsing error: is it really a compiled specification?" &
-                "\n  Please try repeating the compilation."
+    let errmsg = "  Parsing error: invalid TFS file\n" &
+                 "  Please try repeating the compilation."
     raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
   for name, dd in result:
     dd.restore_references(result)
+
+proc load_specification*(filename: string): Specification =
+  var
+    stream: Stream
+    filedesc: string
+  if filename == "":
+    stream = newStringStream(stdin.read_all())
+    filedesc = "Reading from standard input"
+  elif not fileExists(filename):
+    let errmsg = "Error loading pre-compiled specification:\n" &
+             &"  File not found: '{filename}'\n"
+    raise newException(TextFormatsRuntimeError, errmsg)
+  else:
+    filedesc = &"Filename: '{filename}'"
+    try:
+      stream = newFileStream(filename, fmRead)
+    except IOError:
+      let errmsg = "Error loading pre-compiled specification:\n" &
+               "  " & filedesc & "\n" &
+               getCurrentExceptionMsg().indent(2)
+      raise newException(TextFormatsRuntimeError, errmsg)
+  defer: stream.close()
+  return load_specification_stream(stream, filedesc)
+
+proc load_specification_buffer*(buffer: string,
+        filedesc = "Reading from standard input"): Specification =
+  let stream = newStringStream(buffer)
+  defer: stream.close()
+  return load_specification_stream(stream, filedesc)
 
 const BaseDatatypes* = [
   "integer", "unsigned_integer", "float", "string", "json"
 ]
 
+proc is_compiled_stream(stream: Stream): bool =
+  var magic_string = "        "
+  discard stream.read_data_str(magic_string, 0..7)
+  return magic_string == TFS_MAGIC_STRING
+
+proc is_compiled_buffer*(buffer: string): bool =
+  let stream = newStringStream(buffer)
+  defer: stream.close()
+  return is_compiled_stream(stream)
+
 proc is_compiled*(specfile: string): bool =
-  if specfile == "":
-    return false
-  let errmsg_pfx = "Error loading specification\n" &
-                   &"  Filename: '{specfile}'\n"
+  if not fileExists(specfile):
+    raise newException(TextFormatsRuntimeError,
+                       "Error reading specification data:\n" &
+                       &"  File not found: '{specfile}'\n")
+  var errmsg = ""
   try:
     let stream = newFileStream(specfile, mode = fmRead)
     defer: stream.close()
-    var magic_string = "        "
-    discard stream.read_data_str(magic_string, 0..7)
-    return magic_string == "TFS1.0--"
+    return is_compiled_stream(stream)
   except IOError:
-    let errmsg = block:
-      if not fileExists(specfile): "File not found"
-      else: get_current_exception().msg
-    raise newException(TextFormatsRuntimeError, errmsg_pfx & errmsg)
+    errmsg = "Error loading specification\n" &
+             &"  Filename: '{specfile}'\n" &
+             getCurrentExceptionMsg().indent(2)
+  raise newException(TextFormatsRuntimeError, errmsg)
 
 proc datatype_names*(spec: Specification): seq[string] =
   for name, dd in spec:
