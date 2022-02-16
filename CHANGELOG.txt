@@ -4,6 +4,11 @@
   - fix some README file links
   - improve structure of CHANGELOG
 
+- Pre-compiled specifications:
+  - tfs files can now be read from stdin
+  - tf_spec compile accepts tfs specs in input
+    (output is equal to the input)
+
 === 1.2.1 ===
 
 - Python packaging

@@ -25,19 +25,18 @@ The command allows to list the datatypes contained in the file
 (subcommand *list*) and to show the definition of one of those datatypes
 (subcommand *show*).
 
-## Compilation
+## Pre-compilation (TFS files)
 
-A compiled version of the specification can be created
-using the *compile* subcommand.
-They can be used by most CLI commands instead of the YAML or JSON file.
+A pre-compiled version of the specification (TFS binary file) can be created
+using the *compile* subcommand. They can be used by most CLI commands instead
+of the YAML or JSON file.
 
-Compilation specifications can be faster to load in some cases, compared
+Testdata and embedded data contained in the YAML file are not included in the
+TFS file.
+
+TFS specifications can be faster to load in some cases, compared
 to the YAML or JSON specifications (which requires parsing and validation of the
 content, generation and compilation of the regular expressions).
-
-Only the datatype specifications are contained in the compiled
-file, not the testdata and embedded data.
-Compiled specifications cannot be provided from the standard input.
 
 ## Tests
 
@@ -61,29 +60,25 @@ encoding and validations for each of the provided test examples.
 
 ## Subcommands
 
-**list**
-: list all definitions in a specification file
+**info**
+: list all datatypes or show info about a datatype definition
 
-**show**
-: show a definition in a specification file
+**compile**
+: pre-compile a specification file
 
 **generate\_tests**
 : auto-generate testdata for a specification file
 
-**compile**
-: compile a specification file
-
 **test**
 : test a specification using a testdata file
 
-## Required options
-
-all subcommands:
+## Common Options
 
 **-s**, **\-\-specfile=**FILENAME
 : specification file to be used (default: standard input);
-  YAML, JSON or compiled; compiled specifications can be used except for
-  *compile* and cannot be provided as standard input
+  YAML/JSON/compiled specification filename
+
+## Subcommand specific options:
 
 *info* subcommand:
 
@@ -100,8 +95,6 @@ option is used (default: verbose)
 **-o**, **\-\-outfile=**FILENAME
 : output filename for the compiled specification
   (default: standard output)
-
-## Further options
 
 *test* subcommand:
 

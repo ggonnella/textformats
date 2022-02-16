@@ -54,23 +54,19 @@ To output the names of the datatypes defined by a specification,
 the `tf_spec info` command is used, without setting the
 `--datatype`/`-t` option.
 
-### Compilation
+### Pre-compilation
 
-It is possible to compile a YAML specification using the tool
-`tf_spec compile`. The output of the tool (compiled
-specification) is by default written to the standard output; in alternative
-a filename can be provided using the option `--outfile`.
-The suggested file extension for compiled specifications
-is `tfs` (*T*ext*F*ormats *S*pecification).
-
-Compiled specifications can be used in most tools in place
+Pre-compiled specifications can be used in most tools in place
 of the YAML specifications and are automatically
-recognized.
+recognized. They do not contain test data and cannot
+be embedded in data files.
 
-A limitation of compiled specifications is that they cannot
-contain test data or be embedded in data files.
-Furthermore, they cannot be provided as standard input to the
-`tf_spec` tool.
+It is possible to pre-compile a YAML specification using the tool
+`tf_spec compile`. The output filename is
+provided using the option `--outfile` (if none is provided,
+the standard output is used).
+The suggested file extension for pre-compiled specifications
+is `tfs` (*T*ext*F*ormats *S*pecification).
 
 ### Running tests
 

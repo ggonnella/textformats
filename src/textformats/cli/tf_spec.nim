@@ -26,17 +26,19 @@ proc info*(specfile = "", datatype = "", kind = "verbose"): int =
   ## otherwise: show info about a definition
   if datatype == "":
     let datatypes = get_specification(specfile)
-    for datatype_name, datatype in datatypes:
-      if datatype_name notin textformats.BaseDatatypes:
-        echo $datatype_name
+    if kind != "none":
+      for datatype_name, datatype in datatypes:
+        if datatype_name notin textformats.BaseDatatypes:
+          echo $datatype_name
   else:
     let definition = get_datatype_definition(specfile, datatype)
     case kind:
     of "verbose": echo definition.verbose_desc(0)
     of "repr":    echo definition.repr_desc(0)
     of "tabular": echo definition.tabular_desc(0)
+    of "none":    discard
     else: exit_with(ec_err_setting,
-                    "--kind must be one of: verbose, repr, tabular")
+                    "--kind must be one of: verbose, repr, tabular, none")
   exit_with(ec_success)
 
 proc test*(specfile = "", testfile = ""): int =
