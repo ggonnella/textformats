@@ -30,8 +30,8 @@ If a binary package compatible with the system is available, it will
 be downloaded and installed. Nim installation is not required.
 
 If no binary package is available, the source distribution is downloaded.
-In this case, the Nim compiler (>= 1.6.0) must be installed (see section
-"Nim compiler installation" below) and the ``nim`` binary must be in PATH.  Then,
+In this case, the [Nim compiler version >= 1.6.0 must be installed](https://github.com/ggonnella/textformats/blob/main/manuals/howto_install_nim.md)
+and the ``nim`` binary must be in PATH.  Then,
 the ``pip install textformats`` command will automatically compile and install
 the package.
 
@@ -59,11 +59,11 @@ and [here](https://github.com/ggonnella/textformats/tree/main/benchmarks).
 The C API of TextFormats is documented in the
 [C API manual](https://github.com/ggonnella/textformats/blob/main/manuals/C_API.md)
 and [cheatsheet](https://github.com/ggonnella/textformats/blob/main/cheatsheets/C_API.md)
-and is located in the ``C`` directory of the
+and is obtained by cloning the
 [git repository](https://github.com/ggonnella/textformats.git).
+Furthermore [Nim compiler version >= 1.6.0 must be installed](https://github.com/ggonnella/textformats/blob/main/manuals/howto_install_nim.md)
 
-The nim compiler (>= 1.6.0) must also be installed (see below).
-
+The C API are in the in the ``C`` directory of the git repository.
 Example applications based on the C API are available in the git repository
 [here](https://github.com/ggonnella/textformats/tree/main/C/examples)
 and [here](https://github.com/ggonnella/textformats/tree/main/C/benchmarks).
@@ -71,15 +71,12 @@ and [here](https://github.com/ggonnella/textformats/tree/main/C/benchmarks).
 ## Command line tools
 
 The CLI tools developed with TextFormats allows the use of the library
-from the command line (e.g. in Bash scripts). For using it, the Nim compiler (>= 1.6.0)
-must be installed and the Nim package installed.
-The tools are ``tf_spec`` (work with TFSL specifications),
+from the command line (e.g. in Bash scripts). For using it, the
+[Nim compiler version >= 1.6.0 must be installed](https://github.com/ggonnella/textformats/blob/main/manuals/howto_install_nim.md)
+and the textformats Nim package installed (``nimble install textformats``).
+The tools are thereby installed and compiled. They are ``tf_spec`` (work with TFSL specifications),
  ``tf_decode`` (convert a format to JSON), ``tf_encode`` (convert JSON to a format)
   and ``tf_validate`` (validate data or its text representations).
-They are installed along with the Nim package and compiled, using:
-```
-nimble install textformats
-```
 
 The CLI tools are documented in the
 [CLI manual](https://github.com/ggonnella/textformats/blob/main/manuals/CLI.md),
@@ -90,50 +87,6 @@ directory.
 Examples of use of the CLI tools are given in the git repository
 [here](https://github.com/ggonnella/textformats/tree/main/cli/examples)
 [here](https://github.com/ggonnella/textformats/tree/main/cli/tests).
-
-## Nim compiler installation
-
-The Nim compiler (>= 1.6.0) must be installed to work with Nim, C or in Python if no
-binary package is available.
-
-For installing the Nim compiler there
-are several options (any will do, but some will only be available on some
-systems, thus they are all listed here):
-```
-######## option 1: current choosenim (only recent GLIB_C) ###########
-# => this fails on systems with a too old GLIB_C
-# either via pip:
-pip install choosenim_install
-## or downloading directly choosenim:
-curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-# if necessary, add NIM to the path, e.g.:
-echo 'export PATH="$HOME/.nimble/bin:$PATH"' >> .bashrc
-
-####### option 2: older choosenim version (any GLIB_C) ###########
-URL=https://github.com/dom96/choosenim/releases/download/v0.7.2/choosenim-0.7.2_linux_amd64
-# or, on mac:
-URL=https://github.com/dom96/choosenim/releases/download/v0.7.2/choosenim-0.7.2_macosx_amd64
-wget -O choosenim ${URL} && chmod +x choosenim && ./choosenim 1.6.4
-# add NIM to the path, e.g.:
-echo 'export PATH="$HOME/.nimble/bin:$PATH"' >> .bashrc
-
-####### option 3: from the nim homepage ############
-# install the Nim compiler pre-compiled binaries
-# (or even the source code and compile it according to the instructions there)
-# see => https://nim-lang.org/install_unix.html
-# if necessary, add NIM to the path, where you install the software:
-echo 'export PATH="/path/to/nim/bin:$PATH"' >> .bashrc
-
-####### option 4: package managers ###########
-# if you install nim with a package manager (e.g. brew)
-# make sure that the version installed is >= 1.6.0
-# (e.g. conda currently installs the too old version 1.4.8)
-```
-
-In case there is any problem during the Python package installation
-from the source distribution set an environment variable NIM
-containing  the _absolute_ path to the `nim` binary, before running
-`pip`.
 
 ## Format specifications
 
