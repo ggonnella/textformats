@@ -7,5 +7,5 @@ export DatatypeDefinition
 
 template translated*(value: untyped,
                      dd: DatatypeDefinition, i = 0): JsonNode =
-  if dd.decoded[i].is_none: %*value
+  if len(dd.decoded) < i+1 or dd.decoded[i].is_none: %*value
   else: %*(dd.decoded[i].unsafe_get)
