@@ -13,11 +13,15 @@ clean:
 		     __pycache__ */__pycache__ */*/__pycache__ README.md
 
 cleanup: clean
-	rm -rf textformats/*.so
+	rm -rf py_bindings/*.so
 	${PIP} uninstall textformats
+
+PYCODE=cp37
 
 install:
 	${PYTHON} setup.py bdist_wheel
+	mv dist/textformats-${VERSION}-py3-none-any.whl \
+		dist/textformats-${VERSION}-${PYCODE}-${PYCODE}m-manylinux1_x86_64.whl
 	${PIP} install dist/*.whl --force-reinstall
 
 test:
@@ -43,17 +47,14 @@ TFBINDINGS=textformats/py_bindings.so
 BUILD=build/lib/textformats
 
 ${BINDINGS}: ${PY_SOURCES}
-	cd py_bindings && ${NIMBLE} build; \
-	if [ "${OUT}" != "" ]; then \
-	  mkdir -p ${OUT}; \
-		echo $$PWD;\
-		ls .;\
-	  cp py_bindings.so ${OUT}/py_bindings.so; \
-	fi
+	cd py_bindings && ${NIMBLE} build
+
+bindings_cp: ${BINDINGS}
+	mkdir -p ${OUT}
+	cp ${BINDINGS} ${OUT}/py_bindings.so
 
 ${BUILD}: ${TFBINDINGS} README.md
 	rm -f dist/*.whl
-	${PYTHON} setup.py build
 	${PYTHON} setup.py bdist_wheel
 
 install_wheel: ${BUILD}

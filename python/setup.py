@@ -15,7 +15,7 @@ class TfBuilder(build):
   def run(self):
     build.run(self)
     build_path = os.path.abspath(self.build_temp)
-    cmd = ['make', 'bindings',
+    cmd = ['make', 'bindings_cp',
            'OUT=' + os.path.join(build_path, 'py_bindings')]
     target_files = [os.path.join(build_path,
                     'py_bindings', 'py_bindings.so')]
