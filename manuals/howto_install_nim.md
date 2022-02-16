@@ -9,7 +9,7 @@ systems, thus they are all listed here):
 ```
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
 # if necessary, add NIM to the path, e.g.:
-echo 'export PATH="$HOME/.nimble/bin:$PATH"' >> .bashrc
+echo 'export PATH="$HOME/.nimble/bin:$PATH"' >> ~/.bashrc
 ```
 
 # Option 2: Choosenim older version (any GLIB_C)
@@ -22,7 +22,7 @@ export URL=https://github.com/dom96/choosenim/releases/download/v0.7.2/choosenim
 
 wget -O choosenim $URL && chmod +x choosenim && ./choosenim 1.6.4
 # add NIM to the path, e.g.:
-echo 'export PATH="$HOME/.nimble/bin:$PATH"' >> .bashrc
+echo 'export PATH="$HOME/.nimble/bin:$PATH"' >> ~/.bashrc
 ```
 
 # Option 3: Nim homepage 
@@ -32,7 +32,7 @@ from the [Nim homepage](https://nim-lang.org/install_unix.html)
 
 If necessary, add NIM to the path, where you install the software:
 ```
-echo 'export PATH="/path/to/nim/bin:$PATH"' >> .bashrc
+echo 'export PATH="/path/to/nim/bin:$PATH"' >> ~/.bashrc
 ```
 
 # Option 4: package managers
