@@ -1,24 +1,39 @@
+=== #head ===
+
+- Documentation:
+  - fix some README file links
+  - improve structure of CHANGELOG
+
 === 1.2.1 ===
 
-- make Python packaging more straightforward
-  (not based on nimporter)
-- improve handling of as_string option
-- avoid unnecessary operations when saving/loading TFS files
-- implement msgpack format for TFS files
-- great README improvements
+- Python packaging
+  - new own build system (not based on nimporter)
+  - works for both source and binary distributions
+
+- Performance improvements
+  - improve handling of as_string optional key
+    (avoid downstream parsing if regex matches)
+
+- Pre-compiled specifications:
+  - avoid unnecessary operations on reference restoring
+  - implement TFS files as msgpack
+    (previous TFS files are incompatible)
+
+- Documentation:
+  - great improvement of README file
 
 === 1.2.0 ===
 
-- performance improvements:
+- Performance improvements:
   - avoid nested exception handling
   - branch prediction in union datatypes decoding
   - use refc GC (was markAndSweep)
 
-- adapt to newer library/compiler versions:
+- Newer library/compiler versions:
   - use Nim 1.6 (was Nim 1.4)
   - use regex 0.19 (was 0.18)
 
-- new example applications and benchmarks:
+- New example applications and benchmarks:
   - SAM: generate larger data for benchmarks
   - GFA1: show how to fix invalid data output
           by another application
@@ -33,11 +48,14 @@
 
 === 1.1.0 ===
 
-- make clear requirements in nimble file
-- support newer versions of NimYAML and regex libraries
-- automatically find nimbase.h in C Makefiles
-- make sure nimporter==1.0.2 is installed when installing Py module
-- add changelog file
+- Build system:
+  - make clear requirements in nimble file
+  - support newer versions of NimYAML and regex libraries
+  - automatically find nimbase.h in C Makefiles
+  - make sure nimporter==1.0.2 is installed when installing Py module
+
+- Documentation:
+  - add this changelog file
 
 === 1.0.0 ===
 
