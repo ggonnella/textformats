@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.2.1"
+version       = "1.2.2"
 author        = "Giorgio Gonnella"
 description   = "Easy specification of text formats for structured data"
 license       = "ISC"

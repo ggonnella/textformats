@@ -1,16 +1,19 @@
-=== #head ===
+=== 1.2.2 ===
 
 - Documentation:
   - fix some README file links
   - improve structure of CHANGELOG
 
-- Python packaging
+- Python packaging:
   - now compilation on MacOS arm64 works
 
 - Pre-compiled specifications:
   - tfs files can now be read from stdin
   - tf_spec compile accepts tfs specs in input
     (output is equal to the input)
+
+- Example applications:
+  - GFA1 example was implemented in Nim
 
 === 1.2.1 ===
 
