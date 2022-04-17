@@ -21,7 +21,7 @@ cleanup: clean
 
 # Compute PEP 425 compatibility tag
 PYTHON_IMPLEMENTATION_CODE="py"
-PYTHON_VERSION_CODE=`python --version | grep -o -P '\d+\.\d+' | sed 's/\.//'`
+PYTHON_VERSION_CODE=`${PYTHON} --version | grep -o -P '\d+\.\d+' | sed 's/\.//'`
 PYTHON_TAG="${PYTHON_IMPLEMENTATION_CODE}${PYTHON_VERSION_CODE}"
 ABI_TAG="none"
 PLATFORM_TAG="manylinux1_x86_64"
