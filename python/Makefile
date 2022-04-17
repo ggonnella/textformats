@@ -19,12 +19,18 @@ cleanup: clean
 	rm -rf py_bindings/*.so
 	${PIP} uninstall textformats
 
-PYCODE=cp37
+# Compute PEP 425 compatibility tag
+PYTHON_IMPLEMENTATION_CODE="py"
+PYTHON_VERSION_CODE=`python --version | grep -o -P '\d+\.\d+' | sed 's/\.//'`
+PYTHON_TAG="${PYTHON_IMPLEMENTATION_CODE}${PYTHON_VERSION_CODE}"
+ABI_TAG="none"
+PLATFORM_TAG="manylinux1_x86_64"
+PEP425_TAG="${PYTHON_TAG}-${ABI_TAG}-${PLATFORM_TAG}"
 
 install:
 	${PYTHON} setup.py bdist_wheel
 	mv dist/textformats-${VERSION}-py3-none-any.whl \
-		dist/textformats-${VERSION}-${PYCODE}-${PYCODE}m-manylinux1_x86_64.whl
+		dist/textformats-${VERSION}-${PEP425_TAG}.whl
 	${PIP} install dist/*.whl --force-reinstall
 
 test:
