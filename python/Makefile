@@ -8,6 +8,9 @@ PYTHON ?= python
 PIP ?= pip
 NIMBLE ?= nimble
 
+# use Bash commands instead of Sh:
+SHELL := /bin/bash
+
 clean:
 	rm -rf *.egg-info build dist MANIFEST.in nim-extensions \
 		     __pycache__ */__pycache__ */*/__pycache__ README.md
