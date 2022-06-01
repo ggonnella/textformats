@@ -219,6 +219,13 @@ from each of the defined datatypes using `cli/tf_spec generate_tests -s
 Furthermore, the results can be inspected to check that the examples reflect
 the expectations.
 
+## Citation
+
+If you use this software, please cite: Gonnella G. (2022).
+TextFormats: Simplifying the definition and parsing of text formats in
+bioinformatics. PloS one, 17(5), e0268910.
+https://doi.org/10.1371/journal.pone.0268910
+
 ## Developer notes
 
 The library is implemented using the programming language Nim.
