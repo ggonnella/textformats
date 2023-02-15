@@ -708,8 +708,9 @@ deprecated), the dot version will prevale.
 
 The second experimental option is `merge_keys`. This can be set to a list
 of element names, which must be themselves `composed_of`,
-of a `composed_of` definition (anything else will result in a
-definition error). The keys of these elements are then moved to the
+of a `composed_of` definition or a `one_of` definition where
+each branch is a `composed_of` definition -- anything else will result in a
+definition error. All entries of these sub-dictionaries are then moved to the
 main dictionary.
 For example, if the element `e1` is a dictionary with the keys `e11`
 and `e12`, the resulting dictionary of decoding will contain `e11` and
