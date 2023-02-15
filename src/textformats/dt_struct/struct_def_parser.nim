@@ -55,14 +55,39 @@ proc parse_struct_members(n: YamlNode, name: string):
   result = n.parse_named_definitions_to_seq(name, DefKey)
   n.validate_min_len(1, &"Invalid length of '{DefKey}' content.\n")
 
+proc postvalidate_merge_keys(dd: DatatypeDefinition) =
+  var assigned_keys = initHashSet[string]()
+  var i = 0
+  for key in dd.merge_keys:
+    i+=1
+    var mdef: DatatypeDefinition
+    for m in dd.members:
+      if m[0] == key:
+        mdef = dereference(m[1])
+        break
+    if mdef.kind != ddkStruct:
+      raise newException(DefSyntaxError, "Invalid value found " &
+                         &"in '{MergeKeysKey}' list\n" &
+                         &"The {nth(i)} element is invalid.\n" &
+                         &"'{key}' is not of type 'composed_of'.\n")
+    for m2 in mdef.members:
+      if m2[0] in assigned_keys:
+        raise newException(DefSyntaxError, "Invalid value found " &
+                           &"in '{MergeKeysKey}' list\n" &
+                           &"The {nth(i)} element is invalid.\n" &
+                           &"'{key}' contains {m2[0]}.\n" &
+                           &"An element '{m2[0]}' was already assigned.\n")
+      assigned_keys.incl(m2[0])
+
+proc postvalidate_struct*(dd: DatatypeDefinition) =
+  if dd.merge_keys.len > 0:
+    postvalidate_merge_keys(dd)
+
 proc parse_merge_keys(optnode: OptYamlNode,
                       members: seq[(string, DatatypeDefinition)]): seq[string] =
-  var
-    assigned_keys = initHashSet[string]()
-    member_keys = initHashSet[string]()
+  var member_keys = initHashSet[string]()
   for (key, _) in members:
     member_keys.incl(key)
-    assigned_keys.incl(key)
   result = newSeq[string]()
   if not optnode.is_none:
     let node = optnode.unsafe_get
@@ -81,24 +106,6 @@ proc parse_merge_keys(optnode: OptYamlNode,
                            &"in '{MergeKeysKey}' list\n" &
                            &"The {nth(i)} element is invalid.\n" &
                            &"'{elem}' is not the name of an element.\n")
-      var mdef: DatatypeDefinition
-      for m in members:
-        if m[0] == elem:
-          mdef = dereference(m[1])
-          break
-      if mdef.kind != ddkStruct:
-        raise newException(DefSyntaxError, "Invalid value found " &
-                           &"in '{MergeKeysKey}' list\n" &
-                           &"The {nth(i)} element is invalid.\n" &
-                           &"'{elem}' is not of type 'composed_of'.\n")
-      for m2 in mdef.members:
-        if m2[0] in assigned_keys:
-          raise newException(DefSyntaxError, "Invalid value found " &
-                             &"in '{MergeKeysKey}' list\n" &
-                             &"The {nth(i)} element is invalid.\n" &
-                             &"'{elem}' contains {m2[0]}.\n" &
-                             &"An element '{m2[0]}' was already assigned.\n")
-        assigned_keys.incl(m2[0])
       result.add(elem)
 
 proc parse_n_required(dd: var DatatypeDefinition, opt_n: OptYamlNode) =

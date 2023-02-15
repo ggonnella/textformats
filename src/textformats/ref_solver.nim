@@ -9,6 +9,7 @@ import tables, strformat, strutils
 import types / [datatype_definition, specification, textformats_error,
                 def_syntax]
 import support/directed_graph
+import postvalidator
 
 template brokenref_errmsg(name: string, tname: string): string =
   "The definition of datatype '" & name & "' " &
@@ -46,6 +47,8 @@ proc resolve_references(dd: DatatypeDefinition, name: string,
 proc resolve_references*(spec: Specification) =
   for name, definition in spec:
     definition.resolve_references(name, spec)
+  for name, definition in spec:
+    definition.postvalidate
 
 proc construct_dependency_subgraph(dd: DatatypeDefinition, name: string,
                                    dependencies: Graph) =
