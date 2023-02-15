@@ -50,8 +50,10 @@ proc struct_encode*(value: JsonNode, dd: DatatypeDefinition): string =
     raise newException(EncodingError, "Value is not a dictionary, found: " &
             value.describe_kind & "\n")
   var
-    nvalue = if dd.combine_nested: value.normalize_struct_values()
-             else: value
+    nvalue1 = if (dd.merge_keys.len > 0): value.pass_keys_to_children(dd)
+              else: value
+    nvalue = if dd.combine_nested: nvalue1.normalize_struct_values()
+             else: nvalue1
     value_keys = to_seq(nvalue.get_fields.keys).to_hash_set
     results = newseq_of_cap[string](dd.members.len)
     i = 0

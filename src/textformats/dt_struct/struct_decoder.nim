@@ -77,6 +77,8 @@ proc splitting_decode_struct(input: string, dd: DatatypeDefinition): JsonNode =
   result.fields = elements.to_ordered_table
   if dd.combine_nested:
     result = result.combine_nested_objects
+  if dd.merge_keys.len > 0:
+    result = result.merge_keys_with_parent(dd)
 
 proc split_and_raise(input: string, dd: DatatypeDefinition) =
   # use the splitting method, which will also fails
@@ -124,6 +126,8 @@ proc elementwise_decode_struct(input: string, dd: DatatypeDefinition):
   result.fields = elements.to_ordered_table
   if dd.combine_nested:
     result = result.combine_nested_objects
+  if dd.merge_keys.len > 0:
+    result = result.merge_keys_with_parent(dd)
 
 proc decode_struct*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkStruct

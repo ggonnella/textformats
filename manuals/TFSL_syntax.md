@@ -691,16 +691,39 @@ below). In other cases, e.g. if the separator is missing along with the
 element, multiple `composed_of` definitions (with and without the said middle
 element) can be combined using a `one_of` definition (such as in `cof3` below).
 
-If the elements of a `combined_of` are other combined of, a nested dictionary
-will be the decoded value. In this case it is possible to set the
-`combine_nested` option to true. This allows to reduce dictionary nesting, by
-combining keys of the child dictionary to the parent key, using a dot as
-separator. E.g. imagine that the element `a` is a dictionary, with elements `b`
-and `c`. If the option is used, then the main dictionary can use the keys `a.b`
-and `a.c` to represent those values. The decoding will result in a dictionary
-with those combined keys, the encoding accepts both the nested version
-and the combined keys. Of course if `combined_of` is used, no key shall
-contain a dot.
+Sometimes the decoded value is a complex nested structure of dictionaries,
+which can be difficult to use. To avoid this, two experimental options have
+been implemented in `combined_of. These are not supported by the test generator,
+but should be correctly supported by all other functions.
+
+The first of these is the `combine_nested` option. If this is set to true in a
+`combined_of`, elements which are dictionaries themselves are merged into
+the main dictionary. Thereby the keys are joined by a dot.
+For example, if the element `e1` is a dictionary with the keys `e11`
+and `e12`, the resulting dictionary of decoding will contain `e1.e11` and
+`e1.e12` instead of the `e1` key. Both system will still be working when
+encoding, i.e. a dictionary with `e1` is accepted, as well as a dictionary
+with `e1.e11` and `e1.e12`. If both are used at the same time (this is
+deprecated), the dot version will prevale.
+
+The second experimental option is `merge_keys`. This can be set to a list
+of element names, which must be themselves `composed_of`,
+of a `composed_of` definition (anything else will result in a
+definition error). The keys of these elements are then moved to the
+main dictionary.
+For example, if the element `e1` is a dictionary with the keys `e11`
+and `e12`, the resulting dictionary of decoding will contain `e11` and
+`e12` instead of the `e1` key. Both system will still be working when
+encoding, i.e. a dictionary with `e1` is accepted, as well as a dictionary
+with `e11` and `e12`. If both are used at the same time (this is
+deprecated), the transferred keys (`e11`, `e12`) will prevale.
+Using elements which are not `composed_of` or
+whose sub-element names are equal to another element or to a sub-element
+of another merged element will result in a definition error.
+E.g. in the example above, one cannot merge an element `e2`, if this
+also contains a sub-element named `e11`, since `e1` already contained it.
+Also if an element of the main `composed_of` would be called `e11`, then
+`e1` could not be merged.
 
 If in the string representation, the elements of the list are separated by a
 constant string, this can be specified in the definition. If the separator

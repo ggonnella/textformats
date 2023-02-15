@@ -6,7 +6,7 @@ import ../types / [datatype_definition, def_syntax, textformats_error]
 import ../shared / [formatting_def_parser, null_value_def_parser,
                     implicit_def_parser, nameddef_def_parser,
                     as_string_def_parser, scope_def_parser]
-import ../support / [yaml_support, error_support]
+import ../support / [yaml_support, error_support, messages_support]
 
 proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
                                   DatatypeDefinition
@@ -55,6 +55,52 @@ proc parse_struct_members(n: YamlNode, name: string):
   result = n.parse_named_definitions_to_seq(name, DefKey)
   n.validate_min_len(1, &"Invalid length of '{DefKey}' content.\n")
 
+proc parse_merge_keys(optnode: OptYamlNode,
+                      members: seq[(string, DatatypeDefinition)]): seq[string] =
+  var
+    assigned_keys = initHashSet[string]()
+    member_keys = initHashSet[string]()
+  for (key, _) in members:
+    member_keys.incl(key)
+    assigned_keys.incl(key)
+  result = newSeq[string]()
+  if not optnode.is_none:
+    let node = optnode.unsafe_get
+    node.validate_is_sequence(&"Invalid value of '{MergeKeysKey}'.\n" &
+                              "Expected list of strings.\n")
+    var i = 0
+    for elemnode in node.elems:
+      i+=1
+      elemnode.validate_is_string("Invalid value found " &
+                                &"in '{MergeKeysKey}' list\n" &
+                                &"The {nth(i)} element is invalid.\n" &
+                                "All elements should be strings.\n")
+      let elem = elemnode.to_string
+      if elem notin member_keys:
+        raise newException(DefSyntaxError, "Invalid value found " &
+                           &"in '{MergeKeysKey}' list\n" &
+                           &"The {nth(i)} element is invalid.\n" &
+                           &"'{elem}' is not the name of an element.\n")
+      var mdef: DatatypeDefinition
+      for m in members:
+        if m[0] == elem:
+          mdef = m[1]
+          break
+      if mdef.kind != ddkStruct:
+        raise newException(DefSyntaxError, "Invalid value found " &
+                           &"in '{MergeKeysKey}' list\n" &
+                           &"The {nth(i)} element is invalid.\n" &
+                           &"'{elem}' is not of type 'composed_of'.\n")
+      for m2 in mdef.members:
+        if m2[0] in assigned_keys:
+          raise newException(DefSyntaxError, "Invalid value found " &
+                             &"in '{MergeKeysKey}' list\n" &
+                             &"The {nth(i)} element is invalid.\n" &
+                             &"'{elem}' contains {m2[0]}.\n" &
+                             &"An element '{m2[0]}' was already assigned.\n")
+        assigned_keys.incl(m2[0])
+      result.add(elem)
+
 proc parse_n_required(dd: var DatatypeDefinition, opt_n: OptYamlNode) =
   if opt_n.is_none:
     dd.n_required = dd.members.len
@@ -93,7 +139,8 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot,
                      [DefKey, NullValueKey, SepKey, PfxKey, SfxKey,
                       SplittedKey, NRequiredKey, ImplicitKey, AsStringKey,
-                      HiddenKey, ScopeKey, UnitsizeKey, CombineNestedKey])
+                      HiddenKey, ScopeKey, UnitsizeKey, CombineNestedKey,
+                      MergeKeysKey])
     result = DatatypeDefinition(kind: ddkStruct, name: name,
                members:    defnodes[0].unsafe_get.parse_struct_members(name),
                null_value: defnodes[1].parse_null_value,
@@ -105,6 +152,7 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
                unitsize:   defnodes[11].parse_unitsize)
     result.combine_nested =
       defnodes[12].to_bool(default=false, CombineNestedKey)
+    result.merge_keys = defnodes[13].parse_merge_keys(result.members)
     result.parse_n_required(defnodes[6])
     let (sep, sep_excl) = parse_sep(defnodes[2], defnodes[5])
     result.sep = sep

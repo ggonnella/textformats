@@ -1,5 +1,5 @@
 === 1.2.3 ===
-- implement option combine_nested for composed_of
+- implement experimental options combine_nested and merge_keys for composed_of
 
 === 1.2.2 ===
 

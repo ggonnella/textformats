@@ -78,6 +78,7 @@ proc pack_type*[ByteStream](s: ByteStream, dd: DatatypeDefinition) =
       s.pack(dd.n_required)
       s.pack(dd.hidden)
       s.pack(dd.combine_nested)
+      s.pack(dd.merge_keys)
     of ddkDict:
       s.pack(dd.dict_members.len)
       for tk, tv in dd.dict_members:
@@ -196,6 +197,7 @@ proc unpack_type*[ByteStream](s: ByteStream, dd: var DatatypeDefinition) =
       s.unpack(dd.n_required)
       s.unpack(dd.hidden)
       s.unpack(dd.combine_nested)
+      s.unpack(dd.merge_keys)
     of ddkDict:
       s.unpack(l)
       dd.dict_members = newTable[string, DatatypeDefinition]()

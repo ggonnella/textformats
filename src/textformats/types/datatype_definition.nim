@@ -169,6 +169,7 @@ type
       n_required*: int
       combine_nested*: bool
       hidden*: seq[int]
+      merge_keys*: seq[string]
 
     of ddkDict:
       dict_members*: TableRef[string, DatatypeDefinition] # name => def

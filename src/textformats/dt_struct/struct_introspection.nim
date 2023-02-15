@@ -20,6 +20,11 @@ proc struct_verbose_desc*(d: DatatypeDefinition, indent: int): string =
     result &= &"\n{pfx}  - [{i}] element '{k}', defined as:\n" &
               v.verbose_desc(indent+4)
     i += 1
+  if d.merge_keys.len > 0:
+    result &= &"\n{pfx}  the keys of the following tuple " &
+              "elements are merged into the tuple:\n"
+    for k in d.merge_keys:
+      result &= &"{pfx}  - '{k}'\n"
 
 proc struct_repr_desc*(d: DatatypeDefinition, indent: int): string =
   let pfx=" ".repeat(indent)
@@ -34,6 +39,8 @@ proc struct_repr_desc*(d: DatatypeDefinition, indent: int): string =
     result &= &"{NRequiredKey}: {d.n_required}\n"
   if d.combine_nested:
     result &= &"{CombineNestedKey}: true\n"
+  if d.merge_keys.len > 0:
+    result &= &"{MergeKeysKey}: {repr(d.merge_keys)}\n"
 
 proc struct_tabular_desc*(d: DatatypeDefinition, indent: int): string =
   let pfx=" ".repeat(indent)
@@ -42,3 +49,4 @@ proc struct_tabular_desc*(d: DatatypeDefinition, indent: int): string =
     result &= &"{pfx}  - {k}:\n" & v.tabular_desc(indent+4)
   result &= &"{pfx}- n_required: {d.n_required}\n"
   result &= &"{pfx}- combine_nested: {d.combine_nested}\n"
+  result &= &"{pfx}- merge_keys: {d.merge_keys}\n"

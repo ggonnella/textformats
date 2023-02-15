@@ -78,6 +78,25 @@ datatypes:
           splitted_by: "!"
     splitted_by: ":"
     combine_nested: true
+  s_merge:
+    composed_of:
+      - a: string
+      - b:
+          composed_of:
+            - c: string
+            - d: string
+          splitted_by: ","
+      - e:
+          composed_of:
+            - f: string
+            - g: string
+          splitted_by: ","
+      - h:
+          composed_of:
+            - i: string
+            - j: string
+    splitted_by: ":"
+    merge_keys: [b, e]
   s_fullopts:
     composed_of:
     - name: {regex: "[^,]+"}

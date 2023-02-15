@@ -205,7 +205,9 @@ Implicit values, not in text repr       | `composed_of: [v1: integer, v2: string
 &nbsp;                                  | &nbsp;
 Validate, but do not parse seq content  | `..., as_string: true`
 &nbsp;                                  | &nbsp;
-Combin nested dictionaries              | `..., combine_nested: true`
+Combine nested dictionaries             | `..., combine_nested: true`
+&nbsp;                                  | &nbsp;
+Merge sub-element entries into parent   | `..., merge_keys: [subelem1, subelem2]`
 
 # Labeled values list
 

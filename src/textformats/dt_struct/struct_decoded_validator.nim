@@ -10,8 +10,10 @@ from ../decoded_validator import is_valid
 proc struct_is_valid*(value: JsonNode, dd: DatatypeDefinition): bool =
   if not value.is_object: return false
   var
-    nvalue = if dd.combine_nested: value.normalize_struct_values()
-             else: value
+    nvalue1 = if (dd.merge_keys.len > 0): value.pass_keys_to_children(dd)
+              else: value
+    nvalue = if dd.combine_nested: nvalue1.normalize_struct_values()
+             else: nvalue1
     value_keys = to_seq(nvalue.get_fields.keys).toHashSet
     i = 0
   for (name, subdef) in dd.members:

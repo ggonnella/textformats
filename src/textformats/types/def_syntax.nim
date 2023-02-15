@@ -55,6 +55,7 @@ const
   NRequiredKey* = "required"
   HiddenKey* = "hide_constants"
   CombineNestedKey* = "combine_nested"
+  MergeKeysKey* = "merge_keys"
   # tags
   TagnameKey* = "tagname"
   TagsInternalSepKey* = "internal_separator"
