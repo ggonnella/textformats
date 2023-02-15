@@ -3,6 +3,7 @@ import ../types / [datatype_definition, textformats_error]
 import ../support/json_support
 import ../shared/implicit_encoder
 import ../encoder
+import struct_nesting
 
 template format_results(results: seq[string], dd: DatatypeDefinition): string =
   dd.pfx & results.join(dd.sep) & dd.sfx
@@ -49,7 +50,9 @@ proc struct_encode*(value: JsonNode, dd: DatatypeDefinition): string =
     raise newException(EncodingError, "Value is not a dictionary, found: " &
             value.describe_kind & "\n")
   var
-    value_keys = to_seq(value.get_fields.keys).to_hash_set
+    nvalue = if dd.combine_nested: value.normalize_struct_values()
+             else: value
+    value_keys = to_seq(nvalue.get_fields.keys).to_hash_set
     results = newseq_of_cap[string](dd.members.len)
     i = 0
   for (name, subdef) in dd.members:
@@ -65,10 +68,10 @@ proc struct_encode*(value: JsonNode, dd: DatatypeDefinition): string =
             if optname in value_keys:
               raise_optional_key_missing(name, optname, results, dd)
           break
-      try_encoding(value[name], name, subdef, dd, results)
+      try_encoding(nvalue[name], name, subdef, dd, results)
     value_keys.excl(name)
     i+=1
-  value.validate_nonmember_keys(value_keys, dd)
+  nvalue.validate_nonmember_keys(value_keys, dd)
   return results.format_results(dd)
 
 proc struct_unsafe_encode*(value: JsonNode, dd: DatatypeDefinition): string =

@@ -5,8 +5,8 @@ authors:
 - family-names: "Gonnella"
   given-names: "Giorgio"
   orcid: "https://orcid.org/0000-0003-3900-5397"
-version: 1.2.2
-date-released: 2022-02-17
+version: 1.2.3
+date-released: 2023-02-15
 url: "https://github.com/ggonnella/textformats"
 preferred-citation:
   type: article

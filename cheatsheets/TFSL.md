@@ -204,6 +204,8 @@ Allow elems after first 3 to be absent  | `..., required: 3`
 Implicit values, not in text repr       | `composed_of: [v1: integer, v2: string], implicit: {v3: "x"}` <br/> 123a => {v1: 123, v2: "a", v3: "x"}
 &nbsp;                                  | &nbsp;
 Validate, but do not parse seq content  | `..., as_string: true`
+&nbsp;                                  | &nbsp;
+Combin nested dictionaries              | `..., combine_nested: true`
 
 # Labeled values list
 

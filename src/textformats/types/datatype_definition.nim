@@ -167,6 +167,7 @@ type
     of ddkStruct:
       members*: seq[tuple[name: string, def: DatatypeDefinition]]
       n_required*: int
+      combine_nested*: bool
       hidden*: seq[int]
 
     of ddkDict:

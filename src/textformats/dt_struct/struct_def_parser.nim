@@ -16,6 +16,7 @@ const
   DefKey = StructDefKey
   NRequiredHelp = "Number of required elements (default: all)"
   HiddenHelp = "Hide constant elements from decoded value"
+  CombineNestedHelp = "Combine nested structs (keys are joined by .)"
   SyntaxHelp = &"""
   <datatype_name>:
     {DefKey}:
@@ -41,6 +42,7 @@ const
 
   Optional keys for decoding:
   - {ImplicitKey}: {ImplicitHelp}
+  - {CombineNestedKey}: {CombineNestedHelp}
   - {HiddenKey}: {HiddenHelp}
   - {NullValueKey}: {NullValueHelp}
   - {AsStringKey}: {AsStringHelp}
@@ -91,7 +93,7 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
     let defnodes = collect_defnodes(defroot,
                      [DefKey, NullValueKey, SepKey, PfxKey, SfxKey,
                       SplittedKey, NRequiredKey, ImplicitKey, AsStringKey,
-                      HiddenKey, ScopeKey, UnitsizeKey])
+                      HiddenKey, ScopeKey, UnitsizeKey, CombineNestedKey])
     result = DatatypeDefinition(kind: ddkStruct, name: name,
                members:    defnodes[0].unsafe_get.parse_struct_members(name),
                null_value: defnodes[1].parse_null_value,
@@ -101,6 +103,8 @@ proc newStructDatatypeDefinition*(defroot: YamlNode, name: string):
                as_string:  defnodes[8].parse_as_string,
                scope:      defnodes[10].parse_scope,
                unitsize:   defnodes[11].parse_unitsize)
+    result.combine_nested =
+      defnodes[12].to_bool(default=false, CombineNestedKey)
     result.parse_n_required(defnodes[6])
     let (sep, sep_excl) = parse_sep(defnodes[2], defnodes[5])
     result.sep = sep

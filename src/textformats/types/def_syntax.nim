@@ -54,6 +54,7 @@ const
   # struct
   NRequiredKey* = "required"
   HiddenKey* = "hide_constants"
+  CombineNestedKey* = "combine_nested"
   # tags
   TagnameKey* = "tagname"
   TagsInternalSepKey* = "internal_separator"

@@ -691,6 +691,17 @@ below). In other cases, e.g. if the separator is missing along with the
 element, multiple `composed_of` definitions (with and without the said middle
 element) can be combined using a `one_of` definition (such as in `cof3` below).
 
+If the elements of a `combined_of` are other combined of, a nested dictionary
+will be the decoded value. In this case it is possible to set the
+`combine_nested` option to true. This allows to reduce dictionary nesting, by
+combining keys of the child dictionary to the parent key, using a dot as
+separator. E.g. imagine that the element `a` is a dictionary, with elements `b`
+and `c`. If the option is used, then the main dictionary can use the keys `a.b`
+and `a.c` to represent those values. The decoding will result in a dictionary
+with those combined keys, the encoding accepts both the nested version
+and the combined keys. Of course if `combined_of` is used, no key shall
+contain a dot.
+
 If in the string representation, the elements of the list are separated by a
 constant string, this can be specified in the definition. If the separator
 string is never contained in the elements (not even escaped), with

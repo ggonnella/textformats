@@ -1,7 +1,7 @@
 default: clean install
 
 # package version
-VERSION=1.2.2
+VERSION=1.2.3
 
 # command line tools
 PYTHON ?= python

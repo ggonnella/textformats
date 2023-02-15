@@ -68,6 +68,16 @@ datatypes:
     - name: {regex: "[^,]+"}
     - a: {list_of: {constant: a}, minlength: 2, maxlength: 3, splitted_by: ","}
     splitted_by: ","
+  s_nested:
+    composed_of:
+      - a: string
+      - b:
+          composed_of:
+            - c: string
+            - d: string
+          splitted_by: "!"
+    splitted_by: ":"
+    combine_nested: true
   s_fullopts:
     composed_of:
     - name: {regex: "[^,]+"}

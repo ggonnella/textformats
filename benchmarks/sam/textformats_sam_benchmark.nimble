@@ -1,10 +1,10 @@
-version = "1.2.2"
+version = "1.2.3"
 author = "Giorgio Gonnella"
 description = "Use textformats or hts-nim for computing and printing " &
               "some statistics about a SAM file"
 bin = @["htslib_based", "textformats_based"]
 license = "CC-BY-SA"
-requires "hts", "textformats == 1.2.2"
+requires "hts", "textformats == 1.2.3"
 
 import strformat, strutils
 

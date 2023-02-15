@@ -4,6 +4,7 @@ import regex
 import ../types / [datatype_definition, textformats_error, regex_grppfx]
 import ../shared/formatting_decoder
 import ../decoder
+import struct_nesting
 
 proc reraise_invalid_element*(membername: string) =
   let e = getCurrentException()
@@ -74,6 +75,8 @@ proc splitting_decode_struct(input: string, dd: DatatypeDefinition): JsonNode =
     elements &= dd.implicit
   result = newJObject()
   result.fields = elements.to_ordered_table
+  if dd.combine_nested:
+    result = result.combine_nested_objects
 
 proc split_and_raise(input: string, dd: DatatypeDefinition) =
   # use the splitting method, which will also fails
@@ -119,6 +122,8 @@ proc elementwise_decode_struct(input: string, dd: DatatypeDefinition):
     elements &= dd.implicit
   result = newJObject()
   result.fields = elements.to_ordered_table
+  if dd.combine_nested:
+    result = result.combine_nested_objects
 
 proc decode_struct*(input: string, dd: DatatypeDefinition): JsonNode =
   assert dd.kind == ddkStruct

@@ -80,3 +80,5 @@ testdata:
     invalid:
       encoded: [""]
       decoded: [""]
+  s_nested:
+    valid: {"A:C!D":{"a":"A", "b.c": "C", "b.d": "D"}}
