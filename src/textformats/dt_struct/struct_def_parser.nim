@@ -84,7 +84,7 @@ proc parse_merge_keys(optnode: OptYamlNode,
       var mdef: DatatypeDefinition
       for m in members:
         if m[0] == elem:
-          mdef = m[1]
+          mdef = dereference(m[1])
           break
       if mdef.kind != ddkStruct:
         raise newException(DefSyntaxError, "Invalid value found " &
