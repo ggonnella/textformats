@@ -65,19 +65,39 @@ proc postvalidate_merge_keys(dd: DatatypeDefinition) =
       if m[0] == key:
         mdef = dereference(m[1])
         break
-    if mdef.kind != ddkStruct:
+    if mdef.kind != ddkStruct and mdef.kind != ddkUnion:
       raise newException(DefSyntaxError, "Invalid value found " &
                          &"in '{MergeKeysKey}' list\n" &
                          &"The {nth(i)} element is invalid.\n" &
-                         &"'{key}' is not of type 'composed_of'.\n")
-    for m2 in mdef.members:
-      if m2[0] in assigned_keys:
-        raise newException(DefSyntaxError, "Invalid value found " &
-                           &"in '{MergeKeysKey}' list\n" &
-                           &"The {nth(i)} element is invalid.\n" &
-                           &"'{key}' contains {m2[0]}.\n" &
-                           &"An element '{m2[0]}' was already assigned.\n")
-      assigned_keys.incl(m2[0])
+                         &"'{key}' is not of type 'composed_of' or 'one_of'.\n")
+    if mdef.kind == ddkStruct:
+      for m2 in mdef.members:
+        if m2[0] in assigned_keys:
+          raise newException(DefSyntaxError, "Invalid value found " &
+                             &"in '{MergeKeysKey}' list\n" &
+                             &"The {nth(i)} element is invalid.\n" &
+                             &"'{key}' contains {m2[0]}.\n" &
+                             &"An element '{m2[0]}' was already assigned.\n")
+        assigned_keys.incl(m2[0])
+    else:
+      var union_assigned_keys = initHashSet[string]()
+      for c in mdef.choices:
+        let cdef = dereference(c)
+        if cdef.kind != ddkStruct:
+          raise newException(DefSyntaxError, "Invalid value found " &
+                             &"in '{MergeKeysKey}' list\n" &
+                             &"The {nth(i)} element is invalid.\n" &
+                             &"A branch of '{key}' is not of type 'composed_of'.\n")
+        for m2 in cdef.members:
+          if m2[0] in assigned_keys:
+            raise newException(DefSyntaxError, "Invalid value found " &
+                               &"in '{MergeKeysKey}' list\n" &
+                               &"The {nth(i)} element is invalid.\n" &
+                               &"A branch of '{key}' contains {m2[0]}.\n" &
+                               &"An element '{m2[0]}' was already assigned.\n")
+          union_assigned_keys.incl(m2[0])
+      for uak in union_assigned_keys:
+        assigned_keys.incl(uak)
 
 proc postvalidate_struct*(dd: DatatypeDefinition) =
   if dd.merge_keys.len > 0:

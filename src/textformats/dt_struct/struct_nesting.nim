@@ -37,13 +37,19 @@ proc pass_keys_to_children*(value: JsonNode,
   var assign = newTable[string, string]()
   for m in dd.members:
     if m.name in dd.merge_keys:
-      var mdef = dereference(m.def)
+      let mdef = dereference(m.def)
       if mdef.kind == ddkStruct:
         for m2 in mdef.members:
           assign[m2.name] = m.name
-        result[m.name] = newJObject()
+      elif mdef.kind == ddkUnion:
+        for c in mdef.choices:
+          let cdef = dereference(c)
+          for m2 in cdef.members:
+            assign[m2.name] = m.name
   for k, v in value.pairs:
     if k in assign:
+      if not result.hasKey(assign[k]):
+        result[assign[k]] = newJObject()
       result[assign[k]][k] = v
     else:
       result[k] = v
