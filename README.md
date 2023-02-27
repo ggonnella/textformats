@@ -260,3 +260,8 @@ To run the Python API tests, first build the package using
 used to represent decoded values both for Nim code and for passing the values
 through the API to functions written in other languages; however, JsonNode does
 not have a representation for unsigned integers)
+
+## Acknowledgements
+This software has been originally created in context of the DFG project GO 3192/1-1
+“Automated characterization of microbial genomes and metagenomes by collection and verification of association rules”.
+The funders had no role in study design, data collection and analysis.
